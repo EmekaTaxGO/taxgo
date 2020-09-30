@@ -1,52 +1,67 @@
-import React, { useEffect } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { TextField, OutlinedTextField } from 'react-native-material-textfield';
-import AppTextField from '../components/AppTextField';
 import { colorAccent } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import AppButton from '../components/AppButton';
 const { View, Text, StyleSheet, Image } = require("react-native")
 
-const LoginScreen = (props) => {
+class LoginScreen extends Component {
 
-    useEffect(() => {
-        console.log('Props', JSON.stringify(props));
-    }, [])
-
-
-    const onSubmit = () => {
-        let { current: field } = fieldRef;
-
-        console.log(field.value());
-    };
-
-    const onForgotPass = () => {
-        console.log('Pass forgot')
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: '',
+            password: '',
+            emailError: undefined,
+            passError: undefined
+        }
     }
 
-    const fieldRef = React.createRef();
+    emailRef = React.createRef();
+    passRef = React.createRef();
 
-    return <View style={styles.container}>
-        <Image source={{ uri: 'https://taxgoglobal.com/images/logo-hd-main.webp' }}
-            style={styles.logo} />
-        <AppTextField
-            label='Email'
-            keyboardType='email-address' />
+    onForgetPassClick = () => {
+        console.log('OnForget password click!');
+    }
 
-        <AppTextField
-            label='Password'
-            secureTextEntry={true} />
+    onLoginClick = () => {
+        const { text } = this.emailRef.current.state;
+        console.log('Email Ref', text);
+    }
 
-        <TouchableOpacity
-            style={{ paddingVertical: 6 }}
-            onPress={onForgotPass}>
-            <Text style={styles.forgotPass}>Forgot password?</Text>
-        </TouchableOpacity>
+    render() {
+        return <View style={styles.container}>
+            <Image source={{ uri: 'https://taxgoglobal.com/images/logo-hd-main.webp' }}
+                style={styles.logo} />
+            <TextField
+                label='Email'
+                keyboardType='email-address'
+                returnKeyType='next'
+                error={this.state.emailError}
+                ref={this.emailRef}
+                lineWidth={1}
+                onSubmitEditing={() => { this.passRef.current.focus() }} />
+            <TextField
+                label='Password'
+                secureTextEntry={true}
+                error={this.state.passError}
+                lineWidth={1}
+                ref={this.passRef} />
 
-        <AppButton />
+            <TouchableOpacity
+                style={{ paddingVertical: 6, alignItems: 'flex-end' }}
+                onPress={this.onForgetPassClick}>
+                <Text style={styles.forgotPass}>Forgot password?</Text>
+            </TouchableOpacity>
+
+            <AppButton onPress={this.onLoginClick}
+                title='Login'
+                textAllCaps={true} />
 
 
-    </View>
+        </View>
+    }
 }
 const styles = StyleSheet.create({
     container: {

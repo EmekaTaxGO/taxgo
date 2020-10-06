@@ -11,6 +11,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, HeaderTitle } from '@react-navigation/stack';
 import LoginScreen from './src/screens/LoginScreen';
 import { colorPrimary, colorWhite } from './src/theme/Color';
+import HomeScreen from './src/screens/HomeScreen';
 
 const App = () => {
 
@@ -18,13 +19,15 @@ const App = () => {
 
   return <NavigationContainer>
     <Stack.Navigator
-      initialRouteName='Hello'
+      initialRouteName='HomeScreen'
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
         headerTitleStyle: { fontWeight: '400' }
       }}>
-      <Stack.Screen name='LoginScreen' component={LoginScreen} />
+
+      <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />
+      <Stack.Screen name='HomeScreen' component={HomeScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

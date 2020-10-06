@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { TextField, OutlinedTextField } from 'react-native-material-textfield';
 import { colorAccent } from '../theme/Color';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import AppButton from '../components/AppButton';
+import { RaisedTextButton } from 'react-native-material-buttons';
 const { View, Text, StyleSheet, Image } = require("react-native")
 
 class LoginScreen extends Component {
@@ -11,8 +12,6 @@ class LoginScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
-            password: '',
             emailError: undefined,
             passError: undefined
         }
@@ -30,10 +29,25 @@ class LoginScreen extends Component {
         console.log('Email Ref', text);
     }
 
-    render() {
-        return <View style={styles.container}>
-            <Image source={{ uri: 'https://taxgoglobal.com/images/logo-hd-main.webp' }}
-                style={styles.logo} />
+    renderCreateAccountRow = () => {
+        return <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center'
+        }}>
+            <Text style={{ fontSize: 14 }}>Don't have an account</Text>
+            <TouchableOpacity style={{ padding: 12 }}>
+                <Text style={{
+                    fontSize: 14,
+                    color: colorAccent,
+                    textDecorationLine: 'underline'
+                }}>Register</Text>
+            </TouchableOpacity>
+        </View>
+    }
+    renderLoginForm = () => {
+        return <View>
             <TextField
                 label='Email'
                 keyboardType='email-address'
@@ -56,16 +70,41 @@ class LoginScreen extends Component {
             </TouchableOpacity>
 
             <AppButton onPress={this.onLoginClick}
-                title='Login'
-                textAllCaps={true} />
-
-
+                title='Login' />
         </View>
+    }
+
+    render() {
+        return <ScrollView style={{ flex: 1 }}>
+            <View style={styles.container}>
+                <Image source={{ uri: 'https://taxgoglobal.com/images/logo-hd-main.webp' }}
+                    style={styles.logo} />
+                {this.renderLoginForm()}
+                {this.renderCreateAccountRow()}
+
+                <View style={{
+                    flex: 1, flexDirection: 'row',
+                    alignItems: 'center', marginTop: 12
+                }}>
+                    <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
+                    <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
+                    <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
+                </View>
+                <RaisedTextButton
+                    title='SignIn using Facebook'
+                    color={colorAccent}
+                    titleColor='white'
+                    padding={24}
+                    marginTop={24}
+                />
+                
+            </View>
+
+        </ScrollView>
     }
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexDirection: 'column',
         alignItems: 'stretch',
         paddingHorizontal: 12

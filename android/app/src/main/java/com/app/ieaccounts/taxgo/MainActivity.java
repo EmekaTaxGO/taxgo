@@ -1,4 +1,4 @@
-package com.taxgomobile;
+package com.app.ieaccounts.taxgo;
 
 import com.facebook.react.ReactActivity;
 

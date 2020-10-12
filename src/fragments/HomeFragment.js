@@ -138,6 +138,7 @@ const HomeFragment = ({ navigation }) => {
             keyExtractor={(row, index) => `${index}`}
             renderItem={({ item }) => <GridItem item={item} />}
             numColumns={2}
+            showsVerticalScrollIndicator={false}
         />
     </View>
 }

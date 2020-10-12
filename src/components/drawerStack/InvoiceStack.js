@@ -4,6 +4,6 @@ import InvoiceFragment from '../../fragments/InvoiceFragment';
 const InvoiceStack = () => {
 
 
-    return <SingleStack name='Invoice' component={InvoiceFragment} />
+    return <SingleStack name='Invoice' component={InvoiceFragment} title='Invoice' />
 }
 export default InvoiceStack;

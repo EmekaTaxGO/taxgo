@@ -6,11 +6,11 @@ const SettingFragment = props => {
 
     const form = [
         {
-            head: {
-                label: 'Profile',
+            title: {
+                label: 'Profile Settings',
                 description: 'Manage information about your company, logo and password'
             },
-            fields: [
+            data: [
                 {
                     icon: '',
                     label: 'Edit Profile'
@@ -22,11 +22,11 @@ const SettingFragment = props => {
             ]
         },
         {
-            head: {
+            title: {
                 label: 'Subscription & Payment',
                 description: 'Tax Go gives you one month of free trial and upgrade plans at minimum of your budget.'
             },
-            fields: [
+            data: [
                 {
                     icon: '',
                     label: 'Merchant Account'
@@ -38,12 +38,12 @@ const SettingFragment = props => {
             ]
         },
         {
-            head: {
-                label: 'Account',
+            title: {
+                label: 'Account Settings',
                 span: '**comming soon',
                 description: 'Manage information about your account, default terms & conditions, default email messages and choose from multiple invoice style.'
             },
-            fields: [
+            data: [
                 {
                     icon: '',
                     label: 'Customize'
@@ -75,47 +75,71 @@ const SettingFragment = props => {
 
 
     const SectionHeader = ({ section }) => {
-        console.log('Section');
-        return <View style={{ flexDirection: 'column' }}>
-            <Text style={styles.headerTitle}>
-                {section.head.label}
-            </Text>
+        return <View style={{
+            flexDirection: 'column',
+            borderBottomColor: '#fdfdfd',
+            borderBottomWidth: 1
+        }}>
+            <View style={{
+                flexDirection: 'row',
+                backgroundColor: '#6c757e',
+                flex: 1,
+                alignItems: 'center'
+            }}>
+                <Text style={styles.headerTitle}>
+                    {section.title.label}
+                </Text>
+                <Text style={{
+                    color: '#b9aa4c',
+                    paddingStart: 4
+                }}>{section.title.span}</Text>
+            </View>
+            <Text style={{
+                paddingHorizontal: 6,
+                paddingVertical: 8
+            }}>
+                {section.title.description}</Text>
 
         </View>
     }
     const Item = ({ item }) => {
-        console.log('Item');
-        return <View style={{ flex: 1, flexDirection: 'row' }}>
-            <Icon name={item.icon} size={20} color='black' />
-            <Text>{item.label}</Text>
-        </View>
-    }
-    const SectionItem = ({ item }) => {
-        console.log('Item')
-        return <FlatList
-            style={{ flex: 1, flexDirection: 'row' }}
-            data={item.fields}
-            keyExtractor={({ item, index }) => `${item + index}`}
-            renderItem={({ item }) => <Item item={item} />}
-        />
+        return <TouchableOpacity style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center'
+        }}>
+            <Icon name='settings' size={30} color='black' style={{ padding: 16 }} />
+            <View style={{
+                flex: 1,
+                flexDirection: 'row',
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 1,
+                paddingVertical: 16,
+                marginStart: 8
+            }}>
+                <Text style={{ fontSize: 18 }}>{item.label}</Text>
+            </View>
+        </TouchableOpacity>
     }
 
-    console.log('Length', form.length);
 
     return <SectionList
         sections={form}
-        keyExtractor={({ item, index }) => `${item + index}`}
+        keyExtractor={item => item.label}
         renderSectionHeader={({ section }) => <SectionHeader section={section} />}
-        renderItem={({ item }) => <Item item={item} />} />
+        renderItem={({ item }) => <Item item={item} />}
+    />
 }
 const styles = StyleSheet.create({
     menu: {
         paddingLeft: 12
     },
     headerTitle: {
-        flex: 1,
         paddingHorizontal: 4,
-        paddingVertical: 12
+        paddingVertical: 8,
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold'
     }
 });
 export default SettingFragment;

@@ -12,11 +12,11 @@ const SettingFragment = props => {
             },
             data: [
                 {
-                    icon: '',
+                    icon: 'edit',
                     label: 'Edit Profile'
                 },
                 {
-                    icon: '',
+                    icon: 'lock-outline',
                     label: 'Change Password'
                 }
             ]
@@ -28,11 +28,11 @@ const SettingFragment = props => {
             },
             data: [
                 {
-                    icon: '',
+                    icon: 'supervisor-account',
                     label: 'Merchant Account'
                 },
                 {
-                    icon: '',
+                    icon: 'wallet-membership',
                     label: 'Upgrade Plan'
                 }
             ]
@@ -45,15 +45,15 @@ const SettingFragment = props => {
             },
             data: [
                 {
-                    icon: '',
+                    icon: 'dashboard-customize',
                     label: 'Customize'
                 },
                 {
-                    icon: '',
+                    icon: 'menu-book',
                     label: 'Invoice Style'
                 },
                 {
-                    icon: '',
+                    icon: 'payment',
                     label: 'Retail Xpress'
                 }
             ]
@@ -102,13 +102,26 @@ const SettingFragment = props => {
 
         </View>
     }
+    const onItemPress = item => {
+        let screen = null;
+        switch (item.icon) {
+            case 'edit':
+                screen = 'EditProfileScreen';
+                break;
+            default:
+                break;
+        }
+        if (screen !== null) {
+            props.navigation.push(screen);
+        }
+    }
     const Item = ({ item }) => {
         return <TouchableOpacity style={{
             flex: 1,
             flexDirection: 'row',
             alignItems: 'center'
-        }}>
-            <Icon name='settings' size={30} color='black' style={{ padding: 16 }} />
+        }} onPress={() => onItemPress(item)}>
+            <Icon name={item.icon} size={30} color='black' style={{ padding: 16 }} />
             <View style={{
                 flex: 1,
                 flexDirection: 'row',

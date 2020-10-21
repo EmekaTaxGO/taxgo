@@ -13,6 +13,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import { colorPrimary, colorWhite } from './src/theme/Color';
 import HomeScreen from './src/screens/HomeScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
+import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 
 const App = () => {
 
@@ -20,7 +21,7 @@ const App = () => {
 
   return <NavigationContainer>
     <Stack.Navigator
-      initialRouteName='LoginScreen'
+      initialRouteName='HomeScreen'
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
@@ -30,6 +31,7 @@ const App = () => {
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />
       <Stack.Screen name='HomeScreen' component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name='EditProfileScreen' component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
+      <Stack.Screen name='ChangePasswordScreen' component={ChangePasswordScreen} options={{ title: 'Change Password' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

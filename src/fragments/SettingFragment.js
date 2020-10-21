@@ -108,6 +108,9 @@ const SettingFragment = props => {
             case 'edit':
                 screen = 'EditProfileScreen';
                 break;
+            case 'lock-outline':
+                screen = 'ChangePasswordScreen';
+                break;
             default:
                 break;
         }

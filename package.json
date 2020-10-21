@@ -20,6 +20,7 @@
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-native": "0.63.2",
+    "react-native-cardview": "^2.0.5",
     "react-native-fbsdk": "^2.0.0",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-material-buttons": "^0.6.0",

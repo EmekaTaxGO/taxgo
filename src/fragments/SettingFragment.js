@@ -111,6 +111,12 @@ const SettingFragment = props => {
             case 'lock-outline':
                 screen = 'ChangePasswordScreen';
                 break;
+            case 'supervisor-account':
+                screen = 'MerchantAccountScreen';
+                break;
+            case 'wallet-membership':
+                screen = 'UpgradePlanScreen';
+                break;
             default:
                 break;
         }

@@ -42,7 +42,7 @@ const ChangePasswordScreen = () => {
                 />
                 <TextField
                     label='Confirm Password'
-                    returnKeyType='next'
+                    returnKeyType='done'
                     ref={confirmPassRef}
                     lineWidth={1}
                     secureTextEntry={true}

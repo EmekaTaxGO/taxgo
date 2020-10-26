@@ -27,22 +27,22 @@ class UpgradePlanScreen extends Component {
                 features: [
                     '5 Invoices/Month', '5 Customers', '5 Suppliers', 'Choose your own Invoice Design', '2 Bank Accounts'
                 ],
-                startColor: '#fec107',
-                endColor: '#fec107'
+                startColor: '#fda9a7',
+                endColor: '#fbc0ba'
             },
             {
                 header: 'Standard',
                 description: 'Tax GO Standard is upgraded version of your basic account It will help your small/medium business with extra support.',
                 features: ['Get Basic Account', '250 Invoices/Month', '50 Customers', '50 Suppliers', 'Choose your own Invoice Design', '5 Bank Accounts', 'Reports and Accounting'],
-                startColor: '#fec107',
-                endColor: '#fec107'
+                startColor: '#f7cb6a',
+                endColor: '#fca881'
             },
             {
                 header: 'Pro',
                 description: 'Tax GO Pro is the best partner for your business. Pro accounts helps you setup a retail store just with your phone.',
                 features: ['Get Basic Account', 'Unlimited Invoices/Month', 'Unlimited Customers', 'Unlimited Suppliers', 'Unlimted Bank Accounts', 'Reports and Accounting', 'Retail Access'],
-                startColor: '#fec107',
-                endColor: '#fec107'
+                startColor: '#f189e2',
+                endColor: '#f56185'
             }
 
         ]
@@ -96,7 +96,7 @@ class UpgradePlanScreen extends Component {
                 <View style={{
                     flex: 1,
                     flexDirection: 'row',
-                    padding: 8,
+                    padding: 18,
                     alignItems: 'center',
                     borderBottomWidth: 1,
                     borderBottomColor: 'white'

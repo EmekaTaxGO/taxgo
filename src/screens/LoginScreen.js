@@ -5,6 +5,9 @@ import { colorAccent } from '../theme/Color';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import AppButton from '../components/AppButton';
 import { RaisedTextButton } from 'react-native-material-buttons';
+import { LoginButton, AccessToken } from 'react-native-fbsdk';
+import { log, showToast } from '../components/Logger';
+import FBLoginButton from '../components/FBLoginButton';
 const { View, Text, StyleSheet, Image } = require("react-native")
 
 class LoginScreen extends Component {
@@ -74,6 +77,13 @@ class LoginScreen extends Component {
         </View>
     }
 
+    getFBAccessToken = () => {
+        AccessToken.getCurrentAccessToken()
+            .then(data => {
+                log('FB Access Token', data.accessToken.toString());
+            })
+    }
+
     render() {
         return <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -90,14 +100,31 @@ class LoginScreen extends Component {
                     <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
                     <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
                 </View>
-                <RaisedTextButton
+                {/* <RaisedTextButton
                     title='SignIn using Facebook'
                     color={colorAccent}
                     titleColor='white'
                     padding={24}
                     marginTop={24}
-                />
-                
+                /> */}
+                <View style={{ flex: 1, justifyContent: 'center', marginTop: 20 }}>
+                    {/* <LoginButton
+                        // style={styles.fbBtn}
+                        permissions={['public_profile', 'email']}
+                        onLoginFinished={(error, result) => {
+                            if (error || result.isCancelled) {
+                                showToast('Facebook SignIn failed');
+                            } else {
+                                this.getFBAccessToken();
+                            }
+                        }}
+                        onLogoutFinished={() => { log('On Fb Logout!') }}
+                    /> */}
+                    <FBLoginButton
+                        onSuccess={accessToken => { }}
+                        onError={() => { }} />
+
+                </View>
             </View>
 
         </ScrollView>
@@ -121,6 +148,9 @@ const styles = StyleSheet.create({
     },
     forgotPass: {
         color: colorAccent
+    },
+    fbBtn: {
+        // width: '100%'
     }
 });
 export default connect(

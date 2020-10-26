@@ -97,7 +97,6 @@ const HomeFragment = ({ navigation }) => {
     }
 
     const GridItem = ({ item }) => {
-        console.log('Item')
         return <View style={{
             width: '100%',
             aspectRatio: 16 / 9,

@@ -12,6 +12,10 @@ import { createStackNavigator, HeaderTitle } from '@react-navigation/stack';
 import LoginScreen from './src/screens/LoginScreen';
 import { colorPrimary, colorWhite } from './src/theme/Color';
 import HomeScreen from './src/screens/HomeScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
+import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
+import MerchantAccountScreen from './src/screens/MerchantAccountScreen';
+import UpgradePlanScreen from './src/screens/UpgradePlanScreen';
 
 const App = () => {
 
@@ -28,6 +32,10 @@ const App = () => {
 
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />
       <Stack.Screen name='HomeScreen' component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name='EditProfileScreen' component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
+      <Stack.Screen name='ChangePasswordScreen' component={ChangePasswordScreen} options={{ title: 'Change Password' }} />
+      <Stack.Screen name='MerchantAccountScreen' component={MerchantAccountScreen} options={{ title: 'Merchant Account' }} />
+      <Stack.Screen name='UpgradePlanScreen' component={UpgradePlanScreen} options={{ title: 'Upgrade Plan' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

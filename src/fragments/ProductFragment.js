@@ -1,11 +1,13 @@
-import React, { Component, useLayoutEffect } from 'react';
+import React, { Component, useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
 import ImageView from '../components/ImageView';
+import SearchView from '../components/SearchView';
 
 const ProductFragment = props => {
 
+    const [query, setQuery] = useState('');
     const products = [{
         image: 'http://image.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
         name: 'Stock',
@@ -109,6 +111,10 @@ const ProductFragment = props => {
 
 
     return <View style={{ flex: 1 }}>
+        <SearchView
+            value={query}
+            onChangeQuery={q => setQuery(q)}
+            onCrossPress={() => { setQuery('') }} />
         <FlatList
             style={{ flex: 1 }}
             data={products}

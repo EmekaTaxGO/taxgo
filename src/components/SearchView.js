@@ -4,9 +4,11 @@ import CardView from 'react-native-cardview';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 
-const SearchView = ({ value,
+const SearchView = ({
+    value,
     onChangeQuery,
-    onCrossPress }) => {
+    onCrossPress,
+    placeholder }) => {
 
 
     const renderCross = () => {
@@ -26,6 +28,8 @@ const SearchView = ({ value,
             <AntIcon name='search1' size={24} />
             <TextInput
                 value={value}
+                keyboardType='default'
+                placeholder={placeholder}
                 onChangeText={text => onChangeQuery(text)}
                 style={{
                     flex: 1,

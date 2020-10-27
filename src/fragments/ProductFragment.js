@@ -114,7 +114,8 @@ const ProductFragment = props => {
         <SearchView
             value={query}
             onChangeQuery={q => setQuery(q)}
-            onCrossPress={() => { setQuery('') }} />
+            onCrossPress={() => { setQuery('') }}
+            placeholder='Search Products' />
         <FlatList
             style={{ flex: 1 }}
             data={products}

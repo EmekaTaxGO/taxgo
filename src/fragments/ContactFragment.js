@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Platform, ActionSheetIOS } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -7,11 +7,19 @@ import ContactTabItem from '../components/tabs/CustomerTabItem';
 import { colorAccent, colorDark } from '../theme/Color';
 import CustomerTabItem from '../components/tabs/CustomerTabItem';
 import SupplierTabItem from '../components/tabs/SupplierTabItem';
+import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 
 const ContactFragment = props => {
 
     const onMenuPress = () => {
         props.navigation.openDrawer();
+    }
+
+    const onAddClick = () => {
+        const items = ['Customer', 'Suppliers'];
+        showSingleSelectAlert('Choose Contact to add', items, index => {
+            console.log('Index: ', index);
+        })
     }
 
     useLayoutEffect(() => {
@@ -22,7 +30,7 @@ const ContactFragment = props => {
                 </TouchableOpacity>
             },
             headerRight: () => {
-                return <TouchableOpacity onPress={() => { }} style={styles.rightBtn}>
+                return <TouchableOpacity onPress={onAddClick} style={styles.rightBtn}>
                     <Icon name='add' size={30} color='white' />
                 </TouchableOpacity>
             }

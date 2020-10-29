@@ -16,6 +16,7 @@ import EditProfileScreen from './src/screens/EditProfileScreen';
 import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 import MerchantAccountScreen from './src/screens/MerchantAccountScreen';
 import UpgradePlanScreen from './src/screens/UpgradePlanScreen';
+import AddCustomerScreen from './src/screens/AddCustomerScreen';
 
 const App = () => {
 
@@ -36,6 +37,8 @@ const App = () => {
       <Stack.Screen name='ChangePasswordScreen' component={ChangePasswordScreen} options={{ title: 'Change Password' }} />
       <Stack.Screen name='MerchantAccountScreen' component={MerchantAccountScreen} options={{ title: 'Merchant Account' }} />
       <Stack.Screen name='UpgradePlanScreen' component={UpgradePlanScreen} options={{ title: 'Upgrade Plan' }} />
+      <Stack.Screen name='AddCustomerScreen' component={AddCustomerScreen} options={{ title: 'Add Customer' }} />
+
     </Stack.Navigator>
   </NavigationContainer>
 }

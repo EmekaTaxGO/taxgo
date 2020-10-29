@@ -17,9 +17,11 @@ const ContactFragment = props => {
 
     const onAddClick = () => {
         const items = ['Customer', 'Suppliers'];
-        showSingleSelectAlert('Choose Contact to add', items, index => {
-            console.log('Index: ', index);
-        })
+        showSingleSelectAlert('Choose Contact to add', items,
+            index => {
+                props.navigation.push('AddCustomerScreen',
+                    { contact: index === 0 ? 'customer' : 'supplier' });
+            })
     }
 
     useLayoutEffect(() => {
@@ -43,13 +45,13 @@ const ContactFragment = props => {
         screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
                 const iconName = route.name === 'Customer' ? 'user' : 'addusergroup';
-                return <AntIcon name={iconName} size={30} color={focused ? colorAccent : colorDark} />
+                return <AntIcon name={iconName} size={30} color={focused ? colorAccent : 'gray'} />
             }
         })
         }
         tabBarOptions={{
             activeTintColor: colorAccent,
-            inactiveTintColor: colorDark,
+            inactiveTintColor: 'gray',
             allowFontScaling: true,
             showLabel: true,
             labelPosition: 'below-icon',

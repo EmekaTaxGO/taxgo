@@ -17,6 +17,7 @@ import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 import MerchantAccountScreen from './src/screens/MerchantAccountScreen';
 import UpgradePlanScreen from './src/screens/UpgradePlanScreen';
 import AddCustomerScreen from './src/screens/AddCustomerScreen';
+import AddProductScreen from './src/screens/AddProductScreen';
 
 const App = () => {
 
@@ -24,7 +25,7 @@ const App = () => {
 
   return <NavigationContainer>
     <Stack.Navigator
-      initialRouteName='LoginScreen'
+      initialRouteName='HomeScreen'
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
@@ -38,7 +39,7 @@ const App = () => {
       <Stack.Screen name='MerchantAccountScreen' component={MerchantAccountScreen} options={{ title: 'Merchant Account' }} />
       <Stack.Screen name='UpgradePlanScreen' component={UpgradePlanScreen} options={{ title: 'Upgrade Plan' }} />
       <Stack.Screen name='AddCustomerScreen' component={AddCustomerScreen} options={{ title: 'Add Customer' }} />
-
+      <Stack.Screen name='AddProductScreen' component={AddProductScreen} options={{ title: 'Add Product' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

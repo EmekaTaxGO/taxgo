@@ -100,26 +100,8 @@ class LoginScreen extends Component {
                     <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
                     <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
                 </View>
-                {/* <RaisedTextButton
-                    title='SignIn using Facebook'
-                    color={colorAccent}
-                    titleColor='white'
-                    padding={24}
-                    marginTop={24}
-                /> */}
                 <View style={{ flex: 1, justifyContent: 'center', marginTop: 20 }}>
-                    {/* <LoginButton
-                        // style={styles.fbBtn}
-                        permissions={['public_profile', 'email']}
-                        onLoginFinished={(error, result) => {
-                            if (error || result.isCancelled) {
-                                showToast('Facebook SignIn failed');
-                            } else {
-                                this.getFBAccessToken();
-                            }
-                        }}
-                        onLogoutFinished={() => { log('On Fb Logout!') }}
-                    /> */}
+
                     <FBLoginButton
                         onSuccess={accessToken => { }}
                         onError={() => { }} />

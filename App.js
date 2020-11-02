@@ -18,10 +18,13 @@ import MerchantAccountScreen from './src/screens/MerchantAccountScreen';
 import UpgradePlanScreen from './src/screens/UpgradePlanScreen';
 import AddCustomerScreen from './src/screens/AddCustomerScreen';
 import AddProductScreen from './src/screens/AddProductScreen';
+import { LogBox } from 'react-native';
 
 const App = () => {
 
   const Stack = createStackNavigator();
+
+  LogBox.ignoreAllLogs();
 
   return <NavigationContainer>
     <Stack.Navigator

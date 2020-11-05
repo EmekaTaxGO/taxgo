@@ -19,6 +19,8 @@ import UpgradePlanScreen from './src/screens/UpgradePlanScreen';
 import AddCustomerScreen from './src/screens/AddCustomerScreen';
 import AddProductScreen from './src/screens/AddProductScreen';
 import { LogBox } from 'react-native';
+import AddJournalScreen from './src/screens/AddJournalScreen';
+import AddLedgerScreen from './src/screens/AddLedgerScreen';
 
 const App = () => {
 
@@ -43,6 +45,8 @@ const App = () => {
       <Stack.Screen name='UpgradePlanScreen' component={UpgradePlanScreen} options={{ title: 'Upgrade Plan' }} />
       <Stack.Screen name='AddCustomerScreen' component={AddCustomerScreen} options={{ title: 'Add Customer' }} />
       <Stack.Screen name='AddProductScreen' component={AddProductScreen} options={{ title: 'Add Product' }} />
+      <Stack.Screen name='AddJournalScreen' component={AddJournalScreen} options={{ title: 'Add Journal' }} />
+      <Stack.Screen name='AddLedgerScreen' component={AddLedgerScreen} options={{ title: 'Add Ledger' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

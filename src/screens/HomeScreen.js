@@ -6,12 +6,14 @@ import ProductStack from '../components/drawerStack/ProductStack';
 import InvoiceStack from '../components/drawerStack/InvoiceStack';
 import HomeStack from '../components/drawerStack/HomeStack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { DRAWER_ICON_SIZE } from '../constants/appConstant';
 import { colorPrimary, colorAccent } from '../theme/Color';
 import InitialRender from '../components/InitialRender';
 import SettingStack from '../components/drawerStack/SettingStack';
 import ContactFragment from '../fragments/ContactFragment';
 import ContactStack from '../components/drawerStack/ContactStack';
+import JournalStack from '../components/drawerStack/JournalStack';
 
 const HomeScreen = ({ navigation }) => {
 
@@ -72,6 +74,12 @@ const HomeScreen = ({ navigation }) => {
             options={{
                 title: 'Contacts', drawerIcon: ({ color }) =>
                     <Icon name='contacts' size={DRAWER_ICON_SIZE} color={color} />
+            }} />
+        <Drawer.Screen name='JournalFragment'
+            component={JournalStack}
+            options={{
+                title: 'Journals', drawerIcon: ({ color }) =>
+                    <Ionicons name='journal' size={DRAWER_ICON_SIZE} color={color} />
             }} />
 
     </Drawer.Navigator>

@@ -23,8 +23,21 @@ class AddLedgerScreen extends Component {
 
     }
 
-    onCategoryClick = () => {
+    onLedgerSelected = (item) => {
+        this.setValue(this.categoryRef, item.category);
+        this.setValue(this.catGroupRef, item.group);
+    }
 
+    setValue = (ref, value) => {
+        const { current: field } = ref;
+        field.setValue(value);
+    }
+
+    onCategoryClick = () => {
+        const payload = {
+            onLedgerSelected: this.onLedgerSelected.bind(this)
+        }
+        this.props.navigation.push('SelectLedgerScreen', payload);
     }
     render() {
         return <View style={{ flex: 1 }}>

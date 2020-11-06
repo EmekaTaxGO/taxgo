@@ -21,6 +21,7 @@ import AddProductScreen from './src/screens/AddProductScreen';
 import { LogBox } from 'react-native';
 import AddJournalScreen from './src/screens/AddJournalScreen';
 import AddLedgerScreen from './src/screens/AddLedgerScreen';
+import SelectLedgerScreen from './src/screens/SelectLedgerScreen';
 
 const App = () => {
 
@@ -47,6 +48,8 @@ const App = () => {
       <Stack.Screen name='AddProductScreen' component={AddProductScreen} options={{ title: 'Add Product' }} />
       <Stack.Screen name='AddJournalScreen' component={AddJournalScreen} options={{ title: 'Add Journal' }} />
       <Stack.Screen name='AddLedgerScreen' component={AddLedgerScreen} options={{ title: 'Add Ledger' }} />
+      <Stack.Screen name='SelectLedgerScreen' component={SelectLedgerScreen} options={{ title: 'Select Ledger' }} />
+
     </Stack.Navigator>
   </NavigationContainer>
 }

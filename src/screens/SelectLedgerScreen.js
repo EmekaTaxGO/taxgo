@@ -10,7 +10,8 @@ class SelectLedgerScreen extends Component {
         super(props);
         this.state = {
             query: '',
-            ledgers: this.createLedgers()
+            ledgers: this.createLedgers(),
+            filteredLedgers: this.createLedgers()
         }
     }
 
@@ -69,15 +70,26 @@ class SelectLedgerScreen extends Component {
         </TouchableOpacity>
     }
 
+    onSearchQueryChange = q => {
+        let filteredLedgers = null;
+        if (q.length === 0) {
+            filteredLedgers = this.state.ledgers;
+        } else {
+            filteredLedgers = this.state.ledgers.filter((value) =>
+                value.category.toLowerCase().indexOf(q.toLowerCase()) > -1)
+        }
+        this.setState({ query: q, filteredLedgers: [...filteredLedgers] });
+    }
+
     render() {
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
-                onChangeQuery={q => this.setState({ query: q })}
-                onCrossPress={() => { this.setState({ query: '' }) }}
+                onChangeQuery={this.onSearchQueryChange}
+                onCrossPress={() => { this.onSearchQueryChange('') }}
                 placeholder='Search...' />
             <FlatList
-                data={this.state.ledgers}
+                data={this.state.filteredLedgers}
                 renderItem={({ item }) => this.listItem(item)}
                 keyExtractor={(item, index) => `${index}`}
             />

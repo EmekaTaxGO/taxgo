@@ -4,6 +4,8 @@ import { TextField, OutlinedTextField, FilledTextField } from 'react-native-mate
 import { log } from '../components/Logger';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { color } from 'react-native-reanimated';
+import { RaisedTextButton } from 'react-native-material-buttons';
+import { colorAccent } from '../theme/Color';
 
 class AddLedgerScreen extends Component {
 
@@ -79,12 +81,22 @@ class AddLedgerScreen extends Component {
                     ref={this.catGroupRef}
                     onSubmitEditing={() => log('Call Api.')} />
 
+                <RaisedTextButton
+                    title='Save'
+                    color={colorAccent}
+                    titleColor='white'
+                    style={styles.btn}
+                    onPress={() => console.log('Saver Data!')} />
+
             </View>
 
         </View>
     }
 }
 const styles = StyleSheet.create({
-
+    btn: {
+        marginVertical: 20,
+        padding: 20
+    }
 });
 export default AddLedgerScreen;

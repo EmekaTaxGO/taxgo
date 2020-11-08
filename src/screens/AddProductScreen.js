@@ -10,6 +10,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
+import { DATE_FORMAT } from '../constants/appConstant';
 // import { IndicatorViewPager, PagerTabIndicator, PagerDotIndicator } from 'rn-viewpager';
 
 class AddProductScreen extends Component {
@@ -145,7 +146,7 @@ class AddProductScreen extends Component {
             purchaseExpiryDate: currentDate,
             showExpiryDateDialog: false
         }, () => {
-            this.setText(this.expiryDateRef, moment(currentDate).format('DD MMMM, YYYY'));
+            this.setText(this.expiryDateRef, moment(currentDate).format(DATE_FORMAT));
         })
     }
 
@@ -155,7 +156,7 @@ class AddProductScreen extends Component {
             stockDate: currentDate,
             showStockDateDialog: false
         }, () => {
-            this.setText(this.stockDateRef, moment(currentDate).format('DD MMMM, YYYY'));
+            this.setText(this.stockDateRef, moment(currentDate).format(DATE_FORMAT));
         })
     }
 

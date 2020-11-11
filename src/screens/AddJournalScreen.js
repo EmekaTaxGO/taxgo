@@ -25,6 +25,7 @@ class AddJournalScreen extends Component {
     dateRef = React.createRef();
     journalNumRef = React.createRef();
     journalDesRef = React.createRef();
+    ledgerIndex = 0;
 
     createLedgers = () => {
         return [{
@@ -101,6 +102,24 @@ class AddJournalScreen extends Component {
         })
     }
 
+    onLedgerSelected = info => {
+        const newLedgers = [...this.state.ledgers];
+        const newItem = {
+            ...newLedgers[this.ledgerIndex],
+            info: info
+        }
+        newLedgers[this.ledgerIndex] = newItem;
+        this.setState({ ledgers: newLedgers });
+    }
+
+    chooseLedgerClick = (item, index) => {
+        this.ledgerIndex = index;
+        this.props.navigation.push('JournalLedgersScreen', {
+            onLedgerSelected: this.onLedgerSelected.bind(this)
+        });
+
+    }
+
     renderLedgerItem = (item, index) => {
         const isLast = index + 1 === this.state.ledgers.length;
         const showDeleteBtn = index > 0;
@@ -115,7 +134,7 @@ class AddJournalScreen extends Component {
                     alignItems: 'center'
                 }}>
                     <Text style={{ fontSize: 16, flex: 1 }}>Ledger</Text>
-                    <TouchableOpacity onPress={() => { }}>
+                    <TouchableOpacity onPress={() => this.chooseLedgerClick(item, index)}>
                         <Text style={{
                             borderRadius: 12,
                             color: item.info === undefined ? 'gray' : colorAccent,
@@ -126,7 +145,7 @@ class AddJournalScreen extends Component {
                             marginLeft: 12,
                             fontSize: 14
                         }}>{item.info === undefined ?
-                            'Choose Ledger Account' : 'Ledger'}</Text>
+                            'Choose Ledger Account' : item.info.title}</Text>
                     </TouchableOpacity>
                 </View>
                 <TextField
@@ -184,7 +203,7 @@ class AddJournalScreen extends Component {
 
     render() {
         return <View style={{ flex: 1 }}>
-            <View style={{ padding: 16 }}>
+            <View style={{ paddingHorizontal: 16 }}>
                 <TouchableOpacity onPress={() => this.setState({ showDate: true })}>
                     <TextField
                         label='Journal Date'
@@ -208,7 +227,15 @@ class AddJournalScreen extends Component {
                     returnKeyType='next'
                     lineWidth={1}
                     title='*required'
-                    ref={this.journalNumRef} />
+                    ref={this.journalNumRef}
+                    onSubmitEditing={() => this.focus(this.journalDesRef)} />
+                <TextField
+                    label='Description'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    title='*required'
+                    ref={this.journalDesRef} />
 
             </View>
             <FlatList

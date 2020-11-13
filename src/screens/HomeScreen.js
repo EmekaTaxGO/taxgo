@@ -14,6 +14,7 @@ import SettingStack from '../components/drawerStack/SettingStack';
 import ContactFragment from '../fragments/ContactFragment';
 import ContactStack from '../components/drawerStack/ContactStack';
 import JournalStack from '../components/drawerStack/JournalStack';
+import LedgerStack from '../components/drawerStack/LedgerStack';
 
 const HomeScreen = ({ navigation }) => {
 
@@ -80,6 +81,12 @@ const HomeScreen = ({ navigation }) => {
             options={{
                 title: 'Journals', drawerIcon: ({ color }) =>
                     <Ionicons name='journal' size={DRAWER_ICON_SIZE} color={color} />
+            }} />
+        <Drawer.Screen name='LedgerFragment'
+            component={LedgerStack}
+            options={{
+                title: 'Ledger', drawerIcon: ({ color }) =>
+                    <Ionicons name='ios-pencil-sharp' size={DRAWER_ICON_SIZE} color={color} />
             }} />
 
     </Drawer.Navigator>

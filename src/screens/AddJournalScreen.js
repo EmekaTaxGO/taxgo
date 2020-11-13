@@ -202,7 +202,7 @@ class AddJournalScreen extends Component {
     }
 
     render() {
-        return <View style={{ flex: 1 }}>
+        return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ paddingHorizontal: 16 }}>
                 <TouchableOpacity onPress={() => this.setState({ showDate: true })}>
                     <TextField

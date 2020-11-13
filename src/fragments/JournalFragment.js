@@ -171,7 +171,6 @@ class JournalFragment extends Component {
                 <Text style={[styles.textStyle, { marginTop: 4 }]}>{item.count}</Text>
                 <Text style={[styles.textStyle, { marginTop: 4 }]}>{item.date}</Text>
             </View>
-
         </View>
     }
 

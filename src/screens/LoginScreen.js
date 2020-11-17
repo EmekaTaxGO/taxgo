@@ -8,7 +8,12 @@ import { RaisedTextButton } from 'react-native-material-buttons';
 import { LoginButton, AccessToken } from 'react-native-fbsdk';
 import { log, showToast } from '../components/Logger';
 import FBLoginButton from '../components/FBLoginButton';
+import { bindActionCreators } from 'redux';
 const { View, Text, StyleSheet, Image } = require("react-native")
+
+//Importing Actions
+import * as authActions from '../redux/actions/authActions';
+import { getFieldValue } from '../helpers/TextFieldHelpers';
 
 class LoginScreen extends Component {
 
@@ -28,8 +33,15 @@ class LoginScreen extends Component {
     }
 
     onLoginClick = () => {
-        const { text } = this.emailRef.current.state;
-        console.log('Email Ref', text);
+        console.log('Email Ref', getFieldValue(this.emailRef));
+    }
+    setValue = (ref, value) => {
+        const { current: field } = ref;
+        field.setValue(value);
+    }
+
+    onRegisterClick = () => {
+        this.props.navigation.push('SignUpScreen');
     }
 
     renderCreateAccountRow = () => {
@@ -40,7 +52,7 @@ class LoginScreen extends Component {
             alignItems: 'center'
         }}>
             <Text style={{ fontSize: 14 }}>Don't have an account</Text>
-            <TouchableOpacity style={{ padding: 12 }}>
+            <TouchableOpacity style={{ padding: 12 }} onPress={this.onRegisterClick}>
                 <Text style={{
                     fontSize: 14,
                     color: colorAccent,
@@ -138,5 +150,8 @@ const styles = StyleSheet.create({
 export default connect(
     state => ({
         auth: state.auth
-    })
+    }),
+    dispatch => {
+        authActions: bindActionCreators(authActions, dispatch)
+    }
 )(LoginScreen);

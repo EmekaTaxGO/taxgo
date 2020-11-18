@@ -1,11 +1,11 @@
-import AuthReducer from "./reducer/AuthReducer";
+import authReducer from "./reducer/authReducer";
 
 const { combineReducers, createStore, applyMiddleware } = require("redux");
 const { default: thunk } = require("redux-thunk");
 
 
 const appReducers = combineReducers({
-    auth: AuthReducer
+    auth: authReducer
 });
 
 const Store = createStore(appReducers, applyMiddleware(thunk));

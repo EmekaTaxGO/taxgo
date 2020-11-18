@@ -1,12 +1,21 @@
-import React, { Component, useLayoutEffect } from 'react';
+import React, { Component, useLayoutEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import ImageView from '../components/ImageView';
+import SearchView from '../components/SearchView';
 
-const ProductFragment = props => {
+class ProductFragment extends Component {
 
-    const products = [{
+    constructor(props) {
+        super(props);
+        this.state = {
+            query: ''
+        }
+    }
+
+    products = [{
         image: 'http://image.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
         name: 'Stock',
         itemId: 'Stock1',
@@ -67,21 +76,31 @@ const ProductFragment = props => {
         description: 'First Stock'
 
     }];
-    const onMenuPress = () => {
-        props.navigation.openDrawer();
+
+    onMenuPress = () => {
+        this.props.navigation.openDrawer();
     }
 
-    useLayoutEffect(() => {
-        props.navigation.setOptions({
+    onAddClick = () => {
+        this.props.navigation.push('AddProductScreen');
+    }
+
+    componentDidMount() {
+        this.props.navigation.setOptions({
             headerLeft: () => {
-                return <TouchableOpacity onPress={onMenuPress} style={styles.menu}>
+                return <TouchableOpacity onPress={this.onMenuPress} style={styles.menu}>
                     <Icon name='menu' size={30} color='white' />
+                </TouchableOpacity>
+            },
+            headerRight: () => {
+                return <TouchableOpacity onPress={this.onAddClick} style={{ padding: 12 }}>
+                    <MaterialIcon name='add' size={30} color='white' />
                 </TouchableOpacity>
             }
         })
-    }, [props.navigation]);
+    }
 
-    const ListItem = ({ item }) => {
+    ListItem = ({ item }) => {
         return <View style={{
             flex: 1,
             flexDirection: 'row',
@@ -108,13 +127,20 @@ const ProductFragment = props => {
     }
 
 
-    return <View style={{ flex: 1 }}>
-        <FlatList
-            style={{ flex: 1 }}
-            data={products}
-            keyExtractor={(row, index) => `${index}`}
-            renderItem={({ item }) => <ListItem item={item} />} />
-    </View>
+    render() {
+        return <View style={{ flex: 1 }}>
+            <SearchView
+                value={this.state.query}
+                onChangeQuery={q => this.setState({ query: q })}
+                onCrossPress={() => { this.setState({ query: '' }) }}
+                placeholder='Search Products' />
+            <FlatList
+                style={{ flex: 1 }}
+                data={this.products}
+                keyExtractor={(row, index) => `${index}`}
+                renderItem={({ item }) => <this.ListItem item={item} />} />
+        </View >
+    }
 }
 const styles = StyleSheet.create({
     menu: {

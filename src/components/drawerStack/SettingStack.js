@@ -1,10 +1,9 @@
 import React from 'react';
 import SingleStack from './SingleStack';
-import ProductFragment from '../../fragments/ProductFragment';
 import SettingFragment from '../../fragments/SettingFragment';
 const SettingStack = () => {
 
-    return <SingleStack name='Product'
+    return <SingleStack name='Settings'
         component={SettingFragment}
         title='Settings' />
 }

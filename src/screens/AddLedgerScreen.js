@@ -1,0 +1,102 @@
+import React, { Component } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { TextField, OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
+import { log } from '../components/Logger';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { color } from 'react-native-reanimated';
+import { RaisedTextButton } from 'react-native-material-buttons';
+import { colorAccent } from '../theme/Color';
+
+class AddLedgerScreen extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        }
+    }
+
+    ledgerAccRef = React.createRef();
+    codeRef = React.createRef();
+    categoryRef = React.createRef();
+    catGroupRef = React.createRef();
+
+    componentDidMount() {
+
+    }
+
+    onLedgerSelected = (item) => {
+        this.setValue(this.categoryRef, item.category);
+        this.setValue(this.catGroupRef, item.group);
+    }
+
+    setValue = (ref, value) => {
+        const { current: field } = ref;
+        field.setValue(value);
+    }
+
+    onCategoryClick = () => {
+        const payload = {
+            onLedgerSelected: this.onLedgerSelected.bind(this)
+        }
+        this.props.navigation.push('SelectLedgerScreen', payload);
+    }
+    render() {
+        return <View style={{ flex: 1 }}>
+            <View style={{ paddingHorizontal: 16 }}>
+                <TextField
+                    label='Ledger Account'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    errorColor='green'
+                    title='*Required'
+                    titleTextStyle={{ color: 'red', textDecorationColor: 'black', textShadowColor: 'black' }}
+                    ref={this.ledgerAccRef}
+                    onSubmitEditing={() => this.codeRef.current.focus()} />
+                <TextField
+                    label='Nominal Code'
+                    returnKeyType='done'
+                    keyboardType='default'
+                    lineWidth={1}
+                    title='*Required'
+                    ref={this.codeRef} />
+                <TouchableOpacity onPress={this.onCategoryClick}>
+                    <TextField
+                        label='Category'
+                        returnKeyType='next'
+                        keyboardType='default'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.categoryRef}
+                        onSubmitEditing={() => this.catGroupRef.current.focus()} />
+
+                </TouchableOpacity>
+                <TextField
+                    label='Category Group'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    editable={false}
+                    ref={this.catGroupRef}
+                    onSubmitEditing={() => log('Call Api.')} />
+
+                <RaisedTextButton
+                    title='Save'
+                    color={colorAccent}
+                    titleColor='white'
+                    style={styles.btn}
+                    onPress={() => console.log('Saver Data!')} />
+
+            </View>
+
+        </View>
+    }
+}
+const styles = StyleSheet.create({
+    btn: {
+        marginVertical: 20,
+        padding: 20
+    }
+});
+export default AddLedgerScreen;

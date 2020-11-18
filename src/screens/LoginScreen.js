@@ -8,7 +8,12 @@ import { RaisedTextButton } from 'react-native-material-buttons';
 import { LoginButton, AccessToken } from 'react-native-fbsdk';
 import { log, showToast } from '../components/Logger';
 import FBLoginButton from '../components/FBLoginButton';
+import { bindActionCreators } from 'redux';
 const { View, Text, StyleSheet, Image } = require("react-native")
+
+//Importing Actions
+import * as authActions from '../redux/actions/authActions';
+import { getFieldValue } from '../helpers/TextFieldHelpers';
 
 class LoginScreen extends Component {
 
@@ -28,8 +33,15 @@ class LoginScreen extends Component {
     }
 
     onLoginClick = () => {
-        const { text } = this.emailRef.current.state;
-        console.log('Email Ref', text);
+        console.log('Email Ref', getFieldValue(this.emailRef));
+    }
+    setValue = (ref, value) => {
+        const { current: field } = ref;
+        field.setValue(value);
+    }
+
+    onRegisterClick = () => {
+        this.props.navigation.push('SignUpScreen');
     }
 
     renderCreateAccountRow = () => {
@@ -40,7 +52,7 @@ class LoginScreen extends Component {
             alignItems: 'center'
         }}>
             <Text style={{ fontSize: 14 }}>Don't have an account</Text>
-            <TouchableOpacity style={{ padding: 12 }}>
+            <TouchableOpacity style={{ padding: 12 }} onPress={this.onRegisterClick}>
                 <Text style={{
                     fontSize: 14,
                     color: colorAccent,
@@ -100,26 +112,8 @@ class LoginScreen extends Component {
                     <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
                     <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
                 </View>
-                {/* <RaisedTextButton
-                    title='SignIn using Facebook'
-                    color={colorAccent}
-                    titleColor='white'
-                    padding={24}
-                    marginTop={24}
-                /> */}
                 <View style={{ flex: 1, justifyContent: 'center', marginTop: 20 }}>
-                    {/* <LoginButton
-                        // style={styles.fbBtn}
-                        permissions={['public_profile', 'email']}
-                        onLoginFinished={(error, result) => {
-                            if (error || result.isCancelled) {
-                                showToast('Facebook SignIn failed');
-                            } else {
-                                this.getFBAccessToken();
-                            }
-                        }}
-                        onLogoutFinished={() => { log('On Fb Logout!') }}
-                    /> */}
+
                     <FBLoginButton
                         onSuccess={accessToken => { }}
                         onError={() => { }} />
@@ -156,5 +150,8 @@ const styles = StyleSheet.create({
 export default connect(
     state => ({
         auth: state.auth
+    }),
+    dispatch => ({
+        authActions: bindActionCreators(authActions, dispatch)
     })
 )(LoginScreen);

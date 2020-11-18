@@ -1,0 +1,461 @@
+import React, { Component } from 'react';
+import { View, Text, Picker, StyleSheet, KeyboardAvoidingView, ScrollView, TextInput, CheckBox, Switch } from 'react-native';
+// import Picker from '@react-native-community/picker';
+import ViewPager from '@react-native-community/viewpager';
+import AppViewPager from '../components/AppViewpager';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { TextField } from 'react-native-material-textfield';
+import { colorAccent } from '../theme/Color';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
+import { RaisedTextButton } from 'react-native-material-buttons';
+import { DATE_FORMAT } from '../constants/appConstant';
+// import { IndicatorViewPager, PagerTabIndicator, PagerDotIndicator } from 'rn-viewpager';
+
+class AddProductScreen extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            types: this.createProductType(),
+            selectedTypeIndex: 0,
+            vats: this.createVats(),
+            selectedVatIndex: 0,
+            includeVat: false,
+            showExpiryDateDialog: false,
+            purchaseExpiryDate: new Date(),
+            alreadyHaveStock: false,
+            stockDate: new Date(),
+            showStockDateDialog: false
+        }
+
+    }
+
+    codeRef = React.createRef();
+    descriptionRef = React.createRef();
+    saleAccountRef = React.createRef();
+    salePriceRef = React.createRef();
+    tradePriceRef = React.createRef();
+    wholesalePriceRef = React.createRef();
+    vatAmountRef = React.createRef();
+    totalAmountRef = React.createRef();
+    supplierRef = React.createRef();
+    SICodeRef = React.createRef();
+    purchaseDescRef = React.createRef();
+    purchasePriceRef = React.createRef();
+    purchaseAccRef = React.createRef();
+    expiryDateRef = React.createRef();
+    reorderLimitRef = React.createRef();
+    reorderQtyRef = React.createRef();
+    stockQtyRef = React.createRef();
+    stockDateRef = React.createRef();
+    stockPriceRef = React.createRef();
+    locationRef = React.createRef();
+    weightRef = React.createRef();
+    barcodeRef = React.createRef();
+    notesRef = React.createRef();
+
+
+    createVats = () => {
+        return [
+            {
+                id: 1,
+                value: '0.00 % VAT-Zero rate'
+            },
+            {
+                id: 2,
+                value: '5.00 % VAT-Standard rate'
+            },
+            {
+                id: 3,
+                value: '10.00 % VAT-Market rate'
+            }
+        ]
+    }
+    createProductType = () => {
+        return [
+            {
+                id: 1,
+                value: 'Stock'
+            },
+            {
+                id: 2,
+                value: 'Non-Stock'
+            },
+            {
+                id: 3,
+                value: 'Service'
+            },
+        ]
+    }
+
+    renderStrip = (text) => {
+        return <Text
+            style={{
+                width: '100%',
+                backgroundColor: 'gray',
+                color: 'white',
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                fontSize: 18
+            }}>
+            {text}
+        </Text>
+    }
+    renderLabel = (text) => {
+        return <Text
+            style={{
+                width: '100%',
+                color: 'black',
+                fontSize: 14,
+                paddingHorizontal: 16,
+                paddingTop: 12
+            }}>
+            {text}
+        </Text>
+    }
+
+    onVatChange = (itemValue, itemIndex) => {
+
+        this.setState({ selectedVatIndex: itemIndex }, () => {
+            const { vats, selectedVatIndex } = this.state;
+            const vat = vats[selectedVatIndex].id * 2.009
+            this.setText(this.vatAmountRef, vat);
+            this.setText(this.totalAmountRef, vat * 1.5);
+        })
+    }
+
+    setText = (ref, value) => {
+        const { current: field } = ref;
+        field.setValue(value);
+    }
+
+    focus = ref => {
+        ref.current.focus();
+    }
+
+    getTotal = () => {
+        const { vats, selectedVatIndex } = this.state;
+        const total = vats[selectedVatIndex].id * 234;
+        return total;
+    }
+
+    onPurchaseExpiryChange = (event, selectedDate) => {
+        const currentDate = selectedDate || this.state.purchaseExpiryDate;
+        this.setState({
+            purchaseExpiryDate: currentDate,
+            showExpiryDateDialog: false
+        }, () => {
+            this.setText(this.expiryDateRef, moment(currentDate).format(DATE_FORMAT));
+        })
+    }
+
+    onStockDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || this.state.stockDate;
+        this.setState({
+            stockDate: currentDate,
+            showStockDateDialog: false
+        }, () => {
+            this.setText(this.stockDateRef, moment(currentDate).format(DATE_FORMAT));
+        })
+    }
+
+    render() {
+
+        const { types, selectedTypeIndex, vats, selectedVatIndex } = this.state;
+
+
+        return <KeyboardAvoidingView style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1 }}>
+
+                {this.renderStrip('Item')}
+                {this.renderLabel('Type')}
+                <Picker
+                    style={{ marginHorizontal: 12 }}
+                    selectedValue={types[selectedTypeIndex].value}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedTypeIndex: itemIndex })}>
+
+                    {types.map((value, index) => <Picker.Item
+                        label={value.value} value={value.value} key={`${index}`} />)}
+                </Picker>
+                <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
+                    <TextField
+                        label='Code/Name'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        ref={this.codeRef}
+                        lineWidth={1}
+                        onSubmitEditing={() => { this.descriptionRef.current.focus() }} />
+                    <TextField
+                        label='Description'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        ref={this.descriptionRef}
+                        lineWidth={1}
+                        onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                </View>
+                <View style={{ marginTop: 12 }}>
+                    {this.renderStrip('Sale')}
+                </View>
+
+                <View style={{ paddingHorizontal: 16 }}>
+                    <TextField
+                        label='Sales Acc.'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        ref={this.saleAccountRef}
+                        lineWidth={1}
+                        onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                    <TextField
+                        label='Sales Price'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        ref={this.salePriceRef}
+                        lineWidth={1}
+                        onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
+                    <TextField
+                        label='Trade Price'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        ref={this.tradePriceRef}
+                        lineWidth={1}
+                        onSubmitEditing={() => { this.wholesalePriceRef.current.focus() }} />
+                    <TextField
+                        label='Whole Sale Price'
+                        keyboardType='default'
+                        returnKeyType='done'
+                        ref={this.wholesalePriceRef}
+                        lineWidth={1}
+                        onSubmitEditing={() => { }} />
+                </View>
+
+                {this.renderLabel('VAT/GST')}
+                <Picker
+                    style={{ marginHorizontal: 12 }}
+                    selectedValue={vats[selectedVatIndex].value}
+                    mode='dropdown'
+                    onValueChange={this.onVatChange}>
+
+                    {vats.map((value, index) => <Picker.Item
+                        label={value.value} value={value.value} key={`${index}`} />)}
+                </Picker>
+                <View style={{ paddingHorizontal: 16 }}>
+                    <TextField
+                        label='Vat Amount'
+                        keyboardType='default'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.vatAmountRef}
+                        onSubmitEditing={() => { }} />
+                </View>
+                <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginTop: 12 }}>
+                    <Text style={{ fontSize: 16, color: 'gray' }}>Include Vat.</Text>
+                    <Switch
+                        style={{ marginLeft: 40 }}
+                        thumbColor={this.state.includeVat ? colorAccent : 'gray'}
+                        value={this.state.includeVat}
+                        onValueChange={enabled => this.setState({ includeVat: enabled })}
+                    />
+                </View>
+
+                <View style={{ paddingHorizontal: 16 }}>
+                    <TextField
+                        label='Total'
+                        keyboardType='default'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.totalAmountRef}
+                        value={this.getTotal()}
+                        onSubmitEditing={() => { }} />
+                </View>
+                <View style={{ marginTop: 24 }}>
+                    {this.renderStrip('Purchase')}
+                </View>
+
+                <View style={{ paddingHorizontal: 16 }}>
+                    <TextField
+                        label='Supplier'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.supplierRef}
+                        value='Vinay Kumar'
+                        onSubmitEditing={() => this.SICodeRef.current.focus()} />
+
+                    <TextField
+                        label='SI Code'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.SICodeRef}
+                        value='009IKLI009'
+                        onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
+
+                    <TextField
+                        label='Purchase Desc.'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.purchaseDescRef}
+                        value='This is Purchase Description'
+                        onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
+
+                    <TextField
+                        label='Cost Price'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.purchasePriceRef}
+                        value='123445'
+                        onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
+                    <TextField
+                        label='Purchase Acc.'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        editable={false}
+                        ref={this.purchaseAccRef}
+                        value='123445'
+                        onSubmitEditing={() => { }} />
+
+                    <TouchableOpacity onPress={() => this.setState({ showExpiryDateDialog: true })}>
+                        <TextField
+                            label='Expiry Date'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            lineWidth={1}
+                            editable={false}
+                            ref={this.expiryDateRef} />
+                    </TouchableOpacity>
+                    {this.state.showExpiryDateDialog ? <DateTimePicker
+                        value={this.state.purchaseExpiryDate}
+                        mode={'datetime'}
+                        display='default'
+                        minimumDate={new Date()}
+                        onChange={this.onPurchaseExpiryChange}
+                    /> : null}
+
+                    <TextField
+                        label='Reorder Limit.'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        ref={this.reorderLimitRef}
+                        onSubmitEditing={() => this.focus(this.reorderQtyRef)} />
+
+                    <TextField
+                        label='Expiry Qty'
+                        keyboardType='numeric'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        ref={this.reorderQtyRef} />
+                </View>
+                <View style={{ marginVertical: 24 }}>
+                    {this.renderStrip('Stock')}
+                </View>
+
+                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                    <Text style={{ fontSize: 16, color: 'gray' }}>I have existing stock in hand.</Text>
+                    <Switch
+                        style={{ marginLeft: 40 }}
+                        thumbColor={this.state.alreadyHaveStock ? colorAccent : 'gray'}
+                        value={this.state.alreadyHaveStock}
+                        onValueChange={enabled => this.setState({ alreadyHaveStock: enabled })}
+                    />
+                </View>
+                <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
+                    <TextField
+                        label='Quantity'
+                        keyboardType='numeric'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        ref={this.stockQtyRef}
+                        onSubmitEditing={() => this.focus(this.stockPriceRef)} />
+                    <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
+                        <TextField
+                            label='As of Date'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            editable={false}
+                            lineWidth={1}
+                            ref={this.stockDateRef} />
+                    </TouchableOpacity>
+
+                    {this.state.showStockDateDialog ? <DateTimePicker
+                        value={this.state.stockDate}
+                        mode={'datetime'}
+                        display='default'
+                        minimumDate={new Date()}
+                        onChange={this.onStockDateChange}
+                    /> : null}
+
+                    <TextField
+                        label='Cost Price'
+                        keyboardType='number-pad'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        ref={this.stockPriceRef} />
+                </View>
+                <View style={{ marginTop: 24 }}>
+                    {this.renderStrip('Others')}
+                </View>
+                <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+                    <TextField
+                        label='Location'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        ref={this.locationRef}
+                        onSubmitEditing={() => this.focus(this.weightRef)} />
+                    <TextField
+                        label='Weight'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        ref={this.weightRef}
+                        onSubmitEditing={() => this.focus(this.barcodeRef)} />
+                    <TextField
+                        label='Barcode'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        ref={this.barcodeRef}
+                        onSubmitEditing={() => this.focus(this.notesRef)} />
+                    <TextField
+                        label='Notes'
+                        keyboardType='default'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        ref={this.notesRef} />
+                </View>
+                <RaisedTextButton
+                    title='Add'
+                    color={colorAccent}
+                    titleColor='white'
+                    style={styles.materialBtn}
+                    onPress={() => console.log('Pressed!')} />
+            </ScrollView>
+
+        </KeyboardAvoidingView>
+    }
+}
+const styles = StyleSheet.create({
+    textField: {
+        width: '100%',
+        marginLeft: 12
+    },
+    materialBtn: {
+        padding: 26,
+        marginTop: 30,
+        fontSize: 50,
+        margin: 16
+    }
+});
+export default AddProductScreen;

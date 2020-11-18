@@ -23,7 +23,7 @@ import { focusField } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import FBLoginButton from '../components/FBLoginButton';
 import { openLink } from '../helpers/Utils';
-import { TERMS_AND_CONDITION_URL } from '../constants/appConstant';
+import { TERMS_AND_CONDITION_URL, PRIVACY_POLICY_URL } from '../constants/appConstant';
 
 class SignUpScreen extends Component {
 
@@ -103,6 +103,9 @@ class SignUpScreen extends Component {
 
     onTermsConditionClick = () => {
         openLink(this.props.navigation, 'Terms & Conditions', TERMS_AND_CONDITION_URL);
+    }
+    onPrivacyPolicyClick = () => {
+        openLink(this.props.navigation, 'Privacy Policy', PRIVACY_POLICY_URL);
     }
 
     render() {
@@ -209,6 +212,29 @@ class SignUpScreen extends Component {
                             </Text>
                         </TouchableOpacity>
 
+                    </View>
+                    <View style={{
+                        flexDirection: 'row',
+                        flex: 1,
+                        alignItems: 'center',
+                        marginBottom: 12
+                    }}>
+                        <Text style={{
+                            fontSize: 10,
+                            textTransform: 'capitalize'
+                        }}>**Read our privacy policy</Text>
+                        <TouchableOpacity onPress={this.onPrivacyPolicyClick}
+                            style={{
+                                marginLeft: 4,
+                                paddingVertical: 8, paddingHorizontal: 4
+                            }}>
+                            <Text style={{
+                                color: colorAccent,
+                                fontSize: 10,
+                                textTransform: 'capitalize',
+                                textDecorationLine: 'underline'
+                            }}>here.</Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

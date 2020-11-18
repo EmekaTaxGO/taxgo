@@ -7,3 +7,6 @@ export const getFieldValue = ref => {
     const { current: field } = ref;
     return field.value();
 }
+export const focusField = ref => {
+    ref.current.focus();
+}

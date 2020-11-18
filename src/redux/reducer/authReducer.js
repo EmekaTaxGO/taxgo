@@ -1,30 +1,32 @@
-import { FETCH_COUNTRIES_REQUEST, FETCH_COUNTRIES_FAIL, FETCH_COUNTRIES_SUCCESS } from "../../constants";
+import { SIGN_UP_DETAILS_REQUEST, SIGN_UP_DETAILS_FAIL, SIGN_UP_DETAILS_SUCCESS } from "../../constants";
 
 
 const initialState = {
-    fetchingCountries: false,
-    fetchCountryError: undefined,
-    countries: []
+    fetchingSignupDetails: true,
+    fetchSignupDetailsError: undefined,
+    countries: [],
+    businesses: []
 }
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
-        case FETCH_COUNTRIES_REQUEST:
+        case SIGN_UP_DETAILS_REQUEST:
             return {
                 ...state,
-                fetchingCountries: true,
-                fetchCountryError: undefined
+                fetchingSignupDetails: true,
+                fetchSignupDetailsError: undefined
             };
-        case FETCH_COUNTRIES_FAIL:
+        case SIGN_UP_DETAILS_FAIL:
             return {
                 ...state,
-                fetchingCountries: false,
-                fetchCountryError: action.payload
+                fetchingSignupDetails: false,
+                fetchSignupDetailsError: action.payload
             };
-        case FETCH_COUNTRIES_SUCCESS:
+        case SIGN_UP_DETAILS_SUCCESS:
             return {
                 ...state,
-                fetchingCountries: false,
-                countries: [...action.payload.data]
+                fetchingSignupDetails: false,
+                countries: action.payload.countries.data.filter(value => value.country_code),
+                businesses: [...action.payload.businesses.data]
             };
         default:
             return state;

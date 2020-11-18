@@ -1,18 +1,32 @@
 
 import Api from '../../services/api';
-import { FETCH_COUNTRIES_REQUEST, FETCH_COUNTRIES_FAIL, FETCH_COUNTRIES_SUCCESS } from '../../constants';
+import {
+    SIGN_UP_DETAILS_REQUEST,
+    SIGN_UP_DETAILS_FAIL,
+    SIGN_UP_DETAILS_SUCCESS
+} from '../../constants';
 
-export const fetchCountry = () => {
+export const fetchSignupDetails = () => {
     return (dispatch) => {
-        dispatch({ type: FETCH_COUNTRIES_REQUEST })
-        return Api.get('/getCountries')
-            .then(response => {
-                console.log('Countries', JSON.stringify(response.data));
-                dispatch({ type: FETCH_COUNTRIES_SUCCESS, payload: response.data });
+        dispatch({ type: SIGN_UP_DETAILS_REQUEST })
+        return Promise.all([
+            Api.get('/getCountries'),
+            Api.get('/getBusinessCategories')
+        ])
+            .then(result => {
+                const countries = result[0];
+                const businesses = result[1];
+                dispatch({
+                    type: SIGN_UP_DETAILS_SUCCESS,
+                    payload: {
+                        countries: countries.data,
+                        businesses: businesses.data
+                    }
+                })
             })
             .catch(err => {
                 console.log('Api error', err);
-                dispatch({ type: FETCH_COUNTRIES_FAIL, payload: err });
+                dispatch({ type: SIGN_UP_DETAILS_FAIL, payload: err });
             })
     }
 

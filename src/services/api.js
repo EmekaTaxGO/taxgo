@@ -15,7 +15,7 @@ AxiosInstance.interceptors.request.use(config => {
     const newConfig = { ...config };
 
     //Adding Common headers
-    newConfig.headers.common['Content-Type'] = 'application/json';
+    // newConfig.headers.common['Content-Type'] = 'application/json';
 
     //Adding common Query params
     newConfig.params = {
@@ -23,7 +23,9 @@ AxiosInstance.interceptors.request.use(config => {
         'lang_code': 'en'
     }
 
-    console.log('Api Request:', JSON.stringify(newConfig));
+    if (__DEV__) {
+        console.log('Api Request:', JSON.stringify(newConfig));
+    }
     return newConfig;
 });
 export default AxiosInstance;

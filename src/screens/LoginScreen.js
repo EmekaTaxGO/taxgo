@@ -151,7 +151,7 @@ export default connect(
     state => ({
         auth: state.auth
     }),
-    dispatch => {
+    dispatch => ({
         authActions: bindActionCreators(authActions, dispatch)
-    }
+    })
 )(LoginScreen);

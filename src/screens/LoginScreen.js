@@ -14,6 +14,8 @@ const { View, Text, StyleSheet, Image } = require("react-native")
 //Importing Actions
 import * as authActions from '../redux/actions/authActions';
 import { getFieldValue } from '../helpers/TextFieldHelpers';
+import ProgressDialog from '../components/ProgressDialog';
+import { validateEmail, EMAIL_ERROR_MESSAGE, PASSWORD_ERROR_MESSAGE, validatePass } from '../helpers/Utils';
 
 class LoginScreen extends Component {
 
@@ -33,11 +35,24 @@ class LoginScreen extends Component {
     }
 
     onLoginClick = () => {
-        console.log('Email Ref', getFieldValue(this.emailRef));
+        const email = getFieldValue(this.emailRef);
+        const pass = getFieldValue(this.passRef);
+        if (!validateEmail(email)) {
+            this.setState({ emailError: EMAIL_ERROR_MESSAGE, passError: undefined });
+        } else if (!validatePass(pass)) {
+            this.setState({ emailError: undefined, passError: PASSWORD_ERROR_MESSAGE });
+        } else {
+            this.loginUser(email, pass);
+        }
+
     }
-    setValue = (ref, value) => {
-        const { current: field } = ref;
-        field.setValue(value);
+
+    loginUser = (email, pass) => {
+        const { authActions, navigation } = this.props;
+        authActions.login(navigation, {
+            email: email,
+            password: pass
+        })
     }
 
     onRegisterClick = () => {
@@ -61,6 +76,13 @@ class LoginScreen extends Component {
             </TouchableOpacity>
         </View>
     }
+
+    resetState = () => {
+        console.log('Reset::');
+        if (this.state.emailError !== undefined || this.state.passError !== undefined) {
+            this.setState({ emailError: undefined, passError: undefined });
+        }
+    }
     renderLoginForm = () => {
         return <View>
             <TextField
@@ -70,13 +92,15 @@ class LoginScreen extends Component {
                 error={this.state.emailError}
                 ref={this.emailRef}
                 lineWidth={1}
+                onChange={event => this.resetState()}
                 onSubmitEditing={() => { this.passRef.current.focus() }} />
             <TextField
                 label='Password'
                 secureTextEntry={true}
                 error={this.state.passError}
                 lineWidth={1}
-                ref={this.passRef} />
+                ref={this.passRef}
+                onChange={event => this.resetState()} />
 
             <TouchableOpacity
                 style={{ paddingVertical: 6, alignItems: 'flex-end' }}
@@ -97,6 +121,7 @@ class LoginScreen extends Component {
     }
 
     render() {
+        const { auth } = this.props;
         return <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
                 <Image source={{ uri: 'https://taxgoglobal.com/images/logo-hd-main.webp' }}
@@ -120,7 +145,7 @@ class LoginScreen extends Component {
 
                 </View>
             </View>
-
+            <ProgressDialog visible={auth.loading} />
         </ScrollView>
     }
 }

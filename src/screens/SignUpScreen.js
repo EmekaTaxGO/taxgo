@@ -236,6 +236,7 @@ class SignUpScreen extends Component {
                             }}>here.</Text>
                         </TouchableOpacity>
                     </View>
+                    <ProgressDialog visible={auth.loading} />
                 </ScrollView>
             </KeyboardAvoidingView>
 

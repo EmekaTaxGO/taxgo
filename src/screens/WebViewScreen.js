@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
+import { WebView } from 'react-native-webview';
 class WebViewScreen extends Component {
 
     constructor(props) {
@@ -18,9 +19,9 @@ class WebViewScreen extends Component {
     }
 
     render() {
-        return <View style={{ flex: 1 }}>
-            <Text>Web View Screen</Text>
-        </View>
+        const { params } = this.props.route;
+        return <WebView
+            source={{ uri: params.url }} />
     }
 }
 export default WebViewScreen;

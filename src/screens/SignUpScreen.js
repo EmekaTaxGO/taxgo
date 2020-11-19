@@ -7,7 +7,8 @@ import {
     KeyboardAvoidingView,
     SafeAreaView,
     Picker,
-    TouchableOpacity
+    TouchableOpacity,
+    Linking
 } from 'react-native';
 import { colorPrimary, colorAccent } from '../theme/Color';
 import OnScreenSpinner from '../components/OnScreenSpinner';
@@ -22,7 +23,6 @@ import { TextField } from 'react-native-material-textfield';
 import { focusField } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import FBLoginButton from '../components/FBLoginButton';
-import { openLink } from '../helpers/Utils';
 import { TERMS_AND_CONDITION_URL, PRIVACY_POLICY_URL } from '../constants/appConstant';
 
 class SignUpScreen extends Component {
@@ -102,10 +102,10 @@ class SignUpScreen extends Component {
     }
 
     onTermsConditionClick = () => {
-        openLink(this.props.navigation, 'Terms & Conditions', TERMS_AND_CONDITION_URL);
+        Linking.openURL(TERMS_AND_CONDITION_URL);
     }
     onPrivacyPolicyClick = () => {
-        openLink(this.props.navigation, 'Privacy Policy', PRIVACY_POLICY_URL);
+        Linking.openURL(PRIVACY_POLICY_URL);
     }
 
     render() {

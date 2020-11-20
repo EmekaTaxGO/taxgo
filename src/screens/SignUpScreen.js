@@ -7,7 +7,9 @@ import {
     KeyboardAvoidingView,
     SafeAreaView,
     Picker,
-    TouchableOpacity
+    TouchableOpacity,
+    Linking,
+    Image
 } from 'react-native';
 import { colorPrimary, colorAccent } from '../theme/Color';
 import OnScreenSpinner from '../components/OnScreenSpinner';
@@ -22,8 +24,11 @@ import { TextField } from 'react-native-material-textfield';
 import { focusField } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import FBLoginButton from '../components/FBLoginButton';
-import { openLink } from '../helpers/Utils';
 import { TERMS_AND_CONDITION_URL, PRIVACY_POLICY_URL } from '../constants/appConstant';
+import ImagePicker from 'react-native-image-picker';
+import AntIcon from 'react-native-vector-icons/AntDesign';
+import { call } from 'react-native-reanimated';
+import { DEFAULT_PICKER_OPTIONS } from '../helpers/Utils';
 
 class SignUpScreen extends Component {
 
@@ -31,7 +36,8 @@ class SignUpScreen extends Component {
         super(props);
         this.state = {
             categoryIndex: 0,
-            countryIndex: 0
+            countryIndex: 0,
+            imageUri: undefined
         }
     }
 
@@ -102,10 +108,18 @@ class SignUpScreen extends Component {
     }
 
     onTermsConditionClick = () => {
-        openLink(this.props.navigation, 'Terms & Conditions', TERMS_AND_CONDITION_URL);
+        Linking.openURL(TERMS_AND_CONDITION_URL);
     }
     onPrivacyPolicyClick = () => {
-        openLink(this.props.navigation, 'Privacy Policy', PRIVACY_POLICY_URL);
+        Linking.openURL(PRIVACY_POLICY_URL);
+    }
+
+    onImageClick = () => {
+        ImagePicker.showImagePicker(DEFAULT_PICKER_OPTIONS, callback => {
+            if (callback.uri) {
+                this.setState({ imageUri: callback.uri });
+            }
+        })
     }
 
     render() {
@@ -120,6 +134,29 @@ class SignUpScreen extends Component {
         return <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
+                    <TouchableOpacity onPress={this.onImageClick}>
+                        <Image style={{
+                            borderColor: 'gray',
+                            borderWidth: 1,
+                            width: 80,
+                            height: 80,
+                            borderRadius: 40,
+                            marginTop: 14,
+                            alignSelf: 'center',
+                            backgroundColor: 'lightgray',
+
+                        }}
+                            source={{ uri: this.state.imageUri }} />
+                        {this.state.imageUri === undefined ? <AntIcon
+                            style={{
+                                position: 'absolute',
+                                alignSelf: 'center',
+                                marginTop: 34,
+                            }}
+                            name='camera'
+                            color='gray'
+                            size={40} /> : null}
+                    </TouchableOpacity>
                     <TextField
                         label='First Name'
                         keyboardType='default'
@@ -236,6 +273,7 @@ class SignUpScreen extends Component {
                             }}>here.</Text>
                         </TouchableOpacity>
                     </View>
+                    <ProgressDialog visible={auth.loading} />
                 </ScrollView>
             </KeyboardAvoidingView>
 

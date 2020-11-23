@@ -21,14 +21,14 @@ import ProgressDialog from '../components/ProgressDialog';
 
 import * as authActions from '../redux/actions/authActions';
 import { TextField } from 'react-native-material-textfield';
-import { focusField } from '../helpers/TextFieldHelpers';
+import { focusField, getFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import FBLoginButton from '../components/FBLoginButton';
 import { TERMS_AND_CONDITION_URL, PRIVACY_POLICY_URL } from '../constants/appConstant';
 import ImagePicker from 'react-native-image-picker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { call } from 'react-native-reanimated';
-import { DEFAULT_PICKER_OPTIONS } from '../helpers/Utils';
+import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateBusinessName, BUSINESS_NAME_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, validatePass, PASSWORD_ERROR_MESSAGE } from '../helpers/Utils';
 
 class SignUpScreen extends Component {
 
@@ -37,7 +37,13 @@ class SignUpScreen extends Component {
         this.state = {
             categoryIndex: 0,
             countryIndex: 0,
-            imageUri: undefined
+            imageUri: undefined,
+            firstNameError: undefined,
+            lastNameError: undefined,
+            emailError: undefined,
+            passwordError: undefined,
+            businessNameError: undefined,
+            phoneError: undefined
         }
     }
 
@@ -122,6 +128,57 @@ class SignUpScreen extends Component {
         })
     }
 
+    hasAnyError = () => {
+        return this.state.firstNameError !== undefined
+            || this.state.lastNameError !== undefined
+            || this.state.emailError !== undefined
+            || this.state.passwordError !== undefined
+            || this.state.businessNameError !== undefined
+            || this.state.phoneError !== undefined;
+    }
+
+    resetAllError = () => {
+        if (this.hasAnyError()) {
+            this.setState({
+                firstNameError: undefined,
+                lastNameError: undefined,
+                emailError: undefined,
+                passwordError: undefined,
+                businessNameError: undefined,
+                phoneError: undefined
+            });
+        }
+    }
+
+    validateAndSignUp = () => {
+        if (!validateFirstName(getFieldValue(this.firstNameRef))) {
+            this.setState({ firstNameError: FIRST_NAME_ERROR_MESSAGE });
+
+        } else if (!validateLastName(getFieldValue(this.lastNameRef))) {
+            this.setState({ lastNameError: LAST_NAME_ERROR_MESSAGE });
+
+        } else if (!validateEmail(getFieldValue(this.emailRef))) {
+            this.setState({ emailError: EMAIL_ERROR_MESSAGE });
+
+        } else if (!validatePass(getFieldValue(this.passwordRef))) {
+            this.setState({ passwordError: PASSWORD_ERROR_MESSAGE });
+
+        }
+        else if (!validateBusinessName(getFieldValue(this.businessNameRef))) {
+            this.setState({ businessNameError: BUSINESS_NAME_ERROR_MESSAGE });
+
+        } else if (!validateMobile(getFieldValue(this.phoneNumberRef))) {
+            this.setState({ phoneError: MOBILE_ERROR_MESSAGE });
+
+        } else {
+            this.signUpUser();
+        }
+    }
+
+    signUpUser = () => {
+
+    }
+
     render() {
         const { auth } = this.props;
 
@@ -134,7 +191,7 @@ class SignUpScreen extends Component {
         return <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
-                    <TouchableOpacity onPress={this.onImageClick}>
+                    {/* <TouchableOpacity onPress={this.onImageClick}>
                         <Image style={{
                             borderColor: 'gray',
                             borderWidth: 1,
@@ -156,7 +213,7 @@ class SignUpScreen extends Component {
                             name='camera'
                             color='gray'
                             size={40} /> : null}
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TextField
                         label='First Name'
                         keyboardType='default'
@@ -164,6 +221,8 @@ class SignUpScreen extends Component {
                         lineWidth={1}
                         title='*required'
                         ref={this.firstNameRef}
+                        error={this.state.firstNameError}
+                        onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.lastNameRef)} />
                     <TextField
                         label='Last Name'
@@ -172,6 +231,8 @@ class SignUpScreen extends Component {
                         lineWidth={1}
                         title='*required'
                         ref={this.lastNameRef}
+                        error={this.state.lastNameError}
+                        onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.emailRef)} />
                     <TextField
                         label='Email'
@@ -180,6 +241,8 @@ class SignUpScreen extends Component {
                         lineWidth={1}
                         title='*required'
                         ref={this.emailRef}
+                        error={this.state.emailError}
+                        onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.passwordRef)} />
                     <TextField
                         label='Password'
@@ -189,6 +252,8 @@ class SignUpScreen extends Component {
                         secureTextEntry={true}
                         title='*required'
                         ref={this.passwordRef}
+                        error={this.state.passwordError}
+                        onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.businessNameRef)} />
                     <TextField
                         label='Business Name'
@@ -197,16 +262,20 @@ class SignUpScreen extends Component {
                         lineWidth={1}
                         secureTextEntry={true}
                         title='*required'
+                        error={this.state.businessNameError}
+                        onChange={event => this.resetAllError()}
                         ref={this.businessNameRef}
                     />
                     {this.renderBusinessCategory()}
                     {this.renderCountry()}
                     <TextField
                         label='Phone'
-                        keyboardType='phone-pad'
+                        keyboardType='number-pad'
                         returnKeyType='done'
                         lineWidth={1}
+                        error={this.state.phoneError}
                         ref={this.phoneNumberRef}
+                        onChange={event => this.resetAllError()}
                     />
                     <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', marginTop: 12 }}>
                         <Text style={{ fontSize: 10 }}>By Signing up you are agreeing with Tax Go</Text>
@@ -218,12 +287,19 @@ class SignUpScreen extends Component {
                             <Text style={{ color: colorAccent, fontSize: 10 }}>Terms {`&`} Conditions.</Text>
                         </TouchableOpacity>
                     </View>
+                    {this.hasAnyError()
+                        ? <Text
+                            style={{
+                                color: 'red',
+                                fontSize: 11,
+                                alignSelf: 'center'
+                            }}>Resolve All Error First!</Text> : null}
                     <RaisedTextButton
                         title='Sign Up'
                         color={colorAccent}
                         titleColor='white'
                         style={styles.materialBtn}
-                        onPress={() => console.log('Pressed!')} />
+                        onPress={this.validateAndSignUp} />
                     <View style={{ flexDirection: 'row', marginVertical: 18, alignItems: 'center' }}>
                         <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
                         <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>

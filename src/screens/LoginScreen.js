@@ -16,6 +16,8 @@ import * as authActions from '../redux/actions/authActions';
 import { getFieldValue } from '../helpers/TextFieldHelpers';
 import ProgressDialog from '../components/ProgressDialog';
 import { validateEmail, EMAIL_ERROR_MESSAGE, PASSWORD_ERROR_MESSAGE, validatePass } from '../helpers/Utils';
+import { APP_LOGO } from '../constants/appConstant';
+import AppLogo from '../components/AppLogo';
 
 class LoginScreen extends Component {
 
@@ -31,7 +33,7 @@ class LoginScreen extends Component {
     passRef = React.createRef();
 
     onForgetPassClick = () => {
-        console.log('OnForget password click!');
+        this.props.navigation.navigate('ForgotPasswordScreen');
     }
 
     onLoginClick = () => {
@@ -124,8 +126,7 @@ class LoginScreen extends Component {
         const { auth } = this.props;
         return <ScrollView style={{ flex: 1 }}>
             <View style={styles.container}>
-                <Image source={{ uri: 'https://taxgoglobal.com/images/logo-hd-main.webp' }}
-                    style={styles.logo} />
+                <AppLogo />
                 {this.renderLoginForm()}
                 {this.renderCreateAccountRow()}
 

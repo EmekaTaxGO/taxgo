@@ -26,6 +26,7 @@ import JournalLedgersScreen from './src/screens/JournalLedgersScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import WebViewScreen from './src/screens/WebViewScreen';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 
 const App = () => {
 
@@ -57,6 +58,7 @@ const App = () => {
       <Stack.Screen name='SplashScreen' component={SplashScreen} options={{ title: 'TaxGo', headerShown: false }} />
       <Stack.Screen name='SignUpScreen' component={SignUpScreen} options={{ title: 'SignUp' }} />
       <Stack.Screen name='WebViewScreen' component={WebViewScreen} options={{ title: 'WebView' }} />
+      <Stack.Screen name='ForgotPasswordScreen' component={ForgotPasswordScreen} options={{ title: 'Forgot Password' }} />
 
     </Stack.Navigator>
   </NavigationContainer>

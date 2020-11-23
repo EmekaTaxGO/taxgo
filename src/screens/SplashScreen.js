@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { colorPrimary, colorAccent } from '../theme/Color';
+import AppLogo from '../components/AppLogo';
 class SplashScreen extends Component {
 
     constructor(props) {
@@ -12,7 +13,7 @@ class SplashScreen extends Component {
 
     componentDidMount() {
         setTimeout(() => {
-            this.props.navigation.replace('LoginScreen');
+            this.props.navigation.replace('HomeScreen');
         }, 500);
     }
 
@@ -22,13 +23,14 @@ class SplashScreen extends Component {
             justifyContent: 'center',
             alignItems: 'center'
         }}>
-            <Text style={{
+            {/* <Text style={{
                 color: colorAccent,
                 fontSize: 36,
                 fontWeight: 'bold',
                 textAlign: 'center',
                 textTransform: 'capitalize'
-            }}>Welcome to TaxGo</Text>
+            }}>Welcome to TaxGo</Text> */}
+            <AppLogo />
         </View>
     }
 };

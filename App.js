@@ -27,6 +27,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import WebViewScreen from './src/screens/WebViewScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
+import UpdateUserScreen from './src/screens/UpdateUserScreen';
 
 const App = () => {
 
@@ -59,6 +60,7 @@ const App = () => {
       <Stack.Screen name='SignUpScreen' component={SignUpScreen} options={{ title: 'SignUp' }} />
       <Stack.Screen name='WebViewScreen' component={WebViewScreen} options={{ title: 'WebView' }} />
       <Stack.Screen name='ForgotPasswordScreen' component={ForgotPasswordScreen} options={{ title: 'Forgot Password' }} />
+      <Stack.Screen name='UpdateUserScreen' component={UpdateUserScreen} options={{ title: 'Add User' }} />
 
     </Stack.Navigator>
   </NavigationContainer>

@@ -5,7 +5,7 @@ import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
 import AppLogo from '../components/AppLogo';
 import { validateEmail, EMAIL_ERROR_MESSAGE } from '../helpers/Utils';
-import { getFieldValue } from '../helpers/TextFieldHelpers';
+import { getFieldValue, focusField } from '../helpers/TextFieldHelpers';
 class ForgotPasswordScreen extends Component {
 
     constructor(props) {
@@ -18,6 +18,10 @@ class ForgotPasswordScreen extends Component {
     emailRef = React.createRef();
 
     componentDidMount() {
+
+        setTimeout(() => {
+            focusField(this.emailRef);
+        }, 200);
 
     }
 

@@ -6,15 +6,17 @@ import ProductStack from '../components/drawerStack/ProductStack';
 import InvoiceStack from '../components/drawerStack/InvoiceStack';
 import HomeStack from '../components/drawerStack/HomeStack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { DRAWER_ICON_SIZE } from '../constants/appConstant';
-import { colorPrimary, colorAccent } from '../theme/Color';
+import { colorAccent } from '../theme/Color';
 import InitialRender from '../components/InitialRender';
 import SettingStack from '../components/drawerStack/SettingStack';
 import ContactFragment from '../fragments/ContactFragment';
 import ContactStack from '../components/drawerStack/ContactStack';
 import JournalStack from '../components/drawerStack/JournalStack';
 import LedgerStack from '../components/drawerStack/LedgerStack';
+import UserStack from '../components/drawerStack/UserStack';
 
 const HomeScreen = ({ navigation }) => {
 
@@ -87,6 +89,13 @@ const HomeScreen = ({ navigation }) => {
             options={{
                 title: 'Ledger', drawerIcon: ({ color }) =>
                     <Ionicons name='ios-pencil-sharp' size={DRAWER_ICON_SIZE} color={color} />
+            }} />
+
+        <Drawer.Screen name='UserFragment'
+            component={UserStack}
+            options={{
+                title: 'Users/Employees', drawerIcon: ({ color }) =>
+                    <EntypoIcon name='users' size={DRAWER_ICON_SIZE} color={color} />
             }} />
 
     </Drawer.Navigator>

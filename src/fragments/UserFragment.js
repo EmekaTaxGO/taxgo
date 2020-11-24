@@ -59,7 +59,9 @@ class UserFragment extends Component {
         this.props.navigation.openDrawer();
     }
     onAddClick = () => {
-        console.log('On Add User Click!');
+        this.props.navigation.navigate('UpdateUserScreen', {
+            title: 'Add User'
+        })
     }
     onSearchQueryChange = q => {
         let filteredUsers = null;
@@ -88,7 +90,9 @@ class UserFragment extends Component {
     }
 
     onItemPress = (item) => {
-        console.log('On Item Press!');
+        this.props.navigation.navigate('UpdateUserScreen', {
+            title: 'Edit User'
+        });
     }
 
     getStateColor = (item) => {

@@ -9,6 +9,10 @@ export const openLink = (navigation, title, url) => {
     })
 }
 
+export const isEmpty = text => {
+    return text !== undefined && text.length > 0;
+}
+
 export const EMAIL_ERROR_MESSAGE = 'Please enter valid email.';
 export const validateEmail = email => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;

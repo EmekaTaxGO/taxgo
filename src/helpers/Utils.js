@@ -10,7 +10,7 @@ export const openLink = (navigation, title, url) => {
 }
 
 export const isEmpty = text => {
-    return text !== undefined && text.length > 0;
+    return text === undefined || text.length === 0;
 }
 
 export const EMAIL_ERROR_MESSAGE = 'Please enter valid email.';
@@ -41,9 +41,11 @@ export const validateBusinessName = bName => {
 
 export const MOBILE_ERROR_MESSAGE = 'Please enter valid mobile number.';
 export const validateMobile = mobile => {
+
     if (mobile === undefined || mobile.length === 0) {
         return true;
     } else {
+        console.log('Safe');
         return Number.isSafeInteger(Number(mobile));
     }
 }

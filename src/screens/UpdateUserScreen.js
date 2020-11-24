@@ -81,8 +81,6 @@ class UpdateUserScreen extends Component {
     }
 
     validateAndSubmitForm = () => {
-        console.log('Status: ', this.state.status);
-        console.log('Payroll: ', this.state.payroll);
         if (!validateFirstName(getFieldValue(this.firstNameRef))) {
             this.setState({ firstNameError: FIRST_NAME_ERROR_MESSAGE });
 
@@ -120,6 +118,7 @@ class UpdateUserScreen extends Component {
             showDOBPicker: false
         }, () => {
             setFieldValue(this.dateOfBirthRef, moment(currentDate).format(DATE_FORMAT));
+            this.resetAllError();
         })
     }
 
@@ -216,6 +215,25 @@ class UpdateUserScreen extends Component {
                             maximumDate={new Date()}
                             onChange={this.onDOBChanged}
                         /> : null}
+                        <TextField
+                            label='Employee Id'
+                            keyboardType='numeric'
+                            returnKeyType='next'
+                            lineWidth={1}
+                            title='*required'
+                            ref={this.empIdRef}
+                            error={this.state.empIdError}
+                            onChange={event => this.resetAllError()}
+                            onSubmitEditing={() => focusField(this.uniqueIdRef)} />
+                        <TextField
+                            label='Unique ID/License No'
+                            keyboardType='default'
+                            returnKeyType='done'
+                            lineWidth={1}
+                            title='*required'
+                            ref={this.uniqueIdRef}
+                            error={this.state.uniqueIdError}
+                            onChange={event => this.resetAllError()} />
 
                     </View>
                     {this.createSwitch('Status', this.state.status, enabled => this.setState({ status: enabled }))}

@@ -71,16 +71,4 @@ export const signUp = (navigation, body) => {
                 Alert.alert('Alert', API_ERROR_MESSAGE);
             })
     }
-    //     "email": "emailid",
-    //    "password": "password",
-    //    "firstname": "firstname",
-    //    "lastname": "lastname",
-    //    "phone": "123-123",
-    //    "bcategory": "1",
-    //    "country": "123",
-    //    "currency": "EUR",
-    //    "btype": "Accounting",
-    //    "bname": "Business Name",
-    //    "rtype": "user",
-    //    "tax": "VAT/GST"
 }

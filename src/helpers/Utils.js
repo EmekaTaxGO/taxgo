@@ -50,6 +50,16 @@ export const validateMobile = mobile => {
     }
 }
 
+export const isClientError = err => {
+    const { status } = err.response;
+    console.log('Status: ', status);
+    return status >= 400 && status < 500;
+}
+export const isServerError = err => {
+    const { status } = err.response;
+    return status >= 500;
+}
+
 export const DEFAULT_PICKER_OPTIONS = {
     mediaType: 'photo',
     quality: 0,

@@ -11,9 +11,13 @@ import {
     LOGIN_FAIL,
     LOGIN_SUCCESS
 } from '../../constants';
-import { API_ERROR_MESSAGE } from '../../constants/appConstant';
+import {
+    API_ERROR_MESSAGE,
+    NO_INTERNET_ERROR
+} from '../../constants/appConstant';
 import { log } from '../../components/Logger';
 import { Alert } from 'react-native';
+import { isClientError } from '../../helpers/Utils';
 
 export const fetchSignupDetails = () => {
     return (dispatch) => {
@@ -47,12 +51,22 @@ export const login = (navigation, body) => {
         return Api.post('/auth/login', body)
             .then(response => {
                 dispatch({ type: LOGIN_SUCCESS });
-                navigation.navigate('HomeScreen');
+                navigation.replace('HomeScreen');
             })
             .catch(err => {
-                log('Login Error', err);
+                if (err.response) {
+                    if (isClientError(err)) {
+                        Alert.alert('Alert', 'Incorrect Email or Password.');
+                    } else {
+
+                        Alert.alert('Alert', API_ERROR_MESSAGE);
+                    }
+                } else {
+                    Alert.alert('Alert', NO_INTERNET_ERROR);
+                }
+                log('login Error', err);
                 dispatch({ type: LOGIN_FAIL });
-                Alert.alert('Alert', API_ERROR_MESSAGE);
+
             })
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, FlatList, Text, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, FlatList, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import SearchView from '../SearchView';
 import { connect } from 'react-redux';
@@ -69,10 +69,11 @@ class InvoiceList extends Component {
         ]
     }
 
+    onMenuPress = () => {
+        this.props.navigation.openDrawer();
+    }
+
     componentDidMount() {
-        this.props.navigation.addListener('tabPress', e => {
-            console.log('Event: ', e);
-        })
         console.log('Props:', this.isSaleInvoice());
 
     }
@@ -196,6 +197,9 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
         marginVertical: 12,
         flex: 1
+    },
+    menu: {
+        paddingLeft: 12
     }
 });
 export default connect(

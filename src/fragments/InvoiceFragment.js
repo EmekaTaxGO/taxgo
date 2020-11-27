@@ -10,7 +10,7 @@ import { colorPrimary, colorAccent, bottomTabActiveColor, bottomTabInactiveColor
 
 class InvoiceFragment extends Component {
 
-    _tabPressListener;
+    _tab = 'sales';
     constructor(props) {
         super(props);
     }
@@ -21,7 +21,7 @@ class InvoiceFragment extends Component {
     }
 
     onAddClick = () => {
-        if (this.focusedTab === 'sales') {
+        if (this._tab === 'sales') {
             this.showDialogToAddSales();
         } else {
             this.showDialogToAddPurchases();
@@ -53,20 +53,11 @@ class InvoiceFragment extends Component {
             })
     }
 
-    _tabPressHandler = (e) => {
-        console.log('Event', e);
-    }
-
     componentWillUnmount() {
-        // this.props.navigation.removeListener('tabPress', this._tabPressHandler);
-        this.props.navigation.removeListener(this._tabPressListener);
+
     }
 
     componentDidMount() {
-        this._tabPressListener = this.props.navigation.addListener('tabPress',
-            e => {
-                console.log('Event: ', e);
-            });
         this.props.navigation.setOptions({
             headerLeft: () => {
                 return <TouchableOpacity onPress={this.onMenuPress} style={styles.menu}>
@@ -87,6 +78,7 @@ class InvoiceFragment extends Component {
         const Tab = createBottomTabNavigator();
         return <Tab.Navigator
             screenOptions={({ route }) => ({
+
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
                     if (route.name === 'sales') {
@@ -94,7 +86,6 @@ class InvoiceFragment extends Component {
                     } else {
                         iconName = 'shopping-cart';
                     }
-
                     return <Icon name={iconName}
                         color={focused ? bottomTabActiveColor : bottomTabInactiveColor} size={30} />
                 }
@@ -116,8 +107,15 @@ class InvoiceFragment extends Component {
                     padding: 2
                 }
             }}>
-            <Tab.Screen name='sales' component={InvoiceList} options={{ title: 'Sales' }} />
-            <Tab.Screen name='purchase' component={InvoiceList} options={{ title: 'Purchases' }} />
+            <Tab.Screen name='sales'
+                component={InvoiceList}
+                options={{ title: 'Sales' }}
+                listeners={{ tabPress: e => this._tab = 'sales' }} />
+
+            <Tab.Screen name='purchase'
+                component={InvoiceList}
+                options={{ title: 'Purchases' }}
+                listeners={{ tabPress: e => this._tab = 'purchase' }} />
         </Tab.Navigator>
     }
 }

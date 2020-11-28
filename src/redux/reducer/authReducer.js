@@ -16,6 +16,7 @@ const initialState = {
     businesses: [],
 
     loading: false,
+    authData: null//User Info
 }
 const authReducer = (state = initialState, action) => {
     switch (action.type) {

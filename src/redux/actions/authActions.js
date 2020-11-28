@@ -9,7 +9,8 @@ import {
     SIGN_UP_FAIL,
     LOGIN_REQUEST,
     LOGIN_FAIL,
-    LOGIN_SUCCESS
+    LOGIN_SUCCESS,
+    SAVE_AUTH
 } from '../../constants';
 import {
     API_ERROR_MESSAGE,
@@ -18,6 +19,7 @@ import {
 import { log } from '../../components/Logger';
 import { Alert } from 'react-native';
 import { isClientError } from '../../helpers/Utils';
+import { saveToLocal, AUTH_DATA, getSavedData } from '../../services/UserStorage';
 
 export const fetchSignupDetails = () => {
     return (dispatch) => {
@@ -71,18 +73,44 @@ export const login = (navigation, body) => {
     }
 }
 
+export const fetchAuthdata = () => {
+    return (dispatch) => {
+        return new Promise(resolve => {
+            resolve(getSavedData(AUTH_DATA));
+        })
+            .then(response => {
+
+            });
+    }
+}
+
 export const signUp = (navigation, body) => {
     return (dispatch) => {
         dispatch({ type: SIGN_UP_REQUEST });
         return Api.post('/user/register', body)
-            .then(response => {
-                dispatch({ type: SIGN_UP_SUCCESS, payload: response.data })
-                navigation.navigate('HomeScreen');
+            .then(async (response) => {
+
+                await saveToLocal(AUTH_DATA, response.data.user);
+                Alert.alert('Alert', response.data.message, [{
+                    onPress: () => { navigation.replace('HomeScreen') },
+                    style: 'default',
+                    text: 'OK'
+                }], { cancelable: false })
+                dispatch({ type: SIGN_UP_SUCCESS, payload: response.data });
             })
             .catch(err => {
                 log('Error in Signup', err);
                 dispatch({ type: SIGN_UP_FAIL });
-                Alert.alert('Alert', API_ERROR_MESSAGE);
+                if (err.response) {
+                    if (isClientError(err)) {
+                        Alert.alert('Alert', err.response.data.message);
+                    } else {
+                        Alert.alert('Alert', API_ERROR_MESSAGE);
+                    }
+                } else {
+                    Alert.alert('Alert', NO_INTERNET_ERROR);
+                }
+
             })
     }
 }

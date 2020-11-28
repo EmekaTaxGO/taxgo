@@ -29,6 +29,7 @@ import ImagePicker from 'react-native-image-picker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { call } from 'react-native-reanimated';
 import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateBusinessName, BUSINESS_NAME_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, validatePass, PASSWORD_ERROR_MESSAGE } from '../helpers/Utils';
+import { log } from '../components/Logger';
 
 class SignUpScreen extends Component {
 
@@ -37,13 +38,15 @@ class SignUpScreen extends Component {
         this.state = {
             categoryIndex: 0,
             countryIndex: 0,
+            businessTypeIndex: 0,
             imageUri: undefined,
             firstNameError: undefined,
             lastNameError: undefined,
             emailError: undefined,
             passwordError: undefined,
             businessNameError: undefined,
-            phoneError: undefined
+            phoneError: undefined,
+            businessType: ['Limited Company', 'Partnership', 'Trader']
         }
     }
 
@@ -103,6 +106,23 @@ class SignUpScreen extends Component {
 
                     {countries.map((value, index) => <Picker.Item
                         label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
+                </Picker>
+            </View>
+
+        </View>
+    }
+    renderBusinessType = () => {
+        const selectedBType = this.state.businessType[this.state.businessTypeIndex];
+        return <View style={{ flexDirection: 'column', marginTop: 12 }}>
+            <Text>Business Type</Text>
+            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
+                <Picker
+                    selectedValue={selectedBType}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
+
+                    {this.state.businessType.map((value, index) => <Picker.Item
+                        label={value} value={value} key={value} />)}
                 </Picker>
             </View>
 
@@ -176,7 +196,26 @@ class SignUpScreen extends Component {
     }
 
     signUpUser = () => {
-
+        const { businesses, countries } = this.props.auth;
+        const country = countries[this.state.countryIndex];
+        const business = businesses[this.state.categoryIndex];
+        const body = {
+            firstname: getFieldValue(this.firstNameRef),
+            lastname: getFieldValue(this.lastNameRef),
+            email: getFieldValue(this.emailRef),
+            password: getFieldValue(this.passwordRef),
+            phone: getFieldValue(this.phoneNumberRef),
+            bcategory: business.id,
+            country: country.id,
+            currency: country.currency,
+            btype: this.state.businessType[this.state.businessTypeIndex],
+            bname: getFieldValue(this.businessNameRef),
+            rtype: business.btitle,
+            tax: country.taxtype
+        };
+        log('Sign Up Body: ', body);
+        const { authActions } = this.props;
+        authActions.signUp(this.props.navigation, body);
     }
 
     render() {
@@ -188,7 +227,7 @@ class SignUpScreen extends Component {
         if (auth.fetchSignupDetailsError) {
             return <FullScreenError tryAgainClick={this.fetchRenderInfo} />
         }
-        return <SafeAreaView style={{ flex: 1 }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
                     {/* <TouchableOpacity onPress={this.onImageClick}>
@@ -268,6 +307,7 @@ class SignUpScreen extends Component {
                     />
                     {this.renderBusinessCategory()}
                     {this.renderCountry()}
+                    {this.renderBusinessType()}
                     <TextField
                         label='Phone'
                         keyboardType='number-pad'

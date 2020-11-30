@@ -2,6 +2,12 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import { colorPrimary, colorAccent } from '../theme/Color';
 import AppLogo from '../components/AppLogo';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+
+import * as authActions from '../redux/actions/authActions';
+
 class SplashScreen extends Component {
 
     constructor(props) {
@@ -12,8 +18,12 @@ class SplashScreen extends Component {
     }
 
     componentDidMount() {
+        const { authActions } = this.props;
+        authActions.fetchAuthdata();
+
         setTimeout(() => {
-            this.props.navigation.replace('LoginScreen');
+            const { authData } = this.props.auth;
+            this.props.navigation.replace(authData !== null ? 'HomeScreen' : 'LoginScreen');
         }, 500);
     }
 
@@ -34,4 +44,11 @@ class SplashScreen extends Component {
         </View>
     }
 };
-export default SplashScreen;
+export default connect(
+    state => ({
+        auth: state.auth
+    }),
+    dispatch => ({
+        authActions: bindActionCreators(authActions, dispatch)
+    })
+)(SplashScreen);

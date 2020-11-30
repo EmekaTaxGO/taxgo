@@ -215,7 +215,7 @@ class SignUpScreen extends Component {
         };
         log('Sign Up Body: ', body);
         const { authActions } = this.props;
-        authActions.signUp(this.props.navigation, body);
+        authActions.signUp(this.props, body);
     }
 
     render() {

@@ -5,6 +5,13 @@ import Icon from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import ImageView from '../components/ImageView';
 import SearchView from '../components/SearchView';
+import { connect } from 'react-redux';
+
+import * as productActions from '../redux/actions/productActions';
+import { bindActionCreators } from 'redux';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import EmptyView from '../components/EmptyView';
 
 class ProductFragment extends Component {
 
@@ -98,6 +105,13 @@ class ProductFragment extends Component {
                 </TouchableOpacity>
             }
         })
+
+        this.fetchProductList();
+    }
+
+    fetchProductList = () => {
+        const { productActions } = this.props;
+        productActions.getProductList();
     }
 
     ListItem = ({ item }) => {
@@ -128,6 +142,17 @@ class ProductFragment extends Component {
 
 
     render() {
+        const { product } = this.props;
+        if (product.fetchingProductList) {
+            return <OnScreenSpinner />
+        }
+        if (product.productListError) {
+            return <FullScreenError tryAgainClick={this.fetchProductList} />
+        }
+        if (product.productList.length === 0) {
+            return <EmptyView message='No Product Available.'
+                iconName='description' />
+        }
         return <View style={{ flex: 1 }}>
             <SearchView
                 value={this.state.query}
@@ -155,4 +180,11 @@ const styles = StyleSheet.create({
         marginStart: 16
     }
 });
-export default ProductFragment;
+export default connect(
+    state => ({
+        product: state.product
+    }),
+    dispatch => ({
+        productActions: bindActionCreators(productActions, dispatch)
+    })
+)(ProductFragment);

@@ -51,7 +51,8 @@ export const login = (navigation, body) => {
     return (dispatch) => {
         dispatch({ type: LOGIN_REQUEST });
         return Api.post('/auth/login', body)
-            .then(response => {
+            .then(async (response) => {
+                await saveToLocal(AUTH_DATA, response.data.data);
                 dispatch({ type: LOGIN_SUCCESS });
                 navigation.replace('HomeScreen');
             })
@@ -74,25 +75,21 @@ export const login = (navigation, body) => {
 }
 
 export const fetchAuthdata = () => {
-    return (dispatch) => {
-        return new Promise(resolve => {
-            resolve(getSavedData(AUTH_DATA));
-        })
-            .then(response => {
-
-            });
+    return async (dispatch) => {
+        const data = await getSavedData(AUTH_DATA);
+        dispatch({ type: SAVE_AUTH, payload: data });
     }
 }
 
-export const signUp = (navigation, body) => {
+export const signUp = (props, body) => {
     return (dispatch) => {
         dispatch({ type: SIGN_UP_REQUEST });
         return Api.post('/user/register', body)
             .then(async (response) => {
-
-                await saveToLocal(AUTH_DATA, response.data.user);
-                Alert.alert('Alert', response.data.message, [{
-                    onPress: () => { navigation.replace('HomeScreen') },
+                Alert.alert('Alert', 'Registration is successful, Please Login to use Taxgo Services.', [{
+                    onPress: () => {
+                        props.navigation.navigate('LoginScreen');
+                    },
                     style: 'default',
                     text: 'OK'
                 }], { cancelable: false })

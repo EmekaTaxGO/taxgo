@@ -19,9 +19,15 @@ const ContactFragment = props => {
         const items = ['Customer', 'Suppliers'];
         showSingleSelectAlert('Choose Contact to add', items,
             index => {
-                props.navigation.push('AddCustomerScreen',
-                    { contact: index === 0 ? 'customer' : 'supplier' });
+                launchAddContact(index === 0 ? 'customer' : 'supplier');
             })
+    }
+
+    const launchAddContact = (contactType, contact = null) => {
+        props.navigation.push('AddCustomerScreen', {
+            contactType: contactType,
+            contact: contact
+        });
     }
 
     useLayoutEffect(() => {

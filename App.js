@@ -28,6 +28,8 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import WebViewScreen from './src/screens/WebViewScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import UpdateUserScreen from './src/screens/UpdateUserScreen';
+import AddInvoice from './src/screens/AddInvoiceScreen';
+import AddInvoiceScreen from './src/screens/AddInvoiceScreen';
 
 const App = () => {
 
@@ -61,6 +63,7 @@ const App = () => {
       <Stack.Screen name='WebViewScreen' component={WebViewScreen} options={{ title: 'WebView' }} />
       <Stack.Screen name='ForgotPasswordScreen' component={ForgotPasswordScreen} options={{ title: 'Forgot Password' }} />
       <Stack.Screen name='UpdateUserScreen' component={UpdateUserScreen} options={{ title: 'Add User' }} />
+      <Stack.Screen name='AddInvoiceScreen' component={AddInvoiceScreen} options={{ title: 'Add Invoice' }} />
 
     </Stack.Navigator>
   </NavigationContainer>

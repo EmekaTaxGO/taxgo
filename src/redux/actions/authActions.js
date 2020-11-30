@@ -9,11 +9,17 @@ import {
     SIGN_UP_FAIL,
     LOGIN_REQUEST,
     LOGIN_FAIL,
-    LOGIN_SUCCESS
+    LOGIN_SUCCESS,
+    SAVE_AUTH
 } from '../../constants';
-import { API_ERROR_MESSAGE } from '../../constants/appConstant';
+import {
+    API_ERROR_MESSAGE,
+    NO_INTERNET_ERROR
+} from '../../constants/appConstant';
 import { log } from '../../components/Logger';
 import { Alert } from 'react-native';
+import { isClientError } from '../../helpers/Utils';
+import { saveToLocal, AUTH_DATA, getSavedData } from '../../services/UserStorage';
 
 export const fetchSignupDetails = () => {
     return (dispatch) => {
@@ -45,42 +51,63 @@ export const login = (navigation, body) => {
     return (dispatch) => {
         dispatch({ type: LOGIN_REQUEST });
         return Api.post('/auth/login', body)
-            .then(response => {
+            .then(async (response) => {
+                await saveToLocal(AUTH_DATA, response.data.data);
                 dispatch({ type: LOGIN_SUCCESS });
-                navigation.navigate('HomeScreen');
+                navigation.replace('HomeScreen');
             })
             .catch(err => {
-                log('Login Error', err);
+                if (err.response) {
+                    if (isClientError(err)) {
+                        Alert.alert('Alert', 'Incorrect Email or Password.');
+                    } else {
+
+                        Alert.alert('Alert', API_ERROR_MESSAGE);
+                    }
+                } else {
+                    Alert.alert('Alert', NO_INTERNET_ERROR);
+                }
+                log('login Error', err);
                 dispatch({ type: LOGIN_FAIL });
-                Alert.alert('Alert', API_ERROR_MESSAGE);
+
             })
     }
 }
 
-export const signUp = (navigation, body) => {
+export const fetchAuthdata = () => {
+    return async (dispatch) => {
+        const data = await getSavedData(AUTH_DATA);
+        dispatch({ type: SAVE_AUTH, payload: data });
+    }
+}
+
+export const signUp = (props, body) => {
     return (dispatch) => {
         dispatch({ type: SIGN_UP_REQUEST });
         return Api.post('/user/register', body)
-            .then(response => {
-                dispatch({ type: SIGN_UP_SUCCESS, payload: response.data })
-                navigation.navigate('HomeScreen');
+            .then(async (response) => {
+                Alert.alert('Alert', 'Registration is successful, Please Login to use Taxgo Services.', [{
+                    onPress: () => {
+                        props.navigation.navigate('LoginScreen');
+                    },
+                    style: 'default',
+                    text: 'OK'
+                }], { cancelable: false })
+                dispatch({ type: SIGN_UP_SUCCESS, payload: response.data });
             })
             .catch(err => {
                 log('Error in Signup', err);
                 dispatch({ type: SIGN_UP_FAIL });
-                Alert.alert('Alert', API_ERROR_MESSAGE);
+                if (err.response) {
+                    if (isClientError(err)) {
+                        Alert.alert('Alert', err.response.data.message);
+                    } else {
+                        Alert.alert('Alert', API_ERROR_MESSAGE);
+                    }
+                } else {
+                    Alert.alert('Alert', NO_INTERNET_ERROR);
+                }
+
             })
     }
-    //     "email": "emailid",
-    //    "password": "password",
-    //    "firstname": "firstname",
-    //    "lastname": "lastname",
-    //    "phone": "123-123",
-    //    "bcategory": "1",
-    //    "country": "123",
-    //    "currency": "EUR",
-    //    "btype": "Accounting",
-    //    "bname": "Business Name",
-    //    "rtype": "user",
-    //    "tax": "VAT/GST"
 }

@@ -1,4 +1,13 @@
-import { SIGN_UP_DETAILS_REQUEST, SIGN_UP_DETAILS_FAIL, SIGN_UP_DETAILS_SUCCESS, SIGN_UP_REQUEST, SIGN_UP_FAIL, SIGN_UP_SUCCESS, LOGIN_FAIL, LOGIN_SUCCESS, LOGIN_REQUEST } from "../../constants";
+import {
+    SIGN_UP_DETAILS_REQUEST,
+    SIGN_UP_DETAILS_FAIL,
+    SIGN_UP_DETAILS_SUCCESS,
+    SIGN_UP_REQUEST, SIGN_UP_FAIL,
+    SIGN_UP_SUCCESS, LOGIN_FAIL,
+    LOGIN_SUCCESS,
+    LOGIN_REQUEST,
+    SAVE_AUTH
+} from "../../constants";
 
 
 const initialState = {
@@ -8,6 +17,7 @@ const initialState = {
     businesses: [],
 
     loading: false,
+    authData: null//User Info
 }
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -38,6 +48,10 @@ const authReducer = (state = initialState, action) => {
         case SIGN_UP_REQUEST:
         case LOGIN_REQUEST:
             return { ...state, loading: true };
+        case SAVE_AUTH:
+            return {
+                ...state, authData: action.payload
+            }
         default:
             return state;
     }

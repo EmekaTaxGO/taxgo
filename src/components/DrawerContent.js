@@ -1,9 +1,10 @@
-const { View, Image, StyleSheet, Text, ScrollView, ColorPropType } = require("react-native")
+const { View, Image, StyleSheet, Text, ScrollView, ColorPropType, Alert } = require("react-native")
 import React, { useState } from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { colorAccent, colorPrimary } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import { clearData, AUTH_DATA } from '../services/UserStorage';
 
 const DrawerContent = props => {
 
@@ -22,6 +23,22 @@ const DrawerContent = props => {
             <Text style={styles.name}>Vicky Kaushal</Text>
         </View>
     }
+
+    const onSignOutPress = () => {
+        Alert.alert('Are you sure', 'Do you really want to Sign Out?', [
+            {
+                text: 'NO'
+            },
+            {
+                text: 'YES',
+                style: 'default',
+                onPress: async () => {
+                    await clearData(AUTH_DATA);
+                    props.navigation.replace('LoginScreen');
+                }
+            }
+        ])
+    }
     const renderFooter = () => {
         return <TouchableOpacity style={{
             width: '100%',
@@ -29,7 +46,8 @@ const DrawerContent = props => {
             flexDirection: 'row',
             padding: 12,
             alignItems: 'center'
-        }}>
+        }}
+            onPress={onSignOutPress}>
             <FeatherIcon name='power' size={30} color='white' />
             <Text style={{ fontSize: 16, color: 'white', paddingStart: 12 }}>Sign Out</Text>
         </TouchableOpacity>

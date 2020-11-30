@@ -5,7 +5,7 @@ import Store from '../redux/Store';
 
 const AxiosInstance = axios.create({
     baseURL: BASE_URL,
-    timeout: 100000,
+    timeout: 10000,
     // params:{
 
     // }

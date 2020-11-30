@@ -57,8 +57,14 @@ class LoginScreen extends Component {
         })
     }
 
+    onSignUpSuccess = () => {
+        this.props.navigation.replace('HomeScreen');
+    }
+
     onRegisterClick = () => {
-        this.props.navigation.push('SignUpScreen');
+        this.props.navigation.push('SignUpScreen', {
+            onSignUpSuccess: this.onSignUpSuccess.bind(this)
+        });
     }
 
     renderCreateAccountRow = () => {
@@ -80,7 +86,6 @@ class LoginScreen extends Component {
     }
 
     resetState = () => {
-        console.log('Reset::');
         if (this.state.emailError !== undefined || this.state.passError !== undefined) {
             this.setState({ emailError: undefined, passError: undefined });
         }

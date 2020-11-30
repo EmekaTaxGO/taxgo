@@ -177,12 +177,6 @@ class InvoiceList extends Component {
                 leftOpenValue={70}
                 rightOpenValue={-140}
             />
-            {/* <FlatList
-                style={{ flex: 1 }}
-                data={this.state.filteredInvoices}
-                keyExtractor={(row, index) => `${row.id}`}
-                renderItem={({ item, index }) => this.renderListItem(item, index)}
-            /> */}
         </View>
     }
 };

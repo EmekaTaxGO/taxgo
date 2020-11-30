@@ -39,13 +39,20 @@ class AddCustomerScreen extends Component {
 
     componentDidMount() {
         const { params } = this.props.route;
-        const prefix = params.contact === null ? 'Add' : 'Edit';
-        const suffix = params.contactType === 'customer' ? 'Customer' : 'Supplier';
-        const title = `${prefix} ${suffix}`;
-        this.setState({ title });
-        this.props.navigation.setOptions({ title });
+
+        this.props.navigation.setOptions({ title: this.getTitle(params) });
 
         this.setFieldValues(params.contact);
+    }
+
+    getTitle = (params) => {
+        const contactLabel = params.contactType === 'customer' ? 'Customer' : 'Supplier';
+        if (params.mode === 'disabled') {
+            return `${contactLabel} Details`;
+        } else {
+            const prefix = params.contact === null ? 'Add' : 'Edit';
+            return `${prefix} ${contactLabel}`;
+        }
     }
 
     setFieldValues = (contact) => {
@@ -85,6 +92,10 @@ class AddCustomerScreen extends Component {
 
     isEditMode = () => {
         return this.props.route.params.contact !== null;
+    }
+
+    isDisabled = () => {
+        return this.props.route.params.mode === 'disabled';
     }
 
     isSupplier = () => {
@@ -157,6 +168,8 @@ class AddCustomerScreen extends Component {
     }
 
     render() {
+
+        const isFormEditabled = !this.isDisabled();
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
@@ -167,6 +180,7 @@ class AddCustomerScreen extends Component {
                         lineWidth={1}
                         title='*required'
                         ref={this.nameRef}
+                        editable={isFormEditabled}
                         error={this.state.nameError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.businessRef)} />
@@ -178,6 +192,7 @@ class AddCustomerScreen extends Component {
                         title='*required'
                         ref={this.businessRef}
                         error={this.state.businessNameError}
+                        editable={isFormEditabled}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.emailRef)} />
                     <TextField
@@ -189,6 +204,7 @@ class AddCustomerScreen extends Component {
                         ref={this.emailRef}
                         error={this.state.emailError}
                         onChange={event => this.resetAllError()}
+                        editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.mobileRef)} />
                     <TextField
                         label='Mobile'
@@ -198,6 +214,7 @@ class AddCustomerScreen extends Component {
                         ref={this.mobileRef}
                         error={this.state.mobileError}
                         onChange={event => this.resetAllError()}
+                        editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.telephoneRef)} />
                     <TextField
                         label='Telephone'
@@ -207,6 +224,7 @@ class AddCustomerScreen extends Component {
                         ref={this.telephoneRef}
                         error={this.state.telephoneError}
                         onChange={event => this.resetAllError()}
+                        editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.addressRef)} />
                     <TextField
                         label='Address'
@@ -215,6 +233,7 @@ class AddCustomerScreen extends Component {
                         lineWidth={1}
                         ref={this.addressRef}
                         onChange={event => this.resetAllError()}
+                        editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.townRef)} />
                     <TextField
                         label='Town/City'
@@ -223,6 +242,7 @@ class AddCustomerScreen extends Component {
                         lineWidth={1}
                         ref={this.townRef}
                         onChange={event => this.resetAllError()}
+                        editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.postCodeRef)} />
                     <TextField
                         label='Postal Code'
@@ -231,6 +251,7 @@ class AddCustomerScreen extends Component {
                         lineWidth={1}
                         ref={this.postCodeRef}
                         onChange={event => this.resetAllError()}
+                        editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.notesRef)} />
                     <TextField
                         label='Notes'
@@ -239,6 +260,7 @@ class AddCustomerScreen extends Component {
                         lineWidth={1}
                         ref={this.notesRef}
                         onChange={event => this.resetAllError()}
+                        editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.referenceRef)} />
                     <TextField
                         label='Reference'
@@ -246,17 +268,20 @@ class AddCustomerScreen extends Component {
                         returnKeyType='done'
                         lineWidth={1}
                         ref={this.referenceRef}
+                        editable={isFormEditabled}
                         onChange={event => this.resetAllError()} />
                     {this.hasAnyError() ? <Text style={{
                         color: 'red',
                         paddingVertical: 6
                     }}>Resolve All Error.</Text> : null}
-                    <RaisedTextButton
+
+                    {isFormEditabled ? <RaisedTextButton
                         title={this.isEditMode() ? 'Update' : 'Create'}
                         color={colorAccent}
                         titleColor='white'
                         style={styles.materialBtn}
-                        onPress={this.validateAndProcess} />
+                        onPress={this.validateAndProcess} /> : null}
+
                     <ProgressDialog visible={this.isUpdating()} />
                 </ScrollView>
             </KeyboardAvoidingView>

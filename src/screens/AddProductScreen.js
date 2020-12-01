@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Picker, StyleSheet, KeyboardAvoidingView, ScrollView, TextInput, CheckBox, Switch } from 'react-native';
-// import Picker from '@react-native-community/picker';
-import ViewPager from '@react-native-community/viewpager';
-import AppViewPager from '../components/AppViewpager';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, Picker, StyleSheet, KeyboardAvoidingView, ScrollView, Switch, Alert } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import { colorAccent } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -11,7 +7,12 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
-// import { IndicatorViewPager, PagerTabIndicator, PagerDotIndicator } from 'rn-viewpager';
+import { connect } from 'react-redux';
+import { isEmpty, validateEmail } from '../helpers/Utils';
+import { getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
+
+import * as productActions from '../redux/actions/productActions';
+import { bindActionCreators } from 'redux';
 
 class AddProductScreen extends Component {
     constructor(props) {
@@ -33,6 +34,7 @@ class AddProductScreen extends Component {
 
     codeRef = React.createRef();
     descriptionRef = React.createRef();
+    barcodeRef = React.createRef();
     saleAccountRef = React.createRef();
     salePriceRef = React.createRef();
     tradePriceRef = React.createRef();
@@ -87,6 +89,10 @@ class AddProductScreen extends Component {
                 value: 'Service'
             },
         ]
+    }
+
+    isEditMode = () => {
+        return this.props.route.params.product !== null;
     }
 
     renderStrip = (text) => {
@@ -160,6 +166,88 @@ class AddProductScreen extends Component {
         })
     }
 
+    onBarcodePress = () => {
+        //Open Scanner
+    }
+
+    validateAndSubmitForm = () => {
+        if (isEmpty(getFieldValue(this.codeRef))) {
+            this.showAlert('Please enter item code.');
+
+        } else if (isEmpty(getFieldValue(this.descriptionRef))) {
+            this.showAlert('Please enter product description.');
+
+        } else {
+            proceedToSubmit
+        }
+    }
+
+    proceedToSubmit = () => {
+        const { productActions } = this.props;
+        const body = this.createPostBody();
+        productActions.createProduct(this.props.navigation, body)
+    }
+
+    createPostBody = () => {
+        const body = {
+            itemtype: this.state.types[this.state.selectedTypeIndex].value,
+            icode: getFieldValue(this.codeRef),
+            idescription: getFieldValue(this.descriptionRef),
+            saccount: '',
+            sp_price: '',
+            trade_price: '',
+            wholesale: '',
+            rate: '',
+            sicode: '',
+            pdescription: '',
+            costprice: '',
+            paccount: '',
+            rlevel: '',
+            quantity: '',
+            price: '',
+            date: '',
+            c_price: '',
+            rquantity: '',
+            location: '',
+            barcode: '',
+            weight: '',
+            notes: '',
+            userid: '',
+            adminid: '',
+            userdate: '',
+            name: '',
+            logintype: '',
+            expiredate: '',
+            vat: '',
+            vatamt: '',
+            inclidevat: ''
+        }
+    }
+
+    showAlert = (message) => {
+        Alert.alert('Alert', message, [{
+            style: 'default',
+            text: 'OK',
+            onPress: () => { }
+        }])
+    }
+
+    componentDidMount() {
+        this.setTitle();
+        this.setFieldsValue();
+    }
+
+    setTitle = () => {
+        const titlePrefix = this.isEditMode() ? 'Edit' : 'Add';
+        const title = `${titlePrefix} Product`;
+        this.props.navigation.setOptions({ title });
+    }
+    setFieldsValue = () => {
+        const { product } = this.props.route.params;
+        if (product !== null) {
+            //Preset values
+        }
+    }
     render() {
 
         const { types, selectedTypeIndex, vats, selectedVatIndex } = this.state;
@@ -194,6 +282,17 @@ class AddProductScreen extends Component {
                         ref={this.descriptionRef}
                         lineWidth={1}
                         onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                    <TouchableOpacity onPress={this.onBarcodePress}>
+                        <TextField
+                            label='Bar Code'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            editable={false}
+                            ref={this.barcodeRef}
+                            lineWidth={1}
+                        />
+                    </TouchableOpacity>
+
                 </View>
                 <View style={{ marginTop: 12 }}>
                     {this.renderStrip('Sale')}
@@ -440,7 +539,7 @@ class AddProductScreen extends Component {
                     color={colorAccent}
                     titleColor='white'
                     style={styles.materialBtn}
-                    onPress={() => console.log('Pressed!')} />
+                    onPress={this.validateAndSubmitForm} />
             </ScrollView>
 
         </KeyboardAvoidingView>
@@ -458,4 +557,11 @@ const styles = StyleSheet.create({
         margin: 16
     }
 });
-export default AddProductScreen;
+export default connect(
+    state => ({
+        product: state.product
+    }),
+    dispatch => ({
+        productActions: bindActionCreators(productActions, dispatch)
+    })
+)(AddProductScreen);

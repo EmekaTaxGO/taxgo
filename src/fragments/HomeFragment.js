@@ -2,6 +2,7 @@ import React, { Component, useLayoutEffect, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { DrawerActions } from '@react-navigation/native';
 const HomeFragment = ({ navigation }) => {
 
     const gridItems = [
@@ -93,7 +94,20 @@ const HomeFragment = ({ navigation }) => {
         navigation.openDrawer();
     }
     const onGridItemClick = item => {
+        console.log('Grid Item:', item);
+        switch (item.id) {
+            case 'product':
+                switchDrawer('ProductFragment');
+                break;
+            default:
+                switchDrawer('HomeFragment');
+                break;
+        }
+    }
 
+    const switchDrawer = (name) => {
+        const jumpToAction = DrawerActions.jumpTo(name);
+        navigation.dispatch(jumpToAction);
     }
 
     const GridItem = ({ item }) => {
@@ -112,8 +126,8 @@ const HomeFragment = ({ navigation }) => {
                 padding: 6,
                 backgroundColor: item.color,
                 borderRadius: 12
-            }}>
-                {/* onPress={() => onGridItemClick(item)} */}
+            }}
+                onPress={() => onGridItemClick(item)}>
 
                 <Icon size={30} color='white' name={item.icon} />
                 <Text style={{

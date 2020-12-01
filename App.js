@@ -30,6 +30,7 @@ import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import UpdateUserScreen from './src/screens/UpdateUserScreen';
 import AddInvoice from './src/screens/AddInvoiceScreen';
 import AddInvoiceScreen from './src/screens/AddInvoiceScreen';
+import ViewProductInfoScreen from './src/screens/ViewProductInfoScreen';
 
 const App = () => {
 
@@ -64,7 +65,7 @@ const App = () => {
       <Stack.Screen name='ForgotPasswordScreen' component={ForgotPasswordScreen} options={{ title: 'Forgot Password' }} />
       <Stack.Screen name='UpdateUserScreen' component={UpdateUserScreen} options={{ title: 'Add User' }} />
       <Stack.Screen name='AddInvoiceScreen' component={AddInvoiceScreen} options={{ title: 'Add Invoice' }} />
-
+      <Stack.Screen name='ViewProductInfoScreen' component={ViewProductInfoScreen} options={{ title: 'Product Info' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

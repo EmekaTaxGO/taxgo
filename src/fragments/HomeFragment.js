@@ -94,10 +94,12 @@ const HomeFragment = ({ navigation }) => {
         navigation.openDrawer();
     }
     const onGridItemClick = item => {
-        console.log('Grid Item:', item);
         switch (item.id) {
             case 'product':
                 switchDrawer('ProductFragment');
+                break;
+            case 'accounts':
+                navigation.push('ViewProductInfoScreen', { id: 5 });
                 break;
             default:
                 switchDrawer('HomeFragment');

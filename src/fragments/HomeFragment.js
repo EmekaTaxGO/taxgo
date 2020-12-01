@@ -101,6 +101,10 @@ const HomeFragment = ({ navigation }) => {
             case 'accounts':
                 navigation.push('ViewProductInfoScreen', { id: 5 });
                 break;
+            case 'contacts':
+                switchDrawer('ContactFragment');
+                break;
+
             default:
                 switchDrawer('HomeFragment');
                 break;

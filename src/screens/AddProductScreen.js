@@ -246,6 +246,10 @@ class AddProductScreen extends Component {
     componentDidMount() {
         this.setTitle();
         this.setFieldsValue();
+
+        setTimeout(() => {
+            focusField(this.codeRef);
+        }, 200);
     }
 
     setTitle = () => {

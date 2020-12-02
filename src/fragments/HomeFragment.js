@@ -104,7 +104,13 @@ const HomeFragment = ({ navigation }) => {
             case 'contacts':
                 switchDrawer('ContactFragment');
                 break;
-
+            case 'sales':
+                navigation.push('SelectSupplierScreen', {
+                    onSupplierSelected: item => {
+                        console.log('Supplier Selected:', item);
+                    }
+                });
+                break;
             default:
                 switchDrawer('HomeFragment');
                 break;

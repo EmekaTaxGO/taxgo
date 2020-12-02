@@ -9,7 +9,7 @@ import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { connect } from 'react-redux';
 import { isEmpty, validateEmail } from '../helpers/Utils';
-import { getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
+import { getFieldValue, setFieldValue, focusField } from '../helpers/TextFieldHelpers';
 
 import * as productActions from '../redux/actions/productActions';
 import { bindActionCreators } from 'redux';
@@ -34,6 +34,7 @@ class AddProductScreen extends Component {
     }
 
     salesAccount;
+    supplier;
 
     codeRef = React.createRef();
     descriptionRef = React.createRef();
@@ -170,7 +171,12 @@ class AddProductScreen extends Component {
     }
 
     onBarcodePress = () => {
-        //Open Scanner
+        this.props.navigation.push('ScanBarcodeScreen', {
+            onBarCodeScanned: data => {
+                console.log('Scanned Data', data);
+                setFieldValue(this.barcodeRef, data);
+            }
+        });
     }
 
     validateAndSubmitForm = () => {
@@ -254,6 +260,16 @@ class AddProductScreen extends Component {
         }
     }
 
+    onSupplierPress = () => {
+        this.props.navigation.push('SelectSupplierScreen', {
+            onSupplierSelected: item => {
+                this.supplier = item;
+                console.log('Supplier: ', this.supplier);
+                setFieldValue(this.supplierRef, item.name);
+            }
+        });
+    }
+
     onSalesAccountClick = () => {
         this.props.navigation.push('SelectLedgerScreen', {
             onLedgerSelected: (item) => {
@@ -263,10 +279,124 @@ class AddProductScreen extends Component {
             }
         })
     }
+
+    renderStock = () => {
+        return <View style={{ flexDirection: 'column' }}>
+            <View style={{ marginVertical: 24 }}>
+                {this.renderStrip('Stock')}
+            </View>
+
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                <Text style={{ fontSize: 16, color: 'gray' }}>I have existing stock in hand.</Text>
+                <Switch
+                    style={{ marginLeft: 40 }}
+                    thumbColor={this.state.alreadyHaveStock ? colorAccent : 'gray'}
+                    value={this.state.alreadyHaveStock}
+                    onValueChange={enabled => this.setState({ alreadyHaveStock: enabled })}
+                />
+            </View>
+            <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
+                <TextField
+                    label='Quantity'
+                    keyboardType='numeric'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.stockQtyRef}
+                    onSubmitEditing={() => this.focus(this.stockPriceRef)} />
+                <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
+                    <TextField
+                        label='As of Date'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        editable={false}
+                        lineWidth={1}
+                        ref={this.stockDateRef} />
+                </TouchableOpacity>
+
+                {this.state.showStockDateDialog ? <DateTimePicker
+                    value={this.state.stockDate}
+                    mode={'datetime'}
+                    display='default'
+                    minimumDate={new Date()}
+                    onChange={this.onStockDateChange}
+                /> : null}
+
+                <TextField
+                    label='Cost Price'
+                    keyboardType='number-pad'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    ref={this.stockPriceRef} />
+            </View>
+        </View>;
+    }
+
+    renderOther = () => {
+        return <View style={{ flexDirection: 'column' }}>
+            <View style={{ marginTop: 24 }}>
+                {this.renderStrip('Others')}
+            </View>
+            <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+                <TextField
+                    label='Location'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.locationRef}
+                    onSubmitEditing={() => this.focus(this.weightRef)} />
+                <TextField
+                    label='Weight'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.weightRef}
+                    onSubmitEditing={() => this.focus(this.barcodeRef)} />
+                {/* <TextField
+                    label='Barcode'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.barcodeRef}
+                    onSubmitEditing={() => this.focus(this.notesRef)} /> */}
+                <TextField
+                    label='Notes'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    ref={this.notesRef} />
+            </View>
+        </View>;
+    }
+
+    renderPriceField = () => {
+        return <View style={{ flexDirection: 'column' }}>
+            <TextField
+                label='Sales Price'
+                keyboardType='default'
+                returnKeyType='next'
+                ref={this.salePriceRef}
+                lineWidth={1}
+                onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
+            <TextField
+                label='Trade Price'
+                keyboardType='default'
+                returnKeyType='next'
+                ref={this.tradePriceRef}
+                lineWidth={1}
+                onSubmitEditing={() => { this.wholesalePriceRef.current.focus() }} />
+            <TextField
+                label='Whole Sale Price'
+                keyboardType='default'
+                returnKeyType='done'
+                ref={this.wholesalePriceRef}
+                lineWidth={1}
+                onSubmitEditing={() => { }} />
+        </View>;
+    }
     render() {
 
         const { types, selectedTypeIndex, vats, selectedVatIndex } = this.state;
-
+        const isStock = selectedTypeIndex === 0;
 
         return <KeyboardAvoidingView style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1 }}>
@@ -293,10 +423,14 @@ class AddProductScreen extends Component {
                     <TextField
                         label='Description'
                         keyboardType='default'
-                        returnKeyType='next'
+                        returnKeyType={isStock ? 'next' : 'done'}
                         ref={this.descriptionRef}
                         lineWidth={1}
-                        onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                        onSubmitEditing={() => {
+                            if (isStock) {
+                                this.salePriceRef.current.focus()
+                            }
+                        }} />
                     <TouchableOpacity onPress={this.onBarcodePress}>
                         <TextField
                             label='Bar Code'
@@ -325,27 +459,7 @@ class AddProductScreen extends Component {
                             onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
                     </TouchableOpacity>
 
-                    <TextField
-                        label='Sales Price'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        ref={this.salePriceRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
-                    <TextField
-                        label='Trade Price'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        ref={this.tradePriceRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { this.wholesalePriceRef.current.focus() }} />
-                    <TextField
-                        label='Whole Sale Price'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        ref={this.wholesalePriceRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { }} />
+                    {isStock ? this.renderPriceField() : null}
                 </View>
 
                 {this.renderLabel('VAT/GST')}
@@ -394,16 +508,17 @@ class AddProductScreen extends Component {
                 </View>
 
                 <View style={{ paddingHorizontal: 16 }}>
-                    <TextField
-                        label='Supplier'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        editable={false}
-                        ref={this.supplierRef}
-                        value='Vinay Kumar'
-                        onSubmitEditing={() => this.SICodeRef.current.focus()} />
+                    <TouchableOpacity onPress={this.onSupplierPress}>
+                        <TextField
+                            label='Supplier'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            lineWidth={1}
+                            editable={false}
+                            ref={this.supplierRef}
+                            onSubmitEditing={() => this.SICodeRef.current.focus()} />
 
+                    </TouchableOpacity>
                     <TextField
                         label='SI Code'
                         keyboardType='default'
@@ -411,7 +526,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.SICodeRef}
-                        value='009IKLI009'
                         onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
 
                     <TextField
@@ -421,7 +535,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.purchaseDescRef}
-                        value='This is Purchase Description'
                         onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
 
                     <TextField
@@ -431,7 +544,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.purchasePriceRef}
-                        value='123445'
                         onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
                     <TextField
                         label='Purchase Acc.'
@@ -440,7 +552,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.purchaseAccRef}
-                        value='123445'
                         onSubmitEditing={() => { }} />
 
                     <TouchableOpacity onPress={() => this.setState({ showExpiryDateDialog: true })}>
@@ -475,84 +586,8 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         ref={this.reorderQtyRef} />
                 </View>
-                <View style={{ marginVertical: 24 }}>
-                    {this.renderStrip('Stock')}
-                </View>
-
-                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                    <Text style={{ fontSize: 16, color: 'gray' }}>I have existing stock in hand.</Text>
-                    <Switch
-                        style={{ marginLeft: 40 }}
-                        thumbColor={this.state.alreadyHaveStock ? colorAccent : 'gray'}
-                        value={this.state.alreadyHaveStock}
-                        onValueChange={enabled => this.setState({ alreadyHaveStock: enabled })}
-                    />
-                </View>
-                <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
-                    <TextField
-                        label='Quantity'
-                        keyboardType='numeric'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.stockQtyRef}
-                        onSubmitEditing={() => this.focus(this.stockPriceRef)} />
-                    <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
-                        <TextField
-                            label='As of Date'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            editable={false}
-                            lineWidth={1}
-                            ref={this.stockDateRef} />
-                    </TouchableOpacity>
-
-                    {this.state.showStockDateDialog ? <DateTimePicker
-                        value={this.state.stockDate}
-                        mode={'datetime'}
-                        display='default'
-                        minimumDate={new Date()}
-                        onChange={this.onStockDateChange}
-                    /> : null}
-
-                    <TextField
-                        label='Cost Price'
-                        keyboardType='number-pad'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        ref={this.stockPriceRef} />
-                </View>
-                <View style={{ marginTop: 24 }}>
-                    {this.renderStrip('Others')}
-                </View>
-                <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
-                    <TextField
-                        label='Location'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.locationRef}
-                        onSubmitEditing={() => this.focus(this.weightRef)} />
-                    <TextField
-                        label='Weight'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.weightRef}
-                        onSubmitEditing={() => this.focus(this.barcodeRef)} />
-                    <TextField
-                        label='Barcode'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.barcodeRef}
-                        onSubmitEditing={() => this.focus(this.notesRef)} />
-                    <TextField
-                        label='Notes'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        ref={this.notesRef} />
-                </View>
+                {isStock ? this.renderStock() : null}
+                {isStock ? this.renderOther() : null}
                 <RaisedTextButton
                     title='Add'
                     color={colorAccent}

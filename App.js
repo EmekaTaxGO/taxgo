@@ -31,6 +31,8 @@ import UpdateUserScreen from './src/screens/UpdateUserScreen';
 import AddInvoice from './src/screens/AddInvoiceScreen';
 import AddInvoiceScreen from './src/screens/AddInvoiceScreen';
 import ViewProductInfoScreen from './src/screens/ViewProductInfoScreen';
+import SelectSupplierScreen from './src/screens/SelectSupplierScreen';
+import ScanBarcodeScreen from './src/screens/ScanBarcodeScreen';
 
 const App = () => {
 
@@ -66,6 +68,8 @@ const App = () => {
       <Stack.Screen name='UpdateUserScreen' component={UpdateUserScreen} options={{ title: 'Add User' }} />
       <Stack.Screen name='AddInvoiceScreen' component={AddInvoiceScreen} options={{ title: 'Add Invoice' }} />
       <Stack.Screen name='ViewProductInfoScreen' component={ViewProductInfoScreen} options={{ title: 'Product Info' }} />
+      <Stack.Screen name='SelectSupplierScreen' component={SelectSupplierScreen} options={{ title: 'Select Supplier' }} />
+      <Stack.Screen name='ScanBarcodeScreen' component={ScanBarcodeScreen} options={{ title: 'Scan QR' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

@@ -13,6 +13,7 @@ import { getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
 
 import * as productActions from '../redux/actions/productActions';
 import { bindActionCreators } from 'redux';
+import Store from '../redux/Store';
 
 class AddProductScreen extends Component {
     constructor(props) {
@@ -27,10 +28,12 @@ class AddProductScreen extends Component {
             purchaseExpiryDate: new Date(),
             alreadyHaveStock: false,
             stockDate: new Date(),
-            showStockDateDialog: false
+            showStockDateDialog: false,
         }
 
     }
+
+    salesAccount;
 
     codeRef = React.createRef();
     descriptionRef = React.createRef();
@@ -189,6 +192,8 @@ class AddProductScreen extends Component {
     }
 
     createPostBody = () => {
+
+        const { authData } = Store.getState().auth;
         const body = {
             itemtype: this.state.types[this.state.selectedTypeIndex].value,
             icode: getFieldValue(this.codeRef),
@@ -212,8 +217,8 @@ class AddProductScreen extends Component {
             barcode: '',
             weight: '',
             notes: '',
-            userid: '',
-            adminid: '',
+            userid: authData.id,
+            adminid: authData.id,
             userdate: '',
             name: '',
             logintype: '',
@@ -247,6 +252,16 @@ class AddProductScreen extends Component {
         if (product !== null) {
             //Preset values
         }
+    }
+
+    onSalesAccountClick = () => {
+        this.props.navigation.push('SelectLedgerScreen', {
+            onLedgerSelected: (item) => {
+                const label = `${item.nominalcode}-${item.laccount}`;
+                this.salesAccount = item;
+                setFieldValue(this.saleAccountRef, label);
+            }
+        })
     }
     render() {
 
@@ -299,13 +314,17 @@ class AddProductScreen extends Component {
                 </View>
 
                 <View style={{ paddingHorizontal: 16 }}>
-                    <TextField
-                        label='Sales Acc.'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        ref={this.saleAccountRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                    <TouchableOpacity onPress={this.onSalesAccountClick}>
+                        <TextField
+                            label='Sales Acc.'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            ref={this.saleAccountRef}
+                            lineWidth={1}
+                            editable={false}
+                            onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                    </TouchableOpacity>
+
                     <TextField
                         label='Sales Price'
                         keyboardType='default'

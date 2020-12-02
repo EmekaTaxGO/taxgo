@@ -4,48 +4,31 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import SearchView from '../components/SearchView';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import EmptyView from '../components/EmptyView';
+
+import * as productActions from '../redux/actions/productActions';
+import { bindActionCreators } from 'redux';
+import { isEmpty } from '../helpers/Utils';
+
 
 class SelectLedgerScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            query: '',
-            ledgers: this.createLedgers(),
-            filteredLedgers: this.createLedgers()
+            query: ''
         }
     }
 
-    createLedgers = () => {
-        return [
-            {
-                category: 'Bank Assets',
-                group: 'Assets'
-            },
-            {
-                category: 'Bank Assets2',
-                group: 'Assets2'
-            },
-            {
-                category: 'Bank Assets3',
-                group: 'Assets3'
-            },
-            {
-                category: 'Bank Assets4',
-                group: 'Assets4'
-            },
-            {
-                category: 'Bank Assets5',
-                group: 'Assets5'
-            },
-            {
-                category: 'Bank Assets6',
-                group: 'Assets6'
-            },
-        ];
+    componentDidMount() {
+        this.fetchProductLedger();
     }
 
-    componentDidMount() {
-
+    fetchProductLedger = () => {
+        const { productActions } = this.props;
+        productActions.getProductLedger();
     }
     onItemClicked = (item) => {
         const { params } = this.props.route;
@@ -54,6 +37,7 @@ class SelectLedgerScreen extends Component {
     }
 
     listItem = (item) => {
+        const label = `${item.nominalcode}-${item.laccount}`;
         return <TouchableOpacity onPress={() => { this.onItemClicked(item) }}>
             <Text style={{
                 flex: 1,
@@ -65,23 +49,47 @@ class SelectLedgerScreen extends Component {
                 fontSize: 16,
                 color: 'gray'
             }}>
-                {item.category}
+                {label}
             </Text>
         </TouchableOpacity>
     }
 
     onSearchQueryChange = q => {
-        let filteredLedgers = null;
-        if (q.length === 0) {
-            filteredLedgers = this.state.ledgers;
+        this.setState({ query: q });
+    }
+
+    listLedgers = () => {
+        if (isEmpty(this.state.query)) {
+            return this.props.product.productLedgers;
         } else {
-            filteredLedgers = this.state.ledgers.filter((value) =>
-                value.category.toLowerCase().indexOf(q.toLowerCase()) > -1)
+            return this.filteredLedgers();
         }
-        this.setState({ query: q, filteredLedgers: [...filteredLedgers] });
+    }
+
+    filteredLedgers = () => {
+        let filteredLedgers = [];
+        filteredLedgers = this.props.product.productLedgers.filter(value => {
+            const label = `${value.nominalcode}-${value.laccount}`;
+            return label.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        });
+        return filteredLedgers;
     }
 
     render() {
+        //     fetchingProductLedger: false,
+        // fetchProductLedgerError: undefined,
+        // productLedgers: []
+        const { product } = this.props;
+        if (product.fetchingProductLedger) {
+            return <OnScreenSpinner />
+        }
+        if (product.fetchProductLedgerError) {
+            return <FullScreenError tryAgainClick={this.fetchProductLedger} />
+        }
+        if (product.productLedgers.length === 0) {
+            return <EmptyView message='No Ledgers Available' iconName='hourglass-empty' />
+        }
+
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
@@ -89,7 +97,7 @@ class SelectLedgerScreen extends Component {
                 onCrossPress={() => { this.onSearchQueryChange('') }}
                 placeholder='Search...' />
             <FlatList
-                data={this.state.filteredLedgers}
+                data={this.listLedgers()}
                 renderItem={({ item }) => this.listItem(item)}
                 keyExtractor={(item, index) => `${index}`}
             />
@@ -99,4 +107,11 @@ class SelectLedgerScreen extends Component {
 const styles = StyleSheet.create({
 
 });
-export default SelectLedgerScreen;
+export default connect(
+    state => ({
+        product: state.product
+    }),
+    dispatch => ({
+        productActions: bindActionCreators(productActions, dispatch)
+    })
+)(SelectLedgerScreen);

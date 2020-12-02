@@ -89,7 +89,9 @@ class ProductFragment extends Component {
     }
 
     onAddClick = () => {
-        this.props.navigation.push('AddProductScreen');
+        this.props.navigation.push('AddProductScreen', {
+
+        });
     }
 
     componentDidMount() {

@@ -1,6 +1,7 @@
 import { Linking } from "react-native"
 import { colorAccent } from "../theme/Color";
 import { exp } from "react-native-reanimated";
+import _default from "react-native-image-picker";
 
 export const openLink = (navigation, title, url) => {
     navigation.push('WebViewScreen', {
@@ -11,6 +12,43 @@ export const openLink = (navigation, title, url) => {
 
 export const isEmpty = text => {
     return text === undefined || text.length === 0;
+}
+export const isFloat = text => {
+    if (text === undefined || text === null || isEmpty(text)) {
+        return false;
+    }
+    const number = Number(text);
+    if (isNaN(number)) {
+        return false;
+    }
+    return true;
+}
+
+export const isInteger = text => {
+    if (text === undefined || text === null || isEmpty(text)) {
+        return false;
+    }
+    const number = Number(text);
+    if (isNaN(number)) {
+        return false;
+    }
+    return Math.floor(number) === number;
+}
+
+export const toInteger = (text, _default = 0) => {
+    if (isInteger(text)) {
+        return parseInt(text);
+    } else {
+        return _default;
+    }
+}
+
+export const toFloat = (text, _default = 0.0) => {
+    if (isFloat(text)) {
+        return parseFloat(text);
+    } else {
+        return _default;
+    }
 }
 
 export const EMAIL_ERROR_MESSAGE = 'Please enter valid email.';

@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import { View, Text, Picker, StyleSheet, KeyboardAvoidingView, ScrollView, Switch, Alert } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, colorWhite } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { connect } from 'react-redux';
-import { isEmpty, validateEmail } from '../helpers/Utils';
+import { isEmpty, validateEmail, isInteger, isFloat } from '../helpers/Utils';
 import { getFieldValue, setFieldValue, focusField } from '../helpers/TextFieldHelpers';
 
 import * as productActions from '../redux/actions/productActions';
 import { bindActionCreators } from 'redux';
 import Store from '../redux/Store';
+import Snackbar from 'react-native-snackbar';
 
 class AddProductScreen extends Component {
     constructor(props) {
@@ -40,6 +41,7 @@ class AddProductScreen extends Component {
     descriptionRef = React.createRef();
     barcodeRef = React.createRef();
     saleAccountRef = React.createRef();
+    rateRef = React.createRef();
     salePriceRef = React.createRef();
     tradePriceRef = React.createRef();
     wholesalePriceRef = React.createRef();
@@ -180,14 +182,28 @@ class AddProductScreen extends Component {
     }
 
     validateAndSubmitForm = () => {
+        const isStock = this.state.selectedTypeIndex === 0;
+
         if (isEmpty(getFieldValue(this.codeRef))) {
             this.showAlert('Please enter item code.');
 
         } else if (isEmpty(getFieldValue(this.descriptionRef))) {
-            this.showAlert('Please enter product description.');
+            this.showAlert('Please enter item description.');
+
+        } else if (isStock && isEmpty(getFieldValue(this.salePriceRef))) {
+            this.showAlert('Please enter sales price.');
+
+        } else if (isStock && !isFloat(getFieldValue(this.salePriceRef))) {
+            this.showAlert('Please enter valid sales price.');
+
+        } else if (!isStock && isEmpty(getFieldValue(this.rateRef))) {
+            this.showAlert('Please enter rate.');
+
+        } else if (!isStock && !isFloat(getFieldValue(this.rateRef))) {
+            this.showAlert('Please enter valid rate.');
 
         } else {
-            proceedToSubmit
+            this.proceedToSubmit();
         }
     }
 
@@ -200,7 +216,7 @@ class AddProductScreen extends Component {
     createPostBody = () => {
 
         const { authData } = Store.getState().auth;
-        const body = {
+        return {
             itemtype: this.state.types[this.state.selectedTypeIndex].value,
             icode: getFieldValue(this.codeRef),
             idescription: getFieldValue(this.descriptionRef),
@@ -232,15 +248,25 @@ class AddProductScreen extends Component {
             vat: '',
             vatamt: '',
             inclidevat: ''
-        }
+        };
     }
 
     showAlert = (message) => {
-        Alert.alert('Alert', message, [{
-            style: 'default',
-            text: 'OK',
-            onPress: () => { }
-        }])
+        // Alert.alert('Alert', message, [{
+        //     style: 'default',
+        //     text: 'OK',
+        //     onPress: () => { }
+        // }])
+        Snackbar.show({
+            text: message,
+            duration: Snackbar.LENGTH_LONG,
+            backgroundColor: 'red',
+            action: {
+                text: 'OK',
+                textColor: colorWhite,
+                onPress: () => { }
+            }
+        });
     }
 
     componentDidMount() {
@@ -268,7 +294,6 @@ class AddProductScreen extends Component {
         this.props.navigation.push('SelectSupplierScreen', {
             onSupplierSelected: item => {
                 this.supplier = item;
-                console.log('Supplier: ', this.supplier);
                 setFieldValue(this.supplierRef, item.name);
             }
         });
@@ -376,7 +401,7 @@ class AddProductScreen extends Component {
         return <View style={{ flexDirection: 'column' }}>
             <TextField
                 label='Sales Price'
-                keyboardType='default'
+                keyboardType='numeric'
                 returnKeyType='next'
                 ref={this.salePriceRef}
                 lineWidth={1}
@@ -403,7 +428,9 @@ class AddProductScreen extends Component {
         const isStock = selectedTypeIndex === 0;
 
         return <KeyboardAvoidingView style={{ flex: 1 }}>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1 }}
+                keyboardDismissMode='on-drag'
+                keyboardShouldPersistTaps='always'>
 
                 {this.renderStrip('Item')}
                 {this.renderLabel('Type')}
@@ -462,7 +489,14 @@ class AddProductScreen extends Component {
                             editable={false}
                             onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
                     </TouchableOpacity>
-
+                    {!isStock ?
+                        <TextField
+                            label='Rate'
+                            keyboardType='number-pad'
+                            returnKeyType='done'
+                            ref={this.rateRef}
+                            lineWidth={1}
+                        /> : null}
                     {isStock ? this.renderPriceField() : null}
                 </View>
 

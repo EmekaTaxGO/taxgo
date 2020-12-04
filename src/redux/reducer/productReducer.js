@@ -1,11 +1,20 @@
-import { PRODUCT_LIST_REQUEST, PRODUCT_LIST_FAIL, PRODUCT_LIST_SUCCESS } from "../../constants";
+import { PRODUCT_LIST_REQUEST, PRODUCT_LIST_FAIL, PRODUCT_LIST_SUCCESS, PRODUCT_BY_ID_REQUEST, PRODUCT_BY_ID_FAIL, PRODUCT_BY_ID_SUCCESS, PRODUCT_LEDGER_LIST_REQUEST, PRODUCT_LEDGER_LIST_FAIL, PRODUCT_LEDGER_LIST_SUCCESS } from "../../constants";
 import { API_ERROR_MESSAGE } from "../../constants/appConstant";
 
 
 const initialState = {
     fetchingProductList: false,
     productListError: undefined,
-    productList: []
+    productList: [],
+
+
+    fetchingProductInfo: false,
+    fetchProductInfoError: undefined,
+    productInfo: undefined,
+
+    fetchingProductLedger: false,
+    fetchProductLedgerError: undefined,
+    productLedgers: []
 };
 
 const productReducer = (state = initialState, action) => {
@@ -27,6 +36,42 @@ const productReducer = (state = initialState, action) => {
                 ...state,
                 fetchingProductList: false,
                 productList: [...action.payload]
+            };
+        case PRODUCT_BY_ID_REQUEST:
+            return {
+                ...state,
+                fetchingProductInfo: true,
+                fetchProductInfoError: undefined
+            };
+        case PRODUCT_BY_ID_FAIL:
+            return {
+                ...state,
+                fetchingProductInfo: false,
+                fetchProductInfoError: API_ERROR_MESSAGE
+            };
+        case PRODUCT_BY_ID_SUCCESS:
+            return {
+                ...state,
+                fetchingProductInfo: false,
+                productInfo: action.payload
+            };
+        case PRODUCT_LEDGER_LIST_REQUEST:
+            return {
+                ...state,
+                fetchingProductLedger: true,
+                fetchProductLedgerError: undefined
+            };
+        case PRODUCT_LEDGER_LIST_FAIL:
+            return {
+                ...state,
+                fetchingProductLedger: false,
+                fetchProductLedgerError: API_ERROR_MESSAGE
+            };
+        case PRODUCT_LEDGER_LIST_SUCCESS:
+            return {
+                ...state,
+                fetchingProductLedger: false,
+                productLedgers: [...action.payload]
             };
         default:
             return state;

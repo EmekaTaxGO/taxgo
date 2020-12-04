@@ -256,7 +256,7 @@ class AddCustomerScreen extends Component {
                     <TextField
                         label='Notes'
                         keyboardType='default'
-                        returnKeyType='default'
+                        returnKeyType='next'
                         lineWidth={1}
                         ref={this.notesRef}
                         onChange={event => this.resetAllError()}

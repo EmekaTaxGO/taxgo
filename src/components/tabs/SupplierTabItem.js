@@ -102,6 +102,7 @@ class SupplierTabItem extends Component {
 
 
     render() {
+        console.log('Rendering Supplier Tab');
         const { contact } = this.props;
         if (contact.fetchingSupplierList) {
             return <OnScreenSpinner />

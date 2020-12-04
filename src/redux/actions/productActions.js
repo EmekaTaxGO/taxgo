@@ -2,7 +2,19 @@
 import Api from '../../services/api';
 import Store from '../Store';
 import { log } from '../../components/Logger';
-import { PRODUCT_LIST_SUCCESS, PRODUCT_LIST_REQUEST, PRODUCT_LIST_FAIL, UPDATE_PRODUCT_REQUEST, UPDATE_PRODUCT_FAIL } from '../../constants';
+import {
+    PRODUCT_LIST_SUCCESS,
+    PRODUCT_LIST_REQUEST,
+    PRODUCT_LIST_FAIL,
+    UPDATE_PRODUCT_REQUEST,
+    UPDATE_PRODUCT_FAIL,
+    PRODUCT_BY_ID_REQUEST,
+    PRODUCT_BY_ID_SUCCESS,
+    PRODUCT_BY_ID_FAIL,
+    PRODUCT_LEDGER_LIST_REQUEST,
+    PRODUCT_LEDGER_LIST_SUCCESS,
+    PRODUCT_LEDGER_LIST_FAIL
+} from '../../constants';
 
 export const getProductList = () => {
     return (dispatch) => {
@@ -24,12 +36,17 @@ export const getProductList = () => {
 
 export const getProductById = (id) => {
     return (dispatch) => {
+        dispatch({ type: PRODUCT_BY_ID_REQUEST });
         return Api.get(`/product/getProductById/${id}`)
             .then(response => {
-
+                dispatch({
+                    type: PRODUCT_BY_ID_SUCCESS,
+                    payload: response.data.data
+                })
             })
             .catch(err => {
                 log('Error Retriving Product', err);
+                dispatch({ type: PRODUCT_BY_ID_FAIL });
             })
     }
 }
@@ -60,6 +77,23 @@ export const createProduct = (navigation, body) => {
             .catch(err => {
                 log('Error Checking for Product Creation', err);
                 dispatch({ type: UPDATE_PRODUCT_FAIL });
+            })
+    }
+}
+
+export const getProductLedger = () => {
+    return (dispatch) => {
+        dispatch({ type: PRODUCT_LEDGER_LIST_REQUEST });
+        return Api.get('/default/getDefaultLedgers')
+            .then(response => {
+                dispatch({
+                    type: PRODUCT_LEDGER_LIST_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error fetching Product Ledgers', err);
+                dispatch({ type: PRODUCT_LEDGER_LIST_FAIL });
             })
     }
 }

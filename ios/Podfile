@@ -16,6 +16,10 @@ target 'taxgoMobile' do
 
   pod 'RNCPicker', :path => '../node_modules/@react-native-community/picker'
 
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+
+  pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
+
   target 'taxgoMobileTests' do
     inherit! :complete
     # Pods for testing

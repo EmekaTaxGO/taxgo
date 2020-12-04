@@ -6,7 +6,7 @@ const LedgerStack = () => {
     return <SingleStack
         name='Ledger'
         component={LedgerFragment}
-        title='Ledger'
+        title='My Ledger'
     />
 }
 export default LedgerStack;

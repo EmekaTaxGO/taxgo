@@ -53,7 +53,10 @@ export const login = (navigation, body) => {
         return Api.post('/auth/login', body)
             .then(async (response) => {
                 await saveToLocal(AUTH_DATA, response.data.data);
-                dispatch({ type: LOGIN_SUCCESS });
+                dispatch({
+                    type: LOGIN_SUCCESS,
+                    payload: response.data.data
+                });
                 navigation.replace('HomeScreen');
             })
             .catch(err => {

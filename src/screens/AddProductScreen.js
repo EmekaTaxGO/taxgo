@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
-import { View, Text, Picker, StyleSheet, KeyboardAvoidingView, ScrollView, TextInput, CheckBox, Switch } from 'react-native';
-// import Picker from '@react-native-community/picker';
-import ViewPager from '@react-native-community/viewpager';
-import AppViewPager from '../components/AppViewpager';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { View, Text, Picker, StyleSheet, KeyboardAvoidingView, ScrollView, Switch, Alert } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, colorWhite } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
-// import { IndicatorViewPager, PagerTabIndicator, PagerDotIndicator } from 'rn-viewpager';
+import { connect } from 'react-redux';
+import { isEmpty, validateEmail, isInteger, isFloat } from '../helpers/Utils';
+import { getFieldValue, setFieldValue, focusField } from '../helpers/TextFieldHelpers';
+
+import * as productActions from '../redux/actions/productActions';
+import { bindActionCreators } from 'redux';
+import Store from '../redux/Store';
+import Snackbar from 'react-native-snackbar';
 
 class AddProductScreen extends Component {
     constructor(props) {
@@ -26,14 +29,19 @@ class AddProductScreen extends Component {
             purchaseExpiryDate: new Date(),
             alreadyHaveStock: false,
             stockDate: new Date(),
-            showStockDateDialog: false
+            showStockDateDialog: false,
         }
 
     }
 
+    salesAccount;
+    supplier;
+
     codeRef = React.createRef();
     descriptionRef = React.createRef();
+    barcodeRef = React.createRef();
     saleAccountRef = React.createRef();
+    rateRef = React.createRef();
     salePriceRef = React.createRef();
     tradePriceRef = React.createRef();
     wholesalePriceRef = React.createRef();
@@ -87,6 +95,10 @@ class AddProductScreen extends Component {
                 value: 'Service'
             },
         ]
+    }
+
+    isEditMode = () => {
+        return this.props.route.params.product !== null;
     }
 
     renderStrip = (text) => {
@@ -160,13 +172,265 @@ class AddProductScreen extends Component {
         })
     }
 
+    onBarcodePress = () => {
+        this.props.navigation.push('ScanBarcodeScreen', {
+            onBarCodeScanned: data => {
+                console.log('Scanned Data', data);
+                setFieldValue(this.barcodeRef, data);
+            }
+        });
+    }
+
+    validateAndSubmitForm = () => {
+        const isStock = this.state.selectedTypeIndex === 0;
+
+        if (isEmpty(getFieldValue(this.codeRef))) {
+            this.showAlert('Please enter item code.');
+
+        } else if (isEmpty(getFieldValue(this.descriptionRef))) {
+            this.showAlert('Please enter item description.');
+
+        } else if (isStock && isEmpty(getFieldValue(this.salePriceRef))) {
+            this.showAlert('Please enter sales price.');
+
+        } else if (isStock && !isFloat(getFieldValue(this.salePriceRef))) {
+            this.showAlert('Please enter valid sales price.');
+
+        } else if (!isStock && isEmpty(getFieldValue(this.rateRef))) {
+            this.showAlert('Please enter rate.');
+
+        } else if (!isStock && !isFloat(getFieldValue(this.rateRef))) {
+            this.showAlert('Please enter valid rate.');
+
+        } else {
+            this.proceedToSubmit();
+        }
+    }
+
+    proceedToSubmit = () => {
+        const { productActions } = this.props;
+        const body = this.createPostBody();
+        productActions.createProduct(this.props.navigation, body)
+    }
+
+    createPostBody = () => {
+
+        const { authData } = Store.getState().auth;
+        return {
+            itemtype: this.state.types[this.state.selectedTypeIndex].value,
+            icode: getFieldValue(this.codeRef),
+            idescription: getFieldValue(this.descriptionRef),
+            saccount: '',
+            sp_price: '',
+            trade_price: '',
+            wholesale: '',
+            rate: '',
+            sicode: '',
+            pdescription: '',
+            costprice: '',
+            paccount: '',
+            rlevel: '',
+            quantity: '',
+            price: '',
+            date: '',
+            c_price: '',
+            rquantity: '',
+            location: '',
+            barcode: '',
+            weight: '',
+            notes: '',
+            userid: authData.id,
+            adminid: authData.id,
+            userdate: '',
+            name: '',
+            logintype: '',
+            expiredate: '',
+            vat: '',
+            vatamt: '',
+            inclidevat: ''
+        };
+    }
+
+    showAlert = (message) => {
+        // Alert.alert('Alert', message, [{
+        //     style: 'default',
+        //     text: 'OK',
+        //     onPress: () => { }
+        // }])
+        Snackbar.show({
+            text: message,
+            duration: Snackbar.LENGTH_LONG,
+            backgroundColor: 'red',
+            action: {
+                text: 'OK',
+                textColor: colorWhite,
+                onPress: () => { }
+            }
+        });
+    }
+
+    componentDidMount() {
+        this.setTitle();
+        this.setFieldsValue();
+
+        setTimeout(() => {
+            focusField(this.codeRef);
+        }, 200);
+    }
+
+    setTitle = () => {
+        const titlePrefix = this.isEditMode() ? 'Edit' : 'Add';
+        const title = `${titlePrefix} Product`;
+        this.props.navigation.setOptions({ title });
+    }
+    setFieldsValue = () => {
+        const { product } = this.props.route.params;
+        if (product !== null) {
+            //Preset values
+        }
+    }
+
+    onSupplierPress = () => {
+        this.props.navigation.push('SelectSupplierScreen', {
+            onSupplierSelected: item => {
+                this.supplier = item;
+                setFieldValue(this.supplierRef, item.name);
+            }
+        });
+    }
+
+    onSalesAccountClick = () => {
+        this.props.navigation.push('SelectLedgerScreen', {
+            onLedgerSelected: (item) => {
+                const label = `${item.nominalcode}-${item.laccount}`;
+                this.salesAccount = item;
+                setFieldValue(this.saleAccountRef, label);
+            }
+        })
+    }
+
+    renderStock = () => {
+        return <View style={{ flexDirection: 'column' }}>
+            <View style={{ marginVertical: 24 }}>
+                {this.renderStrip('Stock')}
+            </View>
+
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                <Text style={{ fontSize: 16, color: 'gray' }}>I have existing stock in hand.</Text>
+                <Switch
+                    style={{ marginLeft: 40 }}
+                    thumbColor={this.state.alreadyHaveStock ? colorAccent : 'gray'}
+                    value={this.state.alreadyHaveStock}
+                    onValueChange={enabled => this.setState({ alreadyHaveStock: enabled })}
+                />
+            </View>
+            <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
+                <TextField
+                    label='Quantity'
+                    keyboardType='numeric'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.stockQtyRef}
+                    onSubmitEditing={() => this.focus(this.stockPriceRef)} />
+                <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
+                    <TextField
+                        label='As of Date'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        editable={false}
+                        lineWidth={1}
+                        ref={this.stockDateRef} />
+                </TouchableOpacity>
+
+                {this.state.showStockDateDialog ? <DateTimePicker
+                    value={this.state.stockDate}
+                    mode={'datetime'}
+                    display='default'
+                    minimumDate={new Date()}
+                    onChange={this.onStockDateChange}
+                /> : null}
+
+                <TextField
+                    label='Cost Price'
+                    keyboardType='number-pad'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    ref={this.stockPriceRef} />
+            </View>
+        </View>;
+    }
+
+    renderOther = () => {
+        return <View style={{ flexDirection: 'column' }}>
+            <View style={{ marginTop: 24 }}>
+                {this.renderStrip('Others')}
+            </View>
+            <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+                <TextField
+                    label='Location'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.locationRef}
+                    onSubmitEditing={() => this.focus(this.weightRef)} />
+                <TextField
+                    label='Weight'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.weightRef}
+                    onSubmitEditing={() => this.focus(this.barcodeRef)} />
+                {/* <TextField
+                    label='Barcode'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    ref={this.barcodeRef}
+                    onSubmitEditing={() => this.focus(this.notesRef)} /> */}
+                <TextField
+                    label='Notes'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    ref={this.notesRef} />
+            </View>
+        </View>;
+    }
+
+    renderPriceField = () => {
+        return <View style={{ flexDirection: 'column' }}>
+            <TextField
+                label='Sales Price'
+                keyboardType='numeric'
+                returnKeyType='next'
+                ref={this.salePriceRef}
+                lineWidth={1}
+                onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
+            <TextField
+                label='Trade Price'
+                keyboardType='default'
+                returnKeyType='next'
+                ref={this.tradePriceRef}
+                lineWidth={1}
+                onSubmitEditing={() => { this.wholesalePriceRef.current.focus() }} />
+            <TextField
+                label='Whole Sale Price'
+                keyboardType='default'
+                returnKeyType='done'
+                ref={this.wholesalePriceRef}
+                lineWidth={1}
+                onSubmitEditing={() => { }} />
+        </View>;
+    }
     render() {
 
         const { types, selectedTypeIndex, vats, selectedVatIndex } = this.state;
-
+        const isStock = selectedTypeIndex === 0;
 
         return <KeyboardAvoidingView style={{ flex: 1 }}>
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1 }}
+                keyboardDismissMode='on-drag'
+                keyboardShouldPersistTaps='always'>
 
                 {this.renderStrip('Item')}
                 {this.renderLabel('Type')}
@@ -190,44 +454,50 @@ class AddProductScreen extends Component {
                     <TextField
                         label='Description'
                         keyboardType='default'
-                        returnKeyType='next'
+                        returnKeyType={isStock ? 'next' : 'done'}
                         ref={this.descriptionRef}
                         lineWidth={1}
-                        onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                        onSubmitEditing={() => {
+                            if (isStock) {
+                                this.salePriceRef.current.focus()
+                            }
+                        }} />
+                    <TouchableOpacity onPress={this.onBarcodePress}>
+                        <TextField
+                            label='Bar Code'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            editable={false}
+                            ref={this.barcodeRef}
+                            lineWidth={1}
+                        />
+                    </TouchableOpacity>
+
                 </View>
                 <View style={{ marginTop: 12 }}>
                     {this.renderStrip('Sale')}
                 </View>
 
                 <View style={{ paddingHorizontal: 16 }}>
-                    <TextField
-                        label='Sales Acc.'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        ref={this.saleAccountRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
-                    <TextField
-                        label='Sales Price'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        ref={this.salePriceRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
-                    <TextField
-                        label='Trade Price'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        ref={this.tradePriceRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { this.wholesalePriceRef.current.focus() }} />
-                    <TextField
-                        label='Whole Sale Price'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        ref={this.wholesalePriceRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => { }} />
+                    <TouchableOpacity onPress={this.onSalesAccountClick}>
+                        <TextField
+                            label='Sales Acc.'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            ref={this.saleAccountRef}
+                            lineWidth={1}
+                            editable={false}
+                            onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                    </TouchableOpacity>
+                    {!isStock ?
+                        <TextField
+                            label='Rate'
+                            keyboardType='number-pad'
+                            returnKeyType='done'
+                            ref={this.rateRef}
+                            lineWidth={1}
+                        /> : null}
+                    {isStock ? this.renderPriceField() : null}
                 </View>
 
                 {this.renderLabel('VAT/GST')}
@@ -276,16 +546,17 @@ class AddProductScreen extends Component {
                 </View>
 
                 <View style={{ paddingHorizontal: 16 }}>
-                    <TextField
-                        label='Supplier'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        editable={false}
-                        ref={this.supplierRef}
-                        value='Vinay Kumar'
-                        onSubmitEditing={() => this.SICodeRef.current.focus()} />
+                    <TouchableOpacity onPress={this.onSupplierPress}>
+                        <TextField
+                            label='Supplier'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            lineWidth={1}
+                            editable={false}
+                            ref={this.supplierRef}
+                            onSubmitEditing={() => this.SICodeRef.current.focus()} />
 
+                    </TouchableOpacity>
                     <TextField
                         label='SI Code'
                         keyboardType='default'
@@ -293,7 +564,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.SICodeRef}
-                        value='009IKLI009'
                         onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
 
                     <TextField
@@ -303,7 +573,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.purchaseDescRef}
-                        value='This is Purchase Description'
                         onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
 
                     <TextField
@@ -313,7 +582,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.purchasePriceRef}
-                        value='123445'
                         onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
                     <TextField
                         label='Purchase Acc.'
@@ -322,7 +590,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.purchaseAccRef}
-                        value='123445'
                         onSubmitEditing={() => { }} />
 
                     <TouchableOpacity onPress={() => this.setState({ showExpiryDateDialog: true })}>
@@ -357,90 +624,14 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         ref={this.reorderQtyRef} />
                 </View>
-                <View style={{ marginVertical: 24 }}>
-                    {this.renderStrip('Stock')}
-                </View>
-
-                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                    <Text style={{ fontSize: 16, color: 'gray' }}>I have existing stock in hand.</Text>
-                    <Switch
-                        style={{ marginLeft: 40 }}
-                        thumbColor={this.state.alreadyHaveStock ? colorAccent : 'gray'}
-                        value={this.state.alreadyHaveStock}
-                        onValueChange={enabled => this.setState({ alreadyHaveStock: enabled })}
-                    />
-                </View>
-                <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
-                    <TextField
-                        label='Quantity'
-                        keyboardType='numeric'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.stockQtyRef}
-                        onSubmitEditing={() => this.focus(this.stockPriceRef)} />
-                    <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
-                        <TextField
-                            label='As of Date'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            editable={false}
-                            lineWidth={1}
-                            ref={this.stockDateRef} />
-                    </TouchableOpacity>
-
-                    {this.state.showStockDateDialog ? <DateTimePicker
-                        value={this.state.stockDate}
-                        mode={'datetime'}
-                        display='default'
-                        minimumDate={new Date()}
-                        onChange={this.onStockDateChange}
-                    /> : null}
-
-                    <TextField
-                        label='Cost Price'
-                        keyboardType='number-pad'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        ref={this.stockPriceRef} />
-                </View>
-                <View style={{ marginTop: 24 }}>
-                    {this.renderStrip('Others')}
-                </View>
-                <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
-                    <TextField
-                        label='Location'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.locationRef}
-                        onSubmitEditing={() => this.focus(this.weightRef)} />
-                    <TextField
-                        label='Weight'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.weightRef}
-                        onSubmitEditing={() => this.focus(this.barcodeRef)} />
-                    <TextField
-                        label='Barcode'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        ref={this.barcodeRef}
-                        onSubmitEditing={() => this.focus(this.notesRef)} />
-                    <TextField
-                        label='Notes'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        ref={this.notesRef} />
-                </View>
+                {isStock ? this.renderStock() : null}
+                {isStock ? this.renderOther() : null}
                 <RaisedTextButton
                     title='Add'
                     color={colorAccent}
                     titleColor='white'
                     style={styles.materialBtn}
-                    onPress={() => console.log('Pressed!')} />
+                    onPress={this.validateAndSubmitForm} />
             </ScrollView>
 
         </KeyboardAvoidingView>
@@ -458,4 +649,11 @@ const styles = StyleSheet.create({
         margin: 16
     }
 });
-export default AddProductScreen;
+export default connect(
+    state => ({
+        product: state.product
+    }),
+    dispatch => ({
+        productActions: bindActionCreators(productActions, dispatch)
+    })
+)(AddProductScreen);

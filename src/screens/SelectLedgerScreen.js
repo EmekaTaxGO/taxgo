@@ -9,7 +9,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 
-import * as productActions from '../redux/actions/productActions';
+import * as ledgerActions from '../redux/actions/ledgerActions';
 import { bindActionCreators } from 'redux';
 import { isEmpty } from '../helpers/Utils';
 
@@ -23,21 +23,21 @@ class SelectLedgerScreen extends Component {
     }
 
     componentDidMount() {
-        this.fetchProductLedger();
+        this.fetchLedgerCategory();
     }
 
-    fetchProductLedger = () => {
-        const { productActions } = this.props;
-        productActions.getProductLedger();
+    fetchLedgerCategory = () => {
+        const { ledgerActions } = this.props;
+        ledgerActions.getLedgerCategory();
     }
     onItemClicked = (item) => {
         const { params } = this.props.route;
-        params.onLedgerSelected(item);
+        params.onLedgerCategorySelected(item);
         this.props.navigation.goBack();
     }
 
     listItem = (item) => {
-        const label = `${item.nominalcode}-${item.laccount}`;
+        const label = `${item.category}-${item.categorygroup}`;
         return <TouchableOpacity onPress={() => { this.onItemClicked(item) }}>
             <Text style={{
                 flex: 1,
@@ -60,7 +60,7 @@ class SelectLedgerScreen extends Component {
 
     listLedgers = () => {
         if (isEmpty(this.state.query)) {
-            return this.props.product.productLedgers;
+            return this.props.ledger.ledgerCategories;
         } else {
             return this.filteredLedgers();
         }
@@ -68,8 +68,8 @@ class SelectLedgerScreen extends Component {
 
     filteredLedgers = () => {
         let filteredLedgers = [];
-        filteredLedgers = this.props.product.productLedgers.filter(value => {
-            const label = `${value.nominalcode}-${value.laccount}`;
+        filteredLedgers = this.props.ledger.ledgerCategories.filter(value => {
+            const label = `${value.category}-${value.categorygroup}`;
             return label.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
         });
         return filteredLedgers;
@@ -79,15 +79,15 @@ class SelectLedgerScreen extends Component {
         //     fetchingProductLedger: false,
         // fetchProductLedgerError: undefined,
         // productLedgers: []
-        const { product } = this.props;
-        if (product.fetchingProductLedger) {
+        const { ledger } = this.props;
+        if (ledger.fetchingLedgerCategory) {
             return <OnScreenSpinner />
         }
-        if (product.fetchProductLedgerError) {
-            return <FullScreenError tryAgainClick={this.fetchProductLedger} />
+        if (ledger.fetchLedgerCategoryError) {
+            return <FullScreenError tryAgainClick={this.fetchLedgerCategory} />
         }
-        if (product.productLedgers.length === 0) {
-            return <EmptyView message='No Ledgers Available' iconName='hourglass-empty' />
+        if (ledger.ledgerCategories.length === 0) {
+            return <EmptyView message='No Ledgers Category Available' iconName='hourglass-empty' />
         }
 
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -109,9 +109,9 @@ const styles = StyleSheet.create({
 });
 export default connect(
     state => ({
-        product: state.product
+        ledger: state.ledger
     }),
     dispatch => ({
-        productActions: bindActionCreators(productActions, dispatch)
+        ledgerActions: bindActionCreators(ledgerActions, dispatch)
     })
 )(SelectLedgerScreen);

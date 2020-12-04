@@ -33,6 +33,9 @@ import AddInvoiceScreen from './src/screens/AddInvoiceScreen';
 import ViewProductInfoScreen from './src/screens/ViewProductInfoScreen';
 import SelectSupplierScreen from './src/screens/SelectSupplierScreen';
 import ScanBarcodeScreen from './src/screens/ScanBarcodeScreen';
+import PurchaseLedgerScreen from './src/screens/PurchaseLedgerScreen';
+import SaleLedgerScreen from './src/screens/SaleLedgerScreen';
+import MyLedgerScreen from './src/screens/MyLedgerScreen';
 
 const App = () => {
 
@@ -70,6 +73,9 @@ const App = () => {
       <Stack.Screen name='ViewProductInfoScreen' component={ViewProductInfoScreen} options={{ title: 'Product Info' }} />
       <Stack.Screen name='SelectSupplierScreen' component={SelectSupplierScreen} options={{ title: 'Select Supplier' }} />
       <Stack.Screen name='ScanBarcodeScreen' component={ScanBarcodeScreen} options={{ title: 'Scan QR' }} />
+      <Stack.Screen name='PurchaseLedgerScreen' component={PurchaseLedgerScreen} options={{ title: 'Purchase Ledger' }} />
+      <Stack.Screen name='SaleLedgerScreen' component={SaleLedgerScreen} options={{ title: 'Sale Ledger' }} />
+      <Stack.Screen name='MyLedgerScreen' component={MyLedgerScreen} options={{ title: 'My Ledger' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

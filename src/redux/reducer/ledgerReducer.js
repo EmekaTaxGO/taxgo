@@ -7,7 +7,16 @@ import {
     SALES_LEDGER_FAIL,
     PURCHASE_LEDGER_REQUEST,
     PURCHASE_LEDGER_SUCCESS,
-    PURCHASE_LEDGER_FAIL
+    PURCHASE_LEDGER_FAIL,
+    MY_LEDGER_REQUEST,
+    MY_LEDGER_SUCCESS,
+    MY_LEDGER_FAIL,
+    UPDATE_LEDGER_REQUEST,
+    UPDATE_LEDGER_SUCCESS,
+    UPDATE_LEDGER_FAIL,
+    LEDGER_CATEGORY_REQUEST,
+    LEDGER_CATEGORY_SUCCESS,
+    LEDGER_CATEGORY_FAIL
 } from "../../constants";
 import { API_ERROR_MESSAGE } from '../../constants/appConstant';
 
@@ -31,6 +40,10 @@ const initialState = {
 
     updatingLedger: false,
     updateLedgerError: undefined,
+
+    fetchingLedgerCategory: false,
+    fetchLedgerCategoryError: undefined,
+    ledgerCategories: []
 
 };
 const ledgerReducer = (state = initialState, action) => {
@@ -71,8 +84,6 @@ const ledgerReducer = (state = initialState, action) => {
                 fetchingSaleLedger: false,
                 fetchSaleLedgerError: API_ERROR_MESSAGE
             };
-
-
         case PURCHASE_LEDGER_REQUEST:
             return {
                 ...state,
@@ -90,6 +101,60 @@ const ledgerReducer = (state = initialState, action) => {
                 ...state,
                 fetchingPurchaseLedger: false,
                 fetchPurchaseLedgerError: API_ERROR_MESSAGE
+            };
+        case MY_LEDGER_REQUEST:
+            return {
+                ...state,
+                fetchingMyLedger: true,
+                fetchMyLedgerError: undefined
+            };
+        case MY_LEDGER_SUCCESS:
+            return {
+                ...state,
+                fetchingMyLedger: false,
+                myLedgers: [...action.payload],
+                fetchingMyLedger: false
+            };
+        case MY_LEDGER_FAIL:
+            return {
+                ...state,
+                fetchingMyLedger: false,
+                fetchMyLedgerError: API_ERROR_MESSAGE
+            };
+        case UPDATE_LEDGER_REQUEST:
+            return {
+                ...state,
+                updatingLedger: true,
+                updateLedgerError: undefined
+            };
+        case UPDATE_LEDGER_SUCCESS:
+            return {
+                ...state,
+                updatingLedger: false
+            };
+        case UPDATE_LEDGER_FAIL:
+            return {
+                ...state,
+                updatingLedger: false,
+                updateLedgerError: API_ERROR_MESSAGE
+            };
+        case LEDGER_CATEGORY_REQUEST:
+            return {
+                ...state,
+                fetchingLedgerCategory: true,
+                fetchLedgerCategoryError: undefined
+            };
+        case LEDGER_CATEGORY_SUCCESS:
+            return {
+                ...state,
+                fetchingLedgerCategory: false,
+                ledgerCategories: [...action.payload]
+            };
+        case LEDGER_CATEGORY_FAIL:
+            return {
+                ...state,
+                fetchingLedgerCategory: false,
+                fetchLedgerCategoryError: API_ERROR_MESSAGE
             };
         default:
             return state;

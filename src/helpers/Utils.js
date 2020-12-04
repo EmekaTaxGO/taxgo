@@ -1,7 +1,8 @@
 import { Linking } from "react-native"
-import { colorAccent } from "../theme/Color";
+import { colorAccent, colorWhite } from "../theme/Color";
 import { exp } from "react-native-reanimated";
 import _default from "react-native-image-picker";
+import Snackbar from "react-native-snackbar";
 
 export const openLink = (navigation, title, url) => {
     navigation.push('WebViewScreen', {
@@ -96,6 +97,19 @@ export const isClientError = err => {
 export const isServerError = err => {
     const { status } = err.response;
     return status >= 500;
+}
+
+export const showError = (message) => {
+    Snackbar.show({
+        text: message,
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: 'red',
+        action: {
+            text: 'OK',
+            textColor: colorWhite,
+            onPress: () => { }
+        }
+    });
 }
 
 export const DEFAULT_PICKER_OPTIONS = {

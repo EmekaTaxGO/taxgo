@@ -6,8 +6,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 const EmptyView = ({ message, iconName }) => {
 
     return <View style={{
-        flex: 1, justifyContent: 'center',
-        alignItems: 'center', padding: 20, flexDirection: 'column'
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        flexDirection: 'column',
+        backgroundColor: 'white'
     }}>
 
         <Icon size={40} color='black' name={iconName} />

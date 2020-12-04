@@ -3,6 +3,11 @@ import { View, TouchableOpacity, StyleSheet, FlatList, Text, Picker } from 'reac
 import SearchView from '../components/SearchView';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { colorWhite, colorAccent } from '../theme/Color';
+import MyLedgerTabItem from '../components/tabs/MyLedgerTabItem';
+import FA5Icon from 'react-native-vector-icons/FontAwesome5';
+import DefaultLedgerTabItem from '../components/tabs/DefaultLedgerTabItem';
 
 class LedgerFragment extends Component {
     constructor(props) {
@@ -56,7 +61,14 @@ class LedgerFragment extends Component {
         this.props.navigation.openDrawer();
     }
     onAddClick = () => {
-        this.props.navigation.push('AddLedgerScreen');
+        this.props.navigation.push('AddLedgerScreen', {
+            ledger: null,
+            onLedgerUpdated: () => { }
+        });
+    }
+
+    setTitle = (title) => {
+        this.props.navigation.setOptions({ title });
     }
     onSearchQueryChange = q => {
         let filteredLedgers = null;
@@ -118,33 +130,37 @@ class LedgerFragment extends Component {
         </View>
     }
 
-    render() {
-        return <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column' }}>
 
-            <SearchView
-                value={this.state.query}
-                onChangeQuery={this.onSearchQueryChange}
-                onCrossPress={() => this.onSearchQueryChange('')}
-                placeholder='Search...' />
-            <View style={{ flexDirection: 'row-reverse' }}>
-                <Picker
-                    style={{ width: '50%' }}
-                    selectedValue={this.state.selectedLedgerType}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedLedgerType: itemValue })}>
-                    {
-                        this.state.ledgerTypes.map((value, index) => <Picker.Item
-                            label={value} value={value} key={`${index}`} />)
-                    }
-                </Picker>
-            </View>
-            <FlatList
-                data={this.state.filteredLedgers}
-                style={{ flex: 1 }}
-                keyExtractor={(item, index) => `${index}`}
-                renderItem={({ item, index }) => this.renderListItem(item, index)}
-            />
-        </View>
+    render() {
+        const Tab = createBottomTabNavigator();
+        return <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                    const iconName = route.name === 'myledger' ? 'user' : 'user-tag';
+                    return <FA5Icon name={iconName} size={30} color={focused ? colorAccent : 'gray'} />
+                }
+            })}
+            tabBarOptions={{
+                activeTintColor: colorAccent,
+                inactiveTintColor: 'gray',
+                allowFontScaling: true,
+                showLabel: true,
+                labelPosition: 'below-icon',
+                labelStyle: { fontSize: 13, fontWeight: 'bold' },
+                style: { height: 60, justifyContent: 'center', alignItems: 'center' },
+                tabStyle: { alignItems: 'center', justifyContent: 'center', paddingVertical: 6 }
+            }}
+        >
+            <Tab.Screen name='myledger'
+                component={MyLedgerTabItem}
+                options={{ title: 'Custom' }}
+                listeners={{ tabPress: e => this.setTitle('My Ledger') }} />
+
+            <Tab.Screen name='defaultledger'
+                component={DefaultLedgerTabItem}
+                options={{ title: 'Default' }}
+                listeners={{ tabPress: e => this.setTitle('Default Ledger') }} />
+        </Tab.Navigator>
     }
 }
 const styles = StyleSheet.create({

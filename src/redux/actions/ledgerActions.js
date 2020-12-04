@@ -108,8 +108,9 @@ export const getMyLedger = () => {
 }
 
 //For adding & updating Ledgers
-export const updateLedger = (navigation, body) => {
+export const updateLedger = (body, onLedgerUpdated, onError) => {
     return (dispatch) => {
+        console.log('Body', body);
         dispatch({ type: UPDATE_LEDGER_REQUEST });
         return Api.post('/ledger/addUpdateLedger', body)
             .then(response => {
@@ -117,10 +118,12 @@ export const updateLedger = (navigation, body) => {
                     type: UPDATE_LEDGER_SUCCESS,
                     payload: response.data.data
                 });
+                onLedgerUpdated(response.data.message);
             })
             .catch(err => {
-                log('Error fetching Ledger', err);
+                log('Error updating Ledger', err);
                 dispatch({ type: UPDATE_LEDGER_FAIL });
+                onError();
             })
     }
 }

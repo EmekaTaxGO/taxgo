@@ -300,11 +300,24 @@ class AddProductScreen extends Component {
     }
 
     onSalesAccountClick = () => {
-        this.props.navigation.push('SelectLedgerScreen', {
-            onLedgerSelected: (item) => {
-                const label = `${item.nominalcode}-${item.laccount}`;
-                this.salesAccount = item;
-                setFieldValue(this.saleAccountRef, label);
+        // this.props.navigation.push('SelectLedgerScreen', {
+        //     onLedgerSelected: (item) => {
+        //         const label = `${item.nominalcode}-${item.laccount}`;
+        //         this.salesAccount = item;
+        //         setFieldValue(this.saleAccountRef, label);
+        //     }
+        // })
+        this.props.navigation.push('SaleLedgerScreen', {
+            onLedgerSelected: item => {
+                console.log('Selected Ledger:', item);
+            }
+        })
+    }
+
+    onPurchaseAccPress = () => {
+        this.props.navigation.push('PurchaseLedgerScreen', {
+            onLedgerSelected: item => {
+                console.log('Selected Ledger:', item);
             }
         })
     }
@@ -422,6 +435,8 @@ class AddProductScreen extends Component {
                 onSubmitEditing={() => { }} />
         </View>;
     }
+
+
     render() {
 
         const { types, selectedTypeIndex, vats, selectedVatIndex } = this.state;
@@ -583,15 +598,17 @@ class AddProductScreen extends Component {
                         editable={false}
                         ref={this.purchasePriceRef}
                         onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
-                    <TextField
-                        label='Purchase Acc.'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        editable={false}
-                        ref={this.purchaseAccRef}
-                        onSubmitEditing={() => { }} />
+                    <TouchableOpacity onPress={this.onPurchaseAccPress}>
+                        <TextField
+                            label='Purchase Acc.'
+                            keyboardType='default'
+                            returnKeyType='next'
+                            lineWidth={1}
+                            editable={false}
+                            ref={this.purchaseAccRef}
+                            onSubmitEditing={() => { }} />
 
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => this.setState({ showExpiryDateDialog: true })}>
                         <TextField
                             label='Expiry Date'

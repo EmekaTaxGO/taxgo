@@ -300,13 +300,6 @@ class AddProductScreen extends Component {
     }
 
     onSalesAccountClick = () => {
-        // this.props.navigation.push('SelectLedgerScreen', {
-        //     onLedgerSelected: (item) => {
-        //         const label = `${item.nominalcode}-${item.laccount}`;
-        //         this.salesAccount = item;
-        //         setFieldValue(this.saleAccountRef, label);
-        //     }
-        // })
         this.props.navigation.push('SaleLedgerScreen', {
             onLedgerSelected: item => {
                 console.log('Selected Ledger:', item);

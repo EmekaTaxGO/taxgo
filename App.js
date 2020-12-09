@@ -36,6 +36,7 @@ import ScanBarcodeScreen from './src/screens/ScanBarcodeScreen';
 import PurchaseLedgerScreen from './src/screens/PurchaseLedgerScreen';
 import SaleLedgerScreen from './src/screens/SaleLedgerScreen';
 import MyLedgerScreen from './src/screens/MyLedgerScreen';
+import BankAccountScreen from './src/screens/BankAccountScreen';
 
 const App = () => {
 
@@ -76,6 +77,7 @@ const App = () => {
       <Stack.Screen name='PurchaseLedgerScreen' component={PurchaseLedgerScreen} options={{ title: 'Purchase Ledger' }} />
       <Stack.Screen name='SaleLedgerScreen' component={SaleLedgerScreen} options={{ title: 'Sale Ledger' }} />
       <Stack.Screen name='MyLedgerScreen' component={MyLedgerScreen} options={{ title: 'My Ledger' }} />
+      <Stack.Screen name='BankAccountScreen' component={BankAccountScreen} options={{ title: 'Bank Account' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

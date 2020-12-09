@@ -67,8 +67,8 @@ class SaleLedgerScreen extends Component {
                     borderBottomWidth: 1,
                     paddingVertical: 18
                 }}>
-                    <Text style={{ color: 'black', fontSize: 16 }}>{item.name}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>{item.email}</Text>
+                    <Text style={{ color: 'black', fontSize: 16 }}>{item.category}</Text>
+                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>{item.categorygroup}</Text>
                 </View>
             </View>
         </TouchableOpacity>

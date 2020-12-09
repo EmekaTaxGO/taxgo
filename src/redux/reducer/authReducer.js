@@ -6,7 +6,10 @@ import {
     SIGN_UP_SUCCESS, LOGIN_FAIL,
     LOGIN_SUCCESS,
     LOGIN_REQUEST,
-    SAVE_AUTH
+    SAVE_AUTH,
+    CHANGE_PASSWORD_REQUEST,
+    CHANGE_PASSWORD_FAIL,
+    CHANGE_PASSWORD_SUCCESS
 } from "../../constants";
 
 
@@ -17,7 +20,9 @@ const initialState = {
     businesses: [],
 
     loading: false,
-    authData: null//User Info
+    authData: null,//User Info
+
+    updatingPassword: false
 }
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -56,7 +61,18 @@ const authReducer = (state = initialState, action) => {
         case SAVE_AUTH:
             return {
                 ...state, authData: action.payload
-            }
+            };
+        case CHANGE_PASSWORD_REQUEST:
+            return {
+                ...state,
+                updatingPassword: true
+            };
+        case CHANGE_PASSWORD_FAIL:
+        case CHANGE_PASSWORD_SUCCESS:
+            return {
+                ...state,
+                updatingPassword: false
+            };
         default:
             return state;
     }

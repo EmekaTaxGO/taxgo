@@ -92,7 +92,7 @@ const HomeScreen = ({ navigation }) => {
                 title: 'Ledger', drawerIcon: ({ color }) =>
                     <Ionicons name='ios-pencil-sharp' size={DRAWER_ICON_SIZE} color={color} />
             }} />
-        <Drawer.Screen name='Banking'
+        <Drawer.Screen name='BankFragment'
             component={BankStack}
             options={{
                 title: 'Banking', drawerIcon: ({ color }) =>

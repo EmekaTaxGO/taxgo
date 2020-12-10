@@ -28,9 +28,7 @@ class BankFragment extends Component {
         this.props.navigation.openDrawer();
     }
     onAddClick = () => {
-        this.props.navigation.navigate('UpdateUserScreen', {
-            title: 'Add User'
-        })
+        this.props.navigation.navigate('BankAccountScreen', {});
     }
 
     componentDidMount() {

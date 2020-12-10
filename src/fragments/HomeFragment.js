@@ -107,6 +107,9 @@ const HomeFragment = ({ navigation }) => {
             case 'sales':
                 navigation.push('PurchaseLedgerScreen');
                 break;
+            case 'banking':
+                switchDrawer('BankFragment');
+                break;
             default:
                 switchDrawer('HomeFragment');
                 break;

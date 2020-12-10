@@ -6,6 +6,7 @@ import ProductStack from '../components/drawerStack/ProductStack';
 import InvoiceStack from '../components/drawerStack/InvoiceStack';
 import HomeStack from '../components/drawerStack/HomeStack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { DRAWER_ICON_SIZE } from '../constants/appConstant';
@@ -17,6 +18,7 @@ import ContactStack from '../components/drawerStack/ContactStack';
 import JournalStack from '../components/drawerStack/JournalStack';
 import LedgerStack from '../components/drawerStack/LedgerStack';
 import UserStack from '../components/drawerStack/UserStack';
+import BankStack from '../components/drawerStack/BankStack';
 
 const HomeScreen = ({ navigation }) => {
 
@@ -90,7 +92,12 @@ const HomeScreen = ({ navigation }) => {
                 title: 'Ledger', drawerIcon: ({ color }) =>
                     <Ionicons name='ios-pencil-sharp' size={DRAWER_ICON_SIZE} color={color} />
             }} />
-
+        <Drawer.Screen name='BankFragment'
+            component={BankStack}
+            options={{
+                title: 'Banking', drawerIcon: ({ color }) =>
+                    <MaterialCommunityIcon name='bank' size={DRAWER_ICON_SIZE} color={color} />
+            }} />
         <Drawer.Screen name='UserFragment'
             component={UserStack}
             options={{

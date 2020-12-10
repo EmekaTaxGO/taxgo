@@ -118,7 +118,7 @@ export const updateLedger = (body, onLedgerUpdated, onError) => {
                     type: UPDATE_LEDGER_SUCCESS,
                     payload: response.data.data
                 });
-                onLedgerUpdated(response.data.message);
+                onLedgerUpdated(response.data);
             })
             .catch(err => {
                 log('Error updating Ledger', err);

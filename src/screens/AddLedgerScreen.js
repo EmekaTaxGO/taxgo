@@ -94,9 +94,9 @@ class AddLedgerScreen extends Component {
             category: getFieldValue(this.categoryRef),
             categorygroup: getFieldValue(this.catGroupRef),
             nominalcode: getFieldValue(this.codeRef),
-            userid: authData.id,
-            type: this.isEditMode() ? 2 : 1,
-            adminid: authData.id,
+            userid: `${authData.id}`,
+            type: `${this.isEditMode() ? 2 : 1}`,
+            adminid: `${authData.id}`,
             logintype: 'user'
         };
 
@@ -111,17 +111,19 @@ class AddLedgerScreen extends Component {
         }, 200);
     }
 
-    onLedgerUpdated = (message) => {
-        Alert.alert('Alert', message, [
+    onLedgerUpdated = (data) => {
+        Alert.alert('Alert', data.message, [
             {
                 style: 'default',
                 text: 'OK',
                 onPress: () => {
-                    this.props.navigation.goBack();
-                    this.props.route.params.onLedgerUpdated();
+                    if (data.status) {
+                        this.props.navigation.goBack();
+                        this.props.route.params.onLedgerUpdated();
+                    }
                 }
             }
-        ], { cancelable: false })
+        ], { cancelable: false });
     }
 
 

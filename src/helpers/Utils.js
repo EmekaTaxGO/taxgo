@@ -3,6 +3,7 @@ import { colorAccent, colorWhite } from "../theme/Color";
 import { exp } from "react-native-reanimated";
 import _default from "react-native-image-picker";
 import Snackbar from "react-native-snackbar";
+import { NO_INTERNET_ERROR, API_ERROR_MESSAGE } from "../constants/appConstant";
 
 export const openLink = (navigation, title, url) => {
     navigation.push('WebViewScreen', {
@@ -97,6 +98,18 @@ export const isClientError = err => {
 export const isServerError = err => {
     const { status } = err.response;
     return status >= 500;
+}
+
+export const getApiErrorMsg = err => {
+    if (err.response) {
+        if (isClientError(err)) {
+            return err.response.data.message;
+        } else {
+            return API_ERROR_MESSAGE;
+        }
+    } else {
+        return NO_INTERNET_ERROR;
+    }
 }
 
 export const showError = (message) => {

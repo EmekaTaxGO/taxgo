@@ -15,8 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 class MyLedgerTabItem extends Component {
 
     imageRadius = 30;
-    imageUrl = 'https://images.unsplash.com/photo-1462642109801-4ac2971a3a51?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGVkZ2VyfGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';
-
+    imageUrl = 'https://images.unsplash.com/photo-1571292098320-997aa03a5d19?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=294&q=80';
     constructor(props) {
         super(props);
         this.state = {

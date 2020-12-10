@@ -10,7 +10,10 @@ import {
     LOGIN_REQUEST,
     LOGIN_FAIL,
     LOGIN_SUCCESS,
-    SAVE_AUTH
+    SAVE_AUTH,
+    CHANGE_PASSWORD_SUCCESS,
+    CHANGE_PASSWORD_REQUEST,
+    CHANGE_PASSWORD_FAIL
 } from '../../constants';
 import {
     API_ERROR_MESSAGE,
@@ -111,6 +114,22 @@ export const signUp = (props, body) => {
                     Alert.alert('Alert', NO_INTERNET_ERROR);
                 }
 
+            })
+    }
+}
+
+export const changePassword = (body, onSuccess, onError) => {
+    return (dispatch) => {
+        dispatch({ type: CHANGE_PASSWORD_REQUEST });
+        Api.post('/user/changePassword', body)
+            .then(response => {
+                dispatch({ type: CHANGE_PASSWORD_SUCCESS });
+                onSuccess(response.data);
+            })
+            .catch(err => {
+                log('Error changing password', err);
+                onError(err);
+                dispatch({ type: CHANGE_PASSWORD_FAIL });
             })
     }
 }

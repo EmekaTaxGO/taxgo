@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, SafeAreaView, KeyboardAvoidingView, ScrollView, Text, Picker, View, Keyboard } from 'react-native';
+import { StyleSheet, SafeAreaView, KeyboardAvoidingView, ScrollView, Text, Picker, View, Keyboard, Alert } from 'react-native';
 import { connect } from 'react-redux';
 
 import * as bankActions from '../redux/actions/bankActions';
@@ -9,7 +9,7 @@ import { focusField, getFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
 import ProgressDialog from '../components/ProgressDialog';
-import { isEmpty, showError, isInteger, isFloat } from '../helpers/Utils';
+import { isEmpty, showError, isInteger, isFloat, getApiErrorMsg } from '../helpers/Utils';
 
 
 class BankAccountScreen extends Component {
@@ -107,7 +107,24 @@ class BankAccountScreen extends Component {
     }
 
     updateBankAccount = () => {
+        const { bankActions } = this.props;
+        const body = {};
+        bankActions.updateBankDetails(body, this.onUpdateSuccess, this.onUpdateError);
+    }
 
+    onUpdateSuccess = data => {
+        Alert.alert('Alert', data.message, [
+            {
+                style: 'default',
+                onPress: () => this.props.navigation.goBack(),
+                text: 'OK'
+            }
+        ], { cancelable: false });
+    }
+    onUpdateError = err => {
+        setTimeout(() => {
+            showError(getApiErrorMsg(err));
+        }, 200);
     }
 
     render() {

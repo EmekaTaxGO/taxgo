@@ -1,12 +1,12 @@
-import React, { Component, useLayoutEffect } from 'react';
+import React, { Component } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AppTab from '../components/AppTab';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { colorPrimary, colorAccent, bottomTabActiveColor, bottomTabInactiveColor, bottomTabBackgroundColor } from '../theme/Color';
-import SalesInvoiceList from '../components/invoices/SalesInvoiceList';
+import { colorAccent, bottomTabActiveColor, bottomTabInactiveColor, bottomTabBackgroundColor } from '../theme/Color';
+import PurchaseInvoiceList from '../components/invoices/PurchaseInvoiceList';
+import PurchaseCNList from '../components/invoices/PurchaseCNList';
 
 class PurchaseInvoiceFragment extends Component {
 
@@ -61,8 +61,6 @@ class PurchaseInvoiceFragment extends Component {
         })
     }
 
-
-    // Tab = createBottomTabNavigator();
     render() {
         const Tab = createBottomTabNavigator();
         return <Tab.Navigator
@@ -97,12 +95,12 @@ class PurchaseInvoiceFragment extends Component {
                 }
             }}>
             <Tab.Screen name='purchase'
-                component={SalesInvoiceList}
+                component={PurchaseInvoiceList}
                 options={{ title: 'Purchase' }}
                 listeners={{ tabPress: e => this._tab = 'purchase' }} />
 
             <Tab.Screen name='C.Note'
-                component={SalesInvoiceList}
+                component={PurchaseCNList}
                 options={{ title: 'c_note' }}
                 listeners={{ tabPress: e => this._tab = 'c_note' }} />
         </Tab.Navigator>

@@ -10,7 +10,7 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-class SalesCNList extends Component {
+class PurchaseInvoiceList extends Component {
     constructor(props) {
         super(props);
         const invoices = this.createInvoices();
@@ -26,7 +26,7 @@ class SalesCNList extends Component {
         return [
             {
                 id: 1,
-                item_name: 'Credit Note',
+                item_name: 'Purchase Invoice',
                 customer_name: 'Customer',
                 due_date: '25 sep, 2006'
             },
@@ -140,11 +140,7 @@ class SalesCNList extends Component {
             cornerRadius={6}
             style={styles.hiddenCard}>
             <View style={{ flexDirection: 'row' }}>
-                <View style={{ flex: 1 }}>
-                    {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
-                </View>
-                {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
-                {this.hiddenElement('Delete', 'delete', 'red', () => this.onDeleteClick(data))}
+                {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
             </View>
         </CardView>
     }
@@ -175,7 +171,6 @@ class SalesCNList extends Component {
                 renderItem={(data, rowMap) => this.renderListItem(data, rowMap)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}
-                rightOpenValue={-140}
             />
         </View>
     }
@@ -203,4 +198,4 @@ export default connect(
     dispatch => ({
         invoiceActions: bindActionCreators(invoiceActions, dispatch)
     })
-)(SalesCNList);
+)(PurchaseInvoiceList);

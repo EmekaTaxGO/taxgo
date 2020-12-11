@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { View, StyleSheet, FlatList, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import SearchView from '../SearchView';
@@ -9,6 +9,11 @@ import { colorAccent } from '../../theme/Color';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import FullScreenError from '../../components/FullScreenError';
+import EmptyView from '../../components/EmptyView';
+import OnScreenSpinner from '../../components/OnScreenSpinner';
+import { isEmpty } from '../../helpers/Utils';
+import PureElement from '../PureElement';
 
 class SalesInvoiceList extends Component {
     constructor(props) {
@@ -73,9 +78,15 @@ class SalesInvoiceList extends Component {
         this.props.navigation.openDrawer();
     }
 
-    componentDidMount() {
-        console.log('Props:', this.isSaleInvoice());
 
+
+    componentDidMount() {
+        this.fetchSalesInvoice();
+    }
+
+    fetchSalesInvoice = () => {
+        const { invoiceActions } = this.props;
+        invoiceActions.getSalesInvoiceList();
     }
 
     isSaleInvoice = () => {
@@ -94,9 +105,9 @@ class SalesInvoiceList extends Component {
             style={styles.card}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text>{item.item_name}</Text>
-                    <Text>{item.customer_name}</Text>
-                    <Text>Due: {item.due_date}</Text>
+                    <Text>{item.invoiceno}</Text>
+                    <Text>{item.type}</Text>
+                    <Text>Total: {item.total}</Text>
                 </View>
 
             </View>
@@ -134,7 +145,6 @@ class SalesInvoiceList extends Component {
     }
 
     renderHiddenItem = (data) => {
-
         return <CardView
             cardElevation={0}
             cornerRadius={6}
@@ -145,8 +155,35 @@ class SalesInvoiceList extends Component {
         </CardView>
     }
 
+    listdata = () => {
+        if (isEmpty(this.state.query)) {
+            return this.props.invoice.salesInvoiceList;
+        } else {
+            console.log('Loop Running');
+            return this.filteredInvoices();
+        }
+    }
+
+    filteredInvoices = () => {
+        let filteredInvoices = [];
+        filteredInvoices = this.props.invoice.salesInvoiceList.filter(value =>
+            value.invoiceno.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        );
+        return filteredInvoices;
+    }
+
     render() {
+        console.log('Rendering SalesInvoice List');
         const { invoice } = this.props;
+        if (invoice.fetchingSalesInvoice) {
+            return <OnScreenSpinner />
+        }
+        if (invoice.fetchSalesInvoiceError) {
+            return <FullScreenError tryAgainClick={this.fetchSalesInvoice} />
+        }
+        if (invoice.salesInvoiceList.length === 0) {
+            return <EmptyView message='No Invoice Available' iconName='hail' />
+        }
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
@@ -167,7 +204,7 @@ class SalesInvoiceList extends Component {
                 <Text style={{ color: 'gray' }}>All</Text>
             </View>
             <SwipeListView
-                data={this.state.filteredInvoices}
+                data={this.listdata()}
                 renderItem={(data, rowMap) => this.renderListItem(data, rowMap)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}

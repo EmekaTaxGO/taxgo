@@ -9,64 +9,18 @@ import { colorAccent } from '../../theme/Color';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import OnScreenSpinner from '../OnScreenSpinner';
+import FullScreenError from '../FullScreenError';
+import EmptyView from '../EmptyView';
+import { isEmpty } from '../../helpers/Utils';
 
 class SalesCNList extends Component {
     constructor(props) {
         super(props);
-        const invoices = this.createInvoices();
         this.state = {
             query: '',
-            invoices: invoices,
-            filteredInvoices: invoices,
             allChecked: false
         }
-    }
-
-    createInvoices = () => {
-        return [
-            {
-                id: 1,
-                item_name: 'Credit Note',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 2,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 3,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 4,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 5,
-                item_name: 'Item1-General',
-                customer_name: 'Customer Name',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 6,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 7,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            }
-        ]
     }
 
     onMenuPress = () => {
@@ -74,12 +28,12 @@ class SalesCNList extends Component {
     }
 
     componentDidMount() {
-        
-
+        this.fetchSalesInvoice();
     }
 
-    isSaleInvoice = () => {
-        return this.props.route.name === 'sales';
+    fetchSalesInvoice = () => {
+        const { invoiceActions } = this.props;
+        invoiceActions.getSalesCNInvoiceList();
     }
 
     onSearchQueryChange = q => {
@@ -94,9 +48,9 @@ class SalesCNList extends Component {
             style={styles.card}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text>{item.item_name}</Text>
-                    <Text>{item.customer_name}</Text>
-                    <Text>Due: {item.due_date}</Text>
+                    <Text>{item.invoiceno}</Text>
+                    <Text>{item.type}</Text>
+                    <Text>Total: {item.total}</Text>
                 </View>
 
             </View>
@@ -149,8 +103,33 @@ class SalesCNList extends Component {
         </CardView>
     }
 
+    listdata = () => {
+        if (isEmpty(this.state.query)) {
+            return this.props.invoice.salesCNInvoiceList;
+        } else {
+            return this.filteredInvoices();
+        }
+    }
+
+    filteredInvoices = () => {
+        let filteredInvoices = [];
+        filteredInvoices = this.props.invoice.salesCNInvoiceList.filter(value =>
+            value.invoiceno.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        );
+        return filteredInvoices;
+    }
+
     render() {
         const { invoice } = this.props;
+        if (invoice.fetchingSalesCNInvoice) {
+            return <OnScreenSpinner />
+        }
+        if (invoice.fetchSalesCNInvoiceError) {
+            return <FullScreenError tryAgainClick={this.fetchSalesInvoice} />
+        }
+        if (invoice.salesCNInvoiceList.length === 0) {
+            return <EmptyView message='No Invoice Credit Note Available' iconName='hail' />
+        }
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
@@ -161,17 +140,18 @@ class SalesCNList extends Component {
                 <Text style={{
                     flex: 1,
                     fontSize: 13,
-                    color: 'gray'
-                }}>{this.isSaleInvoice() ? 'Sales Invoice' : 'Invoices'}</Text>
-                <CheckBox
+                    color: 'gray',
+                    textTransform: 'uppercase'
+                }}>Sales Credit-Invoices</Text>
+                {/* <CheckBox
                     tintColors={{ true: colorAccent, false: 'gray' }}
                     style={{ borderColor: colorAccent }}
                     value={this.state.allChecked}
                     onValueChange={checked => this.setState({ allChecked: checked })} />
-                <Text style={{ color: 'gray' }}>All</Text>
+                <Text style={{ color: 'gray' }}>All</Text> */}
             </View>
             <SwipeListView
-                data={this.state.filteredInvoices}
+                data={this.listdata()}
                 renderItem={(data, rowMap) => this.renderListItem(data, rowMap)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}

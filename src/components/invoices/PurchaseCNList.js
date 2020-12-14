@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { View, StyleSheet, FlatList, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import SearchView from '../SearchView';
@@ -9,76 +9,33 @@ import { colorAccent } from '../../theme/Color';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import FullScreenError from '../../components/FullScreenError';
+import EmptyView from '../../components/EmptyView';
+import OnScreenSpinner from '../../components/OnScreenSpinner';
+import { isEmpty } from '../../helpers/Utils'
 
 class PurchaseCNList extends Component {
     constructor(props) {
         super(props);
-        const invoices = this.createInvoices();
         this.state = {
             query: '',
-            invoices: invoices,
-            filteredInvoices: invoices,
             allChecked: false
         }
-    }
-
-    createInvoices = () => {
-        return [
-            {
-                id: 1,
-                item_name: 'Purchase CN',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 2,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 3,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 4,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 5,
-                item_name: 'Item1-General',
-                customer_name: 'Customer Name',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 6,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 7,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            }
-        ]
     }
 
     onMenuPress = () => {
         this.props.navigation.openDrawer();
     }
 
+
+
     componentDidMount() {
-        
+        this.fetchPurchaseInvoice();
     }
 
-    isSaleInvoice = () => {
-        return this.props.route.name === 'sales';
+    fetchPurchaseInvoice = () => {
+        const { invoiceActions } = this.props;
+        invoiceActions.getPurchaseCNInvoiceList();
     }
 
     onSearchQueryChange = q => {
@@ -93,9 +50,9 @@ class PurchaseCNList extends Component {
             style={styles.card}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text>{item.item_name}</Text>
-                    <Text>{item.customer_name}</Text>
-                    <Text>Due: {item.due_date}</Text>
+                    <Text>{item.invoiceno}</Text>
+                    <Text>{item.type}</Text>
+                    <Text>Total: {item.total}</Text>
                 </View>
 
             </View>
@@ -133,19 +90,47 @@ class PurchaseCNList extends Component {
     }
 
     renderHiddenItem = (data) => {
-
         return <CardView
             cardElevation={0}
             cornerRadius={6}
             style={styles.hiddenCard}>
             <View style={{ flexDirection: 'row' }}>
-                {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
+                <View style={{ flex: 1 }}>
+                    {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
+                </View>
+                {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
+                {this.hiddenElement('Delete', 'delete', 'red', () => this.onDeleteClick(data))}
             </View>
         </CardView>
     }
 
+    listdata = () => {
+        if (isEmpty(this.state.query)) {
+            return this.props.invoice.purchaseCNInvoiceList;
+        } else {
+            return this.filteredInvoices();
+        }
+    }
+
+    filteredInvoices = () => {
+        let filteredInvoices = [];
+        filteredInvoices = this.props.invoice.purchaseCNInvoiceList.filter(value =>
+            value.invoiceno.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        );
+        return filteredInvoices;
+    }
+
     render() {
         const { invoice } = this.props;
+        if (invoice.fetchingPurchaseCNInvoice) {
+            return <OnScreenSpinner />
+        }
+        if (invoice.fetchPurchaseCNInvoiceError) {
+            return <FullScreenError tryAgainClick={this.fetchPurchaseInvoice} />
+        }
+        if (invoice.purchaseCNInvoiceList.length === 0) {
+            return <EmptyView message='No Invoice Available' iconName='hail' />
+        }
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
@@ -156,20 +141,22 @@ class PurchaseCNList extends Component {
                 <Text style={{
                     flex: 1,
                     fontSize: 13,
-                    color: 'gray'
-                }}>{this.isSaleInvoice() ? 'Sales Invoice' : 'Invoices'}</Text>
-                <CheckBox
+                    color: 'gray',
+                    textTransform: 'uppercase'
+                }}>Purchase Credit-Notes</Text>
+                {/* <CheckBox
                     tintColors={{ true: colorAccent, false: 'gray' }}
                     style={{ borderColor: colorAccent }}
                     value={this.state.allChecked}
                     onValueChange={checked => this.setState({ allChecked: checked })} />
-                <Text style={{ color: 'gray' }}>All</Text>
+                <Text style={{ color: 'gray' }}>All</Text> */}
             </View>
             <SwipeListView
-                data={this.state.filteredInvoices}
+                data={this.listdata()}
                 renderItem={(data, rowMap) => this.renderListItem(data, rowMap)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}
+                rightOpenValue={-140}
             />
         </View>
     }

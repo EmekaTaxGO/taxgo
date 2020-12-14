@@ -12,66 +12,15 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import FullScreenError from '../../components/FullScreenError';
 import EmptyView from '../../components/EmptyView';
 import OnScreenSpinner from '../../components/OnScreenSpinner';
-import { isEmpty } from '../../helpers/Utils';
-import PureElement from '../PureElement';
+import { isEmpty } from '../../helpers/Utils'
 
 class SalesInvoiceList extends Component {
     constructor(props) {
         super(props);
-        const invoices = this.createInvoices();
         this.state = {
             query: '',
-            invoices: invoices,
-            filteredInvoices: invoices,
             allChecked: false
         }
-    }
-
-    createInvoices = () => {
-        return [
-            {
-                id: 1,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 2,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 3,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 4,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 5,
-                item_name: 'Item1-General',
-                customer_name: 'Customer Name',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 6,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            },
-            {
-                id: 7,
-                item_name: 'Item1-General',
-                customer_name: 'Customer',
-                due_date: '25 sep, 2006'
-            }
-        ]
     }
 
     onMenuPress = () => {
@@ -87,10 +36,6 @@ class SalesInvoiceList extends Component {
     fetchSalesInvoice = () => {
         const { invoiceActions } = this.props;
         invoiceActions.getSalesInvoiceList();
-    }
-
-    isSaleInvoice = () => {
-        return this.props.route.name === 'sales';
     }
 
     onSearchQueryChange = q => {
@@ -159,7 +104,6 @@ class SalesInvoiceList extends Component {
         if (isEmpty(this.state.query)) {
             return this.props.invoice.salesInvoiceList;
         } else {
-            console.log('Loop Running');
             return this.filteredInvoices();
         }
     }
@@ -173,7 +117,6 @@ class SalesInvoiceList extends Component {
     }
 
     render() {
-        console.log('Rendering SalesInvoice List');
         const { invoice } = this.props;
         if (invoice.fetchingSalesInvoice) {
             return <OnScreenSpinner />
@@ -194,14 +137,15 @@ class SalesInvoiceList extends Component {
                 <Text style={{
                     flex: 1,
                     fontSize: 13,
-                    color: 'gray'
-                }}>{this.isSaleInvoice() ? 'Sales Invoice' : 'Invoices'}</Text>
-                <CheckBox
+                    color: 'gray',
+                    textTransform: 'uppercase'
+                }}>Sales Invoices</Text>
+                {/* <CheckBox
                     tintColors={{ true: colorAccent, false: 'gray' }}
                     style={{ borderColor: colorAccent }}
                     value={this.state.allChecked}
                     onValueChange={checked => this.setState({ allChecked: checked })} />
-                <Text style={{ color: 'gray' }}>All</Text>
+                <Text style={{ color: 'gray' }}>All</Text> */}
             </View>
             <SwipeListView
                 data={this.listdata()}

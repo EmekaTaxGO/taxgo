@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colorAccent, bottomTabActiveColor, bottomTabInactiveColor, bottomTabBackgroundColor } from '../theme/Color';
+import SalesCNList from '../components/invoices/SalesCNList';
+import SalesInvoiceList from '../components/invoices/SalesInvoiceList';
 import PurchaseInvoiceList from '../components/invoices/PurchaseInvoiceList';
 import PurchaseCNList from '../components/invoices/PurchaseCNList';
 
@@ -21,10 +23,10 @@ class PurchaseInvoiceFragment extends Component {
     }
 
     onAddClick = () => {
-        this.showDialogToAddPurchases();
+        this.showDialogToAddPurchase();
     }
 
-    launchAddInvoice = (mode = 'add', creditNote = false, invoiceType = 'sales') => {
+    launchAddInvoice = (mode = 'add', creditNote = false, invoiceType = 'purchase') => {
         this.props.navigation.navigate('AddInvoiceScreen', {
             info: {
                 mode: mode,
@@ -33,12 +35,11 @@ class PurchaseInvoiceFragment extends Component {
             }
         });
     }
-
-    showDialogToAddPurchases = () => {
+    showDialogToAddPurchase = () => {
         const items = ['Purchase Invoice', 'Purchase Credit Notes'];
         showSingleSelectAlert('New Purchase', items,
             index => {
-                this.launchAddInvoice('add', index === 1, 'purchase');
+                this.launchAddInvoice('add', index === 1);
             })
     }
 
@@ -61,6 +62,8 @@ class PurchaseInvoiceFragment extends Component {
         })
     }
 
+
+    // Tab = createBottomTabNavigator();
     render() {
         const Tab = createBottomTabNavigator();
         return <Tab.Navigator
@@ -68,7 +71,7 @@ class PurchaseInvoiceFragment extends Component {
 
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
-                    if (route.name === 'purchase') {
+                    if (route.name === 'sales') {
                         iconName = 'shopping-cart';
                     } else {
                         iconName = 'description';
@@ -99,9 +102,9 @@ class PurchaseInvoiceFragment extends Component {
                 options={{ title: 'Purchase' }}
                 listeners={{ tabPress: e => this._tab = 'purchase' }} />
 
-            <Tab.Screen name='C.Note'
+            <Tab.Screen name='c_note'
                 component={PurchaseCNList}
-                options={{ title: 'c_note' }}
+                options={{ title: 'C.Note' }}
                 listeners={{ tabPress: e => this._tab = 'c_note' }} />
         </Tab.Navigator>
     }

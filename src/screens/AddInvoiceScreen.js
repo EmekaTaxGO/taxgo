@@ -8,6 +8,7 @@ import { TextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { DATE_FORMAT } from '../constants/appConstant';
+import { setFieldValue } from '../helpers/TextFieldHelpers';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -15,15 +16,20 @@ class AddInvoiceScreen extends Component {
         this.state = {
             selectedTab: 'supplier',
             showInvDatePicker: false,
-            invDate: new Date(),
+            invDate: undefined,
 
             showDueDatePicker: false,
-            dueDate: new Date()
+            dueDate: undefined
         }
     }
-
     _customer = '';
-    _invDate = '';
+
+    customerRef = React.createRef();
+    invoiceDateRef = React.createRef();
+    dueDateRef = React.createRef();
+    invoiceAddressRef = React.createRef();
+    deliveryAddressRef = React.createRef();
+    termsRef = React.createRef();
 
 
     componentDidMount() {
@@ -85,12 +91,27 @@ class AddInvoiceScreen extends Component {
         </TouchableHighlight>
     }
 
+    formattedDate = date => {
+        return date ? moment(date).format(DATE_FORMAT) : '';
+    }
+
     onInvDateChanged = (event, selectedDate) => {
         const currentDate = selectedDate || this.state.invDate;
-        this._invDate = moment(currentDate).format(DATE_FORMAT);
         this.setState({
             invDate: currentDate,
             showInvDatePicker: false
+        }, () => {
+            setFieldValue(this.invoiceDateRef, this.formattedDate(currentDate));
+        });
+    }
+
+    onDueDateChanged = (event, selectedDate) => {
+        const currentDate = selectedDate || this.state.dueDate;
+        this.setState({
+            dueDate: currentDate,
+            showDueDatePicker: false
+        }, () => {
+            setFieldValue(this.dueDateRef, this.formattedDate(currentDate));
         });
     }
 
@@ -102,6 +123,7 @@ class AddInvoiceScreen extends Component {
                     keyboardType='default'
                     returnKeyType='done'
                     lineWidth={1}
+                    ref={this.customerRef}
                     value={this._customer}
                     onChangeText={text => this._customer = text}
                     onSubmitEditing={() => { }} />
@@ -112,16 +134,36 @@ class AddInvoiceScreen extends Component {
                         returnKeyType='done'
                         editable={false}
                         lineWidth={1}
-                        value={this._invDate}
-                        onChangeText={text => this._customer = text}
+                        ref={this.invoiceDateRef}
+                        value={this.formattedDate(this.state.invDate)}
                         onSubmitEditing={() => { }} />
                 </TouchableOpacity>
                 {this.state.showInvDatePicker ? <DateTimePicker
-                    value={this.state.invDate}
+                    value={this.state.invDate ? this.state.invDate : new Date()}
                     mode={'datetime'}
                     display='default'
                     maximumDate={new Date()}
                     onChange={this.onInvDateChanged}
+                /> : null}
+
+                {/* Due Date */}
+                <TouchableOpacity onPress={() => this.setState({ showDueDatePicker: true })}>
+                    <TextField
+                        label='Due Date'
+                        keyboardType='default'
+                        returnKeyType='done'
+                        editable={false}
+                        lineWidth={1}
+                        ref={this.dueDateRef}
+                        value={this.formattedDate(this.state.dueDate)}
+                        onSubmitEditing={() => { }} />
+                </TouchableOpacity>
+                {this.state.showDueDatePicker ? <DateTimePicker
+                    value={this.state.dueDate ? this.state.dueDate : new Date()}
+                    mode={'datetime'}
+                    display='default'
+                    maximumDate={new Date()}
+                    onChange={this.onDueDateChanged}
                 /> : null}
 
             </View>

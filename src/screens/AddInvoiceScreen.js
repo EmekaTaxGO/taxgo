@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -19,10 +19,19 @@ class AddInvoiceScreen extends Component {
             invDate: undefined,
 
             showDueDatePicker: false,
-            dueDate: undefined
+            dueDate: undefined,
+
+            issuedcats: ['Issued', 'Yes', 'No'],
+            selectedIssuedCatIndex: 0,
+
+            invoiceAddress: '',
+            deliveryAddress: '',
+            termsCondition: '',
+            notes: ''
         }
     }
     _customer = '';
+    _invoiceAddress = '';
 
     customerRef = React.createRef();
     invoiceDateRef = React.createRef();
@@ -115,18 +124,47 @@ class AddInvoiceScreen extends Component {
         });
     }
 
+    onCustomerPress = () => {
+        const screen = this.isSalesInvoice() ? 'SelectCustomerScreen' : 'SelectSupplierScreen';
+        this.props.navigation.push(screen, {
+            onCustomerSelected: item => {
+                this.setState({
+                    invoiceAddress: item.address,
+                    deliveryAddress: item.address
+                }, () => {
+                    setFieldValue(this.customerRef, item.name);
+                })
+            },
+            onSupplierSelected: item => {
+                this.setState({ notes: item.notes }, () => {
+                    setFieldValue(this.customerRef, item.name);
+                })
+            }
+        });
+    }
+
     renderSupplierContainer = () => {
-        return <ScrollView style={{ flex: 1, flexDirection: 'column' }}>
+
+        const issuedCat = this.state.issuedcats[this.state.selectedIssuedCatIndex];
+        const isSaleInvoice = this.isSalesInvoice();
+        return <ScrollView style={{
+            flex: 1,
+            flexDirection: 'column'
+        }}>
             <View style={{ paddingHorizontal: 16 }}>
-                <TextField
-                    label='Customer'
-                    keyboardType='default'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    ref={this.customerRef}
-                    value={this._customer}
-                    onChangeText={text => this._customer = text}
-                    onSubmitEditing={() => { }} />
+                <TouchableOpacity onPress={this.onCustomerPress}>
+                    <TextField
+                        label={isSaleInvoice ? 'Customer' : 'Supplier'}
+                        keyboardType='default'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        ref={this.customerRef}
+                        value={this._customer}
+                        editable={false}
+                        onChangeText={text => this._customer = text}
+                        onSubmitEditing={() => { }} />
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => this.setState({ showInvDatePicker: true })}>
                     <TextField
                         label='Invoice Date'
@@ -165,8 +203,56 @@ class AddInvoiceScreen extends Component {
                     maximumDate={new Date()}
                     onChange={this.onDueDateChanged}
                 /> : null}
-
             </View>
+            {isSaleInvoice ? <View style={{ flexDirection: 'column' }}>
+                <Text style={{
+                    color: 'gray',
+                    fontSize: 16,
+                    paddingLeft: 16,
+                    paddingTop: 20
+                }}>Status</Text>
+                <Picker
+                    style={{ marginHorizontal: 12 }}
+                    selectedValue={issuedCat}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedIssuedCatIndex: itemIndex })}>
+                    {this.state.issuedcats.map((value, index) => <Picker.Item
+                        label={value} value={value} key={`${index}`} />)}
+                </Picker>
+            </View> : null}
+
+            {isSaleInvoice ? <View style={{
+                paddingHorizontal: 16,
+                flexDirection: 'column',
+                paddingBottom: 16
+            }}>
+                <Text style={styles.textAreaLabel}>Invoice Address</Text>
+                <TextInput
+                    style={[styles.textAreaStyle, { marginTop: 12 }]}
+                    multiline={true}
+                    numberOfLines={4}
+                    value={this.state.invoiceAddress}
+                    onChangeText={text => this.setState({ invoiceAddress: text })}
+                />
+
+                <Text style={[styles.textAreaLabel, { marginTop: 40 }]}>Delivery Address</Text>
+                <TextInput
+                    style={[styles.textAreaStyle, { marginTop: 12 }]}
+                    multiline={true}
+                    numberOfLines={4}
+                    value={this.state.deliveryAddress}
+                    onChangeText={text => this.setState({ deliveryAddress: text })}
+                />
+
+                <Text style={[styles.textAreaLabel, { marginTop: 40 }]}>{'Terms & Conditions'}</Text>
+                <TextInput
+                    style={[styles.textAreaStyle, { marginTop: 12 }]}
+                    multiline={true}
+                    numberOfLines={4}
+                    value={this.state.termsCondition}
+                    onChangeText={text => this.setState({ termsCondition: text })}
+                />
+            </View> : null}
         </ScrollView>
     }
     renderProductContainer = () => {
@@ -177,7 +263,7 @@ class AddInvoiceScreen extends Component {
 
     renderTabs = () => {
         const selected = this.state.selectedTab;
-        const customerLabel = this.isSalesInvoice() ? 'Supplier' : 'Customer';
+        const customerLabel = this.isSalesInvoice() ? 'Customer' : 'Supplier';
         return <View style={{ width: '100%', flexDirection: 'row' }}>
             {this.tabComponent(customerLabel, 'user-circle', 'FontAwesome5Icon',
                 selected === 'supplier', () => this.selectTab('supplier'))}
@@ -192,7 +278,7 @@ class AddInvoiceScreen extends Component {
     render() {
 
         const selected = this.state.selectedTab;
-        return <SafeAreaView style={{ flex: 1 }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>
 
@@ -205,6 +291,21 @@ class AddInvoiceScreen extends Component {
     }
 };
 const styles = StyleSheet.create({
-
+    textAreaStyle: {
+        backgroundColor: '#f1f1f1',
+        borderColor: '#e5e5e5',
+        borderRadius: 8,
+        borderWidth: 1,
+        textAlignVertical: 'top',
+        paddingHorizontal: 12,
+        fontSize: 16,
+        color: 'black',
+        height: 100
+    },
+    textAreaLabel: {
+        fontSize: 17,
+        color: 'black',
+        marginTop: 12
+    }
 });
 export default AddInvoiceScreen;

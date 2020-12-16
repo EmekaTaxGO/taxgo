@@ -3,120 +3,23 @@ import { View, TouchableOpacity, StyleSheet, Platform, ActionSheetIOS, FlatList,
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SearchView from '../components/SearchView';
 
+import * as journalActions from '../redux/actions/journalActions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import EmptyView from '../components/EmptyView';
+import { isEmpty } from '../helpers/Utils';
+
 class JournalFragment extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            query: '',
-            journals: this.createJournals()
+            query: ''
         }
     }
 
-    createJournals = () => {
-        return [
-            {
-                title: 'Journal1 lkewf erwfkljer ferkljfklre jflerkjg reklgj relkgj relkgj relgk erjklg',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal2',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal3',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal4',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal5',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal6',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal7',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal8',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal9',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal10',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal11',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal12',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal13',
-                count: 1000,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal14',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal15',
-                count: 1000,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal16',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal17',
-                count: 1000,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal18',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal19',
-                count: 100,
-                date: '2020-10-06'
-            },
-            {
-                title: 'Journal20',
-                count: 1000,
-                date: '2020-10-06'
-            }
-        ]
-    }
     onMenuPress = () => {
         this.props.navigation.openDrawer();
     }
@@ -138,9 +41,11 @@ class JournalFragment extends Component {
                 </TouchableOpacity>
             }
         })
+
+        this.fetchMyJournal();
     }
 
-    listItem = (item, index) => {
+    listItem = ({ item, index }) => {
         return <View style={{
             flexDirection: 'row',
             justifyContent: 'center',
@@ -150,7 +55,7 @@ class JournalFragment extends Component {
                 width: 60,
                 height: 60,
                 borderRadius: 30,
-                backgroundColor: 'blue',
+                backgroundColor: '#023380',
                 marginLeft: 16,
                 marginVertical: 12,
                 alignItems: 'center',
@@ -167,16 +72,49 @@ class JournalFragment extends Component {
                 borderColor: 'lightgray',
                 paddingVertical: 12
             }}>
-                <Text style={styles.textStyle}>{item.title}</Text>
-                <Text style={[styles.textStyle, { marginTop: 4 }]}>{item.count}</Text>
+                <Text style={styles.textStyle}>{item.description}</Text>
+                <Text style={[styles.textStyle, { marginTop: 4 }]}>{item.total}</Text>
                 <Text style={[styles.textStyle, { marginTop: 4 }]}>{item.date}</Text>
             </View>
         </View>
     }
 
-    render() {
+    fetchMyJournal = () => {
+        const { journalActions } = this.props;
+        journalActions.getMyJournals();
+    }
 
-        return <View style={{ flex: 1 }}>
+    listData = () => {
+        if (isEmpty(this.state.query)) {
+            return this.props.journal.myJournalList;
+        } else {
+            return this.filteredJournals();
+        }
+    }
+    filteredJournals = () => {
+        let filteredJournals = [];
+        filteredJournals = this.props.journal.myJournalList.filter(value => {
+            return value.description.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        });
+        return filteredJournals;
+    }
+
+    render() {
+        // fetchingMyJournal: false,
+        // fetchMyJournalError: undefined,
+        // myJournalList: []
+        const { journal } = this.props;
+        if (journal.fetchingMyJournal) {
+            return <OnScreenSpinner />
+        }
+        if (journal.fetchMyJournalError) {
+            return <FullScreenError tryAgainClick={this.fetchMyJournal} />
+        }
+        if (journal.myJournalList.length === 0) {
+            return <EmptyView message='No Journal Available.'
+                iconName='description' />
+        }
+        return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
                 onChangeQuery={q => this.setState({ query: q })}
@@ -184,9 +122,9 @@ class JournalFragment extends Component {
                 placeholder='Search Journals' />
 
             <FlatList
-                data={this.state.journals}
-                renderItem={({ item, index }) => this.listItem(item, index)}
-                keyExtractor={(item, index) => index}
+                data={this.listData()}
+                renderItem={this.listItem}
+                keyExtractor={(item, index) => `${index}`}
             />
         </View >
     }
@@ -205,4 +143,11 @@ const styles = StyleSheet.create({
         paddingRight: 12
     }
 });
-export default JournalFragment;
+export default connect(
+    state => ({
+        journal: state.journal
+    }),
+    dispatch => ({
+        journalActions: bindActionCreators(journalActions, dispatch)
+    })
+)(JournalFragment);

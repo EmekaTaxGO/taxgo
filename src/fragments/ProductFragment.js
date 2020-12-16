@@ -23,68 +23,6 @@ class ProductFragment extends Component {
         }
     }
 
-    products = [{
-        image: 'http://image.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock1',
-        description: 'First Stock'
-
-    }, {
-        image: undefined,
-        name: 'Stock kjldnf ewikjlf ewrfre wfrlkerwjr ferwlf ',
-        itemId: 'Stock2 kjewfhr efrekj ergjktrg trkg etjker fijerjf erfg reilerjlkferj ',
-        description: 'First Stock wkjdfher fre fkrekfljerk fjerf ergfioerg regjo gitrgi tr'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock3',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock4',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock5',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }];
-
     onMenuPress = () => {
         this.props.navigation.openDrawer();
     }

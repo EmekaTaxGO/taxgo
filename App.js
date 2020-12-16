@@ -37,6 +37,8 @@ import PurchaseLedgerScreen from './src/screens/PurchaseLedgerScreen';
 import SaleLedgerScreen from './src/screens/SaleLedgerScreen';
 import MyLedgerScreen from './src/screens/MyLedgerScreen';
 import BankAccountScreen from './src/screens/BankAccountScreen';
+import SelectCustomerScreen from './src/screens/SelectCustomerScreen';
+import SelectProductScreen from './src/screens/SelectProductScreen';
 
 const App = () => {
 
@@ -73,11 +75,13 @@ const App = () => {
       <Stack.Screen name='AddInvoiceScreen' component={AddInvoiceScreen} options={{ title: 'Add Invoice' }} />
       <Stack.Screen name='ViewProductInfoScreen' component={ViewProductInfoScreen} options={{ title: 'Product Info' }} />
       <Stack.Screen name='SelectSupplierScreen' component={SelectSupplierScreen} options={{ title: 'Select Supplier' }} />
+      <Stack.Screen name='SelectCustomerScreen' component={SelectCustomerScreen} options={{ title: 'Select Customer' }} />
       <Stack.Screen name='ScanBarcodeScreen' component={ScanBarcodeScreen} options={{ title: 'Scan QR' }} />
       <Stack.Screen name='PurchaseLedgerScreen' component={PurchaseLedgerScreen} options={{ title: 'Purchase Ledger' }} />
       <Stack.Screen name='SaleLedgerScreen' component={SaleLedgerScreen} options={{ title: 'Sale Ledger' }} />
       <Stack.Screen name='MyLedgerScreen' component={MyLedgerScreen} options={{ title: 'My Ledger' }} />
       <Stack.Screen name='BankAccountScreen' component={BankAccountScreen} options={{ title: 'Bank Account' }} />
+      <Stack.Screen name='SelectProductScreen' component={SelectProductScreen} options={{ title: 'Select Product' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

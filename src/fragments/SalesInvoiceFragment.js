@@ -4,11 +4,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AppTab from '../components/AppTab';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
-import InvoiceList from '../components/invoices/InvoiceList';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colorPrimary, colorAccent, bottomTabActiveColor, bottomTabInactiveColor, bottomTabBackgroundColor } from '../theme/Color';
+import SalesInvoiceStack from '../components/drawerStack/SalesInvoiceStack';
+import SalesCNList from '../components/invoices/SalesCNList';
+import SalesInvoiceList from '../components/invoices/SalesInvoiceList';
 
-class InvoiceFragment extends Component {
+class SalesInvoiceFragment extends Component {
 
     _tab = 'sales';
     constructor(props) {
@@ -21,11 +23,7 @@ class InvoiceFragment extends Component {
     }
 
     onAddClick = () => {
-        if (this._tab === 'sales') {
-            this.showDialogToAddSales();
-        } else {
-            this.showDialogToAddPurchases();
-        }
+        this.showDialogToAddSales();
     }
 
     launchAddInvoice = (mode = 'add', creditNote = false, invoiceType = 'sales') => {
@@ -43,13 +41,6 @@ class InvoiceFragment extends Component {
             index => {
                 console.log('Sales Added!');
                 this.launchAddInvoice('add', index === 1);
-            })
-    }
-    showDialogToAddPurchases = () => {
-        const items = ['Purchase Invoice', 'Purchase Credit Notes'];
-        showSingleSelectAlert('New Purchase', items,
-            index => {
-                this.launchAddInvoice('add', index === 1, 'purchase');
             })
     }
 
@@ -82,9 +73,9 @@ class InvoiceFragment extends Component {
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
                     if (route.name === 'sales') {
-                        iconName = 'receipt';
+                        iconName = 'point-of-sale';
                     } else {
-                        iconName = 'shopping-cart';
+                        iconName = 'description';
                     }
                     return <Icon name={iconName}
                         color={focused ? bottomTabActiveColor : bottomTabInactiveColor} size={30} />
@@ -108,14 +99,14 @@ class InvoiceFragment extends Component {
                 }
             }}>
             <Tab.Screen name='sales'
-                component={InvoiceList}
+                component={SalesInvoiceList}
                 options={{ title: 'Sales' }}
                 listeners={{ tabPress: e => this._tab = 'sales' }} />
 
-            <Tab.Screen name='purchase'
-                component={InvoiceList}
-                options={{ title: 'Purchases' }}
-                listeners={{ tabPress: e => this._tab = 'purchase' }} />
+            <Tab.Screen name='c_note'
+                component={SalesCNList}
+                options={{ title: 'C.Note' }}
+                listeners={{ tabPress: e => this._tab = 'c_note' }} />
         </Tab.Navigator>
     }
 }
@@ -124,4 +115,4 @@ const styles = StyleSheet.create({
         paddingLeft: 12
     }
 });
-export default InvoiceFragment;
+export default SalesInvoiceFragment;

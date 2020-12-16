@@ -12,6 +12,7 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
+import { isEmpty } from '../helpers/Utils';
 
 class ProductFragment extends Component {
 
@@ -21,68 +22,6 @@ class ProductFragment extends Component {
             query: ''
         }
     }
-
-    products = [{
-        image: 'http://image.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock1',
-        description: 'First Stock'
-
-    }, {
-        image: undefined,
-        name: 'Stock kjldnf ewikjlf ewrfre wfrlkerwjr ferwlf ',
-        itemId: 'Stock2 kjewfhr efrekj ergjktrg trkg etjker fijerjf erfg reilerjlkferj ',
-        description: 'First Stock wkjdfher fre fkrekfljerk fjerf ergfioerg regjo gitrgi tr'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock3',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock4',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock5',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }, {
-        image: 'https://images.unsplash.com/photo-1600790142055-619df03207e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
-        name: 'Stock',
-        itemId: 'Stock234',
-        description: 'First Stock'
-
-    }];
 
     onMenuPress = () => {
         this.props.navigation.openDrawer();
@@ -135,11 +74,26 @@ class ProductFragment extends Component {
                 borderBottomWidth: 1,
                 paddingVertical: 16
             }}>
-                <Text>{item.name}</Text>
-                <Text style={{ marginTop: 4 }}>Item :{item.itemId}</Text>
-                <Text style={{ marginTop: 4 }}>Description: {item.itemId}</Text>
+                <Text style={styles.textStyle}>{item.itemtype}</Text>
+                <Text style={[styles.textStyle, { marginTop: 4 }]}>Item: {item.icode}</Text>
+                <Text style={[styles.textStyle, { marginTop: 4 }]}>Description: {item.idescription}</Text>
             </View>
         </View>
+    }
+
+    listData = () => {
+        if (isEmpty(this.state.query)) {
+            return this.props.product.productList;
+        } else {
+            return this.filteredProducts();
+        }
+    }
+    filteredProducts = () => {
+        let filteredProducts = [];
+        filteredProducts = this.props.product.productList.filter(value => {
+            return value.icode.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        });
+        return filteredProducts;
     }
 
 
@@ -163,7 +117,7 @@ class ProductFragment extends Component {
                 placeholder='Search Products' />
             <FlatList
                 style={{ flex: 1 }}
-                data={this.products}
+                data={this.listData()}
                 keyExtractor={(row, index) => `${index}`}
                 renderItem={({ item }) => <this.ListItem item={item} />} />
         </View >
@@ -180,6 +134,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'lightgray',
         marginStart: 16
+    },
+    textStyle: {
+        color: '#3c3c3c',
+        fontSize: 14
     }
 });
 export default connect(

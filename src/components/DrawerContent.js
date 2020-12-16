@@ -53,11 +53,14 @@ const DrawerContent = props => {
         </TouchableOpacity>
     }
 
-    return <View style={styles.container} >
-        {renderHeader()}
-        <DrawerItemList {...props} style={{ backgroundColor: 'black' }} />
-        {renderFooter()}
-    </View>
+    return <DrawerContentScrollView>
+        <View style={styles.container} >
+            {renderHeader()}
+            <DrawerItemList {...props} style={{ backgroundColor: 'black' }} />
+            {renderFooter()}
+        </View>
+    </DrawerContentScrollView>
+
 };
 const styles = StyleSheet.create({
     profileImage: {

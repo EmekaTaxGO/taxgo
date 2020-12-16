@@ -3,7 +3,6 @@ import { View, Button, StyleSheet, useWindowDimensions } from 'react-native';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
 import DrawerContent from '../components/DrawerContent';
 import ProductStack from '../components/drawerStack/ProductStack';
-import InvoiceStack from '../components/drawerStack/InvoiceStack';
 import HomeStack from '../components/drawerStack/HomeStack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,6 +18,8 @@ import JournalStack from '../components/drawerStack/JournalStack';
 import LedgerStack from '../components/drawerStack/LedgerStack';
 import UserStack from '../components/drawerStack/UserStack';
 import BankStack from '../components/drawerStack/BankStack';
+import SalesInvoiceStack from '../components/drawerStack/SalesInvoiceStack';
+import PurchaseInvoiceStack from '../components/drawerStack/PurchaseInvoiceStack';
 
 const HomeScreen = ({ navigation }) => {
 
@@ -35,6 +36,8 @@ const HomeScreen = ({ navigation }) => {
         drawerPosition='left'
         drawerStyle={{ backgroundColor: 'white', width: InitialRender ? 0 : drawerWidth }}
         drawerContent={DrawerContent}
+        keyboardDismissMode='on-drag'
+        detachInactiveScreens
         drawerContentOptions={{
             activeTintColor: colorAccent,
             inactiveTintColor: 'black'
@@ -59,11 +62,17 @@ const HomeScreen = ({ navigation }) => {
                     <Icon name='miscellaneous-services' size={DRAWER_ICON_SIZE} color={color} />
             }} />
 
-        <Drawer.Screen name='InvoiceFragment'
-            component={InvoiceStack}
+        <Drawer.Screen name='SalesInvoiceFragment'
+            component={SalesInvoiceStack}
             options={{
-                title: 'Invoices', drawerIcon: ({ color }) =>
-                    <Icon name='my-library-books' size={DRAWER_ICON_SIZE} color={color} />
+                title: 'Sales Invoice', drawerIcon: ({ color }) =>
+                    <Icon name='point-of-sale' size={DRAWER_ICON_SIZE} color={color} />
+            }} />
+        <Drawer.Screen name='PurchaseInvoiceFragment'
+            component={PurchaseInvoiceStack}
+            options={{
+                title: 'Purchase Invoice', drawerIcon: ({ color }) =>
+                    <Icon name='shopping-cart' size={DRAWER_ICON_SIZE} color={color} />
             }} />
 
 

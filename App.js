@@ -38,6 +38,7 @@ import SaleLedgerScreen from './src/screens/SaleLedgerScreen';
 import MyLedgerScreen from './src/screens/MyLedgerScreen';
 import BankAccountScreen from './src/screens/BankAccountScreen';
 import SelectCustomerScreen from './src/screens/SelectCustomerScreen';
+import SelectProductScreen from './src/screens/SelectProductScreen';
 
 const App = () => {
 
@@ -80,6 +81,7 @@ const App = () => {
       <Stack.Screen name='SaleLedgerScreen' component={SaleLedgerScreen} options={{ title: 'Sale Ledger' }} />
       <Stack.Screen name='MyLedgerScreen' component={MyLedgerScreen} options={{ title: 'My Ledger' }} />
       <Stack.Screen name='BankAccountScreen' component={BankAccountScreen} options={{ title: 'Bank Account' }} />
+      <Stack.Screen name='SelectProductScreen' component={SelectProductScreen} options={{ title: 'Select Product' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

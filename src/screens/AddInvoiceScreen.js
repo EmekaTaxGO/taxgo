@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput, FlatList } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -9,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
+import { isFloat, isInteger } from '../helpers/Utils';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -27,7 +28,16 @@ class AddInvoiceScreen extends Component {
             invoiceAddress: '',
             deliveryAddress: '',
             termsCondition: '',
-            notes: ''
+            notes: '',
+
+            products: [{
+                product_name: '',
+                ledger_account: '',
+                rate: '',
+                quantity: '',
+                vat: '0',
+                includeVat: false
+            }]
         }
     }
     _customer = '';
@@ -255,10 +265,179 @@ class AddInvoiceScreen extends Component {
             </View> : null}
         </ScrollView>
     }
-    renderProductContainer = () => {
-        return <View style={{ flex: 1, flexDirection: 'column' }}>
 
+    onProductNamePress = (index) => {
+        this.props.navigation.push('SelectProductScreen', {
+            onProductSelected: item => {
+                const newProduct = {
+                    ...this.state.products[index],
+                    ...item,
+                    label: `${item.icode}-${item.idescription}`
+                };
+
+                const newProducts = [...this.state.products];
+                newProducts.splice(index, 1, newProduct);
+                this.setState({ products: newProducts });
+            }
+        })
+    }
+
+    onLedgerPress = (index) => {
+        this.props.navigation.push('SaleLedgerScreen', {
+            onLedgerSelected: item => {
+                const newProduct = {
+                    ...this.state.products[index],
+                    ...item,
+                    ledger: `${item.category}-${item.categorygroup}`
+                };
+
+                const newProducts = [...this.state.products];
+                newProducts.splice(index, 1, newProduct);
+                this.setState({ products: newProducts });
+            }
+        })
+    }
+
+    onPriceChange = (text, index) => {
+        const newProduct = {
+            ...this.state.products[index],
+            sp_price: text
+        };
+
+        const newProducts = [...this.state.products];
+        newProducts.splice(index, 1, newProduct);
+        this.setState({ products: newProducts });
+    }
+
+    onQuantityChange = (text, index) => {
+        const newProduct = {
+            ...this.state.products[index],
+            quantity: text
+        };
+
+        const newProducts = [...this.state.products];
+        newProducts.splice(index, 1, newProduct);
+        this.setState({ products: newProducts });
+    }
+
+    getVatAmount = item => {
+        if (!isFloat(item.sp_price) || !isInteger(item.quantity) || !isFloat(item.vat)) {
+            return '0.00';
+        }
+        if (item.includevat === 1) {
+
+        }
+
+    }
+
+    renderProductItem = ({ item, index }) => {
+        return <View style={{ flexDirection: 'column' }}>
+
+            <View style={{
+                flexDirection: 'row',
+                paddingHorizontal: 16,
+                paddingTop: 10
+            }}>
+                {/* Product */}
+                <View style={{
+                    flexDirection: 'column',
+                    flex: 1
+                }}>
+                    <Text style={styles.title}>Product({index + 1})</Text>
+                    <TouchableOpacity style={{ marginTop: 6 }}
+                        onPress={() => this.onProductNamePress(index)}>
+                        <TextInput
+                            style={styles.textInput}
+                            value={item.label}
+                            placeholder='Name'
+                            placeholderTextColor='gray'
+                            editable={false}
+                        />
+                    </TouchableOpacity>
+
+                </View>
+
+                {/* Ledger Account */}
+                <View style={{ flexDirection: 'column', flex: 1, marginLeft: 12 }}>
+                    <Text style={styles.title}>Ledger Account</Text>
+                    <TouchableOpacity style={{ marginTop: 6 }}
+                        onPress={() => this.onLedgerPress(index)}>
+                        <TextInput
+                            style={styles.textInput}
+                            value={item.ledger}
+                            placeholder='Ledger Account'
+                            editable={false}
+                            placeholderTextColor='gray'
+                            onChangeText={text => this.onProductNamePress(text, index)}
+                        />
+                    </TouchableOpacity>
+
+                </View>
+
+            </View>
+            <View style={{
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 1,
+                marginVertical: 12
+            }} />
+            <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
+
+                <Text style={styles.title}>Price And Tax</Text>
+                <View style={{ flexDirection: 'row' }}>
+                    {/* Price/Rate */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 14,
+                        flex: 2
+                    }}>
+                        <Text style={styles.subtitle}>Price/Rate</Text>
+                        <TextInput
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            value={item.sp_price}
+                            onChangeText={text => this.onPriceChange(text, index)}
+                        />
+                    </View>
+
+                    {/* Quantity */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 14,
+                        flex: 1,
+                        marginLeft: 12
+                    }}>
+                        <Text style={styles.subtitle}>Quantity</Text>
+                        <TextInput
+                            value={item.quantity}
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            onChangeText={text => this.onQuantityChange(text, index)}
+                        />
+                    </View>
+
+                    {/* Vat Amt */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 14,
+                        flex: 1,
+                        marginLeft: 12
+                    }}>
+                        <Text style={styles.subtitle}>Vat (Amt)</Text>
+                        <TextInput
+                            value={this.getVatAmount(item)}
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            editable={false}
+                        />
+                    </View>
+                </View>
+            </View>
         </View>
+    }
+
+    renderProductContainer = () => {
+        return <FlatList
+            data={this.state.products}
+            keyExtractor={(item, index) => `${index}`}
+            renderItem={this.renderProductItem}
+        />
     }
 
     renderTabs = () => {
@@ -306,6 +485,23 @@ const styles = StyleSheet.create({
         fontSize: 17,
         color: 'black',
         marginTop: 12
+    },
+    textInput: {
+        backgroundColor: '#f1f1f1',
+        height: 40,
+        fontSize: 14,
+        color: 'black',
+        paddingHorizontal: 6
+    },
+    title: {
+        textTransform: 'uppercase',
+        color: 'black',
+        fontSize: 12,
+        fontWeight: 'bold'
+    },
+    subtitle: {
+        color: 'black',
+        fontSize: 14
     }
 });
 export default AddInvoiceScreen;

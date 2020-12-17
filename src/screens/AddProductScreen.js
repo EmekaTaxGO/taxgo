@@ -8,13 +8,21 @@ import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { connect } from 'react-redux';
-import { isEmpty, validateEmail, isInteger, isFloat } from '../helpers/Utils';
+import { toFloat } from '../helpers/Utils';
 import { getFieldValue, setFieldValue, focusField } from '../helpers/TextFieldHelpers';
 
 import * as productActions from '../redux/actions/productActions';
+import * as taxActions from '../redux/actions/taxActions';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+
 import { bindActionCreators } from 'redux';
 import Store from '../redux/Store';
 import Snackbar from 'react-native-snackbar';
+import { log } from '../components/Logger';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import ProgressDialog from '../components/ProgressDialog';
+
 
 class AddProductScreen extends Component {
     constructor(props) {
@@ -22,8 +30,7 @@ class AddProductScreen extends Component {
         this.state = {
             types: this.createProductType(),
             selectedTypeIndex: 0,
-            vats: this.createVats(),
-            selectedVatIndex: 0,
+            selectedTaxIndex: 0,
             includeVat: false,
             showExpiryDateDialog: false,
             purchaseExpiryDate: new Date(),
@@ -35,6 +42,7 @@ class AddProductScreen extends Component {
     }
 
     salesAccount;
+    purchaseAccount;
     supplier;
 
     codeRef = React.createRef();
@@ -53,7 +61,7 @@ class AddProductScreen extends Component {
     purchasePriceRef = React.createRef();
     purchaseAccRef = React.createRef();
     expiryDateRef = React.createRef();
-    reorderLimitRef = React.createRef();
+    reorderLevelRef = React.createRef();
     reorderQtyRef = React.createRef();
     stockQtyRef = React.createRef();
     stockDateRef = React.createRef();
@@ -63,23 +71,6 @@ class AddProductScreen extends Component {
     barcodeRef = React.createRef();
     notesRef = React.createRef();
 
-
-    createVats = () => {
-        return [
-            {
-                id: 1,
-                value: '0.00 % VAT-Zero rate'
-            },
-            {
-                id: 2,
-                value: '5.00 % VAT-Standard rate'
-            },
-            {
-                id: 3,
-                value: '10.00 % VAT-Market rate'
-            }
-        ]
-    }
     createProductType = () => {
         return [
             {
@@ -98,7 +89,7 @@ class AddProductScreen extends Component {
     }
 
     isEditMode = () => {
-        return this.props.route.params.product !== null;
+        return this.props.route.params.product !== undefined;
     }
 
     renderStrip = (text) => {
@@ -129,11 +120,16 @@ class AddProductScreen extends Component {
 
     onVatChange = (itemValue, itemIndex) => {
 
-        this.setState({ selectedVatIndex: itemIndex }, () => {
-            const { vats, selectedVatIndex } = this.state;
-            const vat = vats[selectedVatIndex].id * 2.009
-            this.setText(this.vatAmountRef, vat);
-            this.setText(this.totalAmountRef, vat * 1.5);
+        // this.setState({ selectedVatIndex: itemIndex }, () => {
+        //     const { vats, selectedTaxIndex } = this.state;
+        //     const vat = vats[selectedVatIndex].id * 2.009
+        //     this.setText(this.vatAmountRef, vat);
+        //     this.setText(this.totalAmountRef, vat * 1.5);
+        // })
+        this.setState({
+            selectedTaxIndex: itemIndex
+        }, () => {
+            this.onPriceChange();
         })
     }
 
@@ -144,12 +140,6 @@ class AddProductScreen extends Component {
 
     focus = ref => {
         ref.current.focus();
-    }
-
-    getTotal = () => {
-        const { vats, selectedVatIndex } = this.state;
-        const total = vats[selectedVatIndex].id * 234;
-        return total;
     }
 
     onPurchaseExpiryChange = (event, selectedDate) => {
@@ -175,7 +165,6 @@ class AddProductScreen extends Component {
     onBarcodePress = () => {
         this.props.navigation.push('ScanBarcodeScreen', {
             onBarCodeScanned: data => {
-                console.log('Scanned Data', data);
                 setFieldValue(this.barcodeRef, data);
             }
         });
@@ -184,79 +173,150 @@ class AddProductScreen extends Component {
     validateAndSubmitForm = () => {
         const isStock = this.state.selectedTypeIndex === 0;
 
-        if (isEmpty(getFieldValue(this.codeRef))) {
-            this.showAlert('Please enter item code.');
+        // if (isEmpty(getFieldValue(this.codeRef))) {
+        //     this.showAlert('Please enter item code.');
 
-        } else if (isEmpty(getFieldValue(this.descriptionRef))) {
-            this.showAlert('Please enter item description.');
+        // } else if (isEmpty(getFieldValue(this.descriptionRef))) {
+        //     this.showAlert('Please enter item description.');
 
-        } else if (isStock && isEmpty(getFieldValue(this.salePriceRef))) {
-            this.showAlert('Please enter sales price.');
+        // } else if (isStock && isEmpty(getFieldValue(this.salePriceRef))) {
+        //     this.showAlert('Please enter sales price.');
 
-        } else if (isStock && !isFloat(getFieldValue(this.salePriceRef))) {
-            this.showAlert('Please enter valid sales price.');
+        // } else if (isStock && !isFloat(getFieldValue(this.salePriceRef))) {
+        //     this.showAlert('Please enter valid sales price.');
 
-        } else if (!isStock && isEmpty(getFieldValue(this.rateRef))) {
-            this.showAlert('Please enter rate.');
+        // } else if (!isStock && isEmpty(getFieldValue(this.rateRef))) {
+        //     this.showAlert('Please enter rate.');
 
-        } else if (!isStock && !isFloat(getFieldValue(this.rateRef))) {
-            this.showAlert('Please enter valid rate.');
+        // } else if (!isStock && !isFloat(getFieldValue(this.rateRef))) {
+        //     this.showAlert('Please enter valid rate.');
 
-        } else {
-            this.proceedToSubmit();
-        }
+        // } else {
+        this.proceedToSubmit();
+        // }
     }
 
     proceedToSubmit = () => {
         const { productActions } = this.props;
         const body = this.createPostBody();
-        productActions.createProduct(this.props.navigation, body)
+        console.log('Product Update Body:', body);
+        productActions.checkForPreUpdate(body, this.onUpdateSuccess, this.onUpdateError);
+    }
+
+    onUpdateSuccess = data => {
+        Alert.alert('Alert', data.message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => {
+                    this.props.route.params.onProductUpdated();
+                    this.props.navigation.goBack();
+                }
+            }
+        ], { cancelable: false });
+    }
+
+    onUpdateError = message => {
+        Alert.alert('Alert', message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => { }
+            }
+        ], { cancelable: false });
+    }
+
+    isStock = () => {
+        return this.state.selectedTypeIndex === 0;
     }
 
     createPostBody = () => {
 
         const { authData } = Store.getState().auth;
+        const isStock = this.isStock();
         return {
+            type: this.isEditMode() ? '2' : '1',
+            userid: `${authData.id}`,
             itemtype: this.state.types[this.state.selectedTypeIndex].value,
             icode: getFieldValue(this.codeRef),
             idescription: getFieldValue(this.descriptionRef),
-            saccount: '',
-            sp_price: '',
-            trade_price: '',
-            wholesale: '',
-            rate: '',
-            sicode: '',
-            pdescription: '',
-            costprice: '',
-            paccount: '',
-            rlevel: '',
-            quantity: '',
-            price: '',
-            date: '',
-            c_price: '',
-            rquantity: '',
-            location: '',
-            barcode: '',
-            weight: '',
-            notes: '',
-            userid: authData.id,
-            adminid: authData.id,
-            userdate: '',
-            name: '',
-            logintype: '',
-            expiredate: '',
-            vat: '',
-            vatamt: '',
-            inclidevat: ''
-        };
+            saccount: this.salesAccount ? `${this.salesAccount.id}` : '', //Sales Ledger Id
+            sp_price: isStock ? getFieldValue(this.salePriceRef) : '',
+            trade_price: isStock ? getFieldValue(this.tradePriceRef) : '',
+            quantity: isStock ? getFieldValue(this.stockQtyRef) : '',
+            date: isStock ? moment(this.state.stockDate).format('YYYY-MM-DD') : '',
+            c_price: isStock ? getFieldValue(this.stockPriceRef) : '',
+            wholesale: isStock ? getFieldValue(this.wholesalePriceRef) : '',
+            rate: !isStock ? getFieldValue(this.rateRef) : '',
+            sicode: getFieldValue(this.SICodeRef),
+            pdescription: getFieldValue(this.purchaseDescRef),
+            costprice: getFieldValue(this.purchasePriceRef),
+            paccount: this.purchaseAccount ? `${this.purchaseAccount.id}` : '',
+            rlevel: getFieldValue(this.reorderLevelRef),
+            // name: "18",
+            rquantity: getFieldValue(this.reorderQtyRef),
+            location: isStock ? getFieldValue(this.locationRef) : '',
+            barcode: getFieldValue(this.barcodeRef),
+            weight: isStock ? getFieldValue(this.weightRef) : '',
+            notes: isStock ? getFieldValue(this.notesRef) : '',
+            adminid: '',
+            userdate: moment(new Date()).format('YYYY-MM-DD'),
+            logintype: 'user',
+            // pimage: "TAXGO_IMAGES_1608187534911.png",
+            expiredate: moment(this.state.purchaseExpiryDate).format('YYYY-MM-DD'),
+            vat: `${this.getTaxPercentage()}`,
+            vatamt: `${this.getTaxAmount()}`,
+            includevat: this.state.includeVat ? 1 : 0,
+            totalprice: `${this.getTotalPrice()}`
+        }
+    }
+
+    getSalesPrice = () => {
+        const isStock = this.state.selectedTypeIndex === 0;
+        const salesPrice = toFloat(getFieldValue(isStock ? this.salePriceRef : this.rateRef)).toFixed(2);
+        return toFloat(salesPrice);
+    }
+
+    getTaxPercentage = () => {
+        const { selectedTaxIndex } = this.state;
+        const { taxList } = this.props.tax;
+        if (selectedTaxIndex === 0) {
+            return 0;
+        } else {
+            const percentage = toFloat(taxList[selectedTaxIndex - 1].percentage).toFixed(2);
+            return toFloat(percentage);
+        }
+    }
+
+    getTotalPrice = () => {
+
+        if (this.state.includeVat) {
+            return toFloat(getFieldValue(this.salePriceRef));
+        } else {
+            return this.getSalesPrice() + this.getTaxAmount();
+        }
+    }
+
+    getTaxAmount = () => {
+        const salesPrice = this.getSalesPrice();
+        const taxPercentage = this.getTaxPercentage();
+        let taxAmt = 0.0;
+        if (this.state.includeVat) {
+            const principal = (salesPrice * 100) / (100 + taxPercentage);
+            taxAmt = salesPrice - principal;
+        } else {
+            taxAmt = (taxPercentage * salesPrice) / 100;
+        }
+        taxAmt = toFloat(taxAmt.toFixed(2));
+        return taxAmt;
+    }
+
+    onPriceChange = () => {
+        setFieldValue(this.vatAmountRef, `${this.getTaxAmount()}`);
+        setFieldValue(this.totalAmountRef, `${this.getTotalPrice()}`);
     }
 
     showAlert = (message) => {
-        // Alert.alert('Alert', message, [{
-        //     style: 'default',
-        //     text: 'OK',
-        //     onPress: () => { }
-        // }])
         Snackbar.show({
             text: message,
             duration: Snackbar.LENGTH_LONG,
@@ -270,12 +330,24 @@ class AddProductScreen extends Component {
     }
 
     componentDidMount() {
+        this.configHeader();
         this.setTitle();
         this.setFieldsValue();
 
-        setTimeout(() => {
-            focusField(this.codeRef);
-        }, 200);
+        // setTimeout(() => {
+        //     focusField(this.codeRef);
+        // }, 200);
+        this.fetchTaxList();
+    }
+
+    configHeader = () => {
+        this.props.navigation.setOptions({
+            headerRight: () => {
+                return <TouchableOpacity onPress={this.onBarcodePress} style={{ padding: 12 }}>
+                    <MaterialIcon name='qr-code-scanner' size={30} color='white' />
+                </TouchableOpacity>
+            }
+        })
     }
 
     setTitle = () => {
@@ -285,7 +357,7 @@ class AddProductScreen extends Component {
     }
     setFieldsValue = () => {
         const { product } = this.props.route.params;
-        if (product !== null) {
+        if (product !== undefined) {
             //Preset values
         }
     }
@@ -302,7 +374,10 @@ class AddProductScreen extends Component {
     onSalesAccountClick = () => {
         this.props.navigation.push('SaleLedgerScreen', {
             onLedgerSelected: item => {
-                console.log('Selected Ledger:', item);
+                log('Selected Ledger:', item);
+                this.salesAccount = { ...item };
+                const label = `${item.nominalcode}-${item.category}-${item.categorygroup}`;
+                setFieldValue(this.saleAccountRef, label);
             }
         })
     }
@@ -310,9 +385,18 @@ class AddProductScreen extends Component {
     onPurchaseAccPress = () => {
         this.props.navigation.push('PurchaseLedgerScreen', {
             onLedgerSelected: item => {
-                console.log('Selected Ledger:', item);
+                this.purchaseAccount = { ...item };
+                const label = `${item.nominalcode}-${item.category}-${item.categorygroup}`;
+                setFieldValue(this.purchaseAccRef, label);
             }
         })
+    }
+
+    onStockChange = enabled => {
+        this.setState({ alreadyHaveStock: enabled }, () => {
+            setFieldValue(this.stockQtyRef, enabled ? '0' : '');
+            setFieldValue(this.stockPriceRef, enabled ? '0.00' : '');
+        });
     }
 
     renderStock = () => {
@@ -327,7 +411,7 @@ class AddProductScreen extends Component {
                     style={{ marginLeft: 40 }}
                     thumbColor={this.state.alreadyHaveStock ? colorAccent : 'gray'}
                     value={this.state.alreadyHaveStock}
-                    onValueChange={enabled => this.setState({ alreadyHaveStock: enabled })}
+                    onValueChange={this.onStockChange}
                 />
             </View>
             <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
@@ -336,9 +420,17 @@ class AddProductScreen extends Component {
                     keyboardType='numeric'
                     returnKeyType='next'
                     lineWidth={1}
+                    editable={this.state.alreadyHaveStock}
                     ref={this.stockQtyRef}
                     onSubmitEditing={() => this.focus(this.stockPriceRef)} />
-                <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
+                <TextField
+                    label='Cost Price'
+                    keyboardType='number-pad'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    editable={this.state.alreadyHaveStock}
+                    ref={this.stockPriceRef} />
+                {this.state.alreadyHaveStock ? <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
                     <TextField
                         label='As of Date'
                         keyboardType='default'
@@ -346,7 +438,7 @@ class AddProductScreen extends Component {
                         editable={false}
                         lineWidth={1}
                         ref={this.stockDateRef} />
-                </TouchableOpacity>
+                </TouchableOpacity> : null}
 
                 {this.state.showStockDateDialog ? <DateTimePicker
                     value={this.state.stockDate}
@@ -355,13 +447,6 @@ class AddProductScreen extends Component {
                     minimumDate={new Date()}
                     onChange={this.onStockDateChange}
                 /> : null}
-
-                <TextField
-                    label='Cost Price'
-                    keyboardType='number-pad'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    ref={this.stockPriceRef} />
             </View>
         </View>;
     }
@@ -411,6 +496,9 @@ class AddProductScreen extends Component {
                 returnKeyType='next'
                 ref={this.salePriceRef}
                 lineWidth={1}
+                onChangeText={text => {
+                    setTimeout(this.onPriceChange, 200);
+                }}
                 onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
             <TextField
                 label='Trade Price'
@@ -429,11 +517,39 @@ class AddProductScreen extends Component {
         </View>;
     }
 
+    fetchTaxList = () => {
+        const { taxActions } = this.props;
+        taxActions.getTaxList();
+    }
+
+    getTaxList = () => {
+        const taxes = ['Select Tax Rates'];
+        this.props.tax.taxList.forEach((value) => {
+            taxes.push(`${value.taxtype}-${value.percentage}%`);
+        })
+        return taxes;
+    }
+
+    onIncludeVatChange = enabled => {
+        this.setState({ includeVat: enabled }, () => {
+            this.onPriceChange();
+        });
+    }
+
 
     render() {
 
-        const { types, selectedTypeIndex, vats, selectedVatIndex } = this.state;
+        const { tax } = this.props;
+        if (tax.fetchingTaxList) {
+            return <OnScreenSpinner />
+        }
+        if (tax.fetchTaxListError) {
+            return <FullScreenError tryAgainClick={this.fetchTaxList} />
+        }
+
+        const { types, selectedTypeIndex, selectedTaxIndex } = this.state;
         const isStock = selectedTypeIndex === 0;
+        const taxList = this.getTaxList();
 
         return <KeyboardAvoidingView style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1 }}
@@ -470,17 +586,13 @@ class AddProductScreen extends Component {
                                 this.salePriceRef.current.focus()
                             }
                         }} />
-                    <TouchableOpacity onPress={this.onBarcodePress}>
-                        <TextField
-                            label='Bar Code'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            editable={false}
-                            ref={this.barcodeRef}
-                            lineWidth={1}
-                        />
-                    </TouchableOpacity>
-
+                    <TextField
+                        label='Bar Code'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        ref={this.barcodeRef}
+                        lineWidth={1}
+                    />
                 </View>
                 <View style={{ marginTop: 12 }}>
                     {this.renderStrip('Sale')}
@@ -511,12 +623,12 @@ class AddProductScreen extends Component {
                 {this.renderLabel('VAT/GST')}
                 <Picker
                     style={{ marginHorizontal: 12 }}
-                    selectedValue={vats[selectedVatIndex].value}
+                    selectedValue={taxList[selectedTaxIndex]}
                     mode='dropdown'
                     onValueChange={this.onVatChange}>
 
-                    {vats.map((value, index) => <Picker.Item
-                        label={value.value} value={value.value} key={`${index}`} />)}
+                    {taxList.map((value, index) => <Picker.Item
+                        label={value} value={value} key={`${index}`} />)}
                 </Picker>
                 <View style={{ paddingHorizontal: 16 }}>
                     <TextField
@@ -534,7 +646,7 @@ class AddProductScreen extends Component {
                         style={{ marginLeft: 40 }}
                         thumbColor={this.state.includeVat ? colorAccent : 'gray'}
                         value={this.state.includeVat}
-                        onValueChange={enabled => this.setState({ includeVat: enabled })}
+                        onValueChange={this.onIncludeVatChange}
                     />
                 </View>
 
@@ -546,7 +658,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.totalAmountRef}
-                        value={this.getTotal()}
                         onSubmitEditing={() => { }} />
                 </View>
                 <View style={{ marginTop: 24 }}>
@@ -570,7 +681,6 @@ class AddProductScreen extends Component {
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        editable={false}
                         ref={this.SICodeRef}
                         onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
 
@@ -579,7 +689,6 @@ class AddProductScreen extends Component {
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        editable={false}
                         ref={this.purchaseDescRef}
                         onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
 
@@ -588,7 +697,6 @@ class AddProductScreen extends Component {
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        editable={false}
                         ref={this.purchasePriceRef}
                         onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
                     <TouchableOpacity onPress={this.onPurchaseAccPress}>
@@ -620,15 +728,15 @@ class AddProductScreen extends Component {
                     /> : null}
 
                     <TextField
-                        label='Reorder Limit.'
+                        label='Reorder Level.'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.reorderLimitRef}
+                        ref={this.reorderLevelRef}
                         onSubmitEditing={() => this.focus(this.reorderQtyRef)} />
 
                     <TextField
-                        label='Expiry Qty'
+                        label='Reorder Quantity'
                         keyboardType='numeric'
                         returnKeyType='next'
                         lineWidth={1}
@@ -642,6 +750,7 @@ class AddProductScreen extends Component {
                     titleColor='white'
                     style={styles.materialBtn}
                     onPress={this.validateAndSubmitForm} />
+                <ProgressDialog visible={this.props.product.updatingProduct} />
             </ScrollView>
 
         </KeyboardAvoidingView>
@@ -661,9 +770,11 @@ const styles = StyleSheet.create({
 });
 export default connect(
     state => ({
-        product: state.product
+        product: state.product,
+        tax: state.tax
     }),
     dispatch => ({
-        productActions: bindActionCreators(productActions, dispatch)
+        productActions: bindActionCreators(productActions, dispatch),
+        taxActions: bindActionCreators(taxActions, dispatch)
     })
 )(AddProductScreen);

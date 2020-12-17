@@ -11,6 +11,13 @@ import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
 import { isFloat, isInteger } from '../helpers/Utils';
 
+import * as invoiceActions from '../redux/actions/invoiceActions';
+import * as taxActions from '../redux/actions/taxActions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+
 class AddInvoiceScreen extends Component {
     constructor(props) {
         super();
@@ -54,6 +61,12 @@ class AddInvoiceScreen extends Component {
     componentDidMount() {
         const { info } = this.props.route.params;
         console.log('Info: ', info);
+        this.fetchTaxList();
+    }
+
+    fetchTaxList = () => {
+        const { taxActions } = this.props;
+        taxActions.getTaxList();
     }
 
     isEditMode = () => {
@@ -455,6 +468,13 @@ class AddInvoiceScreen extends Component {
         </View>
     }
     render() {
+        const { tax } = this.props;
+        if (tax.fetchingTaxList) {
+            return <OnScreenSpinner />
+        }
+        if (tax.fetchTaxListError) {
+            return <FullScreenError tryAgainClick={this.fetchTaxList} />
+        }
 
         const selected = this.state.selectedTab;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -504,4 +524,13 @@ const styles = StyleSheet.create({
         fontSize: 14
     }
 });
-export default AddInvoiceScreen;
+export default connect(
+    state => ({
+        invoice: state.invoice,
+        tax: state.tax
+    }),
+    dispatch => ({
+        invoiceActions: bindActionCreators(invoiceActions, dispatch),
+        taxActions: bindActionCreators(taxActions, dispatch)
+    })
+)(AddInvoiceScreen);

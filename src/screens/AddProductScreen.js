@@ -173,27 +173,27 @@ class AddProductScreen extends Component {
     validateAndSubmitForm = () => {
         const isStock = this.state.selectedTypeIndex === 0;
 
-        // if (isEmpty(getFieldValue(this.codeRef))) {
-        //     this.showAlert('Please enter item code.');
+        if (isEmpty(getFieldValue(this.codeRef))) {
+            this.showAlert('Please enter item code.');
 
-        // } else if (isEmpty(getFieldValue(this.descriptionRef))) {
-        //     this.showAlert('Please enter item description.');
+        } else if (isEmpty(getFieldValue(this.descriptionRef))) {
+            this.showAlert('Please enter item description.');
 
-        // } else if (isStock && isEmpty(getFieldValue(this.salePriceRef))) {
-        //     this.showAlert('Please enter sales price.');
+        } else if (isStock && isEmpty(getFieldValue(this.salePriceRef))) {
+            this.showAlert('Please enter sales price.');
 
-        // } else if (isStock && !isFloat(getFieldValue(this.salePriceRef))) {
-        //     this.showAlert('Please enter valid sales price.');
+        } else if (isStock && !isFloat(getFieldValue(this.salePriceRef))) {
+            this.showAlert('Please enter valid sales price.');
 
-        // } else if (!isStock && isEmpty(getFieldValue(this.rateRef))) {
-        //     this.showAlert('Please enter rate.');
+        } else if (!isStock && isEmpty(getFieldValue(this.rateRef))) {
+            this.showAlert('Please enter rate.');
 
-        // } else if (!isStock && !isFloat(getFieldValue(this.rateRef))) {
-        //     this.showAlert('Please enter valid rate.');
+        } else if (!isStock && !isFloat(getFieldValue(this.rateRef))) {
+            this.showAlert('Please enter valid rate.');
 
-        // } else {
-        this.proceedToSubmit();
-        // }
+        } else {
+            this.proceedToSubmit();
+        }
     }
 
     proceedToSubmit = () => {

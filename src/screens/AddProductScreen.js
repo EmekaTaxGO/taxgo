@@ -8,7 +8,7 @@ import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { connect } from 'react-redux';
-import { toFloat } from '../helpers/Utils';
+import { toFloat, isEmpty, isInteger, isFloat } from '../helpers/Utils';
 import { getFieldValue, setFieldValue, focusField } from '../helpers/TextFieldHelpers';
 
 import * as productActions from '../redux/actions/productActions';
@@ -192,6 +192,7 @@ class AddProductScreen extends Component {
             this.showAlert('Please enter valid rate.');
 
         } else {
+            console.log('Validated!!');
             this.proceedToSubmit();
         }
     }
@@ -200,7 +201,12 @@ class AddProductScreen extends Component {
         const { productActions } = this.props;
         const body = this.createPostBody();
         console.log('Product Update Body:', body);
-        productActions.checkForPreUpdate(body, this.onUpdateSuccess, this.onUpdateError);
+        if (this.isEditMode()) {
+            productActions.updateProduct(body, this.onUpdateSuccess, this.onUpdateError);
+        } else {
+            productActions.checkForPreUpdate(body, this.onUpdateSuccess, this.onUpdateError);
+        }
+
     }
 
     onUpdateSuccess = data => {
@@ -291,7 +297,7 @@ class AddProductScreen extends Component {
     getTotalPrice = () => {
 
         if (this.state.includeVat) {
-            return toFloat(getFieldValue(this.salePriceRef));
+            return toFloat(getFieldValue(this.isStock() ? this.salePriceRef : this.rateRef));
         } else {
             return this.getSalesPrice() + this.getTaxAmount();
         }
@@ -331,29 +337,114 @@ class AddProductScreen extends Component {
 
     componentDidMount() {
         this.configHeader();
-        this.setTitle();
         this.setFieldsValue();
-
-        // setTimeout(() => {
-        //     focusField(this.codeRef);
-        // }, 200);
         this.fetchTaxList();
     }
 
+    shouldComponentUpdate(newProps, newState) {
+        console.log('Update');
+        return true;
+    }
+
+    UNSAFE_componentWillUpdate(newProps, newState) {
+        const { tax: newTax } = newProps;
+        if (this.props.tax.fetchingTaxList && !newTax.fetchingTaxList
+            && newTax.fetchTaxListError === undefined) {
+            //Tax List has been fetched
+            if (this.isEditMode()) {
+                this.presetState();
+            }
+
+            //Initial Focus code Field
+            setTimeout(() => {
+                focusField(this.codeRef);
+            }, 300);
+
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const { tax: newTax } = this.props;
+        if (prevProps.tax.fetchingTaxList && !newTax.fetchingTaxList
+            && newTax.fetchTaxListError === undefined) {
+            //Tax List has been fetched
+            if (this.isEditMode()) {
+                this.setAllFieldData();
+            }
+
+        }
+    }
+
+    setAllFieldData = () => {
+        const { product } = this.props.route.params;
+        const isStock = this.isStock();
+        setFieldValue(this.codeRef, product.icode);
+        setFieldValue(this.descriptionRef, product.idescription);
+        setFieldValue(this.barcodeRef, product.barcode);
+
+        if (isStock) {
+            setFieldValue(this.salePriceRef, product.sp_price);
+            setFieldValue(this.tradePriceRef, product.trade_price);
+            setFieldValue(this.wholesalePriceRef, product.wholesale);
+        } else {
+            setFieldValue(this.rateRef, product.rate);
+        }
+        this.onPriceChange();
+        setFieldValue(this.SICodeRef, product.sicode);
+        setFieldValue(this.purchaseDescRef, product.pdescription);
+        setFieldValue(this.purchasePriceRef, product.costprice);
+        setFieldValue(this.expiryDateRef, product.expiredate);
+        setFieldValue(this.reorderLevelRef, product.rlevel);
+        setFieldValue(this.reorderQtyRef, product.rquantity);
+
+        if (isStock) {
+            setFieldValue(this.stockQtyRef, product.quantity);
+            setFieldValue(this.stockPriceRef, product.c_price);
+        }
+
+        setFieldValue(this.locationRef, product.location);
+        setFieldValue(this.weightRef, product.weight);
+        setFieldValue(this.notesRef, product.notes);
+
+
+
+        console.log('Pro:', product);
+    }
+    presetState = () => {
+        const { product } = this.props.route.params;
+        let itemIndex = 0;
+        switch (product.itemtype) {
+            case 'Stock':
+            default:
+                itemIndex = 0;
+                break;
+            case 'Non-Stock':
+                itemIndex = 1;
+                break;
+            case 'Service':
+                itemIndex = 2;
+                break;
+        }
+
+        this.setState({
+            selectedTypeIndex: itemIndex,
+            includeVat: product.includevat === 1,
+            alreadyHaveStock: isInteger(product.quantity)
+        });
+    }
+
     configHeader = () => {
+        const titlePrefix = this.isEditMode() ? 'Edit' : 'Add';
+        const title = `${titlePrefix} Product`;
+
         this.props.navigation.setOptions({
+            title,
             headerRight: () => {
                 return <TouchableOpacity onPress={this.onBarcodePress} style={{ padding: 12 }}>
                     <MaterialIcon name='qr-code-scanner' size={30} color='white' />
                 </TouchableOpacity>
             }
         })
-    }
-
-    setTitle = () => {
-        const titlePrefix = this.isEditMode() ? 'Edit' : 'Add';
-        const title = `${titlePrefix} Product`;
-        this.props.navigation.setOptions({ title });
     }
     setFieldsValue = () => {
         const { product } = this.props.route.params;
@@ -539,6 +630,7 @@ class AddProductScreen extends Component {
 
     render() {
 
+        console.log('Add Product Rendering');
         const { tax } = this.props;
         if (tax.fetchingTaxList) {
             return <OnScreenSpinner />
@@ -616,6 +708,7 @@ class AddProductScreen extends Component {
                             returnKeyType='done'
                             ref={this.rateRef}
                             lineWidth={1}
+                            onChangeText={text => setTimeout(this.onPriceChange, 200)}
                         /> : null}
                     {isStock ? this.renderPriceField() : null}
                 </View>
@@ -745,7 +838,7 @@ class AddProductScreen extends Component {
                 {isStock ? this.renderStock() : null}
                 {isStock ? this.renderOther() : null}
                 <RaisedTextButton
-                    title='Add'
+                    title={this.isEditMode() ? 'Update' : 'Add'}
                     color={colorAccent}
                     titleColor='white'
                     style={styles.materialBtn}

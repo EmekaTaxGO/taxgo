@@ -79,7 +79,12 @@ class ProductFragment extends Component {
         this.props.navigation.push('ViewProductInfoScreen', { id: item.id });
     }
     onEditClick = item => {
-        console.log('onEdit Clicked!');
+        this.props.navigation.push('AddProductScreen', {
+            onProductUpdated: () => {
+                this.fetchProductList();
+            },
+            product: { ...item }
+        });
     }
 
     listData = () => {

@@ -97,12 +97,15 @@ export const checkForPreUpdate = (body, onSuccess, onError) => {
 
 export const updateProduct = (body, onSuccess, onError) => {
     return (dispatch) => {
+        if (body.type === '2') {
+            dispatch({ type: UPDATE_PRODUCT_REQUEST });
+        }
         return Api.post('/product/addUpdateProduct', body)
             .then(response => {
                 onSuccess(response.data);
             })
             .catch(err => {
-                log('Error Updating Product', err);
+                log('Error Updating Product', err.response);
                 dispatch({ type: UPDATE_PRODUCT_FAIL });
                 onError(API_ERROR_MESSAGE);
             })

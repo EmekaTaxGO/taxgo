@@ -148,6 +148,7 @@ export const getProfile = () => {
                 type: PROFILE_SUCCESS,
                 payload: profile
             });
+            console.log('Profile from Local', profile);
         }
 
 
@@ -160,13 +161,14 @@ export const fetchProfileFromRemote = () => {
         return Api.get(`/user/viewProfile/${authData.id}`)
             .then(async (response) => {
                 await saveToLocal(PROFILE_DATA, response.data.data);
+                console.log('Profile from Remote', response.data.data);
                 dispatch({
                     type: PROFILE_SUCCESS,
                     payload: response.data.data
                 });
             })
             .catch(err => {
-                log('Error fetching profile', err);
+                log('Error fetching profile', err.response.data);
                 dispatch({ type: PROFILE_FAIL });
             })
     }

@@ -23,7 +23,8 @@ export const getTaxList = () => {
 }
 export const fetchTaxListFromRemote = () => {
     return (dispatch) => {
-        return Api.get('https://taxgoglobal.com/newrestapi/Accounting/listtax/?countryid=16')
+
+        return Api.get('/default/taxList/3')
             .then(async (response) => {
                 await saveToLocal(TAX_LIST, response.data.data)
                 dispatch({

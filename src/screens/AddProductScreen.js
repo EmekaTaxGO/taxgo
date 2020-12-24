@@ -119,13 +119,6 @@ class AddProductScreen extends Component {
     }
 
     onVatChange = (itemValue, itemIndex) => {
-
-        // this.setState({ selectedVatIndex: itemIndex }, () => {
-        //     const { vats, selectedTaxIndex } = this.state;
-        //     const vat = vats[selectedVatIndex].id * 2.009
-        //     this.setText(this.vatAmountRef, vat);
-        //     this.setText(this.totalAmountRef, vat * 1.5);
-        // })
         this.setState({
             selectedTaxIndex: itemIndex
         }, () => {
@@ -259,7 +252,7 @@ class AddProductScreen extends Component {
             costprice: getFieldValue(this.purchasePriceRef),
             paccount: this.purchaseAccount ? `${this.purchaseAccount.id}` : '',
             rlevel: getFieldValue(this.reorderLevelRef),
-            // name: "18",
+            name: this.supplier ? `${this.supplier.id}` : '',
             rquantity: getFieldValue(this.reorderQtyRef),
             location: isStock ? getFieldValue(this.locationRef) : '',
             barcode: getFieldValue(this.barcodeRef),
@@ -278,7 +271,7 @@ class AddProductScreen extends Component {
     }
 
     getSalesPrice = () => {
-        const isStock = this.state.selectedTypeIndex === 0;
+        const isStock = this.isStock();
         const salesPrice = toFloat(getFieldValue(isStock ? this.salePriceRef : this.rateRef)).toFixed(2);
         return toFloat(salesPrice);
     }
@@ -337,13 +330,22 @@ class AddProductScreen extends Component {
 
     componentDidMount() {
         this.configHeader();
-        this.setFieldsValue();
         this.fetchTaxList();
     }
 
     shouldComponentUpdate(newProps, newState) {
-        console.log('Update');
-        return true;
+        const { product: newProduct, tax: newTax } = newProps;
+        const { product: oldProduct, tax: oldTax } = this.props;
+        return newState.selectedTypeIndex !== this.state.selectedTypeIndex
+            || newState.selectedTaxIndex !== this.state.selectedTaxIndex
+            || newState.includeVat !== this.state.includeVat
+            || newState.showExpiryDateDialog !== this.state.showExpiryDateDialog
+            || newState.alreadyHaveStock !== this.state.alreadyHaveStock
+            || newState.showStockDateDialog !== this.state.showStockDateDialog
+
+            //Props Change
+            || newTax.fetchingTaxList !== oldTax.fetchingTaxList
+            || newProduct.updatingProduct !== oldProduct.updatingProduct;
     }
 
     UNSAFE_componentWillUpdate(newProps, newState) {
@@ -440,17 +442,12 @@ class AddProductScreen extends Component {
         this.props.navigation.setOptions({
             title,
             headerRight: () => {
-                return <TouchableOpacity onPress={this.onBarcodePress} style={{ padding: 12 }}>
-                    <MaterialIcon name='qr-code-scanner' size={30} color='white' />
-                </TouchableOpacity>
+                return !this.isEditMode() ?
+                    <TouchableOpacity onPress={this.onBarcodePress} style={{ padding: 12 }}>
+                        <MaterialIcon name='qr-code-scanner' size={30} color='white' />
+                    </TouchableOpacity> : null
             }
         })
-    }
-    setFieldsValue = () => {
-        const { product } = this.props.route.params;
-        if (product !== undefined) {
-            //Preset values
-        }
     }
 
     onSupplierPress = () => {
@@ -642,6 +639,7 @@ class AddProductScreen extends Component {
         const { types, selectedTypeIndex, selectedTaxIndex } = this.state;
         const isStock = selectedTypeIndex === 0;
         const taxList = this.getTaxList();
+        const editMode = this.isEditMode();
 
         return <KeyboardAvoidingView style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1 }}
@@ -666,6 +664,7 @@ class AddProductScreen extends Component {
                         returnKeyType='next'
                         ref={this.codeRef}
                         lineWidth={1}
+                        editable={!editMode}
                         onSubmitEditing={() => { this.descriptionRef.current.focus() }} />
                     <TextField
                         label='Description'
@@ -683,6 +682,7 @@ class AddProductScreen extends Component {
                         keyboardType='default'
                         returnKeyType='next'
                         ref={this.barcodeRef}
+                        editable={!editMode}
                         lineWidth={1}
                     />
                 </View>

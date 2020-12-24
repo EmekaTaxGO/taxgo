@@ -2,7 +2,6 @@ import React, { Component, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AppTab from '../components/AppTab';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colorPrimary, colorAccent, bottomTabActiveColor, bottomTabInactiveColor, bottomTabBackgroundColor } from '../theme/Color';

@@ -12,7 +12,6 @@ import { DRAWER_ICON_SIZE } from '../constants/appConstant';
 import { colorAccent } from '../theme/Color';
 import InitialRender from '../components/InitialRender';
 import SettingStack from '../components/drawerStack/SettingStack';
-import ContactFragment from '../fragments/ContactFragment';
 import ContactStack from '../components/drawerStack/ContactStack';
 import JournalStack from '../components/drawerStack/JournalStack';
 import LedgerStack from '../components/drawerStack/LedgerStack';

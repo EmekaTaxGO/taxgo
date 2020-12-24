@@ -39,6 +39,14 @@ class ProductFragment extends Component {
         });
     }
 
+    shouldComponentUpdate(newProps, newState) {
+        const { product: newProduct } = newProps;
+        const { product: oldProduct } = this.props;
+        return newState.query !== this.state.query
+            //Props Change
+            || newProduct.fetchingProductList !== oldProduct.fetchingProductList;
+    }
+
     componentDidMount() {
         this.props.navigation.setOptions({
             headerLeft: () => {

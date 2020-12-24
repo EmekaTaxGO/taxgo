@@ -13,7 +13,10 @@ import {
     SAVE_AUTH,
     CHANGE_PASSWORD_SUCCESS,
     CHANGE_PASSWORD_REQUEST,
-    CHANGE_PASSWORD_FAIL
+    CHANGE_PASSWORD_FAIL,
+    PROFILE_REQUEST,
+    PROFILE_FAIL,
+    PROFILE_SUCCESS
 } from '../../constants';
 import {
     API_ERROR_MESSAGE,
@@ -22,7 +25,8 @@ import {
 import { log } from '../../components/Logger';
 import { Alert } from 'react-native';
 import { isClientError } from '../../helpers/Utils';
-import { saveToLocal, AUTH_DATA, getSavedData } from '../../services/UserStorage';
+import { saveToLocal, AUTH_DATA, getSavedData, PROFILE_DATA } from '../../services/UserStorage';
+import Store from '../Store';
 
 export const fetchSignupDetails = () => {
     return (dispatch) => {
@@ -132,4 +136,39 @@ export const changePassword = (body, onSuccess, onError) => {
                 dispatch({ type: CHANGE_PASSWORD_FAIL });
             })
     }
+}
+export const getProfile = () => {
+    return async (dispatch) => {
+        dispatch({ type: PROFILE_REQUEST });
+        const profile = await getSavedData(PROFILE_DATA);
+        if (profile === null) {
+            fetchProfileFromRemote()(dispatch);
+        } else {
+            dispatch({
+                type: PROFILE_SUCCESS,
+                payload: profile
+            });
+        }
+
+
+    }
+}
+
+export const fetchProfileFromRemote = () => {
+    return (dispatch) => {
+        const { authData } = Store.getState().auth;
+        return Api.get(`/user/viewProfile/${authData.id}`)
+            .then(async (response) => {
+                await saveToLocal(PROFILE_DATA, response.data.data);
+                dispatch({
+                    type: PROFILE_SUCCESS,
+                    payload: response.data.data
+                });
+            })
+            .catch(err => {
+                log('Error fetching profile', err);
+                dispatch({ type: PROFILE_FAIL });
+            })
+    }
+
 }

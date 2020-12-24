@@ -53,6 +53,25 @@ export const getProductById = (id) => {
     }
 }
 
+export const getProductDetails = (id, startDate, endDate) => {
+    return (dispatch) => {
+        dispatch({ type: PRODUCT_BY_ID_REQUEST });
+        const { authData } = Store.getState().auth;
+        return Api.get(`/product/productView/${authData.id}/${id}/${startDate}/${endDate}`)
+            .then(response => {
+                dispatch({
+                    type: PRODUCT_BY_ID_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(err => {
+                log('Error Retriving Product', err);
+                dispatch({ type: PRODUCT_BY_ID_FAIL });
+            })
+
+    }
+}
+
 export const getProductByBarcode = (barcode) => {
     return (dispatch) => {
         return Api.get(`/product/getProductByBarcode/${barcode}`)

@@ -22,7 +22,10 @@ const initialState = {
     loading: false,
     authData: null,//User Info
 
-    updatingPassword: false
+    updatingPassword: false,
+
+    profile: null,
+
 }
 const authReducer = (state = initialState, action) => {
     switch (action.type) {

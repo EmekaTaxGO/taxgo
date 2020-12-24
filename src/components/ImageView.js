@@ -7,7 +7,7 @@ const ImageView = props => {
 
     const isUrlValid = () => {
         const { url } = props;
-        return url !== undefined && url.trim().length > 0
+        return url !== undefined && url !== null && url.length > 0
     }
     return <Image
         {...props}

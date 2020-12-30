@@ -354,7 +354,7 @@ class AddProductScreen extends Component {
             && newTax.fetchTaxListError === undefined) {
             //Tax List has been fetched
             if (this.isEditMode()) {
-                this.presetState();
+                this.presetState(newProps);
             }
 
             //Initial Focus code Field
@@ -378,13 +378,14 @@ class AddProductScreen extends Component {
     }
 
     setAllFieldData = () => {
-        const { product } = this.props.route.params;
-        const isStock = this.isStock();
+        const { product_data: product } = this.props.tax.productData;
+        const isStock = product.itemtype === 'Stock';
         setFieldValue(this.codeRef, product.icode);
         setFieldValue(this.descriptionRef, product.idescription);
         setFieldValue(this.barcodeRef, product.barcode);
 
         if (isStock) {
+            console.log('SP_Price', this.state.selectedTypeIndex);
             setFieldValue(this.salePriceRef, product.sp_price);
             setFieldValue(this.tradePriceRef, product.trade_price);
             setFieldValue(this.wholesalePriceRef, product.wholesale);
@@ -407,13 +408,10 @@ class AddProductScreen extends Component {
         setFieldValue(this.locationRef, product.location);
         setFieldValue(this.weightRef, product.weight);
         setFieldValue(this.notesRef, product.notes);
-
-
-
-        console.log('Pro:', product);
     }
-    presetState = () => {
-        const { product } = this.props.route.params;
+    presetState = (newProps) => {
+        const { product_data: product } = newProps.tax.productData;
+        console.log('Product data:', product);
         let itemIndex = 0;
         switch (product.itemtype) {
             case 'Stock':
@@ -428,10 +426,18 @@ class AddProductScreen extends Component {
                 break;
         }
 
+        let taxIndex = 0;
+        const { taxList } = this.props.tax;
+        taxList.forEach((value, index) => {
+            if (product.vat === `${value.percentage}`) {
+                taxIndex = 1 + index;
+            }
+        });
         this.setState({
             selectedTypeIndex: itemIndex,
             includeVat: product.includevat === 1,
-            alreadyHaveStock: isInteger(product.quantity)
+            alreadyHaveStock: isInteger(product.quantity),
+            selectedTaxIndex: taxIndex
         });
     }
 
@@ -607,7 +613,8 @@ class AddProductScreen extends Component {
 
     fetchTaxList = () => {
         const { taxActions } = this.props;
-        taxActions.getTaxList();
+        const { product } = this.props.route.params;
+        taxActions.getTaxList(product ? product.id : undefined);
     }
 
     getTaxList = () => {

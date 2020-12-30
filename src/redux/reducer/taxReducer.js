@@ -5,7 +5,8 @@ import { API_ERROR_MESSAGE } from "../../constants/appConstant";
 const initialState = {
     fetchingTaxList: false,
     fetchTaxListError: undefined,
-    taxList: []
+    taxList: [],
+    productData: undefined
 };
 const taxListReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -25,7 +26,8 @@ const taxListReducer = (state = initialState, action) => {
             return {
                 ...state,
                 fetchingTaxList: false,
-                taxList: [...action.payload]
+                taxList: [...action.payload.taxList],
+                productData: { ...action.payload.productInfo }
             };
         default:
             return state;

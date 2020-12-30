@@ -6,35 +6,48 @@ import {
 } from "../../constants";
 import Api from '../../services/api';
 import { log } from "../../components/Logger";
+import Store from "../Store";
+import moment from 'moment';
 
-export const getTaxList = () => {
-    return async (dispatch) => {
-        dispatch({ type: TAX_LIST_REQUEST });
-        const taxList = await getSavedData(TAX_LIST);
-        if (taxList === null) {
-            fetchTaxListFromRemote()(dispatch);
-        } else {
-            dispatch({
-                type: TAX_LIST_SUCCESS,
-                payload: taxList
-            });
-        }
-    }
-}
-export const fetchTaxListFromRemote = () => {
+export const getTaxList = (productId) => {
     return (dispatch) => {
-
-        return Api.get('/default/taxList/3')
-            .then(async (response) => {
-                await saveToLocal(TAX_LIST, response.data.data)
+        dispatch({ type: TAX_LIST_REQUEST });
+        const apiList = [Api.get(`/default/taxList/16`)];
+        if (productId) {
+            const { authData } = Store.getState().auth;
+            const startDate = defaultStartDate();
+            const endDate = defaultEndDate();
+            apiList.push(Api.get(`/product/productView/${authData.id}/${productId}/${startDate}/${endDate}`));
+        }
+        return Promise.all(apiList)
+            .then(async (results) => {
+                const taxList = results[0].data.data;
+                const productInfo = productId ? results[1].data : undefined;
+                await saveToLocal(TAX_LIST, taxList);
                 dispatch({
                     type: TAX_LIST_SUCCESS,
-                    payload: response.data.data
+                    payload: {
+                        taxList: taxList,
+                        productInfo: productInfo
+                    }
                 });
             })
             .catch(err => {
-                log('Error Fetching tax list', err);
+                log('Error fetching Tax List', err);
                 dispatch({ type: TAX_LIST_FAIL });
             })
     }
+}
+const defaultStartDate = () => {
+    const startDate = moment();
+    startDate.set('date', 1);
+
+    return moment(startDate.toDate()).format('YYYY-MM-DD');
+}
+
+const defaultEndDate = () => {
+    const endDate = moment();
+    endDate.set('date', endDate.daysInMonth());
+
+    return moment(endDate.toDate()).format('YYYY-MM-DD');
 }

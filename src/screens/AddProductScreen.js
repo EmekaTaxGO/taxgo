@@ -385,14 +385,13 @@ class AddProductScreen extends Component {
         setFieldValue(this.barcodeRef, product.barcode);
 
         if (isStock) {
-            console.log('SP_Price', this.state.selectedTypeIndex);
             setFieldValue(this.salePriceRef, product.sp_price);
             setFieldValue(this.tradePriceRef, product.trade_price);
             setFieldValue(this.wholesalePriceRef, product.wholesale);
         } else {
             setFieldValue(this.rateRef, product.rate);
         }
-        this.onPriceChange();
+        setTimeout(this.onPriceChange, 200);
         setFieldValue(this.SICodeRef, product.sicode);
         setFieldValue(this.purchaseDescRef, product.pdescription);
         setFieldValue(this.purchasePriceRef, product.costprice);
@@ -411,7 +410,7 @@ class AddProductScreen extends Component {
     }
     presetState = (newProps) => {
         const { product_data: product } = newProps.tax.productData;
-        console.log('Product data:', product);
+        console.log('Product Info:', newProps.tax.productData);
         let itemIndex = 0;
         switch (product.itemtype) {
             case 'Stock':
@@ -429,7 +428,7 @@ class AddProductScreen extends Component {
         let taxIndex = 0;
         const { taxList } = this.props.tax;
         taxList.forEach((value, index) => {
-            if (product.vat === `${value.percentage}`) {
+            if (toFloat(product.vat) === value.percentage) {
                 taxIndex = 1 + index;
             }
         });
@@ -538,7 +537,6 @@ class AddProductScreen extends Component {
                     value={this.state.stockDate}
                     mode={'datetime'}
                     display='default'
-                    minimumDate={new Date()}
                     onChange={this.onStockDateChange}
                 /> : null}
             </View>
@@ -823,7 +821,6 @@ class AddProductScreen extends Component {
                         value={this.state.purchaseExpiryDate}
                         mode={'datetime'}
                         display='default'
-                        minimumDate={new Date()}
                         onChange={this.onPurchaseExpiryChange}
                     /> : null}
 

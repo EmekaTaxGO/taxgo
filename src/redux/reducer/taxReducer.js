@@ -8,7 +8,8 @@ const initialState = {
     taxList: [],
     productData: undefined,
     salesLedgers: [],
-    purchaseLedgers: []
+    purchaseLedgers: [],
+    suppliers: []
 };
 const taxListReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -31,7 +32,8 @@ const taxListReducer = (state = initialState, action) => {
                 taxList: [...action.payload.taxList],
                 productData: { ...action.payload.productInfo },
                 salesLedgers: action.payload.salesLedgers,
-                purchaseLedgers: action.payload.purchaseLedgers
+                purchaseLedgers: action.payload.purchaseLedgers,
+                suppliers: action.payload.suppliers
             };
         default:
             return state;

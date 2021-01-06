@@ -18,6 +18,7 @@ export const getTaxList = (productId) => {
             apiList.push(Api.get(`/product/getProductById/${productId}`));
             apiList.push(Api.get(`/ledger/listLedger/${authData.id}`));
             apiList.push(Api.get(`/ledger/listpurchaseledger/${authData.id}`));
+            apiList.push(Api.get(`/contact/supplierlist/${authData.id}`));
         }
         return Promise.all(apiList)
             .then(async (results) => {
@@ -25,6 +26,7 @@ export const getTaxList = (productId) => {
                 const productInfo = productId ? results[1].data.data : undefined;
                 const salesLedgers = productId ? results[2].data.data : undefined;
                 const purchaseLedgers = productId ? results[3].data.data : undefined;
+                const suppliers = productId ? results[4].data.data : undefined;
                 await saveToLocal(TAX_LIST, taxList);
                 dispatch({
                     type: TAX_LIST_SUCCESS,
@@ -32,7 +34,8 @@ export const getTaxList = (productId) => {
                         taxList: taxList,
                         productInfo: productInfo,
                         salesLedgers: salesLedgers,
-                        purchaseLedgers: purchaseLedgers
+                        purchaseLedgers: purchaseLedgers,
+                        suppliers: suppliers
                     }
                 });
             })

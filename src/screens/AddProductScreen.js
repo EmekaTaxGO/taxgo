@@ -410,7 +410,6 @@ class AddProductScreen extends Component {
         if (isInteger(product.saccount)) {
             const filteredSales = this.props.tax.salesLedgers
                 .filter(value => toInteger(product.saccount) === value.id);
-            console.log('Saccount', filteredSales);
             if (filteredSales && filteredSales.length > 0) {
                 this.salesAccount = { ...filteredSales[0] };
                 this.setSaleAccount();
@@ -433,7 +432,16 @@ class AddProductScreen extends Component {
                 this.setPurchaseAccount();
             }
         }
+        if (isInteger(product.name)) {
+            const filteredSupplier = this.props.tax.suppliers
+                .filter(value => toInteger(product.name) === value.id);
+            if (filteredSupplier && filteredSupplier.length > 0) {
+                this.supplier = { ...filteredSupplier[0] };
+                this.setSupplier();
+            }
+        }
     }
+
     presetState = (newProps) => {
         const { productData: product } = newProps.tax;
         let itemIndex = 0;
@@ -484,7 +492,7 @@ class AddProductScreen extends Component {
         this.props.navigation.push('SelectSupplierScreen', {
             onSupplierSelected: item => {
                 this.supplier = item;
-                setFieldValue(this.supplierRef, item.name);
+                this.setSupplier();
             }
         });
     }
@@ -505,6 +513,10 @@ class AddProductScreen extends Component {
     setPurchaseAccount = () => {
         const label = `${this.purchaseAccount.nominalcode}-${this.purchaseAccount.laccount}`;
         setFieldValue(this.purchaseAccRef, label);
+    }
+
+    setSupplier = () => {
+        setFieldValue(this.supplierRef, this.supplier.name);
     }
 
     onPurchaseAccPress = () => {
@@ -662,8 +674,6 @@ class AddProductScreen extends Component {
 
 
     render() {
-
-        console.log('Add Product Rendering');
         const { tax } = this.props;
         if (tax.fetchingTaxList) {
             return <OnScreenSpinner />

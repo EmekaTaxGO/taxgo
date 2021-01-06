@@ -51,7 +51,8 @@ class HomeScreen extends Component {
             detachInactiveScreens
             drawerContentOptions={{
                 activeTintColor: colorAccent,
-                inactiveTintColor: 'black'
+                inactiveTintColor: 'black',
+                profile: this.props.auth.profile
             }}
             screenOptions={{
                 // headerStyle: { backgroundColor: colorPrimary },

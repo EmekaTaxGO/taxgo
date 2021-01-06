@@ -6,7 +6,9 @@ const initialState = {
     fetchingTaxList: false,
     fetchTaxListError: undefined,
     taxList: [],
-    productData: undefined
+    productData: undefined,
+    salesLedgers: [],
+    purchaseLedgers: []
 };
 const taxListReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -27,7 +29,9 @@ const taxListReducer = (state = initialState, action) => {
                 ...state,
                 fetchingTaxList: false,
                 taxList: [...action.payload.taxList],
-                productData: { ...action.payload.productInfo }
+                productData: { ...action.payload.productInfo },
+                salesLedgers: action.payload.salesLedgers,
+                purchaseLedgers: action.payload.purchaseLedgers
             };
         default:
             return state;

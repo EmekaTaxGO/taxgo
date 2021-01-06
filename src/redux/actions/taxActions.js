@@ -12,23 +12,27 @@ import moment from 'moment';
 export const getTaxList = (productId) => {
     return (dispatch) => {
         dispatch({ type: TAX_LIST_REQUEST });
-        const apiList = [Api.get(`/default/taxList/16`)];
+        const { authData } = Store.getState().auth;
+        const apiList = [Api.get(`/default/taxList/${authData.country}`)];
         if (productId) {
-            const { authData } = Store.getState().auth;
-            const startDate = defaultStartDate();
-            const endDate = defaultEndDate();
-            apiList.push(Api.get(`/product/productView/${authData.id}/${productId}/${startDate}/${endDate}`));
+            apiList.push(Api.get(`/product/getProductById/${productId}`));
+            apiList.push(Api.get(`/ledger/listLedger/${authData.id}`));
+            apiList.push(Api.get(`/ledger/listpurchaseledger/${authData.id}`));
         }
         return Promise.all(apiList)
             .then(async (results) => {
                 const taxList = results[0].data.data;
-                const productInfo = productId ? results[1].data : undefined;
+                const productInfo = productId ? results[1].data.data : undefined;
+                const salesLedgers = productId ? results[2].data.data : undefined;
+                const purchaseLedgers = productId ? results[3].data.data : undefined;
                 await saveToLocal(TAX_LIST, taxList);
                 dispatch({
                     type: TAX_LIST_SUCCESS,
                     payload: {
                         taxList: taxList,
-                        productInfo: productInfo
+                        productInfo: productInfo,
+                        salesLedgers: salesLedgers,
+                        purchaseLedgers: purchaseLedgers
                     }
                 });
             })
@@ -37,17 +41,4 @@ export const getTaxList = (productId) => {
                 dispatch({ type: TAX_LIST_FAIL });
             })
     }
-}
-const defaultStartDate = () => {
-    const startDate = moment();
-    startDate.set('date', 1);
-
-    return moment(startDate.toDate()).format('YYYY-MM-DD');
-}
-
-const defaultEndDate = () => {
-    const endDate = moment();
-    endDate.set('date', endDate.daysInMonth());
-
-    return moment(endDate.toDate()).format('YYYY-MM-DD');
 }

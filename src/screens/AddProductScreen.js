@@ -8,7 +8,7 @@ import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { connect } from 'react-redux';
-import { toFloat, isEmpty, isInteger, isFloat } from '../helpers/Utils';
+import { toFloat, isEmpty, isInteger, isFloat, toInteger } from '../helpers/Utils';
 import { getFieldValue, setFieldValue, focusField } from '../helpers/TextFieldHelpers';
 
 import * as productActions from '../redux/actions/productActions';
@@ -193,7 +193,6 @@ class AddProductScreen extends Component {
     proceedToSubmit = () => {
         const { productActions } = this.props;
         const body = this.createPostBody();
-        console.log('Product Update Body:', body);
         if (this.isEditMode()) {
             productActions.updateProduct(body, this.onUpdateSuccess, this.onUpdateError);
         } else {
@@ -378,7 +377,7 @@ class AddProductScreen extends Component {
     }
 
     setAllFieldData = () => {
-        const { product_data: product } = this.props.tax.productData;
+        const { productData: product } = this.props.tax;
         const isStock = product.itemtype === 'Stock';
         setFieldValue(this.codeRef, product.icode);
         setFieldValue(this.descriptionRef, product.idescription);
@@ -407,10 +406,36 @@ class AddProductScreen extends Component {
         setFieldValue(this.locationRef, product.location);
         setFieldValue(this.weightRef, product.weight);
         setFieldValue(this.notesRef, product.notes);
+
+        if (isInteger(product.saccount)) {
+            const filteredSales = this.props.tax.salesLedgers
+                .filter(value => toInteger(product.saccount) === value.id);
+            console.log('Saccount', filteredSales);
+            if (filteredSales && filteredSales.length > 0) {
+                this.salesAccount = { ...filteredSales[0] };
+                this.setSaleAccount();
+            }
+        }
+
+        if (isInteger(product.paccount)) {
+            const filteredPurchase = this.props.tax.purchaseLedgers
+                .filter(value => toInteger(product.paccount) === value.id);
+            if (filteredPurchase && filteredPurchase.length > 0) {
+                this.purchaseAccount = { ...filteredPurchase[0] };
+                this.setPurchaseAccount();
+            }
+        }
+        if (isInteger(product.paccount)) {
+            const filteredPurchase = this.props.tax.purchaseLedgers
+                .filter(value => toInteger(product.paccount) === value.id);
+            if (filteredPurchase && filteredPurchase.length > 0) {
+                this.purchaseAccount = { ...filteredPurchase[0] };
+                this.setPurchaseAccount();
+            }
+        }
     }
     presetState = (newProps) => {
-        const { product_data: product } = newProps.tax.productData;
-        console.log('Product Info:', newProps.tax.productData);
+        const { productData: product } = newProps.tax;
         let itemIndex = 0;
         switch (product.itemtype) {
             case 'Stock':
@@ -467,20 +492,26 @@ class AddProductScreen extends Component {
     onSalesAccountClick = () => {
         this.props.navigation.push('SaleLedgerScreen', {
             onLedgerSelected: item => {
-                log('Selected Ledger:', item);
                 this.salesAccount = { ...item };
-                const label = `${item.nominalcode}-${item.category}-${item.categorygroup}`;
-                setFieldValue(this.saleAccountRef, label);
+                this.setSaleAccount();
             }
         })
+    }
+
+    setSaleAccount = () => {
+        const label = `${this.salesAccount.nominalcode}-${this.salesAccount.laccount}`;
+        setFieldValue(this.saleAccountRef, label);
+    }
+    setPurchaseAccount = () => {
+        const label = `${this.purchaseAccount.nominalcode}-${this.purchaseAccount.laccount}`;
+        setFieldValue(this.purchaseAccRef, label);
     }
 
     onPurchaseAccPress = () => {
         this.props.navigation.push('PurchaseLedgerScreen', {
             onLedgerSelected: item => {
                 this.purchaseAccount = { ...item };
-                const label = `${item.nominalcode}-${item.category}-${item.categorygroup}`;
-                setFieldValue(this.purchaseAccRef, label);
+                this.setPurchaseAccount();
             }
         })
     }

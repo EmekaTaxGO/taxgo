@@ -1,27 +1,22 @@
 import React, { useEffect, Component } from 'react';
-import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image } from 'react-native';
+import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Picker } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ImageView from '../components/ImageView';
 import { TextField } from 'react-native-material-textfield';
 import AppButton from '../components/AppButton';
 import { RaisedButton, RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
+import { connect } from 'react-redux';
+import * as authActions from '../redux/actions/authActions';
+import { bindActionCreators } from 'redux';
+import { setFieldValue } from '../helpers/TextFieldHelpers'
 class EditProfileScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            firstName: '',
-            lastName: '',
-            email: '',
-            businessName: '',
-            phone: '',
-            businessType: '',
-            businessCategory: '',
-            regNumber: '',
-            country: '',
-            tax: '',
-            taxRegNum: ''
+            businessTypeIndex: 0,
+            businessType: ['Select Business Type', 'Limited Company', 'Partnership', 'Trader']
         }
     }
 
@@ -35,6 +30,54 @@ class EditProfileScreen extends Component {
     regNumRef = React.createRef();
     countryRef = React.createRef();
     taxRef = React.createRef();
+
+    shouldComponentUpdate(newProps, newState) {
+        const { auth: newAuth } = newProps;
+        const { auth: oldAuth } = this.props;
+        return newAuth.updatingProfile !== oldAuth.updatingProfile
+            //State Change
+            || newState.businessTypeIndex !== this.state.businessTypeIndex;
+    }
+    componentDidUpdate(oldProps, oldState) {
+        const { auth: newAuth } = this.props;
+        const { auth: oldAuth } = oldProps;
+        if (!newAuth.updatingProfile && oldAuth.updatingProfile && newAuth.profile !== null) {
+            this.setFieldData(newAuth.profile);
+        }
+    }
+    componentDidMount() {
+        const { auth } = this.props;
+        if (auth.profile !== null) {
+            this.setFieldData(auth.profile);
+        }
+    }
+
+    setFieldData = (profile) => {
+        setFieldValue(this.firstNameRef, profile.firstname);
+        setFieldValue(this.lastNameRef, profile.lastname);
+        setFieldValue(this.emailRef, profile.email);
+        setFieldValue(this.businessNameRef, profile.bname);
+        setFieldValue(this.phoneRef, profile.phonenumber);
+
+    }
+
+    renderBusinessType = () => {
+        const selectedBType = this.state.businessType[this.state.businessTypeIndex];
+        return <View style={{ flexDirection: 'column', marginTop: 20 }}>
+            <Text style={{ fontSize: 15 }}>Business Type</Text>
+            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
+                <Picker
+                    selectedValue={selectedBType}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
+
+                    {this.state.businessType.map((value, index) => <Picker.Item
+                        label={value} value={value} key={value} />)}
+                </Picker>
+            </View>
+
+        </View>
+    }
 
     render() {
         return <KeyboardAvoidingView
@@ -96,14 +139,7 @@ class EditProfileScreen extends Component {
                     ref={this.phoneRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.businessTypeRef.current.focus() }} />
-                <TextField
-                    label='Business Type'
-                    keyboardType='numbers-and-punctuation'
-                    returnKeyType='next'
-                    // error={this.state.emailError}
-                    ref={this.businessTypeRef}
-                    lineWidth={1}
-                    onSubmitEditing={() => { this.businessCategoryRef.current.focus() }} />
+                {this.renderBusinessType()}
                 <TextField
                     label='Business Category'
                     keyboardType='numbers-and-punctuation'
@@ -156,4 +192,11 @@ const styles = StyleSheet.create({
         marginVertical: 20
     }
 });
-export default EditProfileScreen;
+export default connect(
+    state => ({
+        auth: state.auth
+    }),
+    dispatch => ({
+        authActions: bindActionCreators(authActions, dispatch)
+    })
+)(EditProfileScreen);

@@ -1,4 +1,4 @@
-import { getSavedData, TAX_LIST, saveToLocal } from "../../services/UserStorage"
+import { TAX_LIST, saveToLocal } from "../../services/UserStorage"
 import {
     TAX_LIST_REQUEST,
     TAX_LIST_SUCCESS,
@@ -7,7 +7,6 @@ import {
 import Api from '../../services/api';
 import { log } from "../../components/Logger";
 import Store from "../Store";
-import moment from 'moment';
 
 export const getTaxList = (productId) => {
     return (dispatch) => {

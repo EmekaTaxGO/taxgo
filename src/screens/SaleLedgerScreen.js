@@ -41,8 +41,10 @@ class SaleLedgerScreen extends Component {
     }
     filteredLedgers = () => {
         let filteredLedgers = [];
-        filteredLedgers = this.props.ledger.saleLedgers.filter(value =>
-            value.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1);
+        filteredLedgers = this.props.ledger.saleLedgers.filter(value => {
+            const label = `${value.nominalcode}-${value.laccount}`;
+            return label.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        });
         return filteredLedgers;
     }
 
@@ -53,11 +55,11 @@ class SaleLedgerScreen extends Component {
                 this.props.navigation.goBack();
             }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <ImageView
+                {/* <ImageView
                     placeholder={require('../assets/product.png')}
                     url={''}
                     style={styles.image}
-                />
+                /> */}
                 <View style={{
                     flex: 1,
                     flexDirection: 'column',
@@ -67,8 +69,8 @@ class SaleLedgerScreen extends Component {
                     borderBottomWidth: 1,
                     paddingVertical: 18
                 }}>
-                    <Text style={{ color: 'black', fontSize: 16 }}>{item.category}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>{item.categorygroup}</Text>
+                    <Text style={{ color: 'black', fontSize: 16 }}>{item.nominalcode}-{item.laccount}</Text>
+                    {/* <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Category: {item.category}</Text> */}
                 </View>
             </View>
         </TouchableOpacity>

@@ -1,12 +1,22 @@
 
 export const setFieldValue = (ref, value) => {
     const { current: field } = ref;
-    field.setValue(value);
+    if (field !== null) {
+        field.setValue(value);
+    }
 }
 export const getFieldValue = ref => {
     const { current: field } = ref;
-    return field.value();
+    if (field !== null) {
+        return field.value();
+    } else {
+        return '';
+    }
+
 }
 export const focusField = ref => {
-    ref.current.focus();
+    const { current: field } = ref;
+    if (field !== null) {
+        field.focus();
+    }
 }

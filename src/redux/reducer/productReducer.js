@@ -1,4 +1,18 @@
-import { PRODUCT_LIST_REQUEST, PRODUCT_LIST_FAIL, PRODUCT_LIST_SUCCESS, PRODUCT_BY_ID_REQUEST, PRODUCT_BY_ID_FAIL, PRODUCT_BY_ID_SUCCESS, PRODUCT_LEDGER_LIST_REQUEST, PRODUCT_LEDGER_LIST_FAIL, PRODUCT_LEDGER_LIST_SUCCESS } from "../../constants";
+import {
+    PRODUCT_LIST_REQUEST,
+    PRODUCT_LIST_FAIL,
+    PRODUCT_LIST_SUCCESS,
+    PRODUCT_BY_ID_REQUEST,
+    PRODUCT_BY_ID_FAIL,
+    PRODUCT_BY_ID_SUCCESS,
+    PRODUCT_LEDGER_LIST_REQUEST,
+    PRODUCT_LEDGER_LIST_FAIL,
+    PRODUCT_LEDGER_LIST_SUCCESS,
+    UPDATE_SUPPLIER_REQUEST,
+    UPDATE_PRODUCT_FAIL,
+    UPDATE_PRODUCT_SUCCESS,
+    UPDATE_PRODUCT_REQUEST
+} from "../../constants";
 import { API_ERROR_MESSAGE } from "../../constants/appConstant";
 
 
@@ -14,7 +28,9 @@ const initialState = {
 
     fetchingProductLedger: false,
     fetchProductLedgerError: undefined,
-    productLedgers: []
+    productLedgers: [],
+
+    updatingProduct: false
 };
 
 const productReducer = (state = initialState, action) => {
@@ -73,6 +89,11 @@ const productReducer = (state = initialState, action) => {
                 fetchingProductLedger: false,
                 productLedgers: [...action.payload]
             };
+        case UPDATE_PRODUCT_REQUEST:
+            return { ...state, updatingProduct: true };
+        case UPDATE_PRODUCT_FAIL:
+        case UPDATE_PRODUCT_SUCCESS:
+            return { ...state, updatingProduct: false };
         default:
             return state;
     }

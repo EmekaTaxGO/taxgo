@@ -1,62 +1,56 @@
-import React from 'react';
-import { StyleSheet, View, TouchableHighlight, Text } from 'react-native';
-import { tabBackgroundColor, tabIndicatorColor, tabSelectedColor } from '../theme/Color';
-import FeatherIcon from 'react-native-vector-icons/Feather';
+import React, { Component } from 'react';
+import { StyleSheet, TouchableHighlight, View, Text } from 'react-native';
+import { colorPrimary, tabSelectedColor } from '../theme/Color';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
-const AppTab = ({
-    label,
-    icon = null,
-    iconType = null,
-    onSelected,
-    isSelected = false
-}) => {
+class AppTab extends Component {
 
-    const getIcon = () => {
-        if (icon === null) {
-            return null;
-        } else if (iconType === null) {
-            return <FeatherIcon name={icon} size={30} color={isSelected ? tabSelectedColor : 'white'} />
+    getIcon = (icon, iconType, color) => {
+        if (icon === undefined) {
+            return null
+        }
+        if (iconType === undefined) {
+            return <MaterialIcon name={icon} size={24} color={color} />
         }
         switch (iconType) {
-            case 'material':
-                return <MaterialIcon name={icon} size={30} color={isSelected ? tabSelectedColor : 'white'} />;
+            case 'FontAwesome5Icon':
+                return <FontAwesome5Icon name={icon} size={24} color={color} />;
+            case 'MaterialCommunityIcons':
+                return <MaterialCommunityIcons name={icon} size={24} color={color} />;
             default:
-                return <FeatherIcon name={icon} size={30} color={isSelected ? tabSelectedColor : 'white'} />;
+                return <MaterialIcon name={icon} size={24} color={color} />;
         }
-    }
-    return <TouchableHighlight
-        style={{
-            flex: 1,
-            backgroundColor: tabBackgroundColor,
-            paddingVertical: 8,
-            paddingHorizontal: 4,
-            borderBottomColor: tabIndicatorColor,
-            borderBottomWidth: isSelected ? 4 : 0,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center'
-        }}
-        onPress={onSelected}
-        underlayColor={tabBackgroundColor}
-    >
-        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-            {getIcon()}
-            {(label !== undefined && label.length > 0)
-                ? <Text style={{
-                    fontWeight: isSelected ? 'bold' : 'normal',
-                    fontSize: 18,
-                    marginTop: 4,
-                    color: isSelected ? tabSelectedColor : 'white'
-                }}>
-                    {label}</Text> : null}
-        </View>
-    </TouchableHighlight>
-}
-const styles = StyleSheet.create({
-    tabText: {
-        fontSize: 14,
 
     }
+
+    render() {
+        const { title, onTabPress, icon, iconType, selected } = this.props;
+        return <TouchableHighlight style={{
+            flex: 1,
+            backgroundColor: colorPrimary,
+            paddingVertical: icon ? 6 : 13,
+            borderBottomWidth: selected ? 2 : 0,
+            borderBottomColor: tabSelectedColor,
+        }}
+            onPress={onTabPress}
+            underlayColor={colorPrimary}>
+            <View style={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                {this.getIcon(icon, iconType, selected ? tabSelectedColor : 'white')}
+                <Text style={{
+                    color: selected ? tabSelectedColor : 'white',
+                    fontSize: 14
+                }}>{title}</Text>
+            </View>
+        </TouchableHighlight>
+    }
+}
+const styles = StyleSheet.create({
+
 });
 export default AppTab;

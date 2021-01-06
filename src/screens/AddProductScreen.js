@@ -8,13 +8,21 @@ import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { connect } from 'react-redux';
-import { isEmpty, validateEmail, isInteger, isFloat } from '../helpers/Utils';
+import { toFloat, isEmpty, isInteger, isFloat, toInteger } from '../helpers/Utils';
 import { getFieldValue, setFieldValue, focusField } from '../helpers/TextFieldHelpers';
 
 import * as productActions from '../redux/actions/productActions';
+import * as taxActions from '../redux/actions/taxActions';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+
 import { bindActionCreators } from 'redux';
 import Store from '../redux/Store';
 import Snackbar from 'react-native-snackbar';
+import { log } from '../components/Logger';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import ProgressDialog from '../components/ProgressDialog';
+
 
 class AddProductScreen extends Component {
     constructor(props) {
@@ -22,8 +30,7 @@ class AddProductScreen extends Component {
         this.state = {
             types: this.createProductType(),
             selectedTypeIndex: 0,
-            vats: this.createVats(),
-            selectedVatIndex: 0,
+            selectedTaxIndex: 0,
             includeVat: false,
             showExpiryDateDialog: false,
             purchaseExpiryDate: new Date(),
@@ -35,6 +42,7 @@ class AddProductScreen extends Component {
     }
 
     salesAccount;
+    purchaseAccount;
     supplier;
 
     codeRef = React.createRef();
@@ -53,7 +61,7 @@ class AddProductScreen extends Component {
     purchasePriceRef = React.createRef();
     purchaseAccRef = React.createRef();
     expiryDateRef = React.createRef();
-    reorderLimitRef = React.createRef();
+    reorderLevelRef = React.createRef();
     reorderQtyRef = React.createRef();
     stockQtyRef = React.createRef();
     stockDateRef = React.createRef();
@@ -63,23 +71,6 @@ class AddProductScreen extends Component {
     barcodeRef = React.createRef();
     notesRef = React.createRef();
 
-
-    createVats = () => {
-        return [
-            {
-                id: 1,
-                value: '0.00 % VAT-Zero rate'
-            },
-            {
-                id: 2,
-                value: '5.00 % VAT-Standard rate'
-            },
-            {
-                id: 3,
-                value: '10.00 % VAT-Market rate'
-            }
-        ]
-    }
     createProductType = () => {
         return [
             {
@@ -98,7 +89,7 @@ class AddProductScreen extends Component {
     }
 
     isEditMode = () => {
-        return this.props.route.params.product !== null;
+        return this.props.route.params.product !== undefined;
     }
 
     renderStrip = (text) => {
@@ -128,12 +119,10 @@ class AddProductScreen extends Component {
     }
 
     onVatChange = (itemValue, itemIndex) => {
-
-        this.setState({ selectedVatIndex: itemIndex }, () => {
-            const { vats, selectedVatIndex } = this.state;
-            const vat = vats[selectedVatIndex].id * 2.009
-            this.setText(this.vatAmountRef, vat);
-            this.setText(this.totalAmountRef, vat * 1.5);
+        this.setState({
+            selectedTaxIndex: itemIndex
+        }, () => {
+            this.onPriceChange();
         })
     }
 
@@ -144,12 +133,6 @@ class AddProductScreen extends Component {
 
     focus = ref => {
         ref.current.focus();
-    }
-
-    getTotal = () => {
-        const { vats, selectedVatIndex } = this.state;
-        const total = vats[selectedVatIndex].id * 234;
-        return total;
     }
 
     onPurchaseExpiryChange = (event, selectedDate) => {
@@ -175,7 +158,6 @@ class AddProductScreen extends Component {
     onBarcodePress = () => {
         this.props.navigation.push('ScanBarcodeScreen', {
             onBarCodeScanned: data => {
-                console.log('Scanned Data', data);
                 setFieldValue(this.barcodeRef, data);
             }
         });
@@ -203,6 +185,7 @@ class AddProductScreen extends Component {
             this.showAlert('Please enter valid rate.');
 
         } else {
+            console.log('Validated!!');
             this.proceedToSubmit();
         }
     }
@@ -210,53 +193,128 @@ class AddProductScreen extends Component {
     proceedToSubmit = () => {
         const { productActions } = this.props;
         const body = this.createPostBody();
-        productActions.createProduct(this.props.navigation, body)
+        if (this.isEditMode()) {
+            productActions.updateProduct(body, this.onUpdateSuccess, this.onUpdateError);
+        } else {
+            productActions.checkForPreUpdate(body, this.onUpdateSuccess, this.onUpdateError);
+        }
+
+    }
+
+    onUpdateSuccess = data => {
+        Alert.alert('Alert', data.message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => {
+                    this.props.route.params.onProductUpdated();
+                    this.props.navigation.goBack();
+                }
+            }
+        ], { cancelable: false });
+    }
+
+    onUpdateError = message => {
+        Alert.alert('Alert', message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => { }
+            }
+        ], { cancelable: false });
+    }
+
+    isStock = () => {
+        return this.state.selectedTypeIndex === 0;
     }
 
     createPostBody = () => {
 
         const { authData } = Store.getState().auth;
+        const isStock = this.isStock();
         return {
+            type: this.isEditMode() ? '2' : '1',
+            userid: `${authData.id}`,
             itemtype: this.state.types[this.state.selectedTypeIndex].value,
             icode: getFieldValue(this.codeRef),
             idescription: getFieldValue(this.descriptionRef),
-            saccount: '',
-            sp_price: '',
-            trade_price: '',
-            wholesale: '',
-            rate: '',
-            sicode: '',
-            pdescription: '',
-            costprice: '',
-            paccount: '',
-            rlevel: '',
-            quantity: '',
-            price: '',
-            date: '',
-            c_price: '',
-            rquantity: '',
-            location: '',
-            barcode: '',
-            weight: '',
-            notes: '',
-            userid: authData.id,
-            adminid: authData.id,
-            userdate: '',
-            name: '',
-            logintype: '',
-            expiredate: '',
-            vat: '',
-            vatamt: '',
-            inclidevat: ''
-        };
+            saccount: this.salesAccount ? `${this.salesAccount.id}` : '', //Sales Ledger Id
+            sp_price: isStock ? getFieldValue(this.salePriceRef) : '',
+            trade_price: isStock ? getFieldValue(this.tradePriceRef) : '',
+            quantity: isStock ? getFieldValue(this.stockQtyRef) : '',
+            date: isStock ? moment(this.state.stockDate).format('YYYY-MM-DD') : '',
+            c_price: isStock ? getFieldValue(this.stockPriceRef) : '',
+            wholesale: isStock ? getFieldValue(this.wholesalePriceRef) : '',
+            rate: !isStock ? getFieldValue(this.rateRef) : '',
+            sicode: getFieldValue(this.SICodeRef),
+            pdescription: getFieldValue(this.purchaseDescRef),
+            costprice: getFieldValue(this.purchasePriceRef),
+            paccount: this.purchaseAccount ? `${this.purchaseAccount.id}` : '',
+            rlevel: getFieldValue(this.reorderLevelRef),
+            name: this.supplier ? `${this.supplier.id}` : '',
+            rquantity: getFieldValue(this.reorderQtyRef),
+            location: isStock ? getFieldValue(this.locationRef) : '',
+            barcode: getFieldValue(this.barcodeRef),
+            weight: isStock ? getFieldValue(this.weightRef) : '',
+            notes: isStock ? getFieldValue(this.notesRef) : '',
+            adminid: '',
+            userdate: moment(new Date()).format('YYYY-MM-DD'),
+            logintype: 'user',
+            // pimage: "TAXGO_IMAGES_1608187534911.png",
+            expiredate: moment(this.state.purchaseExpiryDate).format('YYYY-MM-DD'),
+            vat: `${this.getTaxPercentage()}`,
+            vatamt: `${this.getTaxAmount()}`,
+            includevat: this.state.includeVat ? 1 : 0,
+            totalprice: `${this.getTotalPrice()}`
+        }
+    }
+
+    getSalesPrice = () => {
+        const isStock = this.isStock();
+        const salesPrice = toFloat(getFieldValue(isStock ? this.salePriceRef : this.rateRef)).toFixed(2);
+        return toFloat(salesPrice);
+    }
+
+    getTaxPercentage = () => {
+        const { selectedTaxIndex } = this.state;
+        const { taxList } = this.props.tax;
+        if (selectedTaxIndex === 0) {
+            return 0;
+        } else {
+            const percentage = toFloat(taxList[selectedTaxIndex - 1].percentage).toFixed(2);
+            return toFloat(percentage);
+        }
+    }
+
+    getTotalPrice = () => {
+
+        if (this.state.includeVat) {
+            return toFloat(getFieldValue(this.isStock() ? this.salePriceRef : this.rateRef));
+        } else {
+            return this.getSalesPrice() + this.getTaxAmount();
+        }
+    }
+
+    getTaxAmount = () => {
+        const salesPrice = this.getSalesPrice();
+        const taxPercentage = this.getTaxPercentage();
+        let taxAmt = 0.0;
+        if (this.state.includeVat) {
+            const principal = (salesPrice * 100) / (100 + taxPercentage);
+            taxAmt = salesPrice - principal;
+        } else {
+            taxAmt = (taxPercentage * salesPrice) / 100;
+        }
+        taxAmt = toFloat(taxAmt.toFixed(2));
+        return taxAmt;
+    }
+
+    onPriceChange = () => {
+        setFieldValue(this.vatAmountRef, `${this.getTaxAmount()}`);
+        setFieldValue(this.totalAmountRef, `${this.getTotalPrice()}`);
     }
 
     showAlert = (message) => {
-        // Alert.alert('Alert', message, [{
-        //     style: 'default',
-        //     text: 'OK',
-        //     onPress: () => { }
-        // }])
         Snackbar.show({
             text: message,
             duration: Snackbar.LENGTH_LONG,
@@ -270,31 +328,171 @@ class AddProductScreen extends Component {
     }
 
     componentDidMount() {
-        this.setTitle();
-        this.setFieldsValue();
-
-        setTimeout(() => {
-            focusField(this.codeRef);
-        }, 200);
+        this.configHeader();
+        this.fetchTaxList();
     }
 
-    setTitle = () => {
+    shouldComponentUpdate(newProps, newState) {
+        const { product: newProduct, tax: newTax } = newProps;
+        const { product: oldProduct, tax: oldTax } = this.props;
+        return newState.selectedTypeIndex !== this.state.selectedTypeIndex
+            || newState.selectedTaxIndex !== this.state.selectedTaxIndex
+            || newState.includeVat !== this.state.includeVat
+            || newState.showExpiryDateDialog !== this.state.showExpiryDateDialog
+            || newState.alreadyHaveStock !== this.state.alreadyHaveStock
+            || newState.showStockDateDialog !== this.state.showStockDateDialog
+
+            //Props Change
+            || newTax.fetchingTaxList !== oldTax.fetchingTaxList
+            || newProduct.updatingProduct !== oldProduct.updatingProduct;
+    }
+
+    UNSAFE_componentWillUpdate(newProps, newState) {
+        const { tax: newTax } = newProps;
+        if (this.props.tax.fetchingTaxList && !newTax.fetchingTaxList
+            && newTax.fetchTaxListError === undefined) {
+            //Tax List has been fetched
+            if (this.isEditMode()) {
+                this.presetState(newProps);
+            }
+
+            //Initial Focus code Field
+            setTimeout(() => {
+                focusField(this.codeRef);
+            }, 300);
+
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const { tax: newTax } = this.props;
+        if (prevProps.tax.fetchingTaxList && !newTax.fetchingTaxList
+            && newTax.fetchTaxListError === undefined) {
+            //Tax List has been fetched
+            if (this.isEditMode()) {
+                this.setAllFieldData();
+            }
+
+        }
+    }
+
+    setAllFieldData = () => {
+        const { productData: product } = this.props.tax;
+        const isStock = product.itemtype === 'Stock';
+        setFieldValue(this.codeRef, product.icode);
+        setFieldValue(this.descriptionRef, product.idescription);
+        setFieldValue(this.barcodeRef, product.barcode);
+
+        if (isStock) {
+            setFieldValue(this.salePriceRef, product.sp_price);
+            setFieldValue(this.tradePriceRef, product.trade_price);
+            setFieldValue(this.wholesalePriceRef, product.wholesale);
+        } else {
+            setFieldValue(this.rateRef, product.rate);
+        }
+        setTimeout(this.onPriceChange, 200);
+        setFieldValue(this.SICodeRef, product.sicode);
+        setFieldValue(this.purchaseDescRef, product.pdescription);
+        setFieldValue(this.purchasePriceRef, product.costprice);
+        setFieldValue(this.expiryDateRef, product.expiredate);
+        setFieldValue(this.reorderLevelRef, product.rlevel);
+        setFieldValue(this.reorderQtyRef, product.rquantity);
+
+        if (isStock) {
+            setFieldValue(this.stockQtyRef, product.quantity);
+            setFieldValue(this.stockPriceRef, product.c_price);
+        }
+
+        setFieldValue(this.locationRef, product.location);
+        setFieldValue(this.weightRef, product.weight);
+        setFieldValue(this.notesRef, product.notes);
+
+        if (isInteger(product.saccount)) {
+            const filteredSales = this.props.tax.salesLedgers
+                .filter(value => toInteger(product.saccount) === value.id);
+            if (filteredSales && filteredSales.length > 0) {
+                this.salesAccount = { ...filteredSales[0] };
+                this.setSaleAccount();
+            }
+        }
+
+        if (isInteger(product.paccount)) {
+            const filteredPurchase = this.props.tax.purchaseLedgers
+                .filter(value => toInteger(product.paccount) === value.id);
+            if (filteredPurchase && filteredPurchase.length > 0) {
+                this.purchaseAccount = { ...filteredPurchase[0] };
+                this.setPurchaseAccount();
+            }
+        }
+        if (isInteger(product.paccount)) {
+            const filteredPurchase = this.props.tax.purchaseLedgers
+                .filter(value => toInteger(product.paccount) === value.id);
+            if (filteredPurchase && filteredPurchase.length > 0) {
+                this.purchaseAccount = { ...filteredPurchase[0] };
+                this.setPurchaseAccount();
+            }
+        }
+        if (isInteger(product.name)) {
+            const filteredSupplier = this.props.tax.suppliers
+                .filter(value => toInteger(product.name) === value.id);
+            if (filteredSupplier && filteredSupplier.length > 0) {
+                this.supplier = { ...filteredSupplier[0] };
+                this.setSupplier();
+            }
+        }
+    }
+
+    presetState = (newProps) => {
+        const { productData: product } = newProps.tax;
+        let itemIndex = 0;
+        switch (product.itemtype) {
+            case 'Stock':
+            default:
+                itemIndex = 0;
+                break;
+            case 'Non-Stock':
+                itemIndex = 1;
+                break;
+            case 'Service':
+                itemIndex = 2;
+                break;
+        }
+
+        let taxIndex = 0;
+        const { taxList } = this.props.tax;
+        taxList.forEach((value, index) => {
+            if (toFloat(product.vat) === value.percentage) {
+                taxIndex = 1 + index;
+            }
+        });
+        this.setState({
+            selectedTypeIndex: itemIndex,
+            includeVat: product.includevat === 1,
+            alreadyHaveStock: isInteger(product.quantity),
+            selectedTaxIndex: taxIndex
+        });
+    }
+
+    configHeader = () => {
         const titlePrefix = this.isEditMode() ? 'Edit' : 'Add';
         const title = `${titlePrefix} Product`;
-        this.props.navigation.setOptions({ title });
-    }
-    setFieldsValue = () => {
-        const { product } = this.props.route.params;
-        if (product !== null) {
-            //Preset values
-        }
+
+        this.props.navigation.setOptions({
+            title,
+            headerRight: () => {
+                return !this.isEditMode() ?
+                    <TouchableOpacity onPress={this.onBarcodePress} style={{ padding: 12 }}>
+                        <MaterialIcon name='qr-code-scanner' size={30} color='white' />
+                    </TouchableOpacity> : null
+            }
+        })
     }
 
     onSupplierPress = () => {
         this.props.navigation.push('SelectSupplierScreen', {
             onSupplierSelected: item => {
                 this.supplier = item;
-                setFieldValue(this.supplierRef, item.name);
+                this.setSupplier();
             }
         });
     }
@@ -302,17 +500,39 @@ class AddProductScreen extends Component {
     onSalesAccountClick = () => {
         this.props.navigation.push('SaleLedgerScreen', {
             onLedgerSelected: item => {
-                console.log('Selected Ledger:', item);
+                this.salesAccount = { ...item };
+                this.setSaleAccount();
             }
         })
+    }
+
+    setSaleAccount = () => {
+        const label = `${this.salesAccount.nominalcode}-${this.salesAccount.laccount}`;
+        setFieldValue(this.saleAccountRef, label);
+    }
+    setPurchaseAccount = () => {
+        const label = `${this.purchaseAccount.nominalcode}-${this.purchaseAccount.laccount}`;
+        setFieldValue(this.purchaseAccRef, label);
+    }
+
+    setSupplier = () => {
+        setFieldValue(this.supplierRef, this.supplier.name);
     }
 
     onPurchaseAccPress = () => {
         this.props.navigation.push('PurchaseLedgerScreen', {
             onLedgerSelected: item => {
-                console.log('Selected Ledger:', item);
+                this.purchaseAccount = { ...item };
+                this.setPurchaseAccount();
             }
         })
+    }
+
+    onStockChange = enabled => {
+        this.setState({ alreadyHaveStock: enabled }, () => {
+            setFieldValue(this.stockQtyRef, enabled ? '0' : '');
+            setFieldValue(this.stockPriceRef, enabled ? '0.00' : '');
+        });
     }
 
     renderStock = () => {
@@ -327,7 +547,7 @@ class AddProductScreen extends Component {
                     style={{ marginLeft: 40 }}
                     thumbColor={this.state.alreadyHaveStock ? colorAccent : 'gray'}
                     value={this.state.alreadyHaveStock}
-                    onValueChange={enabled => this.setState({ alreadyHaveStock: enabled })}
+                    onValueChange={this.onStockChange}
                 />
             </View>
             <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
@@ -336,9 +556,17 @@ class AddProductScreen extends Component {
                     keyboardType='numeric'
                     returnKeyType='next'
                     lineWidth={1}
+                    editable={this.state.alreadyHaveStock}
                     ref={this.stockQtyRef}
                     onSubmitEditing={() => this.focus(this.stockPriceRef)} />
-                <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
+                <TextField
+                    label='Cost Price'
+                    keyboardType='number-pad'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    editable={this.state.alreadyHaveStock}
+                    ref={this.stockPriceRef} />
+                {this.state.alreadyHaveStock ? <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
                     <TextField
                         label='As of Date'
                         keyboardType='default'
@@ -346,22 +574,14 @@ class AddProductScreen extends Component {
                         editable={false}
                         lineWidth={1}
                         ref={this.stockDateRef} />
-                </TouchableOpacity>
+                </TouchableOpacity> : null}
 
                 {this.state.showStockDateDialog ? <DateTimePicker
                     value={this.state.stockDate}
                     mode={'datetime'}
                     display='default'
-                    minimumDate={new Date()}
                     onChange={this.onStockDateChange}
                 /> : null}
-
-                <TextField
-                    label='Cost Price'
-                    keyboardType='number-pad'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    ref={this.stockPriceRef} />
             </View>
         </View>;
     }
@@ -411,6 +631,9 @@ class AddProductScreen extends Component {
                 returnKeyType='next'
                 ref={this.salePriceRef}
                 lineWidth={1}
+                onChangeText={text => {
+                    setTimeout(this.onPriceChange, 200);
+                }}
                 onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
             <TextField
                 label='Trade Price'
@@ -429,11 +652,40 @@ class AddProductScreen extends Component {
         </View>;
     }
 
+    fetchTaxList = () => {
+        const { taxActions } = this.props;
+        const { product } = this.props.route.params;
+        taxActions.getTaxList(product ? product.id : undefined);
+    }
+
+    getTaxList = () => {
+        const taxes = ['Select Tax Rates'];
+        this.props.tax.taxList.forEach((value) => {
+            taxes.push(`${value.taxtype}-${value.percentage}%`);
+        })
+        return taxes;
+    }
+
+    onIncludeVatChange = enabled => {
+        this.setState({ includeVat: enabled }, () => {
+            this.onPriceChange();
+        });
+    }
+
 
     render() {
+        const { tax } = this.props;
+        if (tax.fetchingTaxList) {
+            return <OnScreenSpinner />
+        }
+        if (tax.fetchTaxListError) {
+            return <FullScreenError tryAgainClick={this.fetchTaxList} />
+        }
 
-        const { types, selectedTypeIndex, vats, selectedVatIndex } = this.state;
+        const { types, selectedTypeIndex, selectedTaxIndex } = this.state;
         const isStock = selectedTypeIndex === 0;
+        const taxList = this.getTaxList();
+        const editMode = this.isEditMode();
 
         return <KeyboardAvoidingView style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1 }}
@@ -458,6 +710,7 @@ class AddProductScreen extends Component {
                         returnKeyType='next'
                         ref={this.codeRef}
                         lineWidth={1}
+                        editable={!editMode}
                         onSubmitEditing={() => { this.descriptionRef.current.focus() }} />
                     <TextField
                         label='Description'
@@ -470,17 +723,14 @@ class AddProductScreen extends Component {
                                 this.salePriceRef.current.focus()
                             }
                         }} />
-                    <TouchableOpacity onPress={this.onBarcodePress}>
-                        <TextField
-                            label='Bar Code'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            editable={false}
-                            ref={this.barcodeRef}
-                            lineWidth={1}
-                        />
-                    </TouchableOpacity>
-
+                    <TextField
+                        label='Bar Code'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        ref={this.barcodeRef}
+                        editable={!editMode}
+                        lineWidth={1}
+                    />
                 </View>
                 <View style={{ marginTop: 12 }}>
                     {this.renderStrip('Sale')}
@@ -504,6 +754,7 @@ class AddProductScreen extends Component {
                             returnKeyType='done'
                             ref={this.rateRef}
                             lineWidth={1}
+                            onChangeText={text => setTimeout(this.onPriceChange, 200)}
                         /> : null}
                     {isStock ? this.renderPriceField() : null}
                 </View>
@@ -511,12 +762,12 @@ class AddProductScreen extends Component {
                 {this.renderLabel('VAT/GST')}
                 <Picker
                     style={{ marginHorizontal: 12 }}
-                    selectedValue={vats[selectedVatIndex].value}
+                    selectedValue={taxList[selectedTaxIndex]}
                     mode='dropdown'
                     onValueChange={this.onVatChange}>
 
-                    {vats.map((value, index) => <Picker.Item
-                        label={value.value} value={value.value} key={`${index}`} />)}
+                    {taxList.map((value, index) => <Picker.Item
+                        label={value} value={value} key={`${index}`} />)}
                 </Picker>
                 <View style={{ paddingHorizontal: 16 }}>
                     <TextField
@@ -534,7 +785,7 @@ class AddProductScreen extends Component {
                         style={{ marginLeft: 40 }}
                         thumbColor={this.state.includeVat ? colorAccent : 'gray'}
                         value={this.state.includeVat}
-                        onValueChange={enabled => this.setState({ includeVat: enabled })}
+                        onValueChange={this.onIncludeVatChange}
                     />
                 </View>
 
@@ -546,7 +797,6 @@ class AddProductScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         ref={this.totalAmountRef}
-                        value={this.getTotal()}
                         onSubmitEditing={() => { }} />
                 </View>
                 <View style={{ marginTop: 24 }}>
@@ -570,7 +820,6 @@ class AddProductScreen extends Component {
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        editable={false}
                         ref={this.SICodeRef}
                         onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
 
@@ -579,7 +828,6 @@ class AddProductScreen extends Component {
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        editable={false}
                         ref={this.purchaseDescRef}
                         onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
 
@@ -588,7 +836,6 @@ class AddProductScreen extends Component {
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        editable={false}
                         ref={this.purchasePriceRef}
                         onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
                     <TouchableOpacity onPress={this.onPurchaseAccPress}>
@@ -615,20 +862,19 @@ class AddProductScreen extends Component {
                         value={this.state.purchaseExpiryDate}
                         mode={'datetime'}
                         display='default'
-                        minimumDate={new Date()}
                         onChange={this.onPurchaseExpiryChange}
                     /> : null}
 
                     <TextField
-                        label='Reorder Limit.'
+                        label='Reorder Level.'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.reorderLimitRef}
+                        ref={this.reorderLevelRef}
                         onSubmitEditing={() => this.focus(this.reorderQtyRef)} />
 
                     <TextField
-                        label='Expiry Qty'
+                        label='Reorder Quantity'
                         keyboardType='numeric'
                         returnKeyType='next'
                         lineWidth={1}
@@ -637,11 +883,12 @@ class AddProductScreen extends Component {
                 {isStock ? this.renderStock() : null}
                 {isStock ? this.renderOther() : null}
                 <RaisedTextButton
-                    title='Add'
+                    title={this.isEditMode() ? 'Update' : 'Add'}
                     color={colorAccent}
                     titleColor='white'
                     style={styles.materialBtn}
                     onPress={this.validateAndSubmitForm} />
+                <ProgressDialog visible={this.props.product.updatingProduct} />
             </ScrollView>
 
         </KeyboardAvoidingView>
@@ -661,9 +908,11 @@ const styles = StyleSheet.create({
 });
 export default connect(
     state => ({
-        product: state.product
+        product: state.product,
+        tax: state.tax
     }),
     dispatch => ({
-        productActions: bindActionCreators(productActions, dispatch)
+        productActions: bindActionCreators(productActions, dispatch),
+        taxActions: bindActionCreators(taxActions, dispatch)
     })
 )(AddProductScreen);

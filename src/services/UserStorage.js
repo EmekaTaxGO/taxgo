@@ -15,6 +15,8 @@ export async function saveToLocal(key, value) {
 
 
 export const AUTH_DATA = 'AUTH_DATA';
+export const TAX_LIST = 'TAX_LIST';
+export const PROFILE_DATA = 'PROFILE_DATA';
 
 export async function getSavedData(key) {
     try {

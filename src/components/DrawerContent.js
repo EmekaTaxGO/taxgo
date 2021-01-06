@@ -8,6 +8,10 @@ import { clearData, AUTH_DATA } from '../services/UserStorage';
 
 const DrawerContent = props => {
 
+    const { profile } = props;
+    const fName = profile ? profile.firstname : '';
+    const lName = profile ? profile.lastname : '';
+    const email = profile ? profile.email : '';
     const renderHeader = () => {
         return <View style={{
             width: '100%',
@@ -20,7 +24,8 @@ const DrawerContent = props => {
                 source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
                 style={styles.profileImage}
             />
-            <Text style={styles.name}>Vicky Kaushal</Text>
+            <Text style={styles.name}>{fName} {lName}</Text>
+            <Text style={styles.email}>{email}</Text>
         </View>
     }
 
@@ -72,7 +77,14 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 16,
         color: 'white',
-        padding: 12
+        paddingStart: 12,
+        paddingTop: 12
+    },
+    email: {
+        fontSize: 14,
+        color: 'white',
+        paddingStart: 12,
+        paddingTop: 2
     },
     container: {
         flexDirection: 'column'

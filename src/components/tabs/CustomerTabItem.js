@@ -21,6 +21,12 @@ class CustomerTabItem extends Component {
         contactActions.getCustomerList();
     }
 
+    shouldComponentUpdate(newProps, newState) {
+        const { contact: newContact } = newProps;
+        const { contact: oldContact } = this.props;
+        return newContact.fetchingCustomerList !== oldContact.fetchingCustomerList;
+    }
+
     componentDidMount() {
         this.fetchCustomerList();
     }

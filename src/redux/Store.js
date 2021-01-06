@@ -6,6 +6,7 @@ import ledgerReducer from "./reducer/ledgerReducer";
 import userReducer from "./reducer/userReducer";
 import bankReducer from "./reducer/bankReducer";
 import journalReduder from "./reducer/journalReducer";
+import taxReducer from './reducer/taxReducer';
 
 const { combineReducers, createStore, applyMiddleware } = require("redux");
 const { default: thunk } = require("redux-thunk");
@@ -19,7 +20,8 @@ const appReducers = combineReducers({
     ledger: ledgerReducer,
     user: userReducer,
     bank: bankReducer,
-    journal: journalReduder
+    journal: journalReduder,
+    tax: taxReducer
 });
 
 const Store = createStore(appReducers, applyMiddleware(thunk));

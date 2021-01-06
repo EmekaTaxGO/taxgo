@@ -11,7 +11,7 @@ const AxiosInstance = axios.create({
     // }
 });
 AxiosInstance.interceptors.request.use(config => {
-    const state = Store.getState();
+    const { authData } = Store.getState().auth;
     const newConfig = { ...config };
 
     //Adding Common headers

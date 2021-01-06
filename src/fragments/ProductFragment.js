@@ -1,5 +1,5 @@
 import React, { Component, useLayoutEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -13,6 +13,9 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 import { isEmpty } from '../helpers/Utils';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import ProductItem from '../product/ProductItem';
+import SwipeHiddenView from '../product/SwipeHiddenView';
 
 class ProductFragment extends Component {
 
@@ -29,8 +32,19 @@ class ProductFragment extends Component {
 
     onAddClick = () => {
         this.props.navigation.push('AddProductScreen', {
-
+            onProductUpdated: () => {
+                console.log('Fetching Pro List...');
+                this.fetchProductList();
+            }
         });
+    }
+
+    shouldComponentUpdate(newProps, newState) {
+        const { product: newProduct } = newProps;
+        const { product: oldProduct } = this.props;
+        return newState.query !== this.state.query
+            //Props Change
+            || newProduct.fetchingProductList !== oldProduct.fetchingProductList;
     }
 
     componentDidMount() {
@@ -55,30 +69,30 @@ class ProductFragment extends Component {
         productActions.getProductList();
     }
 
-    ListItem = ({ item }) => {
-        return <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
+    renderListItem = (data) => {
+        const { item } = data;
+        return <ProductItem item={item} />
+    }
+    renderHiddenItem = (data) => {
+        const { item, index } = data;
+        return <SwipeHiddenView
+            id={index}
+            item={item}
+            onViewClick={this.onViewClick}
+            onEditClick={this.onEditClick}
+        />
+    }
 
-        }}>
-            <ImageView
-                url={item.image}
-                placeholder={require('../assets/product.png')}
-                style={styles.image} />
-            <View style={{
-                flexDirection: 'column',
-                flex: 1,
-                marginStart: 16,
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 1,
-                paddingVertical: 16
-            }}>
-                <Text style={styles.textStyle}>{item.itemtype}</Text>
-                <Text style={[styles.textStyle, { marginTop: 4 }]}>Item: {item.icode}</Text>
-                <Text style={[styles.textStyle, { marginTop: 4 }]}>Description: {item.idescription}</Text>
-            </View>
-        </View>
+    onViewClick = item => {
+        this.props.navigation.push('ViewProductInfoScreen', { id: item.id });
+    }
+    onEditClick = item => {
+        this.props.navigation.push('AddProductScreen', {
+            onProductUpdated: () => {
+                this.fetchProductList();
+            },
+            product: { ...item }
+        });
     }
 
     listData = () => {
@@ -115,11 +129,22 @@ class ProductFragment extends Component {
                 onChangeQuery={q => this.setState({ query: q })}
                 onCrossPress={() => { this.setState({ query: '' }) }}
                 placeholder='Search Products' />
-            <FlatList
+            <SwipeListView
+                style={{
+                    flex: 1,
+                    backgroundColor: 'white'
+                }}
+                data={this.listData()}
+                renderItem={(data) => this.renderListItem(data)}
+                renderHiddenItem={(data) => this.renderHiddenItem(data)}
+                leftOpenValue={70}
+                rightOpenValue={-70}
+            />
+            {/* <FlatList
                 style={{ flex: 1 }}
                 data={this.listData()}
                 keyExtractor={(row, index) => `${index}`}
-                renderItem={({ item }) => <this.ListItem item={item} />} />
+                renderItem={({ item }) => <this.renderListItem item={item} />} /> */}
         </View >
     }
 }

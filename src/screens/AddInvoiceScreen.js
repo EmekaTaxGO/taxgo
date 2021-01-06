@@ -11,6 +11,14 @@ import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
 import { isFloat, isInteger } from '../helpers/Utils';
 
+import * as invoiceActions from '../redux/actions/invoiceActions';
+import * as taxActions from '../redux/actions/taxActions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import AppTab from '../components/AppTab';
+
 class AddInvoiceScreen extends Component {
     constructor(props) {
         super();
@@ -54,6 +62,12 @@ class AddInvoiceScreen extends Component {
     componentDidMount() {
         const { info } = this.props.route.params;
         console.log('Info: ', info);
+        this.fetchTaxList();
+    }
+
+    fetchTaxList = () => {
+        const { taxActions } = this.props;
+        taxActions.getTaxList();
     }
 
     isEditMode = () => {
@@ -67,47 +81,8 @@ class AddInvoiceScreen extends Component {
         return type === 'sales';
     }
 
-    getIcon = (icon, iconType, color) => {
-        if (iconType === undefined) {
-            return <MaterialIcon name={icon} size={24} color={color} />
-        }
-        switch (iconType) {
-            case 'FontAwesome5Icon':
-                return <FontAwesome5Icon name={icon} size={24} color={color} />;
-            case 'MaterialCommunityIcons':
-                return <MaterialCommunityIcons name={icon} size={24} color={color} />;
-            default:
-                return <MaterialIcon name={icon} size={24} color={color} />;
-        }
-
-    }
-
     selectTab = (tabName) => {
         this.setState({ selectedTab: tabName });
-    }
-
-    tabComponent = (title, icon, iconType, selected, onPress) => {
-        return <TouchableHighlight style={{
-            flex: 1,
-            backgroundColor: colorPrimary,
-            paddingVertical: 6,
-            borderBottomWidth: selected ? 2 : 0,
-            borderBottomColor: tabSelectedColor,
-        }}
-            onPress={onPress}
-            underlayColor={colorPrimary}>
-            <View style={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
-                {this.getIcon(icon, iconType, selected ? tabSelectedColor : 'white')}
-                <Text style={{
-                    color: selected ? tabSelectedColor : 'white',
-                    fontSize: 14
-                }}>{title}</Text>
-            </View>
-        </TouchableHighlight>
     }
 
     formattedDate = date => {
@@ -444,17 +419,33 @@ class AddInvoiceScreen extends Component {
         const selected = this.state.selectedTab;
         const customerLabel = this.isSalesInvoice() ? 'Customer' : 'Supplier';
         return <View style={{ width: '100%', flexDirection: 'row' }}>
-            {this.tabComponent(customerLabel, 'user-circle', 'FontAwesome5Icon',
-                selected === 'supplier', () => this.selectTab('supplier'))}
 
-            {this.tabComponent('Product', 'local-offer', undefined,
-                selected === 'product', () => this.selectTab('product'))}
+            <AppTab title={customerLabel}
+                icon='user-circle'
+                iconType='FontAwesome5Icon'
+                selected={selected === 'supplier'}
+                onTabPress={() => this.selectTab('supplier')} />
 
-            {this.tabComponent('Refund', 'cash-refund', 'MaterialCommunityIcons',
-                selected === 'refund', () => this.selectTab('refund'))}
+            <AppTab title='Product'
+                icon='local-offer'
+                selected={selected === 'product'}
+                onTabPress={() => this.selectTab('product')} />
+
+            <AppTab title='Refund'
+                icon='cash-refund'
+                iconType='MaterialCommunityIcons'
+                selected={selected === 'refund'}
+                onTabPress={() => this.selectTab('refund')} />
         </View>
     }
     render() {
+        const { tax } = this.props;
+        if (tax.fetchingTaxList) {
+            return <OnScreenSpinner />
+        }
+        if (tax.fetchTaxListError) {
+            return <FullScreenError tryAgainClick={this.fetchTaxList} />
+        }
 
         const selected = this.state.selectedTab;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -504,4 +495,13 @@ const styles = StyleSheet.create({
         fontSize: 14
     }
 });
-export default AddInvoiceScreen;
+export default connect(
+    state => ({
+        invoice: state.invoice,
+        tax: state.tax
+    }),
+    dispatch => ({
+        invoiceActions: bindActionCreators(invoiceActions, dispatch),
+        taxActions: bindActionCreators(taxActions, dispatch)
+    })
+)(AddInvoiceScreen);

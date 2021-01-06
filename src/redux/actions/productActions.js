@@ -13,8 +13,10 @@ import {
     PRODUCT_BY_ID_FAIL,
     PRODUCT_LEDGER_LIST_REQUEST,
     PRODUCT_LEDGER_LIST_SUCCESS,
-    PRODUCT_LEDGER_LIST_FAIL
+    PRODUCT_LEDGER_LIST_FAIL,
+    UPDATE_PRODUCT_SUCCESS
 } from '../../constants';
+import { API_ERROR_MESSAGE } from '../../constants/appConstant';
 
 export const getProductList = () => {
     return (dispatch) => {
@@ -51,6 +53,25 @@ export const getProductById = (id) => {
     }
 }
 
+export const getProductDetails = (id, startDate, endDate) => {
+    return (dispatch) => {
+        dispatch({ type: PRODUCT_BY_ID_REQUEST });
+        const { authData } = Store.getState().auth;
+        return Api.get(`/product/productView/${authData.id}/${id}/${startDate}/${endDate}`)
+            .then(response => {
+                dispatch({
+                    type: PRODUCT_BY_ID_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(err => {
+                log('Error Retriving Product', err);
+                dispatch({ type: PRODUCT_BY_ID_FAIL });
+            })
+
+    }
+}
+
 export const getProductByBarcode = (barcode) => {
     return (dispatch) => {
         return Api.get(`/product/getProductByBarcode/${barcode}`)
@@ -63,20 +84,49 @@ export const getProductByBarcode = (barcode) => {
     }
 }
 
-export const createProduct = (navigation, body) => {
+export const checkForPreUpdate = (body, onSuccess, onError) => {
     return (dispatch) => {
         dispatch({ type: UPDATE_PRODUCT_REQUEST });
         const { authData } = Store.getState().auth;
-        return Promise.all([
-            Api.get(`/product/checkexistingitem/${authData.id}/${body.icode}`),   //Checking Product already exist with same icode
-            Api.get(`/product/checkexistingbarcode/${body.barcode}`)              //Check for existing barcode
-        ])
-            .then(response => {
-                //hit api to create product
+        const hit = [Api.get(`/product/checkexistingitem/${authData.id}/${body.icode}`)];
+
+        if (body.barcode !== undefined && body.barcode.length > 0) {
+            hit.push(Api.get(`/product/checkexistingbarcode/${body.barcode}`));
+        }
+        return Promise.all(hit)
+            .then(results => {
+                dispatch({ type: UPDATE_PRODUCT_SUCCESS });
+                if (!results[0].data.status) {
+                    onError(results[0].data.message);
+
+                } else if (results.length > 1 && !results[1].data.status) {
+                    onError(results[1].data.message);
+                } else {
+                    updateProduct(body, onSuccess, onError)(dispatch);
+                }
+
             })
             .catch(err => {
                 log('Error Checking for Product Creation', err);
                 dispatch({ type: UPDATE_PRODUCT_FAIL });
+                onError(API_ERROR_MESSAGE);
+            })
+    }
+}
+
+export const updateProduct = (body, onSuccess, onError) => {
+    return (dispatch) => {
+        if (body.type === '2') {
+            dispatch({ type: UPDATE_PRODUCT_REQUEST });
+        }
+        return Api.post('/product/addUpdateProduct', body)
+            .then(response => {
+                onSuccess(response.data);
+            })
+            .catch(err => {
+                log('Error Updating Product', err.response);
+                dispatch({ type: UPDATE_PRODUCT_FAIL });
+                onError(API_ERROR_MESSAGE);
             })
     }
 }

@@ -100,9 +100,6 @@ class JournalFragment extends Component {
     }
 
     render() {
-        // fetchingMyJournal: false,
-        // fetchMyJournalError: undefined,
-        // myJournalList: []
         const { journal } = this.props;
         if (journal.fetchingMyJournal) {
             return <OnScreenSpinner />

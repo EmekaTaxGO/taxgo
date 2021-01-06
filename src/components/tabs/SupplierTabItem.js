@@ -22,6 +22,12 @@ class SupplierTabItem extends Component {
         contactActions.getSupplierList();
     }
 
+    shouldComponentUpdate(newProps, newState) {
+        const { contact: newContact } = newProps;
+        const { contact: oldContact } = this.props;
+        return newContact.fetchingSupplierList !== oldContact.fetchingSupplierList;
+    }
+
     componentDidMount() {
         this.fetchSupplierList();
     }

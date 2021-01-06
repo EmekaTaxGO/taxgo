@@ -9,7 +9,10 @@ import {
     SAVE_AUTH,
     CHANGE_PASSWORD_REQUEST,
     CHANGE_PASSWORD_FAIL,
-    CHANGE_PASSWORD_SUCCESS
+    CHANGE_PASSWORD_SUCCESS,
+    PROFILE_REQUEST,
+    PROFILE_FAIL,
+    PROFILE_SUCCESS
 } from "../../constants";
 
 
@@ -22,7 +25,11 @@ const initialState = {
     loading: false,
     authData: null,//User Info
 
-    updatingPassword: false
+    updatingPassword: false,
+
+    updatingProfile: false,
+    profile: null,
+
 }
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -72,6 +79,22 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 updatingPassword: false
+            };
+        case PROFILE_REQUEST:
+            return {
+                ...state,
+                updatingProfile: true
+            };
+        case PROFILE_FAIL:
+            return {
+                ...state,
+                updatingProfile: false
+            };
+        case PROFILE_SUCCESS:
+            return {
+                ...state,
+                updatingProfile: false,
+                profile: action.payload
             };
         default:
             return state;

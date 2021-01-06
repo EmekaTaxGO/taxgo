@@ -8,7 +8,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 import SearchView from '../components/SearchView';
-import { isEmpty } from '../helpers/Utils';
+import { isEmpty, validateEmail } from '../helpers/Utils';
 import ImageView from '../components/ImageView';
 
 class PurchaseLedgerScreen extends Component {
@@ -42,23 +42,26 @@ class PurchaseLedgerScreen extends Component {
     }
     filteredLedgers = () => {
         let filteredLedgers = [];
-        filteredLedgers = this.props.ledger.purchaseLedgers.filter(value =>
-            value.name.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1);
+        filteredLedgers = this.props.ledger.purchaseLedgers.filter(value => {
+            const label = `${value.nominalcode}-${value.laccount}`;
+            return label.toLowerCase().indexOf(this.state.query.toLowerCase()) > -1
+        });
         return filteredLedgers;
     }
 
     renderListItem = (item) => {
+        const label = `${item.nominalcode}-${item.laccount}`;
         return <TouchableOpacity
             onPress={() => {
                 this.props.route.params.onLedgerSelected(item);
                 this.props.navigation.goBack();
             }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <ImageView
+                {/* <ImageView
                     placeholder={require('../assets/product.png')}
                     url={''}
                     style={styles.image}
-                />
+                /> */}
                 <View style={{
                     flex: 1,
                     flexDirection: 'column',
@@ -68,8 +71,8 @@ class PurchaseLedgerScreen extends Component {
                     borderBottomWidth: 1,
                     paddingVertical: 18
                 }}>
-                    <Text style={{ color: 'black', fontSize: 16 }}>{item.category}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>{item.categorygroup}</Text>
+                    <Text style={{ color: 'black', fontSize: 16 }}>{label}</Text>
+                    {/* <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>{item.categorygroup}</Text> */}
                 </View>
             </View>
         </TouchableOpacity>
@@ -94,7 +97,7 @@ class PurchaseLedgerScreen extends Component {
                 placeholder='Search...' />
             <FlatList
                 data={this.listData()}
-                keyExtractor={item => `${item.id}`}
+                keyExtractor={(item, index) => `${index}`}
                 renderItem={({ item }) => this.renderListItem(item)}
             />
         </View>

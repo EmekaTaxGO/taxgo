@@ -58,7 +58,8 @@ export const getDefaultLedger = () => {
 export const getSaleLedger = () => {
     return (dispatch) => {
         dispatch({ type: SALES_LEDGER_REQUEST });
-        return Api.get('/default/defaultLedgerCategory/sale')
+        const { authData } = Store.getState().auth;
+        return Api.get(`/ledger/listLedger/${authData.id}`)
             .then(response => {
                 dispatch({
                     type: SALES_LEDGER_SUCCESS,
@@ -75,7 +76,8 @@ export const getSaleLedger = () => {
 export const getPurchaseLedger = () => {
     return (dispatch) => {
         dispatch({ type: PURCHASE_LEDGER_REQUEST });
-        return Api.get('/default/defaultLedgerCategory/purchase')
+        const { authData } = Store.getState().auth;
+        return Api.get(`/ledger/listpurchaseledger/${authData.id}`)
             .then(response => {
                 dispatch({
                     type: PURCHASE_LEDGER_SUCCESS,

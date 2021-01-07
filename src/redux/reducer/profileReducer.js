@@ -2,7 +2,7 @@ import { PRE_EDIT_PROFILE_REQUEST, PRE_EDIT_PROFILE_FAIL, PRE_EDIT_PROFILE_SUCCE
 import { API_ERROR_MESSAGE } from "../../constants/appConstant";
 
 const initialState = {
-    fetchingPreEditProfile: false,
+    fetchingPreEditProfile: true,
     fetchPreEditProfileError: undefined,
     profile: null,
     countries: null,

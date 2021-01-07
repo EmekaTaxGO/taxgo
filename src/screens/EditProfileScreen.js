@@ -12,6 +12,8 @@ import { bindActionCreators } from 'redux';
 import { setFieldValue } from '../helpers/TextFieldHelpers'
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
+import { log } from 'react-native-reanimated';
+import { isInteger, isEmpty } from '../helpers/Utils';
 
 class EditProfileScreen extends Component {
 
@@ -22,8 +24,7 @@ class EditProfileScreen extends Component {
             businessType: ['Select Business Type',
                 'Limited Company',
                 'Partnership',
-                'Trader',
-                'Health Care'],
+                'Trader'],
             categoryIndex: 0,
             countryIndex: 0
         }
@@ -43,7 +44,9 @@ class EditProfileScreen extends Component {
         return newProfile.fetchingPreEditProfile !== oldProfile.fetchingPreEditProfile
             || newProfile.editProfileProgress !== oldProfile.editProfileProgress
             //State Change
-            || newState.businessTypeIndex !== this.state.businessTypeIndex;
+            || newState.businessTypeIndex !== this.state.businessTypeIndex
+            || newState.categoryIndex !== this.state.categoryIndex
+            || newState.countryIndex !== this.state.countryIndex;
     }
     componentDidUpdate(oldProps, oldState) {
         const { profile: newProfile } = this.props;
@@ -51,6 +54,55 @@ class EditProfileScreen extends Component {
         if (!newProfile.fetchingPreEditProfile && oldProfile.fetchingPreEditProfile
             && newProfile.fetchPreEditProfileError === undefined) {
             this.setFieldData(newProfile.profile);
+        }
+    }
+
+    UNSAFE_componentWillUpdate(newProps, newState) {
+        const { profile: newProfile } = newProps;
+        const { profile: oldProfile } = this.props;
+        if (!newProfile.fetchingPreEditProfile && oldProfile.fetchingPreEditProfile
+            && newProfile.fetchPreEditProfileError === undefined) {
+
+            let categoryIndex = 0;
+            let countryIndex = 0;
+            let businessTypeIndex = 0;
+
+            //Business category Pre-fill
+            if (isInteger(newProfile.profile.bcategory)) {
+                for (let i = 0; i < newProfile.businesses.length; i++) {
+                    const value = newProfile.businesses[i];
+                    if (newProfile.profile.bcategory === `${value.id}`) {
+                        categoryIndex = i;
+                        break;
+                    }
+                }
+            }
+            //Currency category
+            if (isInteger(newProfile.profile.country)) {
+                for (let i = 0; i < newProfile.countries.length; i++) {
+                    const value = newProfile.countries[i];
+                    if (newProfile.profile.country === `${value.id}`) {
+                        countryIndex = i;
+                        break;
+                    }
+                }
+            }
+            //Business Type
+            if (!isEmpty(newProfile.profile.btype)) {
+                for (let i = 0; i < this.state.businessType.length; i++) {
+                    const value = this.state.businessType[i];
+                    if (newProfile.profile.btype === value) {
+                        businessTypeIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            this.setState({
+                categoryIndex: categoryIndex,
+                countryIndex: countryIndex,
+                businessTypeIndex: businessTypeIndex
+            });
         }
     }
     componentDidMount() {
@@ -63,18 +115,16 @@ class EditProfileScreen extends Component {
     }
 
     setFieldData = (profile) => {
-        console.log('Profile: ', profile);
         setFieldValue(this.firstNameRef, profile.firstname);
         setFieldValue(this.lastNameRef, profile.lastname);
         setFieldValue(this.emailRef, profile.email);
         setFieldValue(this.businessNameRef, profile.bname);
         setFieldValue(this.phoneRef, profile.phonenumber);
         setFieldValue(this.regNumRef, profile.registerno);
-
-
     }
 
     renderBusinessCategory = () => {
+
         const { businesses } = this.props.profile;
         const selectedCategory = businesses[this.state.categoryIndex].btitle;
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>

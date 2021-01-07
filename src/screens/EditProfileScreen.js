@@ -7,16 +7,25 @@ import AppButton from '../components/AppButton';
 import { RaisedButton, RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
 import { connect } from 'react-redux';
-import * as authActions from '../redux/actions/authActions';
+import * as profileActions from '../redux/actions/profileActions';
 import { bindActionCreators } from 'redux';
 import { setFieldValue } from '../helpers/TextFieldHelpers'
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+
 class EditProfileScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             businessTypeIndex: 0,
-            businessType: ['Select Business Type', 'Limited Company', 'Partnership', 'Trader']
+            businessType: ['Select Business Type',
+                'Limited Company',
+                'Partnership',
+                'Trader',
+                'Health Care'],
+            categoryIndex: 0,
+            countryIndex: 0
         }
     }
 
@@ -26,39 +35,84 @@ class EditProfileScreen extends Component {
     businessNameRef = React.createRef();
     phoneRef = React.createRef();
     businessTypeRef = React.createRef();
-    businessCategoryRef = React.createRef();
     regNumRef = React.createRef();
-    countryRef = React.createRef();
-    taxRef = React.createRef();
 
     shouldComponentUpdate(newProps, newState) {
-        const { auth: newAuth } = newProps;
-        const { auth: oldAuth } = this.props;
-        return newAuth.updatingProfile !== oldAuth.updatingProfile
+        const { profile: newProfile } = newProps;
+        const { profile: oldProfile } = this.props;
+        return newProfile.fetchingPreEditProfile !== oldProfile.fetchingPreEditProfile
+            || newProfile.editProfileProgress !== oldProfile.editProfileProgress
             //State Change
             || newState.businessTypeIndex !== this.state.businessTypeIndex;
     }
     componentDidUpdate(oldProps, oldState) {
-        const { auth: newAuth } = this.props;
-        const { auth: oldAuth } = oldProps;
-        if (!newAuth.updatingProfile && oldAuth.updatingProfile && newAuth.profile !== null) {
-            this.setFieldData(newAuth.profile);
+        const { profile: newProfile } = this.props;
+        const { profile: oldProfile } = oldProps;
+        if (!newProfile.fetchingPreEditProfile && oldProfile.fetchingPreEditProfile
+            && newProfile.fetchPreEditProfileError === undefined) {
+            this.setFieldData(newProfile.profile);
         }
     }
     componentDidMount() {
-        const { auth } = this.props;
-        if (auth.profile !== null) {
-            this.setFieldData(auth.profile);
-        }
+        this.prefetchForEditProfile();
+    }
+
+    prefetchForEditProfile = () => {
+        const { profileActions } = this.props;
+        profileActions.prefetchForEditProfile();
     }
 
     setFieldData = (profile) => {
+        console.log('Profile: ', profile);
         setFieldValue(this.firstNameRef, profile.firstname);
         setFieldValue(this.lastNameRef, profile.lastname);
         setFieldValue(this.emailRef, profile.email);
         setFieldValue(this.businessNameRef, profile.bname);
         setFieldValue(this.phoneRef, profile.phonenumber);
+        setFieldValue(this.regNumRef, profile.registerno);
 
+
+    }
+
+    renderBusinessCategory = () => {
+        const { businesses } = this.props.profile;
+        const selectedCategory = businesses[this.state.categoryIndex].btitle;
+        return <View style={{ flexDirection: 'column', marginTop: 12 }}>
+            <Text style={{ fontSize: 15 }}>Business Category</Text>
+            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
+                <Picker
+                    selectedValue={selectedCategory}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ categoryIndex: itemIndex })}>
+
+                    {businesses.map((value, index) => <Picker.Item
+                        label={value.btitle} value={value.btitle} key={`${index}`} />)}
+                </Picker>
+            </View>
+        </View>
+    }
+    countryPickerLabel = value => {
+        return value.country_code ? `${value.currency} (${value.country_code})`
+            : value.currency;
+    }
+
+    renderCountry = () => {
+        const { countries } = this.props.profile;
+        const selectedCountry = countries[this.state.countryIndex].currency;
+        return <View style={{ flexDirection: 'column', marginTop: 12 }}>
+            <Text style={{ fontSize: 15 }}>Currency</Text>
+            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
+                <Picker
+                    selectedValue={selectedCountry}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ countryIndex: itemIndex })}>
+
+                    {countries.map((value, index) => <Picker.Item
+                        label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
+                </Picker>
+            </View>
+
+        </View>
     }
 
     renderBusinessType = () => {
@@ -80,6 +134,13 @@ class EditProfileScreen extends Component {
     }
 
     render() {
+        const { profile } = this.props;
+        if (profile.fetchingPreEditProfile) {
+            return <OnScreenSpinner />
+        }
+        if (profile.fetchPreEditProfileError) {
+            return <FullScreenError tryAgainClick={this.prefetchForEditProfile} />
+        }
         return <KeyboardAvoidingView
             style={{
                 flex: 1,
@@ -139,15 +200,9 @@ class EditProfileScreen extends Component {
                     ref={this.phoneRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.businessTypeRef.current.focus() }} />
+                {this.renderBusinessCategory()}
+                {this.renderCountry()}
                 {this.renderBusinessType()}
-                <TextField
-                    label='Business Category'
-                    keyboardType='numbers-and-punctuation'
-                    returnKeyType='next'
-                    // error={this.state.emailError}
-                    ref={this.businessCategoryRef}
-                    lineWidth={1}
-                    onSubmitEditing={() => { this.regNumRef.current.focus() }} />
                 <TextField
                     label='Registration Number'
                     keyboardType='numbers-and-punctuation'
@@ -156,25 +211,6 @@ class EditProfileScreen extends Component {
                     ref={this.regNumRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.countryRef.current.focus() }} />
-                <TextField
-                    label='Country'
-                    keyboardType='numbers-and-punctuation'
-                    returnKeyType='next'
-                    // error={this.state.emailError}
-                    ref={this.countryRef}
-                    lineWidth={1}
-                    onSubmitEditing={() => { this.taxRef.current.focus() }} />
-                <TextField
-                    label='Tax'
-                    keyboardType='numbers-and-punctuation'
-                    returnKeyType='done'
-                    // error={this.state.emailError}
-                    ref={this.businessNameRef}
-                    lineWidth={1} x
-                    onSubmitEditing={() => { }} />
-                {/* <AppButton onPress={() => { }}
-                    title='Update'
-                    style={styles.updateBtn} /> */}
                 <RaisedTextButton
                     title='Update'
                     color={colorAccent}
@@ -194,9 +230,9 @@ const styles = StyleSheet.create({
 });
 export default connect(
     state => ({
-        auth: state.auth
+        profile: state.profile
     }),
     dispatch => ({
-        authActions: bindActionCreators(authActions, dispatch)
+        profileActions: bindActionCreators(profileActions, dispatch)
     })
 )(EditProfileScreen);

@@ -32,7 +32,6 @@ const profileReducer = (state = initialState, action) => {
                 fetchingPreEditProfile: false
             };
         case EDIT_PROFILE_REQUEST:
-        case EDIT_PROFILE_SUCCESS:
             return {
                 ...state,
                 editProfileProgress: true,
@@ -43,6 +42,11 @@ const profileReducer = (state = initialState, action) => {
                 ...state,
                 editProfileProgress: false,
                 editProfileError: API_ERROR_MESSAGE
+            };
+        case EDIT_PROFILE_SUCCESS:
+            return {
+                ...state,
+                editProfileProgress: false
             };
         default:
             return state;

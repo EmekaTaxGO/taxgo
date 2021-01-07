@@ -1,5 +1,5 @@
 import React, { useEffect, Component } from 'react';
-import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Picker } from 'react-native';
+import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Picker, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ImageView from '../components/ImageView';
 import { TextField } from 'react-native-material-textfield';
@@ -9,11 +9,12 @@ import { colorAccent } from '../theme/Color';
 import { connect } from 'react-redux';
 import * as profileActions from '../redux/actions/profileActions';
 import { bindActionCreators } from 'redux';
-import { setFieldValue } from '../helpers/TextFieldHelpers'
+import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers'
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
-import { log } from 'react-native-reanimated';
+import ProgressDialog from '../components/ProgressDialog';
 import { isInteger, isEmpty } from '../helpers/Utils';
+import { API_ERROR_MESSAGE } from '../constants/appConstant';
 
 class EditProfileScreen extends Component {
 
@@ -183,6 +184,40 @@ class EditProfileScreen extends Component {
         </View>
     }
 
+    onUpdatePress = () => {
+        const { profileActions } = this.props;
+        const { profile } = this.props;
+        const { businessTypeIndex, businessType } = this.state;
+        const body = {
+            ...this.props.profile.profile,
+            firstname: getFieldValue(this.firstNameRef),
+            lastname: getFieldValue(this.lastNameRef),
+            email: getFieldValue(this.emailRef),
+            bname: getFieldValue(this.businessNameRef),
+            phonenumber: getFieldValue(this.phoneRef),
+            bcategory: `${profile.businesses[this.state.categoryIndex].id}`,
+            country: `${profile.countries[this.state.countryIndex].id}`,
+            btype: businessTypeIndex === 0 ? '' : businessType[businessTypeIndex],
+            registerno: getFieldValue(this.regNumRef)
+        };
+        profileActions.updateProfile(body, this.onErrorEditProfile,
+            this.onSuccessEditProfile);
+    }
+
+    onErrorEditProfile = () => {
+        Alert.alert('Alert', API_ERROR_MESSAGE);
+    }
+
+    onSuccessEditProfile = (data) => {
+        Alert.alert('Alert', data.message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => { this.props.navigation.goBack() }
+            }
+        ], { cancelable: false });
+    }
+
     render() {
         const { profile } = this.props;
         if (profile.fetchingPreEditProfile) {
@@ -195,8 +230,7 @@ class EditProfileScreen extends Component {
             style={{
                 flex: 1,
                 flexDirection: 'column'
-            }
-            }>
+            }}>
             <ScrollView style={{ paddingHorizontal: 20 }}>
                 <Image
                     style={{
@@ -266,9 +300,10 @@ class EditProfileScreen extends Component {
                     color={colorAccent}
                     titleColor='white'
                     style={styles.updateBtn}
-                    onPress={() => { console.log('Raised btn clicked!') }}
+                    onPress={this.onUpdatePress}
                 />
             </ScrollView>
+            <ProgressDialog visible={profile.editProfileProgress} />
         </KeyboardAvoidingView >
     }
 }

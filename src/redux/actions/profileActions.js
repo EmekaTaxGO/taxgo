@@ -38,16 +38,18 @@ export const prefetchForEditProfile = () => {
     }
 };
 
-export const updateProfile = () => {
+export const updateProfile = (body, onError, onSuccess) => {
     return (dispatch) => {
         dispatch({ type: EDIT_PROFILE_REQUEST });
-        return Api.post('/user/editProfile')
+        return Api.post('/user/updateProfile', body)
             .then(response => {
-                dispatch({ type: EDIT_PROFILE_SUCCESS })
+                dispatch({ type: EDIT_PROFILE_SUCCESS });
+                onSuccess(response.data);
             })
             .catch(err => {
-                log('Error updating Profile', err);
+                log('Error updating Profile', err.response.data);
                 dispatch({ type: EDIT_PROFILE_FAIL });
+                onError();
             })
     }
 }

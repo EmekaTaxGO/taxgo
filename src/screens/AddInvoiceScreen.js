@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput, FlatList } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput, FlatList, Switch } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import { tabSelectedColor, colorPrimary } from '../theme/Color'
+import { tabSelectedColor, colorPrimary, colorAccent } from '../theme/Color'
 import { TextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
@@ -18,12 +18,13 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import AppTab from '../components/AppTab';
+import { log } from '../components/Logger'
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
         super();
         this.state = {
-            selectedTab: 'supplier',
+            selectedTab: 'product',
             showInvDatePicker: false,
             invDate: undefined,
 
@@ -31,20 +32,20 @@ class AddInvoiceScreen extends Component {
             dueDate: undefined,
 
             issuedcats: ['Issued', 'Yes', 'No'],
-            selectedIssuedCatIndex: 0,
+            selectedIssuedCatIndex: 1,
 
             invoiceAddress: '',
             deliveryAddress: '',
             termsCondition: '',
             notes: '',
-
             products: [{
                 product_name: '',
                 ledger_account: '',
                 rate: '',
                 quantity: '',
                 vat: '0',
-                includeVat: false
+                includeVat: false,
+                vatIndex: 0
             }]
         }
     }
@@ -61,13 +62,17 @@ class AddInvoiceScreen extends Component {
 
     componentDidMount() {
         const { info } = this.props.route.params;
-        console.log('Info: ', info);
-        this.fetchTaxList();
-    }
-
-    fetchTaxList = () => {
         const { taxActions } = this.props;
         taxActions.getTaxList();
+        // log('Info: ', info);
+    }
+    componentWillMount() {
+        const invDate = moment();
+        const dueDate = moment().add(1, 'M').subtract(1, 'd');
+        this.setState({
+            invDate: invDate.toDate(),
+            dueDate: dueDate.toDate()
+        });
     }
 
     isEditMode = () => {
@@ -88,6 +93,15 @@ class AddInvoiceScreen extends Component {
     formattedDate = date => {
         return date ? moment(date).format(DATE_FORMAT) : '';
     }
+
+    getTaxList = () => {
+        const taxes = ['Select Tax Rates'];
+        this.props.tax.taxList.forEach((value) => {
+            taxes.push(`${value.taxtype}-${value.percentage}%`);
+        })
+        return taxes;
+    }
+
 
     onInvDateChanged = (event, selectedDate) => {
         const currentDate = selectedDate || this.state.invDate;
@@ -111,11 +125,13 @@ class AddInvoiceScreen extends Component {
 
     onCustomerPress = () => {
         const screen = this.isSalesInvoice() ? 'SelectCustomerScreen' : 'SelectSupplierScreen';
+        let address = null;
         this.props.navigation.push(screen, {
             onCustomerSelected: item => {
+                address = `${item.address}\n${item.town}\n${item.post_code}`;
                 this.setState({
-                    invoiceAddress: item.address,
-                    deliveryAddress: item.address
+                    invoiceAddress: address,
+                    deliveryAddress: address
                 }, () => {
                     setFieldValue(this.customerRef, item.name);
                 })
@@ -244,6 +260,7 @@ class AddInvoiceScreen extends Component {
     onProductNamePress = (index) => {
         this.props.navigation.push('SelectProductScreen', {
             onProductSelected: item => {
+                log('Product Info', item);
                 const newProduct = {
                     ...this.state.products[index],
                     ...item,
@@ -263,7 +280,7 @@ class AddInvoiceScreen extends Component {
                 const newProduct = {
                     ...this.state.products[index],
                     ...item,
-                    ledger: `${item.category}-${item.categorygroup}`
+                    ledger: `${item.nominalcode}-${item.laccount}`
                 };
 
                 const newProducts = [...this.state.products];
@@ -271,6 +288,17 @@ class AddInvoiceScreen extends Component {
                 this.setState({ products: newProducts });
             }
         })
+    }
+
+    refreshPrice = () => {
+        const newProduct = {
+            ...this.state.products[index],
+            sp_price: text
+        };
+
+        const newProducts = [...this.state.products];
+        newProducts.splice(index, 1, newProduct);
+        this.setState({ products: newProducts });
     }
 
     onPriceChange = (text, index) => {
@@ -306,6 +334,7 @@ class AddInvoiceScreen extends Component {
     }
 
     renderProductItem = ({ item, index }) => {
+        const taxList = this.getTaxList();
         return <View style={{ flexDirection: 'column' }}>
 
             <View style={{
@@ -343,7 +372,6 @@ class AddInvoiceScreen extends Component {
                             placeholder='Ledger Account'
                             editable={false}
                             placeholderTextColor='gray'
-                            onChangeText={text => this.onProductNamePress(text, index)}
                         />
                     </TouchableOpacity>
 
@@ -404,7 +432,66 @@ class AddInvoiceScreen extends Component {
                     </View>
                 </View>
             </View>
+            <View style={{
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 1,
+                marginVertical: 12
+            }} />
+
+            {/* Taxes */}
+            <View style={{
+                flexDirection: 'column',
+                paddingHorizontal: 16,
+                marginTop: 12
+            }}>
+                <Text style={styles.title}>Select Taxes (Vat/GST %)</Text>
+                <View style={{ flexDirection: 'row', flex: 1, paddingTop: 2 }}>
+                    <Picker
+                        style={{ flex: 2 }}
+                        selectedValue={taxList[item.taxIndex]}
+                        mode='dropdown'
+                        onValueChange={(itemValue, itemPosition) => this.onVatChange(index, itemPosition)}>
+                        {taxList.map((value, index) => <Picker.Item
+                            label={value} value={value} key={`${index}`} />)}
+                    </Picker>
+                    <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center' }}>
+                        <Text>Include Vat</Text>
+                        <Switch
+                            style={{}}
+                            thumbColor={item.includeVat ? colorAccent : 'gray'}
+                            value={item.includeVat}
+                            onValueChange={enabled => this.onIncludeVatChange(index, enabled)} />
+                    </View>
+
+                </View>
+            </View>
+            <View style={{
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 1,
+                marginVertical: 12
+            }} />
         </View>
+    }
+    onIncludeVatChange = (listIndex, enabled) => {
+        const newProduct = {
+            ...this.state.products[listIndex],
+            includeVat: enabled
+        };
+
+        const newProducts = [...this.state.products];
+        newProducts.splice(listIndex, 1, newProduct);
+        this.setState({ products: newProducts });
+    }
+
+    onVatChange = (listIndex, taxIndex) => {
+        const newProduct = {
+            ...this.state.products[listIndex],
+            taxIndex: taxIndex
+        };
+
+        const newProducts = [...this.state.products];
+        newProducts.splice(listIndex, 1, newProduct);
+        this.setState({ products: newProducts });
     }
 
     renderProductContainer = () => {
@@ -487,8 +574,7 @@ const styles = StyleSheet.create({
     title: {
         textTransform: 'uppercase',
         color: 'black',
-        fontSize: 12,
-        fontWeight: 'bold'
+        fontSize: 12
     },
     subtitle: {
         color: 'black',

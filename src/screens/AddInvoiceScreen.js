@@ -9,7 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
-import { isFloat, isInteger } from '../helpers/Utils';
+import { isFloat, isInteger, toInteger, toFloat } from '../helpers/Utils';
 
 import * as invoiceActions from '../redux/actions/invoiceActions';
 import * as taxActions from '../redux/actions/taxActions';
@@ -44,8 +44,11 @@ class AddInvoiceScreen extends Component {
                 rate: '',
                 quantity: '',
                 vat: '0',
-                includeVat: false,
-                vatIndex: 0
+                includevat: 0,
+                taxIndex: 0,
+                price: '',
+                itemtype: '',
+                priceIndex: 0
             }]
         }
     }
@@ -92,6 +95,49 @@ class AddInvoiceScreen extends Component {
 
     formattedDate = date => {
         return date ? moment(date).format(DATE_FORMAT) : '';
+    }
+
+    productPrice = (listIndex) => {
+        const item = this.state.products[listIndex];
+        if (isFloat(item.price)) {
+            return toFloat(toFloat(item.price).toFixed(2));
+        } else {
+            return 0;
+        }
+    }
+
+    vatPercentage = (listIndex) => {
+        const item = this.state.products[listIndex];
+        if (isFloat(item.vat)) {
+            return toFloat(toFloat(item.vat).toFixed(2));
+        } else {
+            return 0;
+        }
+    }
+
+    productQuantity = (listIndex) => {
+        const item = this.state.products[listIndex];
+        if (isInteger(item.quantity)) {
+            return toInteger(item.quantity);
+        } else {
+            return 0;
+        }
+    }
+
+    getVatAmount = listIndex => {
+        const item = this.state.products[listIndex];
+        const includeVat = item.includevat === 1;
+        const salesPrice = this.productPrice(listIndex);
+        const taxPercentage = this.vatPercentage(listIndex);
+        let taxAmt = 0.0;
+        if (includeVat) {
+            const principal = (salesPrice * 100) / (100 + taxPercentage);
+            taxAmt = salesPrice - principal;
+        } else {
+            taxAmt = (taxPercentage * salesPrice) / 100;
+        }
+        taxAmt = toFloat(taxAmt.toFixed(2));
+        return taxAmt;
     }
 
     getTaxList = () => {
@@ -261,10 +307,21 @@ class AddInvoiceScreen extends Component {
         this.props.navigation.push('SelectProductScreen', {
             onProductSelected: item => {
                 log('Product Info', item);
+                let taxIndex = 0;
+                const { taxList } = this.props.tax;
+                taxList.forEach((value, index) => {
+                    if (toFloat(item.vat) === value.percentage) {
+                        taxIndex = 1 + index;
+                    }
+                });
+
                 const newProduct = {
                     ...this.state.products[index],
                     ...item,
-                    label: `${item.icode}-${item.idescription}`
+                    label: `${item.icode}-${item.idescription}`,
+                    taxIndex: taxIndex,
+                    price: item.itemtype === 'Stock' ? item.sp_price : item.rate,
+                    priceIndex: 0
                 };
 
                 const newProducts = [...this.state.products];
@@ -304,7 +361,7 @@ class AddInvoiceScreen extends Component {
     onPriceChange = (text, index) => {
         const newProduct = {
             ...this.state.products[index],
-            sp_price: text
+            price: text
         };
 
         const newProducts = [...this.state.products];
@@ -323,18 +380,33 @@ class AddInvoiceScreen extends Component {
         this.setState({ products: newProducts });
     }
 
-    getVatAmount = item => {
-        if (!isFloat(item.sp_price) || !isInteger(item.quantity) || !isFloat(item.vat)) {
-            return '0.00';
-        }
-        if (item.includevat === 1) {
+    renderPriceDropdown = (item, index) => {
+        const priceList = [
+            `Sale Price(${item.sp_price})`,
+            `Trade Price(${item.trade_price})`,
+            `Whole Sale(${item.wholesale})`
+        ];
+        return item.itemtype === 'Stock' ? <View style={{
+            flexDirection: 'row',
+            marginTop: 12, alignItems: 'center'
+        }}>
+            <Text style={[styles.subtitle, { flex: 1 }]}>Select Price</Text>
+            <Picker
+                style={{ flex: 2 }}
+                selectedValue={priceList[item.priceIndex]}
+                mode='dropdown'
+                onValueChange={(itemValue, itemPosition) => this.onPriceIndexChange(index, itemPosition)}>
+                {priceList.map((value, index) => <Picker.Item
+                    label={value} value={value} key={`${index}`} />)}
+            </Picker>
 
-        }
 
+        </View> : null
     }
 
     renderProductItem = ({ item, index }) => {
         const taxList = this.getTaxList();
+        const isStock = item.itemtype === 'Stock';
         return <View style={{ flexDirection: 'column' }}>
 
             <View style={{
@@ -386,6 +458,10 @@ class AddInvoiceScreen extends Component {
             <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
 
                 <Text style={styles.title}>Price And Tax</Text>
+                {/* Prices */}
+                {this.renderPriceDropdown(item, index)}
+
+
                 <View style={{ flexDirection: 'row' }}>
                     {/* Price/Rate */}
                     <View style={{
@@ -396,7 +472,7 @@ class AddInvoiceScreen extends Component {
                         <Text style={styles.subtitle}>Price/Rate</Text>
                         <TextInput
                             style={[styles.textInput, { marginTop: 6 }]}
-                            value={item.sp_price}
+                            value={item.price}
                             onChangeText={text => this.onPriceChange(text, index)}
                         />
                     </View>
@@ -425,12 +501,14 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>Vat (Amt)</Text>
                         <TextInput
-                            value={this.getVatAmount(item)}
+                            value={`${this.getVatAmount(index)}`}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                         />
                     </View>
                 </View>
+
+
             </View>
             <View style={{
                 borderBottomColor: 'lightgray',
@@ -458,8 +536,8 @@ class AddInvoiceScreen extends Component {
                         <Text>Include Vat</Text>
                         <Switch
                             style={{}}
-                            thumbColor={item.includeVat ? colorAccent : 'gray'}
-                            value={item.includeVat}
+                            thumbColor={item.includevat === 1 ? colorAccent : 'gray'}
+                            value={item.includevat === 1}
                             onValueChange={enabled => this.onIncludeVatChange(index, enabled)} />
                     </View>
 
@@ -475,7 +553,7 @@ class AddInvoiceScreen extends Component {
     onIncludeVatChange = (listIndex, enabled) => {
         const newProduct = {
             ...this.state.products[listIndex],
-            includeVat: enabled
+            includevat: enabled ? 1 : 0
         };
 
         const newProducts = [...this.state.products];
@@ -484,9 +562,34 @@ class AddInvoiceScreen extends Component {
     }
 
     onVatChange = (listIndex, taxIndex) => {
+        const taxList = this.props.tax.taxList;
         const newProduct = {
             ...this.state.products[listIndex],
-            taxIndex: taxIndex
+            taxIndex: taxIndex,
+            vat: taxIndex === 0 ? '0' : taxList[taxIndex - 1].percentage
+        };
+
+        const newProducts = [...this.state.products];
+        newProducts.splice(listIndex, 1, newProduct);
+        this.setState({ products: newProducts });
+    }
+    onPriceIndexChange = (listIndex, priceIndex) => {
+        const item = this.state.products[listIndex];
+        let price;
+        switch (priceIndex) {
+            case 0:
+                price = item.sp_price;
+                break;
+            case 1:
+                price = item.trade_price;
+                break;
+            default:
+                price = item.wholesale;
+        }
+        const newProduct = {
+            ...item,
+            priceIndex: priceIndex,
+            price: price
         };
 
         const newProducts = [...this.state.products];
@@ -577,7 +680,7 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     subtitle: {
-        color: 'black',
+        color: 'gray',
         fontSize: 14
     }
 });

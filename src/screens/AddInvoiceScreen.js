@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput, FlatList, Switch } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import { tabSelectedColor, colorPrimary, colorAccent } from '../theme/Color'
+import { tabSelectedColor, colorPrimary, colorAccent, colorWhite, snackbarActionColor } from '../theme/Color'
 import { TextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
@@ -19,6 +20,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import AppTab from '../components/AppTab';
 import { log } from '../components/Logger'
+import Snackbar from 'react-native-snackbar';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -48,7 +50,8 @@ class AddInvoiceScreen extends Component {
                 taxIndex: 0,
                 price: '',
                 itemtype: '',
-                priceIndex: 0
+                priceIndex: 0,
+                discount_per: 0
             }]
         }
     }
@@ -124,17 +127,17 @@ class AddInvoiceScreen extends Component {
         }
     }
 
-    getVatAmount = listIndex => {
+    getTaxAmount = listIndex => {
         const item = this.state.products[listIndex];
         const includeVat = item.includevat === 1;
-        const salesPrice = this.productPrice(listIndex);
+        const price = this.productPrice(listIndex);
         const taxPercentage = this.vatPercentage(listIndex);
         let taxAmt = 0.0;
         if (includeVat) {
-            const principal = (salesPrice * 100) / (100 + taxPercentage);
-            taxAmt = salesPrice - principal;
+            const principal = (price * 100) / (100 + taxPercentage);
+            taxAmt = price - principal;
         } else {
-            taxAmt = (taxPercentage * salesPrice) / 100;
+            taxAmt = (taxPercentage * price) / 100;
         }
         taxAmt = toFloat(taxAmt.toFixed(2));
         return taxAmt;
@@ -369,6 +372,53 @@ class AddInvoiceScreen extends Component {
         this.setState({ products: newProducts });
     }
 
+    onDiscountChange = (text, index) => {
+        const newProduct = {
+            ...this.state.products[index],
+            discount_per: text
+        };
+
+        const newProducts = [...this.state.products];
+        newProducts.splice(index, 1, newProduct);
+        this.setState({ products: newProducts });
+    }
+    discountPercentage = (listIndex) => {
+        const item = this.state.products[listIndex];
+        if (isFloat(item.discount_per)) {
+            return toFloat(toFloat(item.discount_per).toFixed(2));
+        } else {
+            return 0;
+        }
+    }
+
+    // Total Discount Amount for a Specific Invoice
+    discountAmount = (listIndex) => {
+        const item = this.state.products[listIndex];
+        const includeVat = item.includevat === 1;
+        let price = this.productPrice(listIndex);
+        const discountPer = this.discountPercentage(listIndex);
+        const quantity = this.productQuantity(listIndex);
+        let discount;
+        if (!includeVat) {
+            price = price + this.getTaxAmount(listIndex);
+        }
+        discount = (discountPer * price) / 100;
+        return toFloat((discount * quantity).toFixed(2));
+    }
+
+    // Total Amount for Invoice Item 
+    totalAmount = (listIndex) => {
+        const item = this.state.products[listIndex];
+        const includeVat = item.includevat === 1;
+        let price = this.productPrice(listIndex);
+        const quantity = this.productQuantity(listIndex);
+        if (!includeVat) {
+            price = price + this.getTaxAmount(listIndex);
+        }
+        let totalAmt = (price * quantity) + this.discountAmount(listIndex);
+        return toFloat(totalAmt.toFixed(2));
+    }
+
     onQuantityChange = (text, index) => {
         const newProduct = {
             ...this.state.products[index],
@@ -386,32 +436,40 @@ class AddInvoiceScreen extends Component {
             `Trade Price(${item.trade_price})`,
             `Whole Sale(${item.wholesale})`
         ];
-        return item.itemtype === 'Stock' ? <View style={{
-            flexDirection: 'row',
-            marginTop: 12, alignItems: 'center'
-        }}>
-            <Text style={[styles.subtitle, { flex: 1 }]}>Select Price</Text>
-            <Picker
-                style={{ flex: 2 }}
-                selectedValue={priceList[item.priceIndex]}
-                mode='dropdown'
-                onValueChange={(itemValue, itemPosition) => this.onPriceIndexChange(index, itemPosition)}>
-                {priceList.map((value, index) => <Picker.Item
-                    label={value} value={value} key={`${index}`} />)}
-            </Picker>
+        return item.itemtype === 'Stock' ? <View style={{ flexDirection: 'column' }}>
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 16
+            }}>
+                <Text style={[styles.subtitle, { flex: 1 }]}>Select Price</Text>
+                <Picker
+                    style={{ flex: 2 }}
+                    selectedValue={priceList[item.priceIndex]}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemPosition) => this.onPriceIndexChange(index, itemPosition)}>
+                    {priceList.map((value, index) => <Picker.Item
+                        label={value} value={value} key={`${index}`} />)}
+                </Picker>
 
 
+            </View>
+            <View style={{
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 1,
+                marginVertical: 6
+            }} />
         </View> : null
     }
 
     renderProductItem = ({ item, index }) => {
+        const isLast = index + 1 === this.state.products.length;
         const taxList = this.getTaxList();
         const isStock = item.itemtype === 'Stock';
         return <View style={{ flexDirection: 'column' }}>
 
             <View style={{
                 flexDirection: 'row',
-                paddingHorizontal: 16,
                 paddingTop: 10
             }}>
                 {/* Product */}
@@ -420,7 +478,7 @@ class AddInvoiceScreen extends Component {
                     flex: 1
                 }}>
                     <Text style={styles.title}>Product({index + 1})</Text>
-                    <TouchableOpacity style={{ marginTop: 6 }}
+                    <TouchableOpacity style={{ marginTop: 6, marginLeft: 12, marginRight: 6 }}
                         onPress={() => this.onProductNamePress(index)}>
                         <TextInput
                             style={styles.textInput}
@@ -434,9 +492,9 @@ class AddInvoiceScreen extends Component {
                 </View>
 
                 {/* Ledger Account */}
-                <View style={{ flexDirection: 'column', flex: 1, marginLeft: 12 }}>
+                <View style={{ flexDirection: 'column', flex: 1 }}>
                     <Text style={styles.title}>Ledger Account</Text>
-                    <TouchableOpacity style={{ marginTop: 6 }}
+                    <TouchableOpacity style={{ marginTop: 6, marginLeft: 12, marginRight: 12 }}
                         onPress={() => this.onLedgerPress(index)}>
                         <TextInput
                             style={styles.textInput}
@@ -455,14 +513,14 @@ class AddInvoiceScreen extends Component {
                 borderBottomWidth: 1,
                 marginVertical: 12
             }} />
-            <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
+            <View style={{ flexDirection: 'column' }}>
 
                 <Text style={styles.title}>Price And Tax</Text>
                 {/* Prices */}
                 {this.renderPriceDropdown(item, index)}
 
 
-                <View style={{ flexDirection: 'row' }}>
+                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
                     {/* Price/Rate */}
                     <View style={{
                         flexDirection: 'column',
@@ -501,7 +559,7 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>Vat (Amt)</Text>
                         <TextInput
-                            value={`${this.getVatAmount(index)}`}
+                            value={`${this.getTaxAmount(index)}`}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                         />
@@ -519,11 +577,15 @@ class AddInvoiceScreen extends Component {
             {/* Taxes */}
             <View style={{
                 flexDirection: 'column',
-                paddingHorizontal: 16,
                 marginTop: 12
             }}>
                 <Text style={styles.title}>Select Taxes (Vat/GST %)</Text>
-                <View style={{ flexDirection: 'row', flex: 1, paddingTop: 2 }}>
+                <View style={{
+                    flexDirection: 'row',
+                    flex: 1,
+                    paddingTop: 2,
+                    paddingHorizontal: 16
+                }}>
                     <Picker
                         style={{ flex: 2 }}
                         selectedValue={taxList[item.taxIndex]}
@@ -548,7 +610,127 @@ class AddInvoiceScreen extends Component {
                 borderBottomWidth: 1,
                 marginVertical: 12
             }} />
+            <Text style={styles.title}>{'Discount & Total'}</Text>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                {/* % */}
+                <View style={{
+                    flexDirection: 'column',
+                    marginTop: 4,
+                    flex: 1
+                }}>
+                    <Text style={styles.subtitle}>%</Text>
+                    <TextInput
+                        style={[styles.textInput, { marginTop: 6 }]}
+                        value={item.discount_per}
+                        onChangeText={text => this.onDiscountChange(text, index)}
+                    />
+                </View>
+
+                {/* Discount Amt */}
+                <View style={{
+                    flexDirection: 'column',
+                    marginTop: 4,
+                    flex: 1,
+                    marginLeft: 12
+                }}>
+                    <Text style={styles.subtitle}>(Amt)</Text>
+                    <TextInput
+                        value={`${this.discountAmount(index)}`}
+                        style={[styles.textInput, { marginTop: 6 }]}
+                        editable={false}
+                        onChangeText={text => this.onQuantityChange(text, index)}
+                    />
+                </View>
+
+                {/* Total */}
+                <View style={{
+                    flexDirection: 'column',
+                    marginTop: 4,
+                    flex: 1,
+                    marginLeft: 12
+                }}>
+                    <Text style={styles.subtitle}>Total</Text>
+                    <TextInput
+                        value={`${this.totalAmount(index)}`}
+                        style={[styles.textInput, { marginTop: 6 }]}
+                        editable={false}
+                    />
+                </View>
+                {isLast ? <View style={{
+                    flexDirection: 'column',
+                    marginTop: 4,
+                    flex: 1,
+                    justifyContent:'center',
+                    marginLeft: 12,
+                    alignItems:'center'
+                }}>
+                    <Text style={styles.subtitle}>More</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        {
+                            isLast ? <TouchableOpacity onPress={this.addInvoiceItem} style={{ padding: 6 }}>
+                                <Ionicons size={34} name='add-circle' color='green' />
+                            </TouchableOpacity> : null
+                        }
+                        {
+                            index > 0 ? <TouchableOpacity onPress={() => this.deleteInvoiceItem(index)}
+                                style={{ marginLeft: 2, padding: 6 }}>
+                                <MaterialCommunityIcons size={34} name='delete-circle' color='red' />
+                            </TouchableOpacity> : null
+                        }
+                    </View>
+                </View> : null}
+
+            </View>
+            <View style={{
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 5,
+                marginTop: 16
+            }} />
         </View>
+    }
+    addInvoiceItem = () => {
+        const newProducts = [...this.state.products];
+        newProducts.push({
+            product_name: '',
+            ledger_account: '',
+            rate: '',
+            quantity: '',
+            vat: '0',
+            includevat: 0,
+            taxIndex: 0,
+            price: '',
+            itemtype: '',
+            priceIndex: 0,
+            discount_per: 0
+        });
+        this.setState({ products: newProducts }, () => {
+            Snackbar.show({
+                text: 'New Product added.',
+                duration: Snackbar.LENGTH_LONG,
+                action: {
+                    text: 'OK',
+                    textColor: snackbarActionColor,
+                    onPress: () => { }
+                }
+            })
+        });
+    }
+
+    deleteInvoiceItem = index => {
+        let newProducts = [...this.state.products];
+        newProducts.splice(index, 1)
+        this.setState({ products: newProducts }, () => {
+            Snackbar.show({
+                text: 'Product Deleted.',
+                duration: Snackbar.LENGTH_LONG,
+                backgroundColor: 'red',
+                action: {
+                    text: 'OK',
+                    textColor: colorWhite,
+                    onPress: () => { }
+                }
+            })
+        })
     }
     onIncludeVatChange = (listIndex, enabled) => {
         const newProduct = {
@@ -607,6 +789,7 @@ class AddInvoiceScreen extends Component {
 
     renderTabs = () => {
         const selected = this.state.selectedTab;
+        const invoiceAmount = this.invoiceAmount();
         const customerLabel = this.isSalesInvoice() ? 'Customer' : 'Supplier';
         return <View style={{ width: '100%', flexDirection: 'row' }}>
 
@@ -626,7 +809,22 @@ class AddInvoiceScreen extends Component {
                 iconType='MaterialCommunityIcons'
                 selected={selected === 'refund'}
                 onTabPress={() => this.selectTab('refund')} />
+            {invoiceAmount > 0 ? <AppTab
+                title='Payment'
+                icon='payment'
+                selected={selected === 'payment'}
+                onTabPress={() => this.selectTab('payment')} /> : null}
+
+
         </View>
+    }
+
+    invoiceAmount = () => {
+        let total = 0;
+        for (let i = 0; i < this.state.products.length; i++) {
+            total += this.totalAmount(i);
+        }
+        return total;
     }
     render() {
         const { tax } = this.props;
@@ -677,7 +875,8 @@ const styles = StyleSheet.create({
     title: {
         textTransform: 'uppercase',
         color: 'black',
-        fontSize: 12
+        fontSize: 12,
+        paddingHorizontal: 16
     },
     subtitle: {
         color: 'gray',

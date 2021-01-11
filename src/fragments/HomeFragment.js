@@ -105,10 +105,25 @@ const HomeFragment = ({ navigation }) => {
                 switchDrawer('ContactFragment');
                 break;
             case 'sales':
-                navigation.push('PurchaseLedgerScreen');
+                switchDrawer('SalesInvoiceFragment');
+                break;
+            case 'purchase':
+                switchDrawer('PurchaseInvoiceFragment');
                 break;
             case 'banking':
                 switchDrawer('BankFragment');
+                break;
+            case 'journals':
+                switchDrawer('JournalFragment');
+                break;
+            case 'ledgers':
+                switchDrawer('LedgerFragment');
+                break;
+            case 'banking':
+                switchDrawer('BankFragment');
+                break;
+            case 'retailXpress':
+                switchDrawer('UserFragment');
                 break;
             default:
                 switchDrawer('HomeFragment');
@@ -154,7 +169,8 @@ const HomeFragment = ({ navigation }) => {
     return <View style={{
         flex: 1,
         paddingVertical: 6,
-        paddingHorizontal: 6
+        paddingHorizontal: 6,
+        backgroundColor: 'white'
     }}>
         <FlatList
             style={{ flex: 1 }}

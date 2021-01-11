@@ -26,7 +26,7 @@ class AddInvoiceScreen extends Component {
     constructor(props) {
         super();
         this.state = {
-            selectedTab: 'product',
+            selectedTab: 'payment',
             showInvDatePicker: false,
             invDate: undefined,
 
@@ -52,7 +52,9 @@ class AddInvoiceScreen extends Component {
                 itemtype: '',
                 priceIndex: 0,
                 discount_per: 0
-            }]
+            }],
+            paymentIndex: 0,
+            paymentMode: ['Select Payment', 'Live Payment', 'Record payment']
         }
     }
     _customer = '';
@@ -65,11 +67,23 @@ class AddInvoiceScreen extends Component {
     deliveryAddressRef = React.createRef();
     termsRef = React.createRef();
 
+    // Payment References
+    bankRef = React.createRef();
+    accNameRef = React.createRef();
+    accNumRef = React.createRef();
+    accTypeRef = React.createRef();
+    swiftCodeRef = React.createRef();
+    ibanNumRef = React.createRef();
+    amtPaidRef = React.createRef();
+    outAmtRef = React.createRef();
+    payDateRef = React.createRef();
+
+
 
     componentDidMount() {
         const { info } = this.props.route.params;
         const { taxActions } = this.props;
-        taxActions.getTaxList();
+        // taxActions.getTaxList();
         // log('Info: ', info);
     }
     componentWillMount() {
@@ -183,11 +197,13 @@ class AddInvoiceScreen extends Component {
                     deliveryAddress: address
                 }, () => {
                     setFieldValue(this.customerRef, item.name);
+                    this._customer = item.name;
                 })
             },
             onSupplierSelected: item => {
                 this.setState({ notes: item.notes }, () => {
                     setFieldValue(this.customerRef, item.name);
+                    this._customer = item.name;
                 })
             }
         });
@@ -211,7 +227,6 @@ class AddInvoiceScreen extends Component {
                         ref={this.customerRef}
                         value={this._customer}
                         editable={false}
-                        onChangeText={text => this._customer = text}
                         onSubmitEditing={() => { }} />
                 </TouchableOpacity>
 
@@ -660,9 +675,9 @@ class AddInvoiceScreen extends Component {
                     flexDirection: 'column',
                     marginTop: 4,
                     flex: 1,
-                    justifyContent:'center',
+                    justifyContent: 'center',
                     marginLeft: 12,
-                    alignItems:'center'
+                    alignItems: 'center'
                 }}>
                     <Text style={styles.subtitle}>More</Text>
                     <View style={{ flexDirection: 'row' }}>
@@ -787,6 +802,109 @@ class AddInvoiceScreen extends Component {
         />
     }
 
+    renderPaymentContainer = () => {
+
+        return <ScrollView style={{
+            flexDirection: 'column',
+            flex: 1
+        }}>
+            <Picker
+                style={{ marginHorizontal: 16 }}
+                selectedValue={this.state.paymentMode[this.state.paymentIndex]}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ paymentIndex: itemIndex })}>
+                {this.state.paymentMode.map((value, index) => <Picker.Item
+                    label={value} value={value} key={`${index}`} />)}
+            </Picker>
+            <View style={{
+                borderBottomColor: 'lightgray',
+                borderBottomWidth: 1
+            }} />
+            {this.state.paymentIndex === 2 ? this.renderRecordPayment() : null}
+
+        </ScrollView>
+    }
+
+    onBankPress = () => {
+
+    }
+
+    renderRecordPayment = () => {
+        return <View style={{
+            flexDirection: 'column',
+            paddingHorizontal: 16,
+            paddingBottom: 12
+        }}>
+            <TouchableOpacity onPress={this.onBankPress}>
+                <TextField
+                    label='Bank'
+                    keyboardType='name-phone-pad'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    title='*required'
+                    editable={false}
+                    ref={this.bankRef} />
+
+            </TouchableOpacity>
+            <TextField
+                label='A/C Name'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required'
+                ref={this.accNameRef} />
+            <TextField
+                label='A/C No.'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required'
+                ref={this.accNumRef} />
+            <TextField
+                label='A/C Type'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required'
+                ref={this.bankRef} />
+            <TextField
+                label='BIC/Swift'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required'
+                ref={this.swiftCodeRef} />
+
+            <TextField
+                label='IBAN No'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                ref={this.ibanNumRef} />
+            <TextField
+                label='Amount Paid'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required'
+                ref={this.amtPaidRef} />
+            <TextField
+                label='Out. Amount'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required'
+                ref={this.outAmtRef} />
+            <TextField
+                label='Pay Date'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required'
+                ref={this.payDateRef} />
+        </View>
+    }
+
     renderTabs = () => {
         const selected = this.state.selectedTab;
         const invoiceAmount = this.invoiceAmount();
@@ -809,11 +927,13 @@ class AddInvoiceScreen extends Component {
                 iconType='MaterialCommunityIcons'
                 selected={selected === 'refund'}
                 onTabPress={() => this.selectTab('refund')} />
-            {invoiceAmount > 0 ? <AppTab
+            {/* {invoiceAmount > 0 ?  */}
+            <AppTab
                 title='Payment'
                 icon='payment'
                 selected={selected === 'payment'}
-                onTabPress={() => this.selectTab('payment')} /> : null}
+                onTabPress={() => this.selectTab('payment')} />
+            {/* : null} */}
 
 
         </View>
@@ -843,6 +963,7 @@ class AddInvoiceScreen extends Component {
                     {this.renderTabs()}
                     {selected === 'supplier' ? this.renderSupplierContainer() : null}
                     {selected === 'product' ? this.renderProductContainer() : null}
+                    {selected === 'payment' ? this.renderPaymentContainer() : null}
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>

@@ -53,12 +53,15 @@ class AddInvoiceScreen extends Component {
                 priceIndex: 0,
                 discount_per: 0
             }],
-            paymentIndex: 0,
-            paymentMode: ['Select Payment', 'Live Payment', 'Record payment']
+            paymentIndex: 2,
+            paymentMode: ['Select Payment', 'Live Payment', 'Record payment'],
+            payDate: new Date(),
+            showPayDateDialog: false
         }
     }
     _customer = '';
     _invoiceAddress = '';
+    _bank = null;
 
     customerRef = React.createRef();
     invoiceDateRef = React.createRef();
@@ -173,6 +176,15 @@ class AddInvoiceScreen extends Component {
             showInvDatePicker: false
         }, () => {
             setFieldValue(this.invoiceDateRef, this.formattedDate(currentDate));
+        });
+    }
+    onPayDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || this.state.payDate;
+        this.setState({
+            payDate: currentDate,
+            showPayDateDialog: false
+        }, () => {
+            setFieldValue(this.payDateRef, this.formattedDate(currentDate));
         });
     }
 
@@ -825,11 +837,32 @@ class AddInvoiceScreen extends Component {
         </ScrollView>
     }
 
-    onBankPress = () => {
+    setAllBankFields = () => {
+        const bank = this._bank;
+        setFieldValue(this.bankRef, this.bankName(bank));
+        setFieldValue(this.accNameRef, bank.laccount);
+        setFieldValue(this.accNumRef, bank.accnum);
+    }
 
+    onBankPress = () => {
+        this.props.navigation.push('SelectBankScreen', {
+            onBankSelected: bank => {
+                this._bank = { ...bank };
+                this.setAllBankFields();
+            }
+        })
+    }
+
+    bankName = bank => {
+        if (bank === null) {
+            return '';
+        }
+        const bankTitle = `${bank.nominalcode}-${bank.laccount}`;
+        return bankTitle;
     }
 
     renderRecordPayment = () => {
+        const bank = this._bank;
         return <View style={{
             flexDirection: 'column',
             paddingHorizontal: 16,
@@ -841,37 +874,44 @@ class AddInvoiceScreen extends Component {
                     keyboardType='name-phone-pad'
                     returnKeyType='next'
                     lineWidth={1}
+                    value={this.bankName(bank)}
                     title='*required'
                     editable={false}
                     ref={this.bankRef} />
 
             </TouchableOpacity>
             <TextField
-                label='A/C Name'
+                label='A/c Name'
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                ref={this.accNameRef} />
+                editable={false}
+                ref={this.accNameRef}
+                value={bank ? bank.laccount : ''} />
             <TextField
-                label='A/C No.'
-                keyboardType='name-phone-pad'
+                label='A/c No.'
+                keyboardType='number-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                ref={this.accNumRef} />
+                editable={false}
+                ref={this.accNumRef}
+                value={bank ? bank.accnum : ''} />
             <TextField
-                label='A/C Type'
+                label='A/c Type'
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                ref={this.bankRef} />
+                editable={false}
+                ref={this.accTypeRef} />
             <TextField
                 label='BIC/Swift'
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
                 lineWidth={1}
+                editable={false}
                 title='*required'
                 ref={this.swiftCodeRef} />
 
@@ -880,10 +920,11 @@ class AddInvoiceScreen extends Component {
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
                 lineWidth={1}
+                editable={false}
                 ref={this.ibanNumRef} />
             <TextField
                 label='Amount Paid'
-                keyboardType='name-phone-pad'
+                keyboardType='number-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
@@ -894,14 +935,25 @@ class AddInvoiceScreen extends Component {
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
+                editable={false}
                 ref={this.outAmtRef} />
-            <TextField
-                label='Pay Date'
-                keyboardType='name-phone-pad'
-                returnKeyType='next'
-                lineWidth={1}
-                title='*required'
-                ref={this.payDateRef} />
+            <TouchableOpacity onPress={() => this.setState({ showPayDateDialog: true })}>
+                <TextField
+                    label='Pay Date'
+                    keyboardType='name-phone-pad'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    title='*required'
+                    editable={false}
+                    ref={this.payDateRef} />
+            </TouchableOpacity>
+            {this.state.showPayDateDialog ? <DateTimePicker
+                value={this.state.payDate}
+                mode={'datetime'}
+                display='default'
+                minimumDate={new Date()}
+                onChange={this.onPayDateChange}
+            /> : null}
         </View>
     }
 

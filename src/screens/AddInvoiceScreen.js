@@ -842,6 +842,10 @@ class AddInvoiceScreen extends Component {
         setFieldValue(this.bankRef, this.bankName(bank));
         setFieldValue(this.accNameRef, bank.laccount);
         setFieldValue(this.accNumRef, bank.accnum);
+
+        setFieldValue(this.accTypeRef, bank.acctype);
+        setFieldValue(this.swiftCodeRef, bank.bicnum);
+        setFieldValue(this.ibanNumRef, bank.ibannum);
     }
 
     onBankPress = () => {
@@ -905,6 +909,7 @@ class AddInvoiceScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 editable={false}
+                value={bank ? bank.acctype : ''}
                 ref={this.accTypeRef} />
             <TextField
                 label='BIC/Swift'
@@ -913,6 +918,7 @@ class AddInvoiceScreen extends Component {
                 lineWidth={1}
                 editable={false}
                 title='*required'
+                value={bank ? bank.bicnum : ''}
                 ref={this.swiftCodeRef} />
 
             <TextField
@@ -921,6 +927,7 @@ class AddInvoiceScreen extends Component {
                 returnKeyType='next'
                 lineWidth={1}
                 editable={false}
+                value={bank ? bank.ibannum : ''}
                 ref={this.ibanNumRef} />
             <TextField
                 label='Amount Paid'
@@ -945,6 +952,7 @@ class AddInvoiceScreen extends Component {
                     lineWidth={1}
                     title='*required'
                     editable={false}
+                    value={this.formattedDate(this.state.payDate)}
                     ref={this.payDateRef} />
             </TouchableOpacity>
             {this.state.showPayDateDialog ? <DateTimePicker

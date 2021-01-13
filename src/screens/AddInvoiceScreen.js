@@ -21,6 +21,7 @@ import FullScreenError from '../components/FullScreenError';
 import AppTab from '../components/AppTab';
 import { log } from '../components/Logger'
 import Snackbar from 'react-native-snackbar';
+import { CreditCardInput } from 'react-native-credit-card-input';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -833,8 +834,55 @@ class AddInvoiceScreen extends Component {
                 borderBottomWidth: 1
             }} />
             {this.state.paymentIndex === 2 ? this.renderRecordPayment() : null}
+            {this.state.paymentIndex === 1 ? this.renderCardInfo() : null}
 
         </ScrollView>
+    }
+
+    onCreditCardInfoChange = form => {
+        console.log(form);
+    }
+
+    renderCardInfo = () => {
+        return <View style={{
+            flexDirection: 'column',
+            paddingHorizontal: 12,
+            paddingVertical: 16
+        }}>
+            <CreditCardInput
+                onChange={this.onCreditCardInfoChange}
+            />
+            {/* <TextField
+                label='Card Number'
+                keyboardType='name-phone-pad'
+                textContentType='creditCardNumber'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required' /> */}
+            {/* <TextInput
+                placeholder='Cred'
+                textContentType='creditCardNumber'
+                autoCompleteType='cc-number' />
+            <TextField
+                label='MM'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required' />
+            <TextField
+                label='YYYY'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required' />
+            <TextField
+                label='CVV'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                title='*required' /> */}
+        </View>
+
     }
 
     setAllBankFields = () => {

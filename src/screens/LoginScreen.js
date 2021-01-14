@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { TextField, OutlinedTextField } from 'react-native-material-textfield';
+import { OutlinedTextField } from 'react-native-material-textfield';
 import { colorAccent } from '../theme/Color';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import AppButton from '../components/AppButton';
@@ -10,6 +10,7 @@ import { log, showToast } from '../components/Logger';
 import FBLoginButton from '../components/FBLoginButton';
 import { bindActionCreators } from 'redux';
 const { View, Text, StyleSheet, Image } = require("react-native")
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 //Importing Actions
 import * as authActions from '../redux/actions/authActions';
@@ -90,9 +91,12 @@ class LoginScreen extends Component {
             this.setState({ emailError: undefined, passError: undefined });
         }
     }
+
+
     renderLoginForm = () => {
         return <View>
-            <TextField
+            <OutlinedTextField
+                containerStyle={styles.fieldStyle}
                 label='Email'
                 keyboardType='email-address'
                 returnKeyType='next'
@@ -101,7 +105,8 @@ class LoginScreen extends Component {
                 lineWidth={1}
                 onChange={event => this.resetState()}
                 onSubmitEditing={() => { this.passRef.current.focus() }} />
-            <TextField
+            <OutlinedTextField
+                containerStyle={styles.fieldStyle}
                 label='Password'
                 secureTextEntry={true}
                 error={this.state.passError}
@@ -176,6 +181,9 @@ const styles = StyleSheet.create({
     },
     fbBtn: {
         // width: '100%'
+    },
+    fieldStyle: {
+        marginTop: 20
     }
 });
 export default connect(

@@ -2,7 +2,7 @@ import React, { useEffect, Component } from 'react';
 import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Picker, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ImageView from '../components/ImageView';
-import { TextField } from 'react-native-material-textfield';
+import { OutlinedTextField } from 'react-native-material-textfield';
 import AppButton from '../components/AppButton';
 import { RaisedButton, RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
@@ -244,7 +244,8 @@ class EditProfileScreen extends Component {
                     }}
                     source={require('../assets/product.png')}
                 />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textFieldContainerStyle}
                     label='First Name'
                     keyboardType='name-phone-pad'
                     returnKeyType='next'
@@ -252,15 +253,18 @@ class EditProfileScreen extends Component {
                     ref={this.firstNameRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.lastNameRef.current.focus() }} />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textFieldContainerStyle}
                     label='Last Name'
                     keyboardType='name-phone-pad'
                     returnKeyType='next'
                     // error={this.state.emailError}
                     ref={this.lastNameRef}
                     lineWidth={1}
+                    style={{ marginTop: 100 }}
                     onSubmitEditing={() => { this.emailRef.current.focus() }} />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textFieldContainerStyle}
                     label='Email'
                     keyboardType='email-address'
                     returnKeyType='next'
@@ -268,7 +272,8 @@ class EditProfileScreen extends Component {
                     ref={this.emailRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.businessNameRef.current.focus() }} />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textFieldContainerStyle}
                     label='Business Name'
                     keyboardType='name-phone-pad'
                     returnKeyType='next'
@@ -276,7 +281,8 @@ class EditProfileScreen extends Component {
                     ref={this.businessNameRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.phoneRef.current.focus() }} />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textFieldContainerStyle}
                     label='Phone Number'
                     keyboardType='phone-pad'
                     returnKeyType='next'
@@ -287,7 +293,8 @@ class EditProfileScreen extends Component {
                 {this.renderBusinessCategory()}
                 {this.renderCountry()}
                 {this.renderBusinessType()}
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textFieldContainerStyle}
                     label='Registration Number'
                     keyboardType='numbers-and-punctuation'
                     returnKeyType='next'
@@ -311,6 +318,9 @@ const styles = StyleSheet.create({
     updateBtn: {
         padding: 26,
         marginVertical: 20
+    },
+    textFieldContainerStyle: {
+        marginTop: 20
     }
 });
 export default connect(

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput, FlatList, Switch } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { tabSelectedColor, colorPrimary, colorAccent, colorWhite, snackbarActionColor } from '../theme/Color'
@@ -22,12 +23,14 @@ import AppTab from '../components/AppTab';
 import { log } from '../components/Logger'
 import Snackbar from 'react-native-snackbar';
 import { CreditCardInput } from 'react-native-credit-card-input';
+import CardView from 'react-native-cardview';
+import Store from '../redux/Store';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
         super();
         this.state = {
-            selectedTab: 'payment',
+            selectedTab: 'refund',
             showInvDatePicker: false,
             invDate: undefined,
 
@@ -57,12 +60,15 @@ class AddInvoiceScreen extends Component {
             paymentIndex: 2,
             paymentMode: ['Select Payment', 'Live Payment', 'Record payment'],
             payDate: new Date(),
-            showPayDateDialog: false
+            showPayDateDialog: false,
+            payMethod: ['Select Method', 'Cash', 'Current', 'Electronic', 'Credit/Debit Card', 'Paypal'],
+            payMethodIndex: 0
         }
     }
     _customer = '';
     _invoiceAddress = '';
     _bank = null;
+    _reference = ''
 
     customerRef = React.createRef();
     invoiceDateRef = React.createRef();
@@ -78,6 +84,7 @@ class AddInvoiceScreen extends Component {
     accTypeRef = React.createRef();
     swiftCodeRef = React.createRef();
     ibanNumRef = React.createRef();
+    refNumRef = React.createRef();
     amtPaidRef = React.createRef();
     outAmtRef = React.createRef();
     payDateRef = React.createRef();
@@ -88,7 +95,6 @@ class AddInvoiceScreen extends Component {
         const { info } = this.props.route.params;
         const { taxActions } = this.props;
         // taxActions.getTaxList();
-        // log('Info: ', info);
     }
     componentWillMount() {
         const invDate = moment();
@@ -337,7 +343,6 @@ class AddInvoiceScreen extends Component {
     onProductNamePress = (index) => {
         this.props.navigation.push('SelectProductScreen', {
             onProductSelected: item => {
-                log('Product Info', item);
                 let taxIndex = 0;
                 const { taxList } = this.props.tax;
                 taxList.forEach((value, index) => {
@@ -814,6 +819,11 @@ class AddInvoiceScreen extends Component {
             renderItem={this.renderProductItem}
         />
     }
+    renderRefundContainer = () => {
+        return <ScrollView style={{ flex: 1 }}>
+            {this.renderRecordPayment()}
+        </ScrollView>
+    }
 
     renderPaymentContainer = () => {
 
@@ -840,7 +850,7 @@ class AddInvoiceScreen extends Component {
     }
 
     onCreditCardInfoChange = form => {
-        console.log(form);
+        log('Card Info', form);
     }
 
     renderCardInfo = () => {
@@ -900,9 +910,29 @@ class AddInvoiceScreen extends Component {
         this.props.navigation.push('SelectBankScreen', {
             onBankSelected: bank => {
                 this._bank = { ...bank };
-                this.setAllBankFields();
+                const payMethodIndex = this.getPayMethodIndex(bank.paidmethod);
+                this.setState({ payMethodIndex: payMethodIndex }, () => {
+                    this.setAllBankFields();
+                })
+
             }
         })
+    }
+    getPayMethodIndex = (method) => {
+        switch (method) {
+            case 'cash':
+                return 1;
+            case 'current':
+                return 2;
+            case 'electronic':
+                return 3;
+            case 'credit/debit card':
+                return 4;
+            case 'paypal':
+                return 5;
+            default:
+                return 0;
+        }
     }
 
     bankName = bank => {
@@ -915,6 +945,8 @@ class AddInvoiceScreen extends Component {
 
     renderRecordPayment = () => {
         const bank = this._bank;
+        const { payMethod, payMethodIndex } = this.state;
+        const isCreditNote = this.isCreditNote();
         return <View style={{
             flexDirection: 'column',
             paddingHorizontal: 16,
@@ -977,6 +1009,16 @@ class AddInvoiceScreen extends Component {
                 editable={false}
                 value={bank ? bank.ibannum : ''}
                 ref={this.ibanNumRef} />
+
+            {isCreditNote ? <TextField
+                label='Reference'
+                keyboardType='name-phone-pad'
+                returnKeyType='next'
+                lineWidth={1}
+                ref={this.refNumRef}
+                value={this._reference}
+                onChangeText={text => this._reference = text} /> : null}
+
             <TextField
                 label='Amount Paid'
                 keyboardType='number-pad'
@@ -992,6 +1034,17 @@ class AddInvoiceScreen extends Component {
                 title='*required'
                 editable={false}
                 ref={this.outAmtRef} />
+            {/* Select Method Picker */}
+            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
+                <Picker
+                    selectedValue={payMethod[payMethodIndex]}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ payMethodIndex: itemIndex })}>
+                    {payMethod.map((value, index) => <Picker.Item
+                        label={value} value={value} key={`${index}`} />)}
+                </Picker>
+            </View>
+
             <TouchableOpacity onPress={() => this.setState({ showPayDateDialog: true })}>
                 <TextField
                     label='Pay Date'
@@ -1013,9 +1066,8 @@ class AddInvoiceScreen extends Component {
         </View>
     }
 
-    renderTabs = () => {
+    renderTabs = (invoiceAmount) => {
         const selected = this.state.selectedTab;
-        const invoiceAmount = this.invoiceAmount();
         const customerLabel = this.isSalesInvoice() ? 'Customer' : 'Supplier';
         return <View style={{ width: '100%', flexDirection: 'row' }}>
 
@@ -1030,18 +1082,19 @@ class AddInvoiceScreen extends Component {
                 selected={selected === 'product'}
                 onTabPress={() => this.selectTab('product')} />
 
-            <AppTab title='Refund'
+            {this.isCreditNote() ? <AppTab title='Refund'
                 icon='cash-refund'
                 iconType='MaterialCommunityIcons'
                 selected={selected === 'refund'}
                 onTabPress={() => this.selectTab('refund')} />
-            {/* {invoiceAmount > 0 ?  */}
-            <AppTab
-                title='Payment'
-                icon='payment'
-                selected={selected === 'payment'}
-                onTabPress={() => this.selectTab('payment')} />
-            {/* : null} */}
+                : null}
+            {(invoiceAmount > 0 && !this.isCreditNote()) ?
+                <AppTab
+                    title='Payment'
+                    icon='payment'
+                    selected={selected === 'payment'}
+                    onTabPress={() => this.selectTab('payment')} />
+                : null}
 
 
         </View>
@@ -1054,6 +1107,45 @@ class AddInvoiceScreen extends Component {
         }
         return total;
     }
+    renderBottomCard = (invoiceTotal) => {
+        const { authData } = Store.getState().auth;
+        return <CardView
+            cardElevation={4}
+            cardRadius={6}
+            style={{ backgroundColor: colorPrimary }}>
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingVertical: 6,
+                paddingStart: 16
+            }}>
+                <MaterialCommunityIcons name='wallet' size={40} color='black' />
+                <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'center', paddingHorizontal: 12 }}>
+                    <Text style={{ fontSize: 16, flex: 1 }}>Total {authData.currency} {invoiceTotal}</Text>
+                    <Text style={{ fontSize: 16, flex: 1 }}>Items {this.state.products.length}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        onPress={() => { }}
+                        style={{
+                            backgroundColor: 'blue',
+                            paddingHorizontal: 12,
+                            paddingVertical: 8,
+                            borderRadius: 4,
+                            marginEnd: 16
+                        }}>
+                        <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => { }}
+                        style={{ paddingHorizontal: 16 }}>
+                        <FontAwesomeIcon name='angle-double-up' size={24} color='black' />
+                    </TouchableOpacity>
+
+                </View>
+
+            </View>
+        </CardView>
+    }
     render() {
         const { tax } = this.props;
         if (tax.fetchingTaxList) {
@@ -1064,14 +1156,17 @@ class AddInvoiceScreen extends Component {
         }
 
         const selected = this.state.selectedTab;
+        const invoiceAmount = this.invoiceAmount();
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>
 
-                    {this.renderTabs()}
+                    {this.renderTabs(invoiceAmount)}
                     {selected === 'supplier' ? this.renderSupplierContainer() : null}
                     {selected === 'product' ? this.renderProductContainer() : null}
                     {selected === 'payment' ? this.renderPaymentContainer() : null}
+                    {selected === 'refund' ? this.renderRefundContainer() : null}
+                    {this.renderBottomCard(invoiceAmount)}
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>

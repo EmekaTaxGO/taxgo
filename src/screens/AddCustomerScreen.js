@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, SafeAreaView, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { TextField } from 'react-native-material-textfield';
+import { OutlinedTextField } from 'react-native-material-textfield';
 import { focusField, getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, colorPrimary } from '../theme/Color';
 import { isEmpty, BUSINESS_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE } from '../helpers/Utils';
 
 import * as contactActions from '../redux/actions/contactActions';
@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProgressDialog from '../components/ProgressDialog';
 import Store from '../redux/Store';
+import { color } from 'react-native-reanimated';
 
 class AddCustomerScreen extends Component {
 
@@ -173,7 +174,8 @@ class AddCustomerScreen extends Component {
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Name'
                         keyboardType='default'
                         returnKeyType='next'
@@ -184,7 +186,8 @@ class AddCustomerScreen extends Component {
                         error={this.state.nameError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.businessRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Business Name'
                         keyboardType='default'
                         returnKeyType='next'
@@ -195,7 +198,8 @@ class AddCustomerScreen extends Component {
                         editable={isFormEditabled}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.emailRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Email'
                         keyboardType='email-address'
                         returnKeyType='next'
@@ -206,7 +210,8 @@ class AddCustomerScreen extends Component {
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.mobileRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Mobile'
                         keyboardType='numeric'
                         returnKeyType='next'
@@ -216,7 +221,8 @@ class AddCustomerScreen extends Component {
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.telephoneRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Telephone'
                         keyboardType='numeric'
                         returnKeyType='next'
@@ -226,7 +232,8 @@ class AddCustomerScreen extends Component {
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.addressRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Address'
                         keyboardType='default'
                         returnKeyType='next'
@@ -235,7 +242,8 @@ class AddCustomerScreen extends Component {
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.townRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Town/City'
                         keyboardType='default'
                         returnKeyType='next'
@@ -244,7 +252,8 @@ class AddCustomerScreen extends Component {
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.postCodeRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle} eld
                         label='Postal Code'
                         keyboardType='numeric'
                         returnKeyType='next'
@@ -253,7 +262,8 @@ class AddCustomerScreen extends Component {
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.notesRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Notes'
                         keyboardType='default'
                         returnKeyType='next'
@@ -262,7 +272,8 @@ class AddCustomerScreen extends Component {
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.referenceRef)} />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.fieldStyle}
                         label='Reference'
                         keyboardType='default'
                         returnKeyType='done'
@@ -294,6 +305,9 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         marginTop: 12,
         fontSize: 50
+    },
+    fieldStyle: {
+        marginTop: 20
     }
 });
 export default connect(

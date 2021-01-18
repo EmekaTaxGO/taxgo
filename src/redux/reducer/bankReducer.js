@@ -6,7 +6,6 @@ import {
     BANK_UPDATE_REQUEST,
     BANK_UPDATE_FAIL,
     BANK_UPDATE_SUCCESS,
-    API_ERROR_MESSAGE,
     BANK_ACTIVITY_REQUEST,
     BANK_ACTIVITY_FAIL,
     BANK_ACTIVITY_SUCCESS,
@@ -14,6 +13,7 @@ import {
     BANK_RECONCILE_SUCCESS,
     BANK_RECONCILE_FAIL
 } from '../../constants';
+import { API_ERROR_MESSAGE } from '../../constants/appConstant';
 
 
 const initialState = {

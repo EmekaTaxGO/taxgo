@@ -236,6 +236,7 @@ class BankDetailScreen extends Component {
                     <CheckBox
                         style={{ color: colorAccent, position: 'relative' }}
                         value={allChecked}
+                        tintColors={{ true: colorAccent, false: 'gray' }}
                         onValueChange={this.onAllCheckChanged} />
                     <Text>All</Text>
 
@@ -278,6 +279,7 @@ class BankDetailScreen extends Component {
             <CheckBox
                 style={{ color: colorAccent, position: 'relative' }}
                 value={item.checked}
+                tintColors={{ true: colorAccent, false: 'gray' }}
                 onValueChange={checked => this.onCheckChanged(checked, index)} />
             <View style={{
                 flexDirection: 'column',
@@ -336,9 +338,9 @@ class BankDetailScreen extends Component {
             return <FullScreenError tryAgainClick={this.fetchBankReconcile} />
         }
         const { reconciles } = this.state;
-        // if (reconciles.length === 0) {
-        //     return <EmptyView message='No Records found' iconName='hail' />
-        // }
+        if (reconciles.length === 0) {
+            return <EmptyView message='No Records found' iconName='hail' />
+        }
         return <FlatList
             keyExtractor={(item, index) => `${index}`}
             data={['Vikas', 'Ashish', 'Pashvan']}

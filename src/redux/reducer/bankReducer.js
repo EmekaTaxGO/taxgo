@@ -6,7 +6,13 @@ import {
     BANK_UPDATE_REQUEST,
     BANK_UPDATE_FAIL,
     BANK_UPDATE_SUCCESS,
-    API_ERROR_MESSAGE
+    API_ERROR_MESSAGE,
+    BANK_ACTIVITY_REQUEST,
+    BANK_ACTIVITY_FAIL,
+    BANK_ACTIVITY_SUCCESS,
+    BANK_RECONCILE_REQUEST,
+    BANK_RECONCILE_SUCCESS,
+    BANK_RECONCILE_FAIL
 } from '../../constants';
 
 
@@ -15,7 +21,15 @@ const initialState = {
     fetchBankListError: undefined,
     bankList: [],
 
-    updatingBankDetail: false
+    updatingBankDetail: false,
+
+    fetchingBankActivity: false,
+    fetchBankActivityError: undefined,
+    bankActivities: [],
+
+    fetchingBankReconcile: false,
+    fetchBankReconcileError: undefined,
+    bankReconciles: []
 };
 
 const bankReducer = (state = initialState, action) => {
@@ -48,6 +62,42 @@ const bankReducer = (state = initialState, action) => {
             return {
                 ...state,
                 updatingBankDetail: false
+            };
+        case BANK_ACTIVITY_REQUEST:
+            return {
+                ...state,
+                fetchingBankActivity: true,
+                fetchBankActivityError: undefined
+            };
+        case BANK_ACTIVITY_SUCCESS:
+            return {
+                ...state,
+                fetchingBankActivity: false,
+                bankActivities: [...action.payload]
+            };
+        case BANK_ACTIVITY_FAIL:
+            return {
+                ...state,
+                fetchingBankActivity: false,
+                fetchBankActivityError: API_ERROR_MESSAGE
+            };
+        case BANK_RECONCILE_REQUEST:
+            return {
+                ...state,
+                fetchingBankReconcile: true,
+                fetchBankReconcileError: undefined
+            };
+        case BANK_RECONCILE_SUCCESS:
+            return {
+                ...state,
+                fetchingBankReconcile: false,
+                bankReconciles: [...action.payload]
+            };
+        case BANK_RECONCILE_FAIL:
+            return {
+                ...state,
+                fetchingBankReconcile: false,
+                fetchBankReconcileError: API_ERROR_MESSAGE
             };
         default:
             return state;

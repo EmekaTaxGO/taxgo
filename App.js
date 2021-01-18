@@ -40,6 +40,7 @@ import BankAccountScreen from './src/screens/BankAccountScreen';
 import SelectCustomerScreen from './src/screens/SelectCustomerScreen';
 import SelectProductScreen from './src/screens/SelectProductScreen';
 import SelectBankScreen from './src/screens/SelectBankScreen';
+import BankDetailScreen from './src/screens/BankDetailScreen';
 
 const App = () => {
 
@@ -84,6 +85,7 @@ const App = () => {
       <Stack.Screen name='BankAccountScreen' component={BankAccountScreen} options={{ title: 'Bank Account' }} />
       <Stack.Screen name='SelectProductScreen' component={SelectProductScreen} options={{ title: 'Select Product' }} />
       <Stack.Screen name='SelectBankScreen' component={SelectBankScreen} options={{ title: 'Select Bank' }} />
+      <Stack.Screen name='BankDetailScreen' component={BankDetailScreen} options={{ title: 'Bank Detail' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

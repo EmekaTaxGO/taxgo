@@ -111,7 +111,8 @@ const HomeFragment = ({ navigation }) => {
                 switchDrawer('PurchaseInvoiceFragment');
                 break;
             case 'banking':
-                switchDrawer('BankFragment');
+                // switchDrawer('BankFragment');
+                navigation.push('BankDetailScreen');
                 break;
             case 'journals':
                 switchDrawer('JournalFragment');

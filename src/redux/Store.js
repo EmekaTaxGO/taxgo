@@ -8,6 +8,7 @@ import bankReducer from "./reducer/bankReducer";
 import journalReduder from "./reducer/journalReducer";
 import taxReducer from './reducer/taxReducer';
 import profileReducer from "./reducer/profileReducer";
+import paymentReducer from "./reducer/paymentReducer";
 
 const { combineReducers, createStore, applyMiddleware } = require("redux");
 const { default: thunk } = require("redux-thunk");
@@ -23,7 +24,8 @@ const appReducers = combineReducers({
     bank: bankReducer,
     journal: journalReduder,
     tax: taxReducer,
-    profile: profileReducer
+    profile: profileReducer,
+    payment: paymentReducer
 });
 
 const Store = createStore(appReducers, applyMiddleware(thunk));

@@ -41,6 +41,9 @@ import SelectCustomerScreen from './src/screens/SelectCustomerScreen';
 import SelectProductScreen from './src/screens/SelectProductScreen';
 import SelectBankScreen from './src/screens/SelectBankScreen';
 import BankDetailScreen from './src/screens/BankDetailScreen';
+import CustomerReceiptScreen from './src/screens/CustomerReceiptScreen';
+import SupplierPaymentScreen from './src/screens/SupplierPaymentScreen';
+import BankTransferScreen from './src/screens/BankTransferScreen';
 
 const App = () => {
 
@@ -86,6 +89,9 @@ const App = () => {
       <Stack.Screen name='SelectProductScreen' component={SelectProductScreen} options={{ title: 'Select Product' }} />
       <Stack.Screen name='SelectBankScreen' component={SelectBankScreen} options={{ title: 'Select Bank' }} />
       <Stack.Screen name='BankDetailScreen' component={BankDetailScreen} options={{ title: 'Bank Detail' }} />
+      <Stack.Screen name='CustomerReceiptScreen' component={CustomerReceiptScreen} options={{ title: 'Customer Receipt' }} />
+      <Stack.Screen name='SupplierPaymentScreen' component={SupplierPaymentScreen} options={{ title: 'Supplier Payment' }} />
+      <Stack.Screen name='BankTransferScreen' component={BankTransferScreen} options={{ title: 'Bank Transfer' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

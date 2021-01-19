@@ -50,6 +50,9 @@ class BankDetailScreen extends Component {
     endDateString = () => {
         return this.getDateString(this.state.endDate);
     }
+    getBankId = () => {
+        return `${this.props.route.params.bank.id}`
+    }
 
     fetchBankInfo = () => {
         this.fetchBankActivity();
@@ -57,12 +60,14 @@ class BankDetailScreen extends Component {
     }
     fetchBankActivity = () => {
         const { bankActions } = this.props;
-        bankActions.getBankActivity('358', this.startDateString(), this.endDateString());
+        bankActions.getBankActivity(this.getBankId(), this.startDateString(), this.endDateString());
     }
 
     fetchBankReconcile = () => {
         const { bankActions } = this.props;
-        bankActions.getBankReconcile('358', this.startDateString(), this.endDateString());
+        bankActions.getBankReconcile(this.getBankId(),
+            this.startDateString(),
+            this.endDateString());
     }
 
     UNSAFE_componentWillUpdate(newProps, newState) {

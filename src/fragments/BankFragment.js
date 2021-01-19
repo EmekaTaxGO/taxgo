@@ -16,6 +16,7 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
+import Menu, { MenuItem } from 'react-native-material-menu';
 
 class BankFragment extends Component {
     constructor(props) {
@@ -24,11 +25,48 @@ class BankFragment extends Component {
         }
     }
 
+    _menuRef = React.createRef();
+
     onMenuPress = () => {
         this.props.navigation.openDrawer();
     }
     onAddClick = () => {
         this.props.navigation.navigate('BankAccountScreen', {});
+    }
+
+    showMenu = () => {
+        this._menuRef.current.show();
+    }
+    hideMenu = () => {
+        this._menuRef.current.hide();
+    }
+
+    salesPress = () => {
+        this.hideMenu();
+        this.props.navigation.push('CustomerReceiptScreen');
+    }
+    purchasePress = () => {
+        this.hideMenu();
+        this.props.navigation.push('SupplierPaymentScreen');
+    }
+    bankTransferPress = () => {
+        this.hideMenu();
+        this.props.navigation.push('BankTransferScreen');
+    }
+
+    renderPopup = () => {
+        return <Menu
+            ref={this._menuRef}
+            button={
+                <TouchableOpacity style={{ padding: 12 }} onPress={this.showMenu}>
+                    <Icon name='more-vert' size={30} color='white' />
+                </TouchableOpacity>
+            }>
+            <MenuItem onPress={this.salesPress}>Sales/Receipt</MenuItem>
+            <MenuItem onPress={this.purchasePress}>Purchase/Payment</MenuItem>
+            <MenuItem onPress={this.bankTransferPress}>Bank Transfer</MenuItem>
+            {/* <MenuItem onPress={this.hideMenu}>Import</MenuItem> */}
+        </Menu>
     }
 
     componentDidMount() {
@@ -39,9 +77,12 @@ class BankFragment extends Component {
                 </TouchableOpacity>
             },
             headerRight: () => {
-                return <TouchableOpacity onPress={this.onAddClick} style={styles.rightBtn}>
-                    <Icon name='add' size={30} color='white' />
-                </TouchableOpacity>
+                return <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={this.onAddClick} style={styles.rightBtn}>
+                        <Icon name='add' size={30} color='white' />
+                    </TouchableOpacity>
+                    {this.renderPopup()}
+                </View>
             }
         })
         this.fetchBankList();
@@ -153,8 +194,10 @@ class BankFragment extends Component {
         </TouchableHighlight>
     }
 
-    onViewClick = () => {
-        console.log('View Click');
+    onViewClick = (item) => {
+        this.props.navigation.push('BankDetailScreen', {
+            bank: { ...item }
+        })
     }
     onEditClick = () => {
         console.log('Edit Click');
@@ -170,7 +213,7 @@ class BankFragment extends Component {
             flexDirection: 'row'
         }}>
             <View style={{ flex: 1 }}>
-                {this.hiddenElement('View', 'visibility', 'green', this.onViewClick)}
+                {this.hiddenElement('View', 'visibility', 'green', () => this.onViewClick(item))}
             </View>
             {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
         </View>

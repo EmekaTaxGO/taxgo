@@ -112,7 +112,8 @@ class LoginScreen extends Component {
                 error={this.state.passError}
                 lineWidth={1}
                 ref={this.passRef}
-                onChange={event => this.resetState()} />
+                onChange={event => this.resetState()}
+                onSubmitEditing={e => this.onLoginClick()} />
 
             <TouchableOpacity
                 style={{ paddingVertical: 6, alignItems: 'flex-end' }}

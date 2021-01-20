@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     },
     materialBtn: {
         padding: 26,
-        margin: 16,
+        marginTop: 16,
         fontSize: 50
     }
 })

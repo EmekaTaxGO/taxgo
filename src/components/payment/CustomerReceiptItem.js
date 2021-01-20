@@ -7,7 +7,8 @@ class CustomerReceiptItem extends Component {
 
 
     shouldComponentUpdate(newProps, nextProps) {
-        return newProps.item.id !== this.props.item.id;
+        return newProps.item.id !== this.props.item.id
+            || newProps.item.checked !== this.props.item.checked;
     }
     render() {
         const { item, index } = this.props;

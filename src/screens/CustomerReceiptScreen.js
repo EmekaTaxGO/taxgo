@@ -28,6 +28,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { isFloat, toFloat } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
 import { RaisedTextButton } from 'react-native-material-buttons';
+import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 
 class CustomerReceiptScreen extends Component {
 
@@ -38,7 +39,9 @@ class CustomerReceiptScreen extends Component {
             showReceivedDate: false,
             payMethod: ['Select Paid Method', 'Cash', 'Current', 'Electronic', 'Credit/Debit Card', 'Paypal'],
             payMethodIndex: 0,
-            receipts: []
+            receipts: [],
+            showPaymentDetail: false,
+            paymentDetail: {}
         }
     }
     _customer;
@@ -73,7 +76,6 @@ class CustomerReceiptScreen extends Component {
     onCustomerPress = () => {
         this.props.navigation.push('SelectCustomerScreen', {
             onCustomerSelected: item => {
-                console.log('Customer:', item);
                 setFieldValue(this.customerRef, item.name);
                 this._customer = item.name
                 this.fetchCustomerPayment();
@@ -135,7 +137,10 @@ class CustomerReceiptScreen extends Component {
     }
 
     onPressVisibility = (item) => {
-
+        this.setState({
+            showPaymentDetail: true,
+            paymentDetail: { ...item }
+        });
     }
 
     renderReceiptItem = ({ item, index }) => {
@@ -156,6 +161,10 @@ class CustomerReceiptScreen extends Component {
                     ListFooterComponent={this.renderFooter}
                     renderItem={this.renderReceiptItem}
                 />
+                <PaymentDetailCard
+                    visible={this.state.showPaymentDetail}
+                    payment={this.state.paymentDetail}
+                    onCrossPress={() => this.setState({ showPaymentDetail: false })} />
             </KeyboardAvoidingView>
         </SafeAreaView>
     }

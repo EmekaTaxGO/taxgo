@@ -8,7 +8,7 @@ import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers'
 import CardView from 'react-native-cardview';
 import CheckBox from '@react-native-community/checkbox';
-import { colorAccent, colorWhite } from '../theme/Color';
+import { colorAccent, colorWhite, colorPrimary } from '../theme/Color';
 import { connect } from 'react-redux';
 import * as taxActions from '../redux/actions/taxActions';
 import { bindActionCreators } from 'redux';
@@ -259,9 +259,13 @@ class OtherReceiptScreen extends Component {
     }
 
     onLedgerAmountChange = (index, amount) => {
-        const item = this.state.data[index]
-        item.amount = amount
-        this.onAmountChange(index)
+        const newItem = {
+            ...this.state.data[index],
+            amount
+        }
+        const newItems = [...this.state.data]
+        newItems.splice(index, 1, newItem)
+        this.setState({ data: newItems }, () => this.onAmountChange(index))
     }
     renderItem = ({ item, index }) => {
         const { taxes } = this.state;
@@ -473,9 +477,34 @@ class OtherReceiptScreen extends Component {
             keyExtractor={(item, index) => `${index}`}
             renderItem={this.renderItem} />
     }
+    renderBotttomStrip = grand => {
+        return <View style={{
+            flexDirection: 'row',
+            backgroundColor: colorPrimary,
+            paddingVertical: 12
+        }}>
+            <Text style={styles.priceLabel}>Total Amount: {grand.amount}</Text>
+            <Text style={styles.priceLabel}>Total Tax: {grand.tax}</Text>
+            <Text style={[styles.priceLabel, { paddingRight: 12 }]}>Total: {grand.total}</Text>
+        </View>
+    }
+
+    calculateGrand = () => {
+        let amount = 0
+        let tax = 0
+        let total = 0
+        this.state.data.forEach((value, index) => {
+            amount += this.ledgerAmount(index)
+            tax += this.ledgerTaxAmt(index)
+            total += this.ledgerTotal(index)
+        })
+        return { amount, tax, total }
+    }
+
 
     render() {
         const { tab } = this.state;
+        const grand = this.calculateGrand()
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>
@@ -484,6 +513,7 @@ class OtherReceiptScreen extends Component {
                     {tab === 'customer' ? this.renderCustomer() : null}
                     {tab === 'ledger' ? this.renderLedger() : null}
                 </View>
+                {this.renderBotttomStrip(grand)}
             </KeyboardAvoidingView>
         </SafeAreaView>
     }
@@ -496,6 +526,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginTop: 16,
         flex: 1
+    },
+    priceLabel: {
+        flex: 1,
+        fontSize: 14,
+        textAlign: 'center',
+        paddingLeft: 12
     }
 })
 export default connect(

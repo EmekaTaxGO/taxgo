@@ -4,6 +4,7 @@ import { colorPrimary, tabSelectedColor } from '../theme/Color';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 
 class AppTab extends Component {
 
@@ -19,6 +20,8 @@ class AppTab extends Component {
                 return <FontAwesome5Icon name={icon} size={24} color={color} />;
             case 'MaterialCommunityIcons':
                 return <MaterialCommunityIcons name={icon} size={24} color={color} />;
+            case 'EntypoIcon':
+                return <EntypoIcon name={icon} size={24} color={color} />;
             default:
                 return <MaterialIcon name={icon} size={24} color={color} />;
         }

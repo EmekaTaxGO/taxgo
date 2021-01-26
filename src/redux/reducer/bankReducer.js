@@ -22,6 +22,8 @@ const initialState = {
     bankList: [],
 
     updatingBankDetail: false,
+    updateBankDetailError: undefined,
+    updateBankData: undefined,
 
     fetchingBankActivity: false,
     fetchBankActivityError: undefined,
@@ -55,13 +57,20 @@ const bankReducer = (state = initialState, action) => {
         case BANK_UPDATE_REQUEST:
             return {
                 ...state,
-                updatingBankDetail: true
+                updatingBankDetail: true,
+                updateBankDetailError: undefined
             };
         case BANK_UPDATE_SUCCESS:
+            return {
+                ...state,
+                updatingBankDetail: false,
+                updateBankData: action.payload
+            };
         case BANK_UPDATE_FAIL:
             return {
                 ...state,
-                updatingBankDetail: false
+                updatingBankDetail: false,
+                updateBankDetailError: API_ERROR_MESSAGE
             };
         case BANK_ACTIVITY_REQUEST:
             return {

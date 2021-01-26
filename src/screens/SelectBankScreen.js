@@ -50,9 +50,10 @@ class SelectBankScreen extends Component {
     }
 
     renderListItem = (item) => {
+        const { list } = item
         return <TouchableOpacity
             onPress={() => {
-                this.props.route.params.onBankSelected(item);
+                this.props.route.params.onBankSelected(list);
                 this.props.navigation.goBack();
             }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -70,9 +71,9 @@ class SelectBankScreen extends Component {
                     borderBottomWidth: 1,
                     paddingVertical: 12
                 }}>
-                    <Text style={{ color: 'black', fontSize: 16 }}>{item.nominalcode} {item.laccount}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Category: {item.categorygroup}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Mathod: {item.paidmethod}</Text>
+                    <Text style={{ color: 'black', fontSize: 16 }}>{list.nominalcode} {list.laccount}</Text>
+                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Category: {list.categorygroup}</Text>
+                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Mathod: {list.paidmethod}</Text>
                 </View>
             </View>
         </TouchableOpacity>

@@ -31,7 +31,11 @@ class BankFragment extends Component {
         this.props.navigation.openDrawer();
     }
     onAddClick = () => {
-        this.props.navigation.navigate('BankAccountScreen', {});
+        this.props.navigation.navigate('BankAccountScreen', {
+            onBankUpdated: () => {
+                this.fetchBankList()
+            }
+        });
     }
 
     showMenu = () => {
@@ -138,16 +142,18 @@ class BankFragment extends Component {
 
     renderListItem = (data) => {
         const { item, index } = data;
+        const { list: account } = item
+        const isLast = this.props.bank.bankList.length === index + 1
         return <CardView
             cardElevation={4}
             cornerRadius={6}
-            style={styles.bankCard}>
+            style={[styles.bankCard, { marginBottom: isLast ? 16 : 0 }]}>
             <View style={{
                 flexDirection: 'column'
             }}>
 
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    {this.accountIcon(item.acctype)}
+                    {this.accountIcon(account.acctype)}
                     <View style={{
                         flex: 1,
                         justifyContent: 'flex-end',
@@ -161,7 +167,7 @@ class BankFragment extends Component {
                             fontSize: 16,
                             textAlign: 'center',
                             backgroundColor: '#43a8d4'
-                        }}>{item.acctype}</Text>
+                        }}>{account.acctype}</Text>
                     </View>
 
                 </View>
@@ -169,10 +175,10 @@ class BankFragment extends Component {
                     textAlign: 'center',
                     color: 'white',
                     fontSize: 20
-                }}>{item.accnum ? item.accnum : '****  ***  ****'}</Text>
-                {this.rowItem('Current Balance', item.total)}
-                {this.rowItem('Opening Balance', item.opening)}
-                {this.rowItem(item.userdate, item.acctype)}
+                }}>{account.accnum ? account.accnum : '****  ***  ****'}</Text>
+                {this.rowItem('Current Balance', account.total)}
+                {this.rowItem('Opening Balance', account.opening)}
+                {this.rowItem(account.userdate, account.acctype)}
             </View>
         </CardView>
     }
@@ -199,12 +205,19 @@ class BankFragment extends Component {
             bank: { ...item }
         })
     }
-    onEditClick = () => {
-        console.log('Edit Click');
+    onEditClick = account => {
+        this.props.navigation.push('BankAccountScreen',
+            {
+                account,
+                onBankUpdated: () => {
+                    this.fetchBankList()
+                }
+            })
     }
 
     renderHiddenItem = (data) => {
         const { item, index } = data;
+        const { list: account } = item
         return <View style={{
             flex: 1,
             marginHorizontal: 20,
@@ -213,9 +226,9 @@ class BankFragment extends Component {
             flexDirection: 'row'
         }}>
             <View style={{ flex: 1 }}>
-                {this.hiddenElement('View', 'visibility', 'green', () => this.onViewClick(item))}
+                {this.hiddenElement('View', 'visibility', 'green', () => this.onViewClick(account))}
             </View>
-            {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
+            {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(account))}
         </View>
     }
 
@@ -237,7 +250,7 @@ class BankFragment extends Component {
                     backgroundColor: 'white'
                 }}
                 data={bank.bankList}
-                keyExtractor={(item, index) => `${item.id}`}
+                keyExtractor={(item, index) => `${item.list.id}`}
                 renderItem={(data, rowMap) => this.renderListItem(data)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}

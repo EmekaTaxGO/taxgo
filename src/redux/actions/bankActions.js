@@ -21,20 +21,19 @@ export const getBankList = () => {
     }
 }
 
-export const updateBankDetails = (body, onSuccess, onError) => {
+export const updateBankDetails = (body) => {
     return (dispatch) => {
         dispatch({ type: BANK_UPDATE_REQUEST });
-        return Api.post('/ledgerDetails/updateAddBank', body)
+        return Api.post('/bank/addUpdateBank', body)
             .then(response => {
                 dispatch({
-                    type: BANK_UPDATE_SUCCESS
+                    type: BANK_UPDATE_SUCCESS,
+                    payload: response.data
                 });
-                onSuccess(response.data);
             })
             .catch(err => {
                 log('Error Updating Bank Details', err);
                 dispatch({ type: BANK_UPDATE_FAIL });
-                onError(err);
             })
     }
 }

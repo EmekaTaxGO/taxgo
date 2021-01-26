@@ -22,7 +22,7 @@ class OtherReceiptScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tab: 'ledger',
+            tab: 'customer',
             payMethod: ['Select Paid Method', 'Cash', 'Current', 'Electronic', 'Credit/Debit Card', 'Paypal'],
             payMethodIndex: 0,
             receivedDate: new Date(),

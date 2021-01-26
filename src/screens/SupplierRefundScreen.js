@@ -32,7 +32,7 @@ import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Menu, { MenuItem } from 'react-native-material-menu';
 
-class CustomerReceiptScreen extends Component {
+class SupplierRefundScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -63,7 +63,7 @@ class CustomerReceiptScreen extends Component {
     }
     onSupplierRefundPress = () => {
         this.hideMenu()
-        this.props.navigation.replace('SupplierRefundScreen')
+        this.props.navigation.replace('OtherReceiptScreen')
     }
     hideMenu = () => {
         this._menuRef.current.hide();
@@ -344,4 +344,4 @@ export default connect(
     dispatch => ({
         paymentActions: bindActionCreators(paymentActions, dispatch)
     })
-)(CustomerReceiptScreen);
+)(SupplierRefundScreen);

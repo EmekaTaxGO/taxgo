@@ -209,7 +209,7 @@ class BankAccountScreen extends Component {
             type: account ? '2' : '1',
             userid: `${authData.id}`,
             acctype: this.getAccType(accTypeIndex),
-            accname: getFieldValue(this.accNameRef),
+            laccount: getFieldValue(this.accNameRef),
             accnum: showAccNum ? getFieldValue(this.accNumRef) : '',
             cardnum: this.showCreditCard() ? getFieldValue(this.ccRef) : '',
             nominalcode: getFieldValue(this.nominalCodeRef),

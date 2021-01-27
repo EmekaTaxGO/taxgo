@@ -85,14 +85,11 @@ export const validateMobile = mobile => {
     if (mobile === undefined || mobile.length === 0) {
         return true;
     } else {
-        console.log('Safe');
         return Number.isSafeInteger(Number(mobile));
     }
 }
-
 export const isClientError = err => {
     const { status } = err.response;
-    console.log('Status: ', status);
     return status >= 400 && status < 500;
 }
 export const isServerError = err => {

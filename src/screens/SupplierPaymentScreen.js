@@ -156,7 +156,7 @@ class SupplierPaymentScreen extends Component {
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <FlatList
                     data={this.state.receipts}
-                    keyExtractor={(item, index) => item.id}
+                    keyExtractor={(item, index) => `${index}`}
                     ListHeaderComponent={this.renderHeader}
                     ListFooterComponent={this.renderFooter}
                     renderItem={this.renderReceiptItem}

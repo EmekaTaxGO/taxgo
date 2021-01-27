@@ -14,7 +14,7 @@ import {
 import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
-import { setFieldValue } from '../helpers/TextFieldHelpers';
+import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import * as paymentActions from '../redux/actions/paymentActions';
@@ -23,7 +23,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner'
 import FullScreenError from '../components/FullScreenError'
 import EmptyView from '../components/EmptyView';
 import CheckBox from '@react-native-community/checkbox';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, colorWhite } from '../theme/Color';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { isFloat, toFloat } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
@@ -31,14 +31,15 @@ import { RaisedTextButton } from 'react-native-material-buttons';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Menu, { MenuItem } from 'react-native-material-menu';
+import Snackbar from 'react-native-snackbar';
 
 class SupplierRefundScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            receivedDate: new Date(),
-            showReceivedDate: false,
+            paidDate: new Date(),
+            showPaidDate: false,
             payMethod: ['Select Paid Method', 'Cash', 'Current', 'Electronic', 'Credit/Debit Card', 'Paypal'],
             payMethodIndex: 0,
             receipts: [],
@@ -48,7 +49,7 @@ class SupplierRefundScreen extends Component {
     }
 
     _menuRef = React.createRef()
-    _customer;
+    _supplier;
     _bank;
     _amount = 0;
     _reference;
@@ -57,11 +58,11 @@ class SupplierRefundScreen extends Component {
         this.configHeader()
     }
 
-    onOtherReceiptPress = () => {
+    onCustomerReceiptPress = () => {
         this.hideMenu()
-        this.props.navigation.replace('OtherReceiptScreen')
+        this.props.navigation.replace('CustomerReceiptScreen')
     }
-    onSupplierRefundPress = () => {
+    onOtherReceiptPress = () => {
         this.hideMenu()
         this.props.navigation.replace('OtherReceiptScreen')
     }
@@ -82,8 +83,8 @@ class SupplierRefundScreen extends Component {
                             <Icon name='more-vert' size={30} color='white' />
                         </TouchableOpacity>
                     }>
+                    <MenuItem onPress={this.onCustomerReceiptPress}>Customer Receipt</MenuItem>
                     <MenuItem onPress={this.onOtherReceiptPress}>Other Receipt</MenuItem>
-                    <MenuItem onPress={this.onSupplierRefundPress}>Supplier Refund</MenuItem>
                 </Menu>
             }
         })
@@ -91,30 +92,30 @@ class SupplierRefundScreen extends Component {
     UNSAFE_componentWillUpdate(newProps, nextState) {
         const { payment: newPayment } = newProps;
         const { payment: oldPayment } = this.props;
-        if (!newPayment.fetchingCustomerPayment && oldPayment.fetchingCustomerPayment
-            && newPayment.fetchCustomerPaymentError === undefined) {
-            this.setState({ receipts: [...newPayment.customerPayments] });
+        if (!newPayment.fetchingSupplierRefund && oldPayment.fetchingSupplierRefund
+            && newPayment.fetchSupplierRefundError === undefined) {
+            this.setState({ receipts: [...newPayment.supplierRefunds] });
         }
     }
 
-    fetchCustomerPayment = () => {
+    fetchRefundPayment = () => {
         const { paymentActions } = this.props;
-        paymentActions.getCustomerPayment(this._customer.id);
+        paymentActions.getSupplierRefund(this._supplier.id);
     }
 
 
-    customerRef = React.createRef();
+    supplierRef = React.createRef();
     paidIntoRef = React.createRef();
-    dateReceivedRef = React.createRef();
-    amountReceivedRef = React.createRef();
+    datePaidRef = React.createRef();
+    amountPaidRef = React.createRef();
     referenceRef = React.createRef();
 
     onCustomerPress = () => {
-        this.props.navigation.push('SelectCustomerScreen', {
-            onCustomerSelected: item => {
-                setFieldValue(this.customerRef, item.name);
-                this._customer = item.name
-                this.fetchCustomerPayment();
+        this.props.navigation.push('SelectSupplierScreen', {
+            onSupplierSelected: item => {
+                setFieldValue(this.supplierRef, item.name);
+                this._supplier = item.name
+                this.fetchRefundPayment();
             }
         });
     }
@@ -134,13 +135,13 @@ class SupplierRefundScreen extends Component {
         return bankTitle;
     }
 
-    onReceiveDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.receivedDate;
+    onPaidDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate || this.state.paidDate;
         this.setState({
-            receivedDate: currentDate,
-            showReceivedDate: false
+            paidDate: currentDate,
+            showPaidDate: false
         }, () => {
-            setFieldValue(this.dateReceivedRef, this.formattedDate(currentDate));
+            setFieldValue(this.datePaidRef, this.formattedDate(currentDate));
         });
     }
 
@@ -162,12 +163,12 @@ class SupplierRefundScreen extends Component {
                 let amount = this._amount
 
                 if (checked) {
-                    amount += toFloat(newReceipt.total);
+                    amount += -1 * toFloat(newReceipt.total);
                 } else {
-                    amount -= toFloat(newReceipt.total);
+                    amount -= -1 * toFloat(newReceipt.total);
                 }
                 this._amount = amount;
-                setFieldValue(this.amountReceivedRef, `${this._amount}`);
+                setFieldValue(this.amountPaidRef, `${this._amount}`);
             }
         });
     }
@@ -205,18 +206,19 @@ class SupplierRefundScreen extends Component {
         </SafeAreaView>
     }
     renderFooter = () => {
-        if (this._customer === undefined) {
+        if (this._supplier === undefined) {
             return null;
         }
+
         const { payment } = this.props;
-        if (payment.fetchingCustomerPayment) {
+        if (payment.fetchingSupplierRefund) {
             return <View style={{ padding: 12 }}>
                 <OnScreenSpinner />
             </View>
         }
-        if (payment.fetchCustomerPaymentError) {
+        if (payment.fetchSupplierRefundError) {
             return <View style={{ padding: 24 }}>
-                <FullScreenError tryAgainClick={this.fetchCustomerPayment} />
+                <FullScreenError tryAgainClick={this.fetchRefundPayment} />
             </View>
         }
         if (this.state.receipts.length === 0) {
@@ -226,16 +228,47 @@ class SupplierRefundScreen extends Component {
     }
 
     validateAndSave = () => {
+        if (!this._supplier) {
+            this.showError('Select Supplier!')
+        }
+        else if (!this._bank) {
+            this.showError('Select Bank Account!')
+        }
+        else if (this.state.payMethodIndex === 0) {
+            this.showError('Select Pay Method')
+        }
+        else if (!isFloat(getFieldValue(this.amountPaidRef)) || toFloat(getFieldValue(this.amountPaidRef))) {
+            this.showError('Refund Amount cannot be 0')
+        }
+        else {
+            this.refundSupplier()
+        }
+    }
+
+    refundSupplier = () => {
 
     }
 
+    showError = message => {
+        Snackbar.show({
+            text: message,
+            duration: Snackbar.LENGTH_LONG,
+            backgroundColor: 'red',
+            action: {
+                text: 'OK',
+                textColor: colorWhite,
+                onPress: () => { }
+            }
+        });
+    }
+
     renderHeader = () => {
-        const { payMethod, payMethodIndex, receivedDate } = this.state;
+        const { payMethod, payMethodIndex, paidDate: paidDate } = this.state;
         return <View style={{
             flexDirection: 'column',
             paddingHorizontal: 16,
             borderBottomColor: 'lightgray',
-            borderBottomWidth: this._customer ? 0 : 0,
+            borderBottomWidth: this._supplier ? 0 : 0,
             paddingBottom: 12
         }}>
             <TouchableOpacity
@@ -243,21 +276,21 @@ class SupplierRefundScreen extends Component {
                 style={{ marginTop: 20 }}>
                 <OutlinedTextField
                     containerStyle={styles.fieldStyle}
-                    label='Customer'
+                    label='Supplier Name'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
                     title='*required'
                     editable={false}
-                    value={this._customer ? this._customer.name : ''}
-                    ref={this.customerRef} />
+                    value={this._supplier ? this._supplier.name : ''}
+                    ref={this.supplierRef} />
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={this.onPaidIntoPress}
                 style={{ marginTop: 20 }}>
                 <OutlinedTextField
                     containerStyle={styles.fieldStyle}
-                    label='Paid Into'
+                    label='Paid Into Bank Account'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
@@ -278,36 +311,36 @@ class SupplierRefundScreen extends Component {
             </View>
 
             <TouchableOpacity
-                onPress={() => this.setState({ showReceivedDate: true })}
+                onPress={() => this.setState({ showPaidDate: true })}
                 style={{ marginTop: 20 }}>
                 <OutlinedTextField
                     containerStyle={styles.fieldStyle}
-                    label='Date Received'
+                    label='Date Paid'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
                     title='*required'
                     editable={false}
-                    value={this.formattedDate(receivedDate)}
-                    ref={this.dateReceivedRef} />
+                    value={this.formattedDate(paidDate)}
+                    ref={this.datePaidRef} />
             </TouchableOpacity>
-            {this.state.showReceivedDate ? <DateTimePicker
-                value={this.state.receivedDate ? this.state.receivedDate : new Date()}
+            {this.state.showPaidDate ? <DateTimePicker
+                value={this.state.paidDate ? this.state.paidDate : new Date()}
                 mode={'datetime'}
                 display='default'
                 maximumDate={new Date()}
-                onChange={this.onReceiveDateChange}
+                onChange={this.onPaidDateChange}
             /> : null}
             <OutlinedTextField
                 containerStyle={{ marginTop: 20 }}
-                label='Amount Received'
+                label='Amount Refunded'
                 keyboardType='number-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
                 editable={false}
                 value={`${this._amount}`}
-                ref={this.amountReceivedRef} />
+                ref={this.amountPaidRef} />
             <OutlinedTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'

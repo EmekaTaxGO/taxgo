@@ -3,6 +3,7 @@ import Api from '../../services/api';
 import { BANK_UPDATE_REQUEST, BANK_LIST_REQUEST, BANK_LIST_SUCCESS, BANK_UPDATE_SUCCESS, BANK_UPDATE_FAIL, BANK_ACTIVITY_REQUEST, BANK_ACTIVITY_FAIL, BANK_RECONCILE_REQUEST, BANK_ACTIVITY_SUCCESS, BANK_RECONCILE_SUCCESS, BANK_RECONCILE_FAIL } from "../../constants";
 import Store from "../Store";
 import { log } from "../../components/Logger";
+import { isClientError, getApiErrorMsg } from "../../helpers/Utils";
 
 export const getBankList = () => {
     return (dispatch) => {
@@ -33,7 +34,10 @@ export const updateBankDetails = (body) => {
             })
             .catch(err => {
                 log('Error Updating Bank Details', err);
-                dispatch({ type: BANK_UPDATE_FAIL });
+                dispatch({
+                    type: BANK_UPDATE_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
             })
     }
 }

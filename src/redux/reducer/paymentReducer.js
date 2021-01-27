@@ -4,7 +4,10 @@ import {
     CUSTOMER_PAYMENT_SUCCESS,
     SUPPLIER_PAYMENT_REQUEST,
     SUPPLIER_PAYMENT_FAIL,
-    SUPPLIER_PAYMENT_SUCCESS
+    SUPPLIER_PAYMENT_SUCCESS,
+    SUPPLIER_REFUND_RECEIPT_REQUEST,
+    SUPPLIER_REFUND_RECEIPT_SUCCESS,
+    SUPPLIER_REFUND_RECEIPT_FAIL
 } from '../../constants'
 import { API_ERROR_MESSAGE } from '../../constants/appConstant';
 
@@ -15,7 +18,11 @@ const initialState = {
 
     fetchingSupplierPayment: false,
     fetchSupplierPaymentError: undefined,
-    supplierPayments: []
+    supplierPayments: [],
+
+    fetchingSupplierRefund: true,
+    fetchSupplierRefundError: undefined,
+    supplierRefunds: []
 }
 
 const paymentReducer = (state = initialState, action) => {
@@ -57,6 +64,24 @@ const paymentReducer = (state = initialState, action) => {
                 ...state,
                 fetchingSupplierPayment: false,
                 fetchSupplierPaymentError: API_ERROR_MESSAGE
+            };
+        case SUPPLIER_REFUND_RECEIPT_REQUEST:
+            return {
+                ...state,
+                fetchingSupplierRefund: true,
+                fetchSupplierRefundError: undefined
+            };
+        case SUPPLIER_REFUND_RECEIPT_SUCCESS:
+            return {
+                ...state,
+                fetchingSupplierRefund: false,
+                supplierRefunds: [...action.payload]
+            };
+        case SUPPLIER_REFUND_RECEIPT_FAIL:
+            return {
+                ...state,
+                fetchingSupplierRefund: false,
+                fetchSupplierRefundError: action.payload
             };
         default:
             return state;

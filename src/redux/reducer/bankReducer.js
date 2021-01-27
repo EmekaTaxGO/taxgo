@@ -70,7 +70,7 @@ const bankReducer = (state = initialState, action) => {
             return {
                 ...state,
                 updatingBankDetail: false,
-                updateBankDetailError: API_ERROR_MESSAGE
+                updateBankDetailError: action.payload
             };
         case BANK_ACTIVITY_REQUEST:
             return {

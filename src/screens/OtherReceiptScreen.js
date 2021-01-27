@@ -16,6 +16,8 @@ import { isFloat, toFloat } from '../helpers/Utils';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Snackbar from 'react-native-snackbar';
+import Menu, { MenuItem } from 'react-native-material-menu';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 class OtherReceiptScreen extends Component {
 
@@ -48,6 +50,7 @@ class OtherReceiptScreen extends Component {
     dateReceivedRef = React.createRef();
     amountReceivedRef = React.createRef();
     referenceRef = React.createRef();
+    _menuRef = React.createRef()
 
 
     _customer;
@@ -58,6 +61,38 @@ class OtherReceiptScreen extends Component {
 
     componentDidMount() {
         this.fetchTaxList();
+        this.configHeader()
+    }
+
+    showMenu = () => {
+        this._menuRef.current.show();
+    }
+    hideMenu = () => {
+        this._menuRef.current.hide();
+    }
+    onCustomerReceiptPress = () => {
+        this.hideMenu()
+        this.props.navigation.replace('CustomerReceiptScreen')
+    }
+    onSupplierRefundPress = () => {
+        this.hideMenu()
+        this.props.navigation.replace('SupplierRefundScreen')
+    }
+    configHeader = () => {
+        this.props.navigation.setOptions({
+            headerRight: () => {
+                return <Menu
+                    ref={this._menuRef}
+                    button={
+                        <TouchableOpacity style={{ padding: 12 }} onPress={this.showMenu}>
+                            <MaterialIcons name='more-vert' size={30} color='white' />
+                        </TouchableOpacity>
+                    }>
+                    <MenuItem onPress={this.onCustomerReceiptPress}>Customer Receipt</MenuItem>
+                    <MenuItem onPress={this.onSupplierRefundPress}>Supplier Refund</MenuItem>
+                </Menu>
+            }
+        })
     }
 
     fetchTaxList = () => {

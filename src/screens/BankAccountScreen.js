@@ -12,6 +12,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import { isEmpty, showError, isInteger, isFloat, getApiErrorMsg } from '../helpers/Utils';
 import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import Store from '../redux/Store';
+import moment from 'moment';
 
 
 class BankAccountScreen extends Component {
@@ -23,6 +24,8 @@ class BankAccountScreen extends Component {
             accTypes: this.createAccountTypes()
         }
     }
+
+    showAccInfo = true
 
     accNameRef = React.createRef();
     accNumRef = React.createRef();
@@ -76,11 +79,14 @@ class BankAccountScreen extends Component {
 
     componentDidMount() {
         this.setTitle();
+
+        if (this.showAccInfo) {
+            console.log('Acc Info', this.accountData());
+        }
     }
 
     UNSAFE_componentWillMount() {
         if (this.isEditMode()) {
-            console.log('Acc', this.accountData());
             this.setAllFields()
         }
     }
@@ -138,7 +144,7 @@ class BankAccountScreen extends Component {
             if (newBank.updateBankDetailError) {
                 //Case of error
                 setTimeout(() => {
-                    showError(API_ERROR_MESSAGE)
+                    showError(newBank.updateBankDetailError)
                 }, 400)
             } else {
                 this.showBankUpdatedMessage(newBank.updateBankData.message)
@@ -204,6 +210,7 @@ class BankAccountScreen extends Component {
         const { accTypeIndex } = this.state
         const showAccNum = this.showAccNum()
         const account = this.accountData()
+        const date = moment().format('MM-DD-YY')
         const body = {
             id: account ? account.id : undefined,
             type: account ? '2' : '1',
@@ -220,7 +227,9 @@ class BankAccountScreen extends Component {
             bicnum: showAccNum ? getFieldValue(this.swiftCodeRef) : undefined,
             opening: getFieldValue(this.openingBalRef),
             adminid: "",
-            logintype: "user"
+            logintype: "user",
+            sdate: date,
+            userdate: date
         }
         // console.log('Prepared Data', JSON.stringify(body));
         bankActions.updateBankDetails(body);
@@ -258,6 +267,7 @@ class BankAccountScreen extends Component {
         const { updatingBankDetail } = this.props.bank
         const account = this.accountData()
         const showAccNum = this.showAccNum()
+        const editMode = this.isEditMode()
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ flex: 1 }}>
@@ -287,11 +297,11 @@ class BankAccountScreen extends Component {
                         <OutlinedTextField
                             containerStyle={{ marginTop: 20 }}
                             label='A/c Name'
-                            keyboardType='name-phone-pad'
+                            keyboardType='default'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            value={account ? account.accname : ''}
+                            value={account ? account.laccount : ''}
                             ref={this.accNameRef} />
                         {showAccNum ? <OutlinedTextField
                             containerStyle={styles.fieldStyle}
@@ -319,6 +329,7 @@ class BankAccountScreen extends Component {
                             lineWidth={1}
                             title='*required'
                             ref={this.nominalCodeRef}
+                            disabled={editMode}
                             value={account ? account.nominalcode : ''} />
                         {this.showCreditCard() ? <OutlinedTextField
                             containerStyle={styles.fieldStyle}
@@ -332,6 +343,7 @@ class BankAccountScreen extends Component {
 
                         {showAccNum ? <OutlinedTextField
                             containerStyle={styles.fieldStyle}
+                            keyboardType='default'
                             label='IBAN No.'
                             returnKeyType='done'
                             lineWidth={1}
@@ -342,6 +354,7 @@ class BankAccountScreen extends Component {
                             containerStyle={styles.fieldStyle}
                             label='Bic/Swift'
                             returnKeyType='done'
+                            keyboardType='default'
                             lineWidth={1}
                             title='*required'
                             value={account ? account.bicnum : ''}
@@ -375,7 +388,7 @@ class BankAccountScreen extends Component {
                         </View> : null}
                         <RaisedTextButton
                             containerStyle={styles.fieldStyle}
-                            title={this.isEditMode() ? 'Update' : 'Save'}
+                            title={editMode ? 'Update' : 'Save'}
                             color={colorAccent}
                             titleColor='white'
                             style={styles.materialBtn}

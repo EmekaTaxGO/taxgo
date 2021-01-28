@@ -46,6 +46,8 @@ import SupplierPaymentScreen from './src/screens/SupplierPaymentScreen';
 import BankTransferScreen from './src/screens/BankTransferScreen';
 import OtherReceiptScreen from './src/screens/OtherReceiptScreen';
 import SupplierRefundScreen from './src/screens/SupplierRefundScreen';
+import OtherPaymentScreen from './src/screens/OtherPaymentScreen';
+import CustomerRefundScreen from './src/screens/CustomerRefundScreen';
 
 const App = () => {
 
@@ -96,6 +98,8 @@ const App = () => {
       <Stack.Screen name='BankTransferScreen' component={BankTransferScreen} options={{ title: 'Bank Transfer' }} />
       <Stack.Screen name='OtherReceiptScreen' component={OtherReceiptScreen} options={{ title: 'Other Receipt' }} />
       <Stack.Screen name='SupplierRefundScreen' component={SupplierRefundScreen} options={{ title: 'Supplier Refund' }} />
+      <Stack.Screen name='OtherPaymentScreen' component={OtherPaymentScreen} options={{ title: 'Other Payment' }} />
+      <Stack.Screen name='CustomerRefundScreen' component={CustomerRefundScreen} options={{ title: 'Customer Refund' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

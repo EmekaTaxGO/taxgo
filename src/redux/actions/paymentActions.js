@@ -11,7 +11,25 @@ import {
     SUPPLIER_PAYMENT_SUCCESS,
     SUPPLIER_REFUND_RECEIPT_REQUEST,
     SUPPLIER_REFUND_RECEIPT_SUCCESS,
-    SUPPLIER_REFUND_RECEIPT_FAIL
+    SUPPLIER_REFUND_RECEIPT_FAIL,
+    SAVE_CUSTOMER_RECEIPT_REQUEST,
+    SAVE_CUSTOMER_RECEIPT_SUCCESS,
+    SAVE_CUSTOMER_RECEIPT_FAIL,
+    SAVE_OTHER_RECEIPT_REQUEST,
+    SAVE_OTHER_RECEIPT_SUCCESS,
+    SAVE_OTHER_RECEIPT_FAIL,
+    SAVE_SUPPLIER_REFUND_REQUEST,
+    SAVE_SUPPLIER_REFUND_SUCCESS,
+    SAVE_SUPPLIER_REFUND_FAIL,
+    SAVE_SUPPLIER_PAYMENT_REQUEST,
+    SAVE_SUPPLIER_PAYMENT_SUCCESS,
+    SAVE_SUPPLIER_PAYMENT_FAIL,
+    SAVE_OTHER_PAYMENT_REQUEST,
+    SAVE_OTHER_PAYMENT_SUCCESS,
+    SAVE_OTHER_PAYMENT_FAIL,
+    SAVE_CUSTOMER_REFUND_REQUEST,
+    SAVE_CUSTOMER_REFUND_SUCCESS,
+    SAVE_CUSTOMER_REFUND_FAIL
 } from '../../constants';
 import Store from '../Store';
 import { getApiErrorMsg } from '../../helpers/Utils';
@@ -82,6 +100,128 @@ export const getSupplierRefund = (supplierId = 86) => {
                 log('Error fetching Supplier Refund', err);
                 dispatch({
                     type: SUPPLIER_REFUND_RECEIPT_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+}
+
+
+//Update Apis
+export const saveCustomerReceipt = body => {
+    return (dispatch) => {
+        dispatch({ type: SAVE_CUSTOMER_RECEIPT_REQUEST });
+        return Api.post('//TO-DO', body)
+            .then(response => {
+                dispatch({
+                    type: SAVE_CUSTOMER_RECEIPT_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error saving customer receipt', err);
+                dispatch({
+                    type: SAVE_CUSTOMER_RECEIPT_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+}
+
+export const saveOtherReceipt = body => {
+    return (dispatch) => {
+        dispatch({ type: SAVE_OTHER_RECEIPT_REQUEST });
+        return Api.post('//TO-DO', body)
+            .then(response => {
+                dispatch({
+                    type: SAVE_OTHER_RECEIPT_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error saving other receipt', err);
+                dispatch({
+                    type: SAVE_OTHER_RECEIPT_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+}
+
+export const saveSupplierRefund = body => {
+    return (dispatch) => {
+        dispatch({ type: SAVE_SUPPLIER_REFUND_REQUEST });
+        return Api.post('//TO-DO', body)
+            .then(response => {
+                dispatch({
+                    type: SAVE_SUPPLIER_REFUND_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error saving supplier refund', err);
+                dispatch({
+                    type: SAVE_SUPPLIER_REFUND_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+}
+
+export const saveSupplierPayment = body => {
+    return (dispatch) => {
+        dispatch({ type: SAVE_SUPPLIER_PAYMENT_REQUEST });
+        return Api.post('//TO-DO', body)
+            .then(response => {
+                dispatch({
+                    type: SAVE_SUPPLIER_PAYMENT_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error saving supplier payment', err);
+                dispatch({
+                    type: SAVE_SUPPLIER_PAYMENT_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+}
+
+export const saveOtherPayment = body => {
+    return (dispatch) => {
+        dispatch({ type: SAVE_OTHER_PAYMENT_REQUEST });
+        return Api.post('//TO-DO', body)
+            .then(response => {
+                dispatch({
+                    type: SAVE_OTHER_PAYMENT_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error saving other payment', err);
+                dispatch({
+                    type: SAVE_OTHER_PAYMENT_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+}
+
+export const saveCustomerRefund = body => {
+    return (dispatch) => {
+        dispatch({ type: SAVE_CUSTOMER_REFUND_REQUEST });
+        return Api.post('//TO-DO', body)
+            .then(response => {
+                dispatch({
+                    type: SAVE_CUSTOMER_REFUND_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error saving customer refund', err);
+                dispatch({
+                    type: SAVE_CUSTOMER_REFUND_FAIL,
                     payload: getApiErrorMsg(err)
                 });
             })

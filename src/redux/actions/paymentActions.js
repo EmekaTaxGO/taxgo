@@ -3,12 +3,12 @@ import Api from '../../services/api';
 import { log } from '../../components/Logger';
 
 import {
-    CUSTOMER_PAYMENT_REQUEST,
-    CUSTOMER_PAYMENT_FAIL,
-    CUSTOMER_PAYMENT_SUCCESS,
-    SUPPLIER_PAYMENT_REQUEST,
-    SUPPLIER_PAYMENT_FAIL,
-    SUPPLIER_PAYMENT_SUCCESS,
+    CUSTOMER_RECEIPT_LIST_REQUEST,
+    CUSTOMER_RECEIPT_LIST_FAIL,
+    CUSTOMER_RECEIPT_LIST_SUCCESS,
+    SUPPLIER_PAYMENT_RECEIPT_REQUEST,
+    SUPPLIER_PAYMENT_RECEIPT_FAIL,
+    SUPPLIER_PAYMENT_RECEIPT_SUCCESS,
     SUPPLIER_REFUND_RECEIPT_REQUEST,
     SUPPLIER_REFUND_RECEIPT_SUCCESS,
     SUPPLIER_REFUND_RECEIPT_FAIL,
@@ -29,16 +29,19 @@ import {
     SAVE_OTHER_PAYMENT_FAIL,
     SAVE_CUSTOMER_REFUND_REQUEST,
     SAVE_CUSTOMER_REFUND_SUCCESS,
-    SAVE_CUSTOMER_REFUND_FAIL
+    SAVE_CUSTOMER_REFUND_FAIL,
+    CUSTOMER_REFUND_LIST_REQUEST,
+    CUSTOMER_REFUND_LIST_SUCCESS,
+    CUSTOMER_REFUND_LIST_FAIL
 } from '../../constants';
 import Store from '../Store';
 import { getApiErrorMsg } from '../../helpers/Utils';
 
 export const getCustomerPayment = (customerId = 21) => {
     return (dispatch) => {
-        dispatch({ type: CUSTOMER_PAYMENT_REQUEST });
+        dispatch({ type: CUSTOMER_RECEIPT_LIST_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/Banking/ListCustomerpay', {
+        return Api.get('/bank/listCustomerPay', {
             params: {
                 id: customerId,
                 userid: authData.id
@@ -46,45 +49,23 @@ export const getCustomerPayment = (customerId = 21) => {
         })
             .then(response => {
                 dispatch({
-                    type: CUSTOMER_PAYMENT_SUCCESS,
+                    type: CUSTOMER_RECEIPT_LIST_SUCCESS,
                     payload: response.data.data
                 })
             })
             .catch(err => {
                 log('Error fetching Customer Payments', err);
-                dispatch({ type: CUSTOMER_PAYMENT_FAIL });
+                dispatch({ type: CUSTOMER_RECEIPT_LIST_FAIL });
             })
     }
 }
 
-export const getSupplierPayment = (supplierId = 18) => {
-    return (dispatch) => {
-        dispatch({ type: SUPPLIER_PAYMENT_REQUEST });
-        const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/Banking/Listsupplierpay', {
-            params: {
-                id: supplierId,
-                userid: authData.id
-            }
-        })
-            .then(response => {
-                dispatch({
-                    type: SUPPLIER_PAYMENT_SUCCESS,
-                    payload: response.data.data
-                })
-            })
-            .catch(err => {
-                log('Error fetching Supplier Payments', err);
-                dispatch({ type: SUPPLIER_PAYMENT_FAIL });
-            })
-    }
-}
 
 export const getSupplierRefund = (supplierId = 86) => {
     return (dispatch) => {
         dispatch({ type: SUPPLIER_REFUND_RECEIPT_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/Accounting/Listsupplierrefund', {
+        return Api.get('/bank/listSupplierRefund', {
             params: {
                 id: supplierId,
                 userid: authData.id
@@ -102,6 +83,47 @@ export const getSupplierRefund = (supplierId = 86) => {
                     type: SUPPLIER_REFUND_RECEIPT_FAIL,
                     payload: getApiErrorMsg(err)
                 });
+            })
+    }
+}
+
+export const getSupplierPayment = (supplierId = 18) => {
+    return (dispatch) => {
+        dispatch({ type: SUPPLIER_PAYMENT_RECEIPT_REQUEST });
+        const { authData } = Store.getState().auth;
+        return Api.get('/bank/listSupplierPay', {
+            params: {
+                id: supplierId,
+                userid: authData.id
+            }
+        })
+            .then(response => {
+                dispatch({
+                    type: SUPPLIER_PAYMENT_RECEIPT_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error fetching Supplier Payments', err);
+                dispatch({ type: SUPPLIER_PAYMENT_RECEIPT_FAIL });
+            })
+    }
+}
+
+export const getCustomerRefund = (supplierId = 18) => {
+    return (dispatch) => {
+        dispatch({ type: CUSTOMER_REFUND_LIST_REQUEST });
+        const { authData } = Store.getState().auth;
+        return Api.get(`/bank/listCustomerRefund/${supplierId}/${authData.id}`)
+            .then(response => {
+                dispatch({
+                    type: CUSTOMER_REFUND_LIST_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error fetching Customer Refund', err);
+                dispatch({ type: CUSTOMER_REFUND_LIST_FAIL });
             })
     }
 }
@@ -171,7 +193,7 @@ export const saveSupplierRefund = body => {
 export const saveSupplierPayment = body => {
     return (dispatch) => {
         dispatch({ type: SAVE_SUPPLIER_PAYMENT_REQUEST });
-        return Api.post('//TO-DO', body)
+        return Api.post('/receipt/addSuppReceipt', body)
             .then(response => {
                 dispatch({
                     type: SAVE_SUPPLIER_PAYMENT_SUCCESS,
@@ -191,7 +213,7 @@ export const saveSupplierPayment = body => {
 export const saveOtherPayment = body => {
     return (dispatch) => {
         dispatch({ type: SAVE_OTHER_PAYMENT_REQUEST });
-        return Api.post('//TO-DO', body)
+        return Api.post('/receipt/addSupOtherReceipt', body)
             .then(response => {
                 dispatch({
                     type: SAVE_OTHER_PAYMENT_SUCCESS,
@@ -211,7 +233,7 @@ export const saveOtherPayment = body => {
 export const saveCustomerRefund = body => {
     return (dispatch) => {
         dispatch({ type: SAVE_CUSTOMER_REFUND_REQUEST });
-        return Api.post('//TO-DO', body)
+        return Api.post('/receipt/addCustRefund', body)
             .then(response => {
                 dispatch({
                     type: SAVE_CUSTOMER_REFUND_SUCCESS,

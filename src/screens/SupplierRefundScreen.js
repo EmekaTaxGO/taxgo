@@ -98,7 +98,7 @@ class SupplierRefundScreen extends Component {
         }
     }
 
-    fetchRefundPayment = () => {
+    fetchSupplierRefund = () => {
         const { paymentActions } = this.props;
         paymentActions.getSupplierRefund(this._supplier.id);
     }
@@ -115,7 +115,7 @@ class SupplierRefundScreen extends Component {
             onSupplierSelected: item => {
                 setFieldValue(this.supplierRef, item.name);
                 this._supplier = item.name
-                this.fetchRefundPayment();
+                this.fetchSupplierRefund();
             }
         });
     }
@@ -218,7 +218,7 @@ class SupplierRefundScreen extends Component {
         }
         if (payment.fetchSupplierRefundError) {
             return <View style={{ padding: 24 }}>
-                <FullScreenError tryAgainClick={this.fetchRefundPayment} />
+                <FullScreenError tryAgainClick={this.fetchSupplierRefund} />
             </View>
         }
         if (this.state.receipts.length === 0) {

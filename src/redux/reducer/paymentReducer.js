@@ -1,10 +1,10 @@
 import {
-    CUSTOMER_PAYMENT_REQUEST,
-    CUSTOMER_PAYMENT_FAIL,
-    CUSTOMER_PAYMENT_SUCCESS,
-    SUPPLIER_PAYMENT_REQUEST,
-    SUPPLIER_PAYMENT_FAIL,
-    SUPPLIER_PAYMENT_SUCCESS,
+    CUSTOMER_RECEIPT_LIST_REQUEST,
+    CUSTOMER_RECEIPT_LIST_FAIL,
+    CUSTOMER_RECEIPT_LIST_SUCCESS,
+    SUPPLIER_PAYMENT_RECEIPT_REQUEST,
+    SUPPLIER_PAYMENT_RECEIPT_FAIL,
+    SUPPLIER_PAYMENT_RECEIPT_SUCCESS,
     SUPPLIER_REFUND_RECEIPT_REQUEST,
     SUPPLIER_REFUND_RECEIPT_SUCCESS,
     SUPPLIER_REFUND_RECEIPT_FAIL,
@@ -25,22 +25,30 @@ import {
     SAVE_OTHER_PAYMENT_FAIL,
     SAVE_CUSTOMER_REFUND_REQUEST,
     SAVE_CUSTOMER_REFUND_SUCCESS,
-    SAVE_CUSTOMER_REFUND_FAIL
+    SAVE_CUSTOMER_REFUND_FAIL,
+    CUSTOMER_REFUND_LIST_REQUEST,
+    CUSTOMER_REFUND_LIST_SUCCESS,
+    CUSTOMER_REFUND_LIST_FAIL
 } from '../../constants'
 import { API_ERROR_MESSAGE } from '../../constants/appConstant';
 
 const initialState = {
+    //List Apis for Bank
     fetchingCustomerPayment: false,
     fetchCustomerPaymentError: undefined,
     customerPayments: [],
+
+    fetchingSupplierRefund: false,
+    fetchSupplierRefundError: undefined,
+    supplierRefunds: [],
 
     fetchingSupplierPayment: false,
     fetchSupplierPaymentError: undefined,
     supplierPayments: [],
 
-    fetchingSupplierRefund: true,
-    fetchSupplierRefundError: undefined,
-    supplierRefunds: [],
+    fetchingCustomerRefund: false,
+    fetchCustomerRefundError: undefined,
+    customerRefunds: [],
 
     //Bank Receipt
     savingCustomerReceipt: false,
@@ -64,43 +72,59 @@ const initialState = {
 
 const paymentReducer = (state = initialState, action) => {
     switch (action.type) {
-        case CUSTOMER_PAYMENT_REQUEST:
+        case CUSTOMER_RECEIPT_LIST_REQUEST:
             return {
                 ...state,
                 fetchingCustomerPayment: true,
                 fetchCustomerPaymentError: undefined
             };
-        case CUSTOMER_PAYMENT_SUCCESS:
+        case CUSTOMER_RECEIPT_LIST_SUCCESS:
             return {
                 ...state,
                 fetchingCustomerPayment: false,
                 customerPayments: [...action.payload]
             };
-        case CUSTOMER_PAYMENT_FAIL:
+        case CUSTOMER_RECEIPT_LIST_FAIL:
             return {
                 ...state,
                 fetchingCustomerPayment: false,
                 fetchCustomerPaymentError: API_ERROR_MESSAGE
             };
-
-
-        case SUPPLIER_PAYMENT_REQUEST:
+        case SUPPLIER_PAYMENT_RECEIPT_REQUEST:
             return {
                 ...state,
                 fetchingSupplierPayment: true,
                 fetchSupplierPaymentError: undefined
             };
-        case SUPPLIER_PAYMENT_SUCCESS:
+        case SUPPLIER_PAYMENT_RECEIPT_SUCCESS:
             return {
                 ...state,
                 fetchingSupplierPayment: false,
                 supplierPayments: [...action.payload]
             };
-        case SUPPLIER_PAYMENT_FAIL:
+        case SUPPLIER_PAYMENT_RECEIPT_FAIL:
             return {
                 ...state,
                 fetchingSupplierPayment: false,
                 fetchSupplierPaymentError: API_ERROR_MESSAGE
+            };
+        case CUSTOMER_REFUND_LIST_REQUEST:
+            return {
+                ...state,
+                fetchingCustomerRefund: true,
+                fetchCustomerRefundError: undefined
+            };
+        case CUSTOMER_REFUND_LIST_SUCCESS:
+            return {
+                ...state,
+                fetchingCustomerRefund: false,
+                customerRefunds: [...action.payload]
+            };
+        case CUSTOMER_REFUND_LIST_FAIL:
+            return {
+                ...state,
+                fetchingCustomerRefund: false,
+                fetchCustomerRefundError: API_ERROR_MESSAGE
             };
         case SUPPLIER_REFUND_RECEIPT_REQUEST:
             return {

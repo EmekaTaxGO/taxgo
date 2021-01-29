@@ -49,7 +49,7 @@ class CustomerRefundScreen extends Component {
     }
 
     _menuRef = React.createRef()
-    _supplier;
+    _customer;
     _bank;
     _amount = 0;
     _reference;
@@ -92,30 +92,30 @@ class CustomerRefundScreen extends Component {
     UNSAFE_componentWillUpdate(newProps, nextState) {
         const { payment: newPayment } = newProps;
         const { payment: oldPayment } = this.props;
-        if (!newPayment.fetchingSupplierRefund && oldPayment.fetchingSupplierRefund
-            && newPayment.fetchSupplierRefundError === undefined) {
-            this.setState({ receipts: [...newPayment.supplierRefunds] });
+        if (!newPayment.fetchingCustomerRefund && oldPayment.fetchingCustomerRefund
+            && newPayment.fetchCustomerRefundError === undefined) {
+            this.setState({ receipts: [...newPayment.customerRefunds] });
         }
     }
 
-    fetchRefundPayment = () => {
+    fetchCustomerRefund = () => {
         const { paymentActions } = this.props;
-        paymentActions.getSupplierRefund(this._supplier.id);
+        paymentActions.getCustomerRefund(this._customer.id);
     }
 
 
-    supplierRef = React.createRef();
+    customerRef = React.createRef();
     paidIntoRef = React.createRef();
     datePaidRef = React.createRef();
     amountPaidRef = React.createRef();
     referenceRef = React.createRef();
 
     onCustomerPress = () => {
-        this.props.navigation.push('SelectSupplierScreen', {
-            onSupplierSelected: item => {
-                setFieldValue(this.supplierRef, item.name);
-                this._supplier = item.name
-                this.fetchRefundPayment();
+        this.props.navigation.push('SelectCustomerScreen', {
+            onCustomerSelected: item => {
+                setFieldValue(this.customerRef, item.name);
+                this._customer = item.name
+                this.fetchCustomerRefund();
             }
         });
     }
@@ -206,7 +206,7 @@ class CustomerRefundScreen extends Component {
         </SafeAreaView>
     }
     renderFooter = () => {
-        if (this._supplier === undefined) {
+        if (this._customer === undefined) {
             return null;
         }
 
@@ -218,7 +218,7 @@ class CustomerRefundScreen extends Component {
         }
         if (payment.fetchSupplierRefundError) {
             return <View style={{ padding: 24 }}>
-                <FullScreenError tryAgainClick={this.fetchRefundPayment} />
+                <FullScreenError tryAgainClick={this.fetchCustomerRefund} />
             </View>
         }
         if (this.state.receipts.length === 0) {
@@ -228,7 +228,7 @@ class CustomerRefundScreen extends Component {
     }
 
     validateAndSave = () => {
-        if (!this._supplier) {
+        if (!this._customer) {
             this.showError('Select Supplier!')
         }
         else if (!this._bank) {
@@ -268,7 +268,7 @@ class CustomerRefundScreen extends Component {
             flexDirection: 'column',
             paddingHorizontal: 16,
             borderBottomColor: 'lightgray',
-            borderBottomWidth: this._supplier ? 0 : 0,
+            borderBottomWidth: this._customer ? 0 : 0,
             paddingBottom: 12
         }}>
             <TouchableOpacity
@@ -276,14 +276,14 @@ class CustomerRefundScreen extends Component {
                 style={{ marginTop: 20 }}>
                 <OutlinedTextField
                     containerStyle={styles.fieldStyle}
-                    label='Supplier Name'
+                    label='Customer name'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
                     title='*required'
                     editable={false}
-                    value={this._supplier ? this._supplier.name : ''}
-                    ref={this.supplierRef} />
+                    value={this._customer ? this._customer.name : ''}
+                    ref={this.customerRef} />
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={this.onPaidIntoPress}

@@ -32,7 +32,8 @@ import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import Snackbar from 'react-native-snackbar';
-
+import Store from '../redux/Store';
+import bankHelper from '../helpers/BankHelper';
 class CustomerRefundScreen extends Component {
 
     constructor(props) {
@@ -40,7 +41,7 @@ class CustomerRefundScreen extends Component {
         this.state = {
             paidDate: new Date(),
             showPaidDate: false,
-            payMethod: ['Select Paid Method', 'Cash', 'Current', 'Electronic', 'Credit/Debit Card', 'Paypal'],
+            payMethod: bankHelper.getPaidMethodArray(),
             payMethodIndex: 0,
             receipts: [],
             showPaymentDetail: false,
@@ -163,11 +164,11 @@ class CustomerRefundScreen extends Component {
                 let amount = this._amount
 
                 if (checked) {
-                    amount += -1 * toFloat(newReceipt.total);
+                    amount += toFloat(newReceipt.total);
                 } else {
-                    amount -= -1 * toFloat(newReceipt.total);
+                    amount -= toFloat(newReceipt.total);
                 }
-                this._amount = amount;
+                this._amount = toFloat(amount.toFixed(2));
                 setFieldValue(this.amountPaidRef, `${this._amount}`);
             }
         });
@@ -237,15 +238,50 @@ class CustomerRefundScreen extends Component {
         else if (this.state.payMethodIndex === 0) {
             this.showError('Select Pay Method')
         }
-        else if (!isFloat(getFieldValue(this.amountPaidRef)) || toFloat(getFieldValue(this.amountPaidRef))) {
+        else if (!isFloat(getFieldValue(this.amountPaidRef))
+            || toFloat(getFieldValue(this.amountPaidRef)) === 0) {
             this.showError('Refund Amount cannot be 0')
         }
         else {
-            this.refundSupplier()
+            this.saveCustomerRefund()
         }
     }
 
-    refundSupplier = () => {
+    getSelectedItems = () => {
+        const items = this.state.receipts.filter(value => value.checked === '1');
+        // this.state.receipts.forEach((value) => {
+        //     if (value.checked === '1') {
+        //         items.push({
+        //             bankid: value.bankid,
+        //             itemid: value.id
+        //         })
+        //     }
+        // })
+        return items;
+    }
+
+    saveCustomerRefund = () => {
+
+        const selectedItems = this.getSelectedItems();
+        const { paymentActions } = this.props;
+        const { authData } = Store.getState().auth;
+        const currentDate = moment().format('YYYY-MM-DD');
+        const data = {
+            userid: authData.id,
+            item: selectedItems,
+            amount: getFieldValue(this.amountPaidRef),
+            cname: this._customer ? `${this._customer.id}` : '',
+            paidto: this._bank ? `${this._bank.id}` : '',
+            paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
+            sdate: currentDate,
+            reference: getFieldValue(this.referenceRef),
+            receipttype: 'Customer Refund',
+            adminid: '0',
+            logintype: "user",
+            userdate: currentDate,
+        };
+        console.log('Post Body', data);
+        // paymentActions.saveCustomerRefund(data)
 
     }
 

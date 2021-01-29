@@ -13,6 +13,7 @@ import { isEmpty, showError, isInteger, isFloat, getApiErrorMsg } from '../helpe
 import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import Store from '../redux/Store';
 import moment from 'moment';
+import bankHelper from '../helpers/BankHelper';
 
 
 class BankAccountScreen extends Component {
@@ -21,7 +22,7 @@ class BankAccountScreen extends Component {
         super(props);
         this.state = {
             accTypeIndex: 0,
-            accTypes: this.createAccountTypes()
+            accTypes: bankHelper.getAccTypeArray()
         }
     }
 
@@ -37,35 +38,6 @@ class BankAccountScreen extends Component {
     sortCode2Ref = React.createRef();
     sortCode3Ref = React.createRef();
     ccRef = React.createRef();
-
-    createAccountTypes = () => {
-        return [
-            {
-                id: '1',
-                label: 'Current'
-            },
-            {
-                id: '2',
-                label: 'Savings'
-            },
-            {
-                id: '3',
-                label: 'Credit Card'
-            },
-            {
-                id: '4',
-                label: 'Cash in Hand'
-            },
-            {
-                id: '5',
-                label: 'Loan'
-            },
-            {
-                id: '6',
-                label: 'Others'
-            }
-        ]
-    }
 
     accountData = () => {
         const { account } = this.props.route.params;

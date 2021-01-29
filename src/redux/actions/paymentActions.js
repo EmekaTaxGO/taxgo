@@ -41,12 +41,7 @@ export const getCustomerPayment = (customerId = 21) => {
     return (dispatch) => {
         dispatch({ type: CUSTOMER_RECEIPT_LIST_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get('/bank/listCustomerPay', {
-            params: {
-                id: customerId,
-                userid: authData.id
-            }
-        })
+        return Api.get(`/bank/listCustomerPay/${customerId}/${authData.id}`)
             .then(response => {
                 dispatch({
                     type: CUSTOMER_RECEIPT_LIST_SUCCESS,
@@ -91,12 +86,7 @@ export const getSupplierPayment = (supplierId = 18) => {
     return (dispatch) => {
         dispatch({ type: SUPPLIER_PAYMENT_RECEIPT_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get('/bank/listSupplierPay', {
-            params: {
-                id: supplierId,
-                userid: authData.id
-            }
-        })
+        return Api.get(`/bank/listSupplierPay/${supplierId}/${authData.id}`)
             .then(response => {
                 dispatch({
                     type: SUPPLIER_PAYMENT_RECEIPT_SUCCESS,
@@ -114,7 +104,7 @@ export const getCustomerRefund = (supplierId = 18) => {
     return (dispatch) => {
         dispatch({ type: CUSTOMER_REFUND_LIST_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get(`/bank/listCustomerRefund/${supplierId}/${authData.id}`)
+        return Api.get(`/bank/listCustomerRefund/${2}/${authData.id}`)
             .then(response => {
                 dispatch({
                     type: CUSTOMER_REFUND_LIST_SUCCESS,
@@ -197,7 +187,7 @@ export const saveSupplierPayment = body => {
             .then(response => {
                 dispatch({
                     type: SAVE_SUPPLIER_PAYMENT_SUCCESS,
-                    payload: response.data.data
+                    payload: response.data
                 })
             })
             .catch(err => {

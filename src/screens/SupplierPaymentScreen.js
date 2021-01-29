@@ -9,12 +9,13 @@ import {
     TouchableOpacity,
     Picker,
     FlatList,
-    Text
+    Text,
+    Alert
 } from 'react-native';
 import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
-import { setFieldValue } from '../helpers/TextFieldHelpers';
+import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import * as paymentActions from '../redux/actions/paymentActions';
@@ -24,11 +25,14 @@ import FullScreenError from '../components/FullScreenError'
 import EmptyView from '../components/EmptyView';
 import { colorAccent } from '../theme/Color';
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { isFloat, toFloat } from '../helpers/Utils'
+import { isFloat, toFloat, showError } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Menu, { MenuItem } from 'react-native-material-menu';
+import bankHelper from '../helpers/BankHelper';
+import Store from '../redux/Store';
+import ProgressDialog from '../components/ProgressDialog';
 
 class SupplierPaymentScreen extends Component {
 
@@ -61,6 +65,32 @@ class SupplierPaymentScreen extends Component {
             && newPayment.fetchSupplierPaymentError === undefined) {
             this.setState({ receipts: [...newPayment.supplierPayments] });
         }
+    }
+    componentDidUpdate(oldProps, oldState) {
+        //     savingSupplierPayment: false,
+        // saveSupplierPaymentError: undefined,
+        const { payment: oldPayment } = oldProps;
+        const { payment: newPayment } = this.props;
+        if (!newPayment.savingSupplierPayment && oldPayment.savingSupplierPayment) {
+
+            if (newPayment.saveSupplierPaymentError) {
+                setTimeout(() => {
+                    showError(newPayment.saveSupplierPaymentError);
+                }, 300);
+            } else {
+                this.showUpdateSuccessAlert(newPayment.supplierPaymentSaved.message)
+            }
+        }
+    }
+
+    showUpdateSuccessAlert = (message) => {
+        Alert.alert('Alert', message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => { this.props.navigation.goBack() }
+            }
+        ], { cancelable: false })
     }
 
     hideMenu = () => {
@@ -110,7 +140,7 @@ class SupplierPaymentScreen extends Component {
         this.props.navigation.push('SelectSupplierScreen', {
             onSupplierSelected: item => {
                 setFieldValue(this.supplierRef, item.name);
-                this._supplier = item.name
+                this._supplier = { ...item }
                 this.fetchSupplierPayment();
             }
         });
@@ -147,9 +177,12 @@ class SupplierPaymentScreen extends Component {
 
     onCheckChange = (checked, index) => {
         const { receipts } = this.state;
+        const oldReceipt = receipts[index];
         const newReceipt = {
-            ...receipts[index],
-            checked: checked ? '1' : '0'
+            ...oldReceipt,
+            checked: checked ? '1' : '0',
+            amountpaid: checked ? oldReceipt.rout : 0,
+            outstanding: checked ? 0 : oldReceipt.rout
         };
 
         const newReceipts = [...receipts];
@@ -159,11 +192,11 @@ class SupplierPaymentScreen extends Component {
                 let amount = this._amount
 
                 if (checked) {
-                    amount += toFloat(newReceipt.total);
+                    amount += -1 * toFloat(newReceipt.total);
                 } else {
-                    amount -= toFloat(newReceipt.total);
+                    amount -= -1 * toFloat(newReceipt.total);
                 }
-                this._amount = amount;
+                this._amount = toFloat(amount.toFixed(2));
                 setFieldValue(this.amountReceivedRef, `${this._amount}`);
             }
         });
@@ -185,6 +218,7 @@ class SupplierPaymentScreen extends Component {
     }
 
     render() {
+        const { payment } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <FlatList
@@ -198,6 +232,7 @@ class SupplierPaymentScreen extends Component {
                     visible={this.state.showPaymentDetail}
                     payment={this.state.paymentDetail}
                     onCrossPress={() => this.setState({ showPaymentDetail: false })} />
+                <ProgressDialog visible={payment.savingSupplierPayment} />
             </KeyboardAvoidingView>
         </SafeAreaView>
     }
@@ -223,7 +258,57 @@ class SupplierPaymentScreen extends Component {
     }
 
     validateAndSave = () => {
-
+        if (!this._supplier) {
+            showError('Select Supplier!')
+        }
+        else if (!this._bank) {
+            showError('Select Bank Account!')
+        }
+        else if (this.state.payMethodIndex === 0) {
+            showError('Select Pay Method!')
+        }
+        else if (!isFloat(getFieldValue(this.amountReceivedRef))
+            || toFloat(getFieldValue(this.amountReceivedRef)) === 0) {
+            showError('Amount Received cannot be 0')
+        } else {
+            this.saveSupplierPayment();
+        }
+    }
+    getSelectedItems = () => {
+        const items = [];
+        this.state.receipts.forEach((value) => {
+            if (value.checked === '1') {
+                items.push({
+                    ...value,
+                    checked: 1,
+                    remainout: 0,
+                    amountpaid: value.rout,
+                    outstanding: 0
+                })
+            }
+        })
+        return items;
+    }
+    saveSupplierPayment = () => {
+        const selectedItems = this.getSelectedItems();
+        const currentDate = moment().format('YYYY-MM-DD');
+        const { authData } = Store.getState().auth;
+        const body = {
+            userid: authData.id,
+            item: selectedItems,
+            amount: getFieldValue(this.amountReceivedRef),
+            sname: this._supplier ? this._supplier.id : '',
+            paidto: this._bank ? this._bank.id : '',
+            paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
+            sdate: currentDate,
+            reference: getFieldValue(this.referenceRef),
+            receipttype: "Supplier Receipt",
+            adminid: 0,
+            logintype: "user",
+            userdate: currentDate
+        }
+        const { paymentActions } = this.props;
+        paymentActions.saveSupplierPayment(body)
     }
 
     renderHeader = () => {

@@ -62,6 +62,7 @@ const initialState = {
 
     savingSupplierPayment: false,
     saveSupplierPaymentError: undefined,
+    supplierPaymentSaved: undefined,
 
     savingOtherPayment: false,
     saveOtherPaymentError: undefined,
@@ -204,7 +205,8 @@ const paymentReducer = (state = initialState, action) => {
         case SAVE_SUPPLIER_PAYMENT_SUCCESS:
             return {
                 ...state,
-                savingSupplierPayment: false
+                savingSupplierPayment: false,
+                supplierPaymentSaved: action.payload
             };
         case SAVE_SUPPLIER_PAYMENT_FAIL:
             return {

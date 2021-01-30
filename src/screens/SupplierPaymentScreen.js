@@ -33,6 +33,7 @@ import Menu, { MenuItem } from 'react-native-material-menu';
 import bankHelper from '../helpers/BankHelper';
 import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
+import paymentHelper from '../helpers/PaymentHelper';
 
 class SupplierPaymentScreen extends Component {
 
@@ -67,8 +68,6 @@ class SupplierPaymentScreen extends Component {
         }
     }
     componentDidUpdate(oldProps, oldState) {
-        //     savingSupplierPayment: false,
-        // saveSupplierPaymentError: undefined,
         const { payment: oldPayment } = oldProps;
         const { payment: newPayment } = this.props;
         if (!newPayment.savingSupplierPayment && oldPayment.savingSupplierPayment) {
@@ -274,24 +273,10 @@ class SupplierPaymentScreen extends Component {
             this.saveSupplierPayment();
         }
     }
-    getSelectedItems = () => {
-        const items = [];
-        this.state.receipts.forEach((value) => {
-            if (value.checked === '1') {
-                items.push({
-                    ...value,
-                    checked: 1,
-                    remainout: 0,
-                    amountpaid: value.rout,
-                    outstanding: 0
-                })
-            }
-        })
-        return items;
-    }
+
     saveSupplierPayment = () => {
-        const selectedItems = this.getSelectedItems();
-        const currentDate = moment().format('YYYY-MM-DD');
+        const selectedItems = paymentHelper.getSelectedReceipts(this.state.receipts);
+        const recDate = moment(this.state.receivedDate).format('YYYY-MM-DD');
         const { authData } = Store.getState().auth;
         const body = {
             userid: authData.id,
@@ -300,12 +285,11 @@ class SupplierPaymentScreen extends Component {
             sname: this._supplier ? this._supplier.id : '',
             paidto: this._bank ? this._bank.id : '',
             paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
-            sdate: currentDate,
+            sdate: recDate,
             reference: getFieldValue(this.referenceRef),
             receipttype: "Supplier Receipt",
             adminid: 0,
-            logintype: "user",
-            userdate: currentDate
+            logintype: "user"
         }
         const { paymentActions } = this.props;
         paymentActions.saveSupplierPayment(body)

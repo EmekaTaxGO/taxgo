@@ -9,7 +9,8 @@ import {
     TouchableOpacity,
     Picker,
     FlatList,
-    Text
+    Text,
+    Alert
 } from 'react-native';
 import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -25,13 +26,17 @@ import EmptyView from '../components/EmptyView';
 import CheckBox from '@react-native-community/checkbox';
 import { colorAccent, colorWhite } from '../theme/Color';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { isFloat, toFloat } from '../helpers/Utils'
+import { isFloat, toFloat, showError } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import Snackbar from 'react-native-snackbar';
+import paymentHelper from '../helpers/PaymentHelper';
+import bankHelper from '../helpers/BankHelper';
+import Store from '../redux/Store';
+import ProgressDialog from '../components/ProgressDialog';
 
 class SupplierRefundScreen extends Component {
 
@@ -56,6 +61,30 @@ class SupplierRefundScreen extends Component {
 
     componentDidMount() {
         this.configHeader()
+    }
+    componentDidUpdate(oldProps, oldState) {
+        const { payment: oldPayment } = oldProps;
+        const { payment: newPayment } = this.props;
+
+        if (!newPayment.savingSupplierRefund && oldPayment.savingSupplierRefund) {
+            if (newPayment.saveSupplierRefundError) {
+                setTimeout(() => {
+                    showError(newPayment.saveSupplierRefundError);
+                }, 300);
+            } else {
+                this.showUpdateSuccessAlert(newPayment.supplierRefundSaved.message)
+            }
+        }
+    }
+
+    showUpdateSuccessAlert = (message) => {
+        Alert.alert('Alert', message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => { this.props.navigation.goBack() }
+            }
+        ], { cancelable: false })
     }
 
     onCustomerReceiptPress = () => {
@@ -107,7 +136,7 @@ class SupplierRefundScreen extends Component {
     supplierRef = React.createRef();
     paidIntoRef = React.createRef();
     datePaidRef = React.createRef();
-    amountPaidRef = React.createRef();
+    amountRefundedRef = React.createRef();
     referenceRef = React.createRef();
 
     onCustomerPress = () => {
@@ -171,7 +200,7 @@ class SupplierRefundScreen extends Component {
                     amount -= -1 * toFloat(newReceipt.rout);
                 }
                 this._amount = toFloat(amount.toFixed(2));
-                setFieldValue(this.amountPaidRef, `${this._amount}`);
+                setFieldValue(this.amountRefundedRef, `${this._amount}`);
             }
         });
     }
@@ -192,6 +221,7 @@ class SupplierRefundScreen extends Component {
     }
 
     render() {
+        const { payment } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <FlatList
@@ -205,6 +235,7 @@ class SupplierRefundScreen extends Component {
                     visible={this.state.showPaymentDetail}
                     payment={this.state.paymentDetail}
                     onCrossPress={() => this.setState({ showPaymentDetail: false })} />
+                <ProgressDialog visible={payment.savingSupplierRefund} />
             </KeyboardAvoidingView>
         </SafeAreaView>
     }
@@ -240,16 +271,33 @@ class SupplierRefundScreen extends Component {
         else if (this.state.payMethodIndex === 0) {
             this.showError('Select Pay Method')
         }
-        else if (!isFloat(getFieldValue(this.amountPaidRef)) || toFloat(getFieldValue(this.amountPaidRef))) {
+        else if (!isFloat(getFieldValue(this.amountRefundedRef)) || toFloat(getFieldValue(this.amountRefundedRef))) {
             this.showError('Refund Amount cannot be 0')
         }
         else {
-            this.refundSupplier()
+            this.saveSupplierRefund()
         }
     }
 
-    refundSupplier = () => {
-
+    saveSupplierRefund = () => {
+        const selectedItems = paymentHelper.getSelectedReceipts(this.state.receipts);
+        const paidDate = moment(this.state.paidDate).format('YYYY-MM-DD');
+        const { authData } = Store.getState().auth;
+        const body = {
+            userid: authData.id,
+            item: selectedItems,
+            amount: getFieldValue(this.amountRefundedRef),
+            sname: this._supplier ? this._supplier.id : '',
+            paidto: this._bank ? this._bank.id : '',
+            paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
+            sdate: paidDate,
+            reference: getFieldValue(this.referenceRef),
+            receipttype: "Supplier Receipt",
+            adminid: 0,
+            logintype: "user"
+        }
+        const { paymentActions } = this.props;
+        paymentActions.saveSupplierRefund(body)
     }
 
     showError = message => {
@@ -343,7 +391,7 @@ class SupplierRefundScreen extends Component {
                 title='*required'
                 editable={false}
                 value={`${this._amount}`}
-                ref={this.amountPaidRef} />
+                ref={this.amountRefundedRef} />
             <OutlinedTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'

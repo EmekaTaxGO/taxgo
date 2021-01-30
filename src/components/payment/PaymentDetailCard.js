@@ -4,7 +4,7 @@ import { colorAccent } from '../../theme/Color';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { isEmpty } from '../../helpers/Utils';
 
-class PaymentDetailCard extends Component {
+class PaymentDetailCard extends React.PureComponent {
 
     renderRow = (label, value, textColor = 'black') => {
         return <View style={{
@@ -36,8 +36,8 @@ class PaymentDetailCard extends Component {
                     <View style={{ marginTop: 30 }} />
                     {this.renderRow('Date:', payment.date)}
                     {this.renderRow('Total:', payment.total, 'blue')}
-                    {this.renderRow('Outstanding:', payment.duplicateout, 'red')}
-                    {this.renderRow('Amount Paid:', payment.amountpaid,)}
+                    {this.renderRow('Outstanding:', payment.outstanding, 'red')}
+                    {this.renderRow('Amount Paid:', payment.amountpaid)}
                     {this.renderRow('Reference:', payment.reference,)}
 
                 </View>

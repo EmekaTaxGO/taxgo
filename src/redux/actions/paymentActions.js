@@ -117,10 +117,11 @@ export const getCustomerRefund = (supplierId = 18) => {
         dispatch({ type: CUSTOMER_REFUND_LIST_REQUEST });
         const { authData } = Store.getState().auth;
         return Api.get(`/bank/listCustomerRefund/${2}/${authData.id}`)
-            .then(response => {
+            .then(async (response) => {
+                const receipts = await sanetizeReceipts(response.data.data)
                 dispatch({
                     type: CUSTOMER_REFUND_LIST_SUCCESS,
-                    payload: response.data.data
+                    payload: receipts
                 })
             })
             .catch(err => {
@@ -139,7 +140,7 @@ export const saveCustomerReceipt = body => {
             .then(response => {
                 dispatch({
                     type: SAVE_CUSTOMER_RECEIPT_SUCCESS,
-                    payload: response.data.data
+                    payload: response.data
                 })
             })
             .catch(err => {
@@ -179,7 +180,7 @@ export const saveSupplierRefund = body => {
             .then(response => {
                 dispatch({
                     type: SAVE_SUPPLIER_REFUND_SUCCESS,
-                    payload: response.data.data
+                    payload: response.data
                 })
             })
             .catch(err => {
@@ -239,7 +240,7 @@ export const saveCustomerRefund = body => {
             .then(response => {
                 dispatch({
                     type: SAVE_CUSTOMER_REFUND_SUCCESS,
-                    payload: response.data.data
+                    payload: response.data
                 })
             })
             .catch(err => {

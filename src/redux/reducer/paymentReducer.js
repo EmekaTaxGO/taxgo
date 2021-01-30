@@ -53,12 +53,14 @@ const initialState = {
     //Bank Receipt
     savingCustomerReceipt: false,
     saveCustomerReceiptError: undefined,
+    savedCustomerReceipt: undefined,
 
     savingOtherReceipt: false,
     saveOtherReceiptError: undefined,
 
     savingSupplierRefund: false,
     saveSupplierRefundError: undefined,
+    supplierRefundSaved: undefined,
 
     savingSupplierPayment: false,
     saveSupplierPaymentError: undefined,
@@ -68,7 +70,8 @@ const initialState = {
     saveOtherPaymentError: undefined,
 
     savingCustomerRefund: false,
-    saveCustomerRefundError: undefined
+    saveCustomerRefundError: undefined,
+    customerRefundSaved: undefined
 }
 
 const paymentReducer = (state = initialState, action) => {
@@ -154,7 +157,8 @@ const paymentReducer = (state = initialState, action) => {
         case SAVE_CUSTOMER_RECEIPT_SUCCESS:
             return {
                 ...state,
-                savingCustomerReceipt: false
+                savingCustomerReceipt: false,
+                savedCustomerReceipt: action.payload
             };
         case SAVE_CUSTOMER_RECEIPT_FAIL:
             return {
@@ -188,7 +192,8 @@ const paymentReducer = (state = initialState, action) => {
         case SAVE_SUPPLIER_REFUND_SUCCESS:
             return {
                 ...state,
-                savingSupplierRefund: false
+                savingSupplierRefund: false,
+                supplierRefundSaved: action.payload
             };
         case SAVE_SUPPLIER_REFUND_FAIL:
             return {
@@ -240,7 +245,8 @@ const paymentReducer = (state = initialState, action) => {
         case SAVE_CUSTOMER_REFUND_SUCCESS:
             return {
                 ...state,
-                savingCustomerRefund: false
+                savingCustomerRefund: false,
+                customerRefundSaved: action.payload
             };
         case SAVE_CUSTOMER_REFUND_FAIL:
             return {

@@ -9,7 +9,8 @@ import {
     TouchableOpacity,
     Picker,
     FlatList,
-    Text
+    Text,
+    Alert
 } from 'react-native';
 import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -25,7 +26,7 @@ import EmptyView from '../components/EmptyView';
 import CheckBox from '@react-native-community/checkbox';
 import { colorAccent, colorWhite } from '../theme/Color';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { isFloat, toFloat } from '../helpers/Utils'
+import { isFloat, toFloat, showError } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
@@ -34,6 +35,9 @@ import Menu, { MenuItem } from 'react-native-material-menu';
 import Snackbar from 'react-native-snackbar';
 import Store from '../redux/Store';
 import bankHelper from '../helpers/BankHelper';
+import ProgressDialog from '../components/ProgressDialog';
+import paymentHelper from '../helpers/PaymentHelper';
+
 class CustomerRefundScreen extends Component {
 
     constructor(props) {
@@ -57,6 +61,33 @@ class CustomerRefundScreen extends Component {
 
     componentDidMount() {
         this.configHeader()
+    }
+
+    componentDidUpdate(oldProps, oldState) {
+        const { payment: oldPayment } = oldProps;
+        const { payment: newPayment } = this.props;
+        if (!newPayment.savingCustomerRefund && oldPayment.savingCustomerRefund) {
+            // savingCustomerRefund: false,
+            // saveCustomerRefundError: undefined,
+            // customerRefundSaved: undefined
+            if (newPayment.saveCustomerRefundError) {
+                setTimeout(() => {
+                    showError(newPayment.saveCustomerRefundError);
+                }, 300);
+            } else {
+                this.showUpdateSuccessAlert(newPayment.customerRefundSaved.message)
+            }
+        }
+    }
+
+    showUpdateSuccessAlert = (message) => {
+        Alert.alert('Alert', message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => { this.props.navigation.goBack() }
+            }
+        ], { cancelable: false })
     }
 
     onSupplierPaymentPress = () => {
@@ -152,21 +183,24 @@ class CustomerRefundScreen extends Component {
 
     onCheckChange = (checked, index) => {
         const { receipts } = this.state;
+        const oldReceipt = receipts[index];
         const newReceipt = {
-            ...receipts[index],
-            checked: checked ? '1' : '0'
+            ...oldReceipt,
+            checked: checked ? '1' : '0',
+            amountpaid: checked ? oldReceipt.rout : 0,
+            outstanding: checked ? 0 : oldReceipt.rout
         };
 
         const newReceipts = [...receipts];
         newReceipts.splice(index, 1, newReceipt);
         this.setState({ receipts: newReceipts }, () => {
-            if (isFloat(newReceipt.total)) {
+            if (isFloat(newReceipt.rout)) {
                 let amount = this._amount
 
                 if (checked) {
-                    amount += toFloat(newReceipt.total);
+                    amount += toFloat(newReceipt.rout);
                 } else {
-                    amount -= toFloat(newReceipt.total);
+                    amount -= toFloat(newReceipt.rout);
                 }
                 this._amount = toFloat(amount.toFixed(2));
                 setFieldValue(this.amountPaidRef, `${this._amount}`);
@@ -190,6 +224,7 @@ class CustomerRefundScreen extends Component {
     }
 
     render() {
+        const { payment } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <FlatList
@@ -203,6 +238,7 @@ class CustomerRefundScreen extends Component {
                     visible={this.state.showPaymentDetail}
                     payment={this.state.paymentDetail}
                     onCrossPress={() => this.setState({ showPaymentDetail: false })} />
+                <ProgressDialog visible={payment.savingCustomerRefund} />
             </KeyboardAvoidingView>
         </SafeAreaView>
     }
@@ -247,17 +283,11 @@ class CustomerRefundScreen extends Component {
         }
     }
 
-    getSelectedItems = () => {
-        const items = this.state.receipts.filter(value => value.checked === '1');
-        return items;
-    }
-
     saveCustomerRefund = () => {
 
-        const selectedItems = this.getSelectedItems();
-        const { paymentActions } = this.props;
+        const selectedItems = paymentHelper.getSelectedReceipts(this.state.receipts);
         const { authData } = Store.getState().auth;
-        const currentDate = moment().format('YYYY-MM-DD');
+        const currentDate = moment(this.state.paidDate).format('YYYY-MM-DD');
         const data = {
             userid: authData.id,
             item: selectedItems,
@@ -269,10 +299,10 @@ class CustomerRefundScreen extends Component {
             reference: getFieldValue(this.referenceRef),
             receipttype: 'Customer Refund',
             adminid: '0',
-            logintype: "user",
-            userdate: currentDate,
+            logintype: "user"
         };
         console.log('Post Body', data);
+        const { paymentActions } = this.props;
         // paymentActions.saveCustomerRefund(data)
 
     }

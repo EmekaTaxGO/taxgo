@@ -9,12 +9,13 @@ import {
     TouchableOpacity,
     Picker,
     FlatList,
-    Text
+    Text,
+    Alert
 } from 'react-native';
 import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
-import { setFieldValue } from '../helpers/TextFieldHelpers';
+import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import * as paymentActions from '../redux/actions/paymentActions';
@@ -25,12 +26,16 @@ import EmptyView from '../components/EmptyView';
 import CheckBox from '@react-native-community/checkbox';
 import { colorAccent } from '../theme/Color';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { isFloat, toFloat } from '../helpers/Utils'
+import { isFloat, toFloat, showError } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Menu, { MenuItem } from 'react-native-material-menu';
+import paymentHelper from '../helpers/PaymentHelper';
+import Store from '../redux/Store';
+import bankHelper from '../helpers/BankHelper';
+import ProgressDialog from '../components/ProgressDialog';
 
 class CustomerReceiptScreen extends Component {
 
@@ -55,6 +60,32 @@ class CustomerReceiptScreen extends Component {
 
     componentDidMount() {
         this.configHeader()
+    }
+
+    componentDidUpdate(oldProps, oldState) {
+        const { payment: oldPayment } = oldProps;
+        const { payment: newPayment } = this.props;
+
+        if (!newPayment.savingCustomerReceipt && oldPayment.savingCustomerReceipt) {
+
+            if (newPayment.saveCustomerReceiptError) {
+                setTimeout(() => {
+                    showError(newPayment.saveCustomerReceiptError);
+                }, 300);
+            } else {
+                this.showUpdateSuccessAlert(newPayment.savedCustomerReceipt.message)
+            }
+        }
+    }
+
+    showUpdateSuccessAlert = (message) => {
+        Alert.alert('Alert', message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => { this.props.navigation.goBack() }
+            }
+        ], { cancelable: false })
     }
 
     onOtherReceiptPress = () => {
@@ -191,6 +222,7 @@ class CustomerReceiptScreen extends Component {
     }
 
     render() {
+        const { payment } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <FlatList
@@ -204,6 +236,7 @@ class CustomerReceiptScreen extends Component {
                     visible={this.state.showPaymentDetail}
                     payment={this.state.paymentDetail}
                     onCrossPress={() => this.setState({ showPaymentDetail: false })} />
+                <ProgressDialog visible={payment.savingCustomerReceipt} />
             </KeyboardAvoidingView>
         </SafeAreaView>
     }
@@ -229,7 +262,42 @@ class CustomerReceiptScreen extends Component {
     }
 
     validateAndSave = () => {
+        if (!this._customer) {
+            showError('Select Customer!')
+        }
+        else if (!this._bank) {
+            showError('Select Bank Paid Into!')
+        }
+        else if (this.state.payMethodIndex === 0) {
+            showError('Select Paid Method')
+        }
+        else if (toFloat(getFieldValue(this.amountReceivedRef)) === 0) {
+            showError('Amount received cannot be zero')
+        }
+        else {
+            this.saveCustomerReceipt();
+        }
+    }
 
+    saveCustomerReceipt = () => {
+        const selectedItems = paymentHelper.getSelectedReceipts(this.state.receipts);
+        const currentDate = moment(this.state.dateReceivedRef).format('YYYY-MM-DD');
+        const { authData } = Store.getState().auth;
+        const body = {
+            userid: authData.id,
+            item: selectedItems,
+            amount: getFieldValue(this.amountReceivedRef),
+            sname: this._supplier ? this._supplier.id : '',
+            paidto: this._bank ? this._bank.id : '',
+            paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
+            sdate: currentDate,
+            reference: getFieldValue(this.referenceRef),
+            receipttype: "Customer Receipt",
+            adminid: 0,
+            logintype: "user"
+        }
+        const { paymentActions } = this.props;
+        paymentActions.saveCustomerReceipt(body);
     }
 
     renderHeader = () => {

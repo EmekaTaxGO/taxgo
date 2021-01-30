@@ -188,13 +188,13 @@ class SupplierPaymentScreen extends Component {
         const newReceipts = [...receipts];
         newReceipts.splice(index, 1, newReceipt);
         this.setState({ receipts: newReceipts }, () => {
-            if (isFloat(newReceipt.total)) {
+            if (isFloat(newReceipt.rout)) {
                 let amount = this._amount
 
                 if (checked) {
-                    amount += -1 * toFloat(newReceipt.total);
+                    amount += -1 * toFloat(newReceipt.rout);
                 } else {
-                    amount -= -1 * toFloat(newReceipt.total);
+                    amount -= -1 * toFloat(newReceipt.rout);
                 }
                 this._amount = toFloat(amount.toFixed(2));
                 setFieldValue(this.amountReceivedRef, `${this._amount}`);

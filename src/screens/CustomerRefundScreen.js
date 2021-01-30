@@ -249,14 +249,6 @@ class CustomerRefundScreen extends Component {
 
     getSelectedItems = () => {
         const items = this.state.receipts.filter(value => value.checked === '1');
-        // this.state.receipts.forEach((value) => {
-        //     if (value.checked === '1') {
-        //         items.push({
-        //             bankid: value.bankid,
-        //             itemid: value.id
-        //         })
-        //     }
-        // })
         return items;
     }
 

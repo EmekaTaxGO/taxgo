@@ -151,23 +151,26 @@ class SupplierRefundScreen extends Component {
 
     onCheckChange = (checked, index) => {
         const { receipts } = this.state;
+        const oldReceipt = receipts[index];
         const newReceipt = {
-            ...receipts[index],
-            checked: checked ? '1' : '0'
+            ...oldReceipt,
+            checked: checked ? '1' : '0',
+            amountpaid: checked ? oldReceipt.rout : 0,
+            outstanding: checked ? 0 : oldReceipt.rout
         };
 
         const newReceipts = [...receipts];
         newReceipts.splice(index, 1, newReceipt);
         this.setState({ receipts: newReceipts }, () => {
-            if (isFloat(newReceipt.total)) {
+            if (isFloat(newReceipt.rout)) {
                 let amount = this._amount
 
                 if (checked) {
-                    amount += -1 * toFloat(newReceipt.total);
+                    amount += -1 * toFloat(newReceipt.rout);
                 } else {
-                    amount -= -1 * toFloat(newReceipt.total);
+                    amount -= -1 * toFloat(newReceipt.rout);
                 }
-                this._amount = amount;
+                this._amount = toFloat(amount.toFixed(2));
                 setFieldValue(this.amountPaidRef, `${this._amount}`);
             }
         });

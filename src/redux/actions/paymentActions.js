@@ -42,10 +42,11 @@ export const getCustomerPayment = (customerId = 21) => {
         dispatch({ type: CUSTOMER_RECEIPT_LIST_REQUEST });
         const { authData } = Store.getState().auth;
         return Api.get(`/bank/listCustomerPay/${customerId}/${authData.id}`)
-            .then(response => {
+            .then(async (response) => {
+                const receipts = await sanetizeReceipts(response.data.data)
                 dispatch({
                     type: CUSTOMER_RECEIPT_LIST_SUCCESS,
-                    payload: response.data.data
+                    payload: receipts
                 })
             })
             .catch(err => {
@@ -60,16 +61,12 @@ export const getSupplierRefund = (supplierId = 86) => {
     return (dispatch) => {
         dispatch({ type: SUPPLIER_REFUND_RECEIPT_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get('/bank/listSupplierRefund', {
-            params: {
-                id: supplierId,
-                userid: authData.id
-            }
-        })
-            .then(response => {
+        return Api.get(`/bank/listSupplierRefund/${supplierId}/${authData.id}`)
+            .then(async (response) => {
+                const receipts = await sanetizeReceipts(response.data.data)
                 dispatch({
                     type: SUPPLIER_REFUND_RECEIPT_SUCCESS,
-                    payload: response.data.data
+                    payload: receipts
                 })
             })
             .catch(err => {
@@ -87,10 +84,12 @@ export const getSupplierPayment = (supplierId = 18) => {
         dispatch({ type: SUPPLIER_PAYMENT_RECEIPT_REQUEST });
         const { authData } = Store.getState().auth;
         return Api.get(`/bank/listSupplierPay/${supplierId}/${authData.id}`)
-            .then(response => {
+            .then(async (response) => {
+
+                const receipts = await sanetizeReceipts(response.data.data)
                 dispatch({
                     type: SUPPLIER_PAYMENT_RECEIPT_SUCCESS,
-                    payload: response.data.data
+                    payload: receipts
                 })
             })
             .catch(err => {
@@ -98,6 +97,19 @@ export const getSupplierPayment = (supplierId = 18) => {
                 dispatch({ type: SUPPLIER_PAYMENT_RECEIPT_FAIL });
             })
     }
+}
+
+const sanetizeReceipts = receipts => {
+    return new Promise(resolve => {
+        const newReceipts = receipts.map(value => {
+            return {
+                ...value,
+                amountpaid: 0,
+                outstanding: value.rout
+            }
+        })
+        resolve(newReceipts)
+    })
 }
 
 export const getCustomerRefund = (supplierId = 18) => {

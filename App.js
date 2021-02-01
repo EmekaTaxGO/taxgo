@@ -48,6 +48,7 @@ import OtherReceiptScreen from './src/screens/OtherReceiptScreen';
 import SupplierRefundScreen from './src/screens/SupplierRefundScreen';
 import OtherPaymentScreen from './src/screens/OtherPaymentScreen';
 import CustomerRefundScreen from './src/screens/CustomerRefundScreen';
+import AddMerchantScreen from './src/screens/AddMerchantScreen';
 
 const App = () => {
 
@@ -100,6 +101,7 @@ const App = () => {
       <Stack.Screen name='SupplierRefundScreen' component={SupplierRefundScreen} options={{ title: 'Supplier Refund' }} />
       <Stack.Screen name='OtherPaymentScreen' component={OtherPaymentScreen} options={{ title: 'Other Payment' }} />
       <Stack.Screen name='CustomerRefundScreen' component={CustomerRefundScreen} options={{ title: 'Customer Refund' }} />
+      <Stack.Screen name='AddMerchantScreen' component={AddMerchantScreen} options={{ title: 'Add Merchant Account' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

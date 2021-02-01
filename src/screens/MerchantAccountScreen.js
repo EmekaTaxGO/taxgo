@@ -1,52 +1,25 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, TouchableOpacity, FlatList, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, FlatList, Text, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as merchantActions from '../redux/actions/merchantActions';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import ProgressDialog from '../components/ProgressDialog';
+import EmptyView from '../components/EmptyView';
 
 class MerchantAccountScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            merchants: this.getMerchants()
+            merchants: []
         }
     }
 
-    getMerchants = () => {
-        return [
-            {
-                id: '1',
-                tag: 'A',
-                email: 'abc@gmail.com',
-                description: 'Something'
-            },
-            {
-                id: '2',
-                tag: 'B',
-                email: 'abc@gmail.com',
-                description: 'Something'
-            },
-            {
-                id: '3',
-                tag: 'C',
-                email: 'abc@gmail.com',
-                description: 'Something'
-            },
-            {
-                id: '4',
-                tag: 'D',
-                email: 'abc@gmail.com',
-                description: 'Something'
-            },
-            {
-                id: '5',
-                tag: 'E',
-                email: 'abc@gmail.com',
-                description: 'Something'
-            }
-        ];
-    }
     onAddClick = () => {
-        console.log('On Merchant Add Click!');
+        this.props.navigation.push('AddMerchantScreen');
     }
     componentDidMount() {
         this.props.navigation.setOptions({
@@ -57,16 +30,32 @@ class MerchantAccountScreen extends Component {
                 </TouchableOpacity>
             }
         })
+        this.fetchMerchantAccount();
     }
 
-    merchantItem = row => {
-        console.log('Data', JSON.stringify(row));
+    componentDidUpdate(oldProps, oldState) {
+        const { merchant: oldMerchant } = oldProps;
+        const { merchant: newMerchant } = this.props;
+
+        if (oldMerchant.fetchingMerchant && !newMerchant.fetchingMerchant
+            && newMerchant.fetchMerchantError === undefined) {
+            //case when merchant is fetched
+            this.setState({ merchants: [...newMerchant.merchants] })
+        }
+    }
+
+    fetchMerchantAccount = () => {
+        const { merchantActions } = this.props;
+        merchantActions.fetchMerchants();
+    }
+
+    renderItem = item => {
         return <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{
                 fontSize: 24,
                 paddingHorizontal: 24,
                 paddingVertical: 12
-            }}>{row.tag}</Text>
+            }}>{item.accname.toUpperCase().charAt(0)}</Text>
             <View style={{
                 flexDirection: 'column',
                 flex: 1,
@@ -75,24 +64,44 @@ class MerchantAccountScreen extends Component {
                 borderBottomWidth: 1,
                 borderColor: 'lightgray'
             }}>
-                <Text>{row.email}</Text>
-                <Text style={{ marginTop: 4, color: 'gray' }}>{row.description}</Text>
+                <Text>{item.accname}</Text>
+                <Text style={{ marginTop: 4, color: 'gray' }}>{item.type}</Text>
             </View>
         </View>
     }
 
+
+
     render() {
-        return <View style={{ flex: 1 }}>
+        const { merchant } = this.props;
+        if (merchant.fetchingMerchant) {
+            return <OnScreenSpinner />
+        }
+        if (merchant.fetchMerchantError) {
+            return <FullScreenError tryAgainClick={this.fetchMerchantAccount} />
+        }
+        if (!merchant.merchants) {
+            return <EmptyView message='No Invoice Available' iconName='hail' />
+        }
+
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <FlatList
                 style={{ flex: 1 }}
                 data={this.state.merchants}
-                keyExtractor={row => row.id}
-                renderItem={({ item }) => this.merchantItem(item)}
+                keyExtractor={row => `${row.id}`}
+                renderItem={({ item }) => this.renderItem(item)}
             />
-        </View>
+        </SafeAreaView>
     }
 }
 const styles = StyleSheet.create({
 
 });
-export default MerchantAccountScreen;
+export default connect(
+    state => ({
+        merchant: state.merchant
+    }),
+    dispatch => ({
+        merchantActions: bindActionCreators(merchantActions, dispatch)
+    })
+)(MerchantAccountScreen);

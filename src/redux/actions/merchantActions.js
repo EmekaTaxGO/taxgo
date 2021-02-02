@@ -30,11 +30,11 @@ export const fetchMerchants = () => {
 export const saveOrUpdateMerchant = (body) => {
     return (dispatch) => {
         dispatch({ type: SAVE_MERCHANT_REQUEST })
-        return Api.post('//TO-DO', body)
+        return Api.post('/merchant/addUpdateMerchant', body)
             .then(result => {
                 dispatch({
                     type: SAVE_MERCHANT_SUCCESS,
-                    payload: result.data.data
+                    payload: result.data
                 })
             })
             .catch(err => {

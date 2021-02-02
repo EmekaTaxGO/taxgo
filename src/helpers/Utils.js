@@ -13,7 +13,7 @@ export const openLink = (navigation, title, url) => {
 }
 
 export const isEmpty = text => {
-    return text === undefined || text.length === 0;
+    return text === undefined || text === null || text.length === 0;
 }
 export const isFloat = text => {
     if (text === undefined || text === null || isEmpty(text)) {

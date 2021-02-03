@@ -274,6 +274,7 @@ class AddMerchantScreen extends Component {
     render() {
         const { merchant } = this.props;
         const isBrainTree = this.isBrainTree();
+        const editMode = this.isEditMode();
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column' }}>
                 <ScrollView style={{ flex: 1 }}>
@@ -282,21 +283,23 @@ class AddMerchantScreen extends Component {
                         paddingHorizontal: 16,
                         paddingVertical: 12
                     }}>
-                        <Text style={{
-                            fontSize: 18,
-                            paddingStart: 12,
-                            paddingTop: 12,
-                            color: 'gray'
-                        }}>Account Type</Text>
-                        <RadioForm
-                            radio_props={this.state.accTypes}
-                            initial={this.state.selectedAccType}
-                            style={{ padding: 12 }}
-                            labelStyle={{ paddingStart: 12, paddingEnd: 12 }}
-                            formHorizontal={true}
-                            onPress={this.onAccountTypePress}
-                            animation={false}
-                        />
+                        {!editMode ? <View style={{ flexDirection: 'column' }}>
+                            <Text style={{
+                                fontSize: 18,
+                                paddingStart: 12,
+                                paddingTop: 12,
+                                color: 'gray'
+                            }}>Account Type</Text>
+                            <RadioForm
+                                radio_props={this.state.accTypes}
+                                initial={this.state.selectedAccType}
+                                style={{ padding: 12 }}
+                                labelStyle={{ paddingStart: 12, paddingEnd: 12 }}
+                                formHorizontal={true}
+                                onPress={this.onAccountTypePress}
+                                animation={false}
+                            />
+                        </View> : null}
                         <OutlinedTextField
                             containerStyle={styles.fieldStyle}
                             label='Account Name'

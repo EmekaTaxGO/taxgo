@@ -10,6 +10,7 @@ import taxReducer from './reducer/taxReducer';
 import profileReducer from "./reducer/profileReducer";
 import paymentReducer from "./reducer/paymentReducer";
 import merchantReducer from "./reducer/merchantReducer";
+import reportReducer from "./reducer/reportReducer";
 
 const { combineReducers, createStore, applyMiddleware } = require("redux");
 const { default: thunk } = require("redux-thunk");
@@ -27,7 +28,8 @@ const appReducers = combineReducers({
     tax: taxReducer,
     profile: profileReducer,
     payment: paymentReducer,
-    merchant: merchantReducer
+    merchant: merchantReducer,
+    report: reportReducer
 });
 
 const Store = createStore(appReducers, applyMiddleware(thunk));

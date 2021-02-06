@@ -13,6 +13,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
+import { log } from 'react-native-reanimated';
 
 class TaxReturnListScreen extends Component {
 
@@ -144,7 +145,7 @@ class TaxReturnListScreen extends Component {
     }
 
     onPricePress = item => {
-
+        this.props.navigation.push('TaxViewScreen', { item })
     }
 
     renderReportItem = (item, index) => {
@@ -176,7 +177,7 @@ class TaxReturnListScreen extends Component {
                     fontWeight: 'bold',
                     padding: 12
                 }}>Total {item.ledger}</Text>
-                <TouchableOpacity onPress={this.onPricePress} style={{ padding: 12 }}>
+                <TouchableOpacity onPress={() => this.onPricePress(item)} style={{ padding: 12 }}>
                     <Text style={{
                         flex: 1,
                         textAlign: 'right',

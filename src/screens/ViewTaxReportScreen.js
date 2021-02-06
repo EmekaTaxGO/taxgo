@@ -17,7 +17,7 @@ import { log } from 'react-native-reanimated';
 import taxList from '../files/NominalTaxList.json';
 import EmptyView from '../components/EmptyView';
 
-class TaxViewScreen extends Component {
+class ViewTaxReportScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -62,7 +62,7 @@ class TaxViewScreen extends Component {
     }
 
     taxItem = () => {
-        return this.props.route.params.item;
+        return this.props.route.params.taxItem;
     }
 
     fetchNominalTaxList = () => {
@@ -152,10 +152,7 @@ class TaxViewScreen extends Component {
     }
 
     onViewReportPress = item => {
-        this.props.navigation.push('ViewTaxReportScreen', {
-            taxItem: this.taxItem(),
-            product: item
-        })
+
     }
 
     renderTaxItem = (item, index) => {
@@ -276,4 +273,4 @@ export default connect(
     dispatch => ({
         reportActions: bindActionCreators(reportActions, dispatch)
     })
-)(TaxViewScreen);
+)(ViewTaxReportScreen);

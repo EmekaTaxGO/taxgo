@@ -145,7 +145,12 @@ class TaxReturnListScreen extends Component {
     }
 
     onPricePress = item => {
-        this.props.navigation.push('TaxViewScreen', { item })
+        this.props.navigation.push('TaxViewScreen', {
+            item,
+            periodIndex: this.state.periodIndex,
+            fromDate: this.state.fromDate,
+            toDate: this.state.toDate
+        })
     }
 
     renderReportItem = (item, index) => {

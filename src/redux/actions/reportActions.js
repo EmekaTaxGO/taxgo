@@ -1,5 +1,5 @@
 import Api from '../../services/api';
-import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_LIST_FAIL } from '../../constants';
+import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL } from '../../constants';
 import { log } from '../../components/Logger';
 import { getApiErrorMsg, toFloat } from '../../helpers/Utils';
 import Store from '../Store';
@@ -60,28 +60,30 @@ export const fetchTaxNominalList = (id, startDate, endDate) => {
     }
 
 }
-export const fetchNominalTaxReturn = (id, startDate, endDate) => {
+export const fetchNominalTaxReturn = (id, ledger, startDate, endDate) => {
     return (dispatch) => {
-        dispatch({ type: FETCH_NOMINAL_TAX_LIST_REQUEST })
+        dispatch({ type: FETCH_NOMINAL_TAX_RETURN_REQUEST })
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/reporting/vatnominallist', {
+        return Api.get('https://taxgoglobal.com/newrestapi/reporting/nominalvatreturn', {
             params: {
                 userid: authData.id,
                 fdate: startDate, //Format - YYYY-MM-DD
                 ldate: endDate,
-                id
+                id,
+                ledger
             }
         })
             .then(response => {
+                const payload = response.data.status === 'success' ? response.data.data : [];
                 dispatch({
-                    type: FETCH_NOMINAL_TAX_LIST_SUCCESS,
-                    payload: response.data.data.vatlist
+                    type: FETCH_NOMINAL_TAX_RETURN_SUCCESS,
+                    payload
                 })
             })
             .catch(err => {
-                log('Error fetching nominal tax list', err);
+                log('Error fetching nominal tax return', err);
                 dispatch({
-                    type: FETCH_NOMINAL_TAX_LIST_FAIL,
+                    type: FETCH_NOMINAL_TAX_RETURN_FAIL,
                     payload: getApiErrorMsg(err)
                 });
             })

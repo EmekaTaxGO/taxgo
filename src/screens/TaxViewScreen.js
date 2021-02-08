@@ -14,7 +14,6 @@ import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
 import { log } from 'react-native-reanimated';
-import taxList from '../files/NominalTaxList.json';
 import EmptyView from '../components/EmptyView';
 
 class TaxViewScreen extends Component {
@@ -75,9 +74,8 @@ class TaxViewScreen extends Component {
     }
 
     presetState = async () => {
-        const fromDate = moment().set('month', 0).set('date', 1).toDate();
-        const toDate = moment().set('month', 2).set('date', 31).toDate();
-        this.setState({ fromDate, toDate });
+        const { periodIndex, fromDate, toDate } = this.props.route.params;
+        this.setState({ periodIndex, fromDate, toDate });
     }
 
     onFromDateChange = (event, selectedDate) => {
@@ -154,12 +152,15 @@ class TaxViewScreen extends Component {
     onViewReportPress = item => {
         this.props.navigation.push('ViewTaxReportScreen', {
             taxItem: this.taxItem(),
-            product: item
+            product: item,
+            periodIndex: this.state.periodIndex,
+            fromDate: this.state.fromDate,
+            toDate: this.state.toDate
         })
     }
 
     renderTaxItem = (item, index) => {
-        const count = taxList.length;
+        const count = this.props.report.nominalTaxList;
         const isLast = count === index + 1;
         return <CardView
             cardElevation={4}
@@ -186,11 +187,6 @@ class TaxViewScreen extends Component {
     }
 
     renderReturnList = () => {
-        return <FlatList
-            keyExtractor={(item, index) => `${index}`}
-            data={taxList}
-            renderItem={({ item, index }) => this.renderTaxItem(item, index)}
-        />
         const { report } = this.props;
         if (report.fetchingNominalTaxList) {
             return <OnScreenSpinner />

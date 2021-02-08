@@ -53,31 +53,35 @@ class ViewTaxReportScreen extends Component {
 
     componentDidMount() {
         this.configHeader();
-        this.fetchNominalTaxList();
+        this.fetchTaxReturn();
     }
 
     configHeader = () => {
-        const title = `${this.taxItem().ledger}-View`;
+        const taxItem = this.taxItem();
+        const item = this.product();
+        const title = `${taxItem.ledger}-${item.product}-View`;
         this.props.navigation.setOptions({ title })
     }
 
     taxItem = () => {
         return this.props.route.params.taxItem;
     }
+    product = () => {
+        return this.props.route.params.product;
+    }
 
-    fetchNominalTaxList = () => {
-        const taxId = this.taxItem().id;
-        // console.log('TaxItem', this.taxItem());
+    fetchTaxReturn = () => {
+        const ledger = this.taxItem().id;
+        const productId = this.product().id;
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
-        reportActions.fetchTaxNominalList(taxId, startDate, endDate);
+        reportActions.fetchNominalTaxReturn(productId, ledger, startDate, endDate);
     }
 
     presetState = async () => {
-        const fromDate = moment().set('month', 0).set('date', 1).toDate();
-        const toDate = moment().set('month', 2).set('date', 31).toDate();
-        this.setState({ fromDate, toDate });
+        const { fromDate, toDate, periodIndex } = this.props.route.params;
+        this.setState({ fromDate, toDate, periodIndex });
     }
 
     onFromDateChange = (event, selectedDate) => {
@@ -87,7 +91,7 @@ class ViewTaxReportScreen extends Component {
             showFromDateDialog: false
         }, () => {
             setFieldValue(this._fromDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchNominalTaxList();
+            this.fetchTaxReturn();
         })
     }
 
@@ -98,7 +102,7 @@ class ViewTaxReportScreen extends Component {
             showToDateDialog: false
         }, () => {
             setFieldValue(this._toDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchNominalTaxList();
+            this.fetchTaxReturn();
         })
     }
 
@@ -151,57 +155,47 @@ class ViewTaxReportScreen extends Component {
         </View>
     }
 
-    onViewReportPress = item => {
-
-    }
-
-    renderTaxItem = (item, index) => {
-        const count = taxList.length;
+    renderTaxReturnItem = (item, index) => {
+        const count = this.props.report.taxReturns.length;
         const isLast = count === index + 1;
         return <CardView
             cardElevation={4}
             cornerRadius={6}
-            style={[styles.listCard, { marginBottom: isLast ? 16 : 0 }]}>
+            style={[styles.listCard, { marginBottom: isLast ? 24 : 0 }]}>
             <View style={{ flexDirection: 'column' }}>
-                {this.renderItemRow('S.No', index + 1, '#efefef')}
-                {this.renderItemRow('Product Name', item.product)}
-                {this.renderItemRow('Total', item.amount, '#efefef')}
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ flex: 1, fontSize: 15, padding: 15 }}>Action</Text>
-                    <TouchableOpacity style={{ padding: 15 }} onPress={() => this.onViewReportPress(item)}>
-                        <Text style={{ fontSize: 15, color: colorAccent }}>View The Report</Text>
-                    </TouchableOpacity>
-                </View>
+                {this.renderItemRow('Date', item.date, '#efefef')}
+                {this.renderItemRow('Invoice Name', item.name)}
+                {this.renderItemRow('Vat(%)', item.incometax, '#efefef')}
+                {this.renderItemRow('Invoice Amount', item.total)}
+                {this.renderItemRow('Vat(In Amount)', item.incometaxamount, '#efefef')}
+                {this.renderItemRow('Debit', item.debit)}
+                {this.renderItemRow('Credit', item.credit, '#efefef')}
+                {this.renderItemRow('Total', `${item.incometaxamount} Dr`)}
             </View>
         </CardView>
     }
     renderItemRow = (label, value, background = '#ffffff') => {
         return <View style={{ flexDirection: 'row', padding: 12, backgroundColor: background }}>
-            <Text style={{ flex: 1, fontSize: 15 }}>{label}</Text>
+            <Text style={{ flex: 1, fontSize: 15, textTransform: 'uppercase' }}>{label}</Text>
             <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value}</Text>
         </View>
     }
 
     renderReturnList = () => {
-        return <FlatList
-            keyExtractor={(item, index) => `${index}`}
-            data={taxList}
-            renderItem={({ item, index }) => this.renderTaxItem(item, index)}
-        />
         const { report } = this.props;
-        if (report.fetchingNominalTaxList) {
+        if (report.fetchingTaxReturn) {
             return <OnScreenSpinner />
         }
-        if (report.fetchNominalTaxListError) {
-            return <FullScreenError tryAgainClick={this.fetchNominalTaxList} />
+        if (report.fetchTaxReturnError) {
+            return <FullScreenError tryAgainClick={this.fetchTaxReturn} />
         }
-        if (report.nominalTaxList.length === 0) {
-            return <EmptyView message='No Taxes Available to show' iconName='hail' />
+        if (report.taxReturns.length === 0) {
+            return <EmptyView message='No Tax return Available to show' iconName='hail' />
         }
         return <FlatList
             keyExtractor={(item, index) => `${index}`}
-            data={report.nominalTaxList}
-            renderItem={({ item, index }) => this.renderTaxItem(item, index)}
+            data={report.taxReturns}
+            renderItem={({ item, index }) => this.renderTaxReturnItem(item, index)}
         />
     }
 
@@ -227,7 +221,7 @@ class ViewTaxReportScreen extends Component {
             setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
             setFieldValue(this._toDateRef, timeHelper.format(toDate, this.DATE_FORMAT));
             if (itemIndex > 0 && itemIndex < 5) {
-                this.fetchNominalTaxList();
+                this.fetchTaxReturn();
             }
         })
     }
@@ -263,7 +257,7 @@ class ViewTaxReportScreen extends Component {
 const styles = StyleSheet.create({
     listCard: {
         marginHorizontal: 16,
-        marginTop: 16
+        marginTop: 24
     }
 })
 export default connect(

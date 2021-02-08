@@ -84,13 +84,15 @@ class ReportFragment extends Component {
         })
     }
     onItemPress = (index) => {
+        let screen = '';
         switch (index) {
             case 0:
-                this.props.navigation.push('TaxReturnListScreen');
+                screen = 'TaxReturnListScreen';
                 break;
             default:
-                break
+                screen = 'AgeDebtorScreen';
         }
+        this.props.navigation.push(screen);
     }
     renderItem = (item, index) => {
         const count = this.state.items.length;

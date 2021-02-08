@@ -1,5 +1,18 @@
 import Api from '../../services/api';
-import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL } from '../../constants';
+import {
+    FETCH_VAT_REPORT_REQUEST,
+    FETCH_VAT_REPORT_SUCCESS,
+    FETCH_VAT_REPORT_FAIL,
+    FETCH_NOMINAL_TAX_LIST_REQUEST,
+    FETCH_NOMINAL_TAX_LIST_SUCCESS,
+    FETCH_NOMINAL_TAX_LIST_FAIL,
+    FETCH_NOMINAL_TAX_RETURN_REQUEST,
+    FETCH_NOMINAL_TAX_RETURN_SUCCESS,
+    FETCH_NOMINAL_TAX_RETURN_FAIL,
+    FETCH_AGE_DEBTORS_REQUEST,
+    FETCH_AGE_DEBTORS_SUCCESS,
+    FETCH_AGE_DEBTORS_FAIL
+} from '../../constants';
 import { log } from '../../components/Logger';
 import { getApiErrorMsg, toFloat } from '../../helpers/Utils';
 import Store from '../Store';
@@ -84,6 +97,33 @@ export const fetchNominalTaxReturn = (id, ledger, startDate, endDate) => {
                 log('Error fetching nominal tax return', err);
                 dispatch({
                     type: FETCH_NOMINAL_TAX_RETURN_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+
+}
+export const fetchAgeDebtors = (date) => {
+    return (dispatch) => {
+        dispatch({ type: FETCH_AGE_DEBTORS_REQUEST })
+        const { authData } = Store.getState().auth;
+        return Api.get('https://taxgoglobal.com/newrestapi/reporting/agedebtors', {
+            params: {
+                userid: authData.id,
+                sDate: date //Format - YYYY-MM-DD
+            }
+        })
+            .then(response => {
+                const payload = response.data.status === 'success' ? response.data.data : [];
+                dispatch({
+                    type: FETCH_AGE_DEBTORS_SUCCESS,
+                    payload
+                })
+            })
+            .catch(err => {
+                log('Error fetching Age Debtors', err);
+                dispatch({
+                    type: FETCH_AGE_DEBTORS_FAIL,
                     payload: getApiErrorMsg(err)
                 });
             })

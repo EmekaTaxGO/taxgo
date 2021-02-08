@@ -1,4 +1,4 @@
-import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL } from "../../constants";
+import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL, FETCH_AGE_DEBTORS_REQUEST, FETCH_AGE_DEBTORS_SUCCESS, FETCH_AGE_DEBTORS_FAIL } from "../../constants";
 
 const { State } = require("react-native-gesture-handler")
 
@@ -14,7 +14,12 @@ const initialState = {
 
     fetchingTaxReturn: false,
     fetchTaxReturnError: undefined,
-    taxReturns: []
+    taxReturns: [],
+
+    //Age Debtors
+    fetchingAgeDebtors: false,
+    fetchAgeDebtorsError: undefined,
+    ageDebtors: []
 }
 const reportReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -71,6 +76,24 @@ const reportReducer = (state = initialState, action) => {
                 ...state,
                 fetchingTaxReturn: false,
                 fetchTaxReturnError: action.payload
+            };
+        case FETCH_AGE_DEBTORS_REQUEST:
+            return {
+                ...state,
+                fetchingAgeDebtors: true,
+                fetchAgeDebtorsError: undefined
+            };
+        case FETCH_AGE_DEBTORS_SUCCESS:
+            return {
+                ...state,
+                fetchingAgeDebtors: false,
+                ageDebtors: action.payload
+            };
+        case FETCH_AGE_DEBTORS_FAIL:
+            return {
+                ...state,
+                fetchingAgeDebtors: false,
+                fetchAgeDebtorsError: action.payload
             };
         default:
             return state;

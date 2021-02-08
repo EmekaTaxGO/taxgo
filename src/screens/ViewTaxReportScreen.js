@@ -158,6 +158,9 @@ class ViewTaxReportScreen extends Component {
     renderTaxReturnItem = (item, index) => {
         const count = this.props.report.taxReturns.length;
         const isLast = count === index + 1;
+        const isDebit = item.runningtotal < 0;
+        const total = item.runningtotal * (isDebit ? -1 : 1);
+        const totalSuffix = isDebit ? 'Dr' : 'Cr';
         return <CardView
             cardElevation={4}
             cornerRadius={6}
@@ -170,7 +173,7 @@ class ViewTaxReportScreen extends Component {
                 {this.renderItemRow('Vat(In Amount)', item.incometaxamount, '#efefef')}
                 {this.renderItemRow('Debit', item.debit)}
                 {this.renderItemRow('Credit', item.credit, '#efefef')}
-                {this.renderItemRow('Total', `${item.incometaxamount} Dr`)}
+                {this.renderItemRow('Total', `${total} ${totalSuffix}`)}
             </View>
         </CardView>
     }

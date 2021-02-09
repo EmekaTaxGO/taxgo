@@ -16,7 +16,7 @@ import { colorAccent } from '../theme/Color';
 import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
 
-class AgeDebtorScreen extends Component {
+class DebtorBreakdownScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -29,20 +29,24 @@ class AgeDebtorScreen extends Component {
 
     DATE_FORMAT = 'YYYY-MM-DD';
 
+    UNSAFE_componentWillMount() {
+        this.presetState()
+    }
+
     componentDidMount() {
-        this.configHeader();
-        this.fetchAgeDebtors();
+        this.fetchDebtorBreakdown();
     }
 
-    configHeader = () => {
-        const title = 'Aged debtors Report';
-        this.props.navigation.setOptions({ title })
-    }
-
-    fetchAgeDebtors = () => {
+    fetchDebtorBreakdown = () => {
         const { reportActions } = this.props;
+        const { debtor } = this.props.route.params;
         const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
-        reportActions.fetchAgeDebtors(date);
+        reportActions.fetchAgedDebtorBreakdown(debtor.id, date);
+    }
+
+    presetState = () => {
+        const untilDate = this.props.route.params.untilDate;
+        this.setState({ untilDate });
     }
 
     onUntilDateChange = (event, selectedDate) => {
@@ -55,58 +59,32 @@ class AgeDebtorScreen extends Component {
             showUntilDateDialog: false
         }, () => {
             setFieldValue(this._untilDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchAgeDebtors();
+            this.fetchDebtorBreakdown();
         })
     }
 
-    onOutstandingClick = item => {
-        console.log('onOutstandingClick');
-        this.props.navigation.push('DebtorBreakdownScreen', {
-            untilDate: this.state.untilDate,
-            debtor: item
-        });
-    }
-
     renderAgeDebtorItem = (item, index) => {
-        const count = this.props.report.ageDebtors.length;
+        const count = this.props.report.agedDebtorBreakdown.length;
         const isLast = count === index + 1;
-        const { age } = item;
         return <CardView
             cardElevation={4}
             cornerRadius={6}
             style={[styles.listCard, { marginBottom: isLast ? 24 : 0 }]}>
             <View style={{ flexDirection: 'column' }}>
-                {this.renderItemRow('Customer', item.cname, '#efefef')}
-
-                {this.renderClickableItemRow('O/S Amt', age.outstanding,
-                    () => this.onOutstandingClick(item))}
-
-                {this.renderItemRow('30days', age.total30, '#efefef')}
-                {this.renderItemRow('60days', age.total60)}
-                {this.renderItemRow('90days', age.total90, '#efefef')}
-                {this.renderItemRow('120days', age.total120)}
-                {this.renderItemRow('Older', age.totalOLD, '#efefef')}
+                {this.renderItemRow('Date', item.sdate)}
+                {this.renderItemRow('Reference', item.invoiceno, '#efefef')}
+                {this.renderItemRow('Total', item.total)}
+                {this.renderItemRow('Due Date', item.ldate, '#efefef')}
+                {this.renderItemRow('O/S Amt', item.outtotal)}
+                {this.renderItemRow('30Days', item.outamount3, '#efefef')}
+                {this.renderItemRow('60Days', item.outamount6)}
+                {this.renderItemRow('90Days', item.outamount9, '#efefef')}
+                {this.renderItemRow('120Days', item.outamount12)}
+                {this.renderItemRow('Older', item.outamountOLD, '#efefef')}
             </View>
         </CardView>
     }
-    renderClickableItemRow = (label, value, onClick, background = '#ffffff') => {
-        return <View style={{ flexDirection: 'row', backgroundColor: background }}>
-            <Text style={{
-                flex: 1,
-                fontSize: 15,
-                textTransform: 'uppercase',
-                padding: 12
-            }}>{label}</Text>
-            <TouchableOpacity onPress={onClick} style={{ padding: 12 }}>
-                <Text style={{
-                    flex: 1,
-                    textAlign: 'right',
-                    fontSize: 15,
-                    color: colorAccent
-                }}>{value}</Text>
-            </TouchableOpacity>
-        </View>
-    }
+
     renderItemRow = (label, value, background = '#ffffff') => {
         return <View style={{ flexDirection: 'row', padding: 12, backgroundColor: background }}>
             <Text style={{ flex: 1, fontSize: 15, textTransform: 'uppercase' }}>{label}</Text>
@@ -115,24 +93,27 @@ class AgeDebtorScreen extends Component {
     }
 
     renderReturnList = () => {
+        //     fetchingAgedDebtorBreakdown: false,
+        // fetchAgedDebtorBreakdownError: undefined,
+        // agedDebtorBreakdown: []
         const { report } = this.props;
-        if (report.fetchingAgeDebtors) {
+        if (report.fetchingAgedDebtorBreakdown) {
             return <OnScreenSpinner />
         }
-        if (report.fetchAgeDebtorsError) {
-            return <FullScreenError tryAgainClick={this.fetchAgeDebtors} />
+        if (report.fetchAgedDebtorBreakdownError) {
+            return <FullScreenError tryAgainClick={this.fetchDebtorBreakdown} />
         }
-        if (report.ageDebtors.length === 0) {
-            return <EmptyView message='No Age Debtors Found!' iconName='hail' />
+        if (report.agedDebtorBreakdown.length === 0) {
+            return <EmptyView message='No Debtors Breakdown  Found!' iconName='hail' />
         }
         return <FlatList
             keyExtractor={(item, index) => `${index}`}
-            data={report.ageDebtors}
+            data={report.agedDebtorBreakdown}
             renderItem={({ item, index }) => this.renderAgeDebtorItem(item, index)}
         />
     }
     renderDate = () => {
-        const disableDate = this.props.report.fetchingAgeDebtors;
+        const disableDate = this.props.report.fetchingAgedDebtorBreakdown;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
             <TouchableOpacity
                 style={{ width: '100%', marginEnd: 6 }}
@@ -145,7 +126,7 @@ class AgeDebtorScreen extends Component {
                     lineWidth={1}
                     editable={false}
                     baseColor={disableDate ? 'gray' : colorAccent}
-                    value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
+                    value={timeHelper.format(this.state.untilDate, this.DATE_FORMAT)}
                     ref={this._untilDateRef}
                 />
             </TouchableOpacity>
@@ -182,4 +163,4 @@ export default connect(
     dispatch => ({
         reportActions: bindActionCreators(reportActions, dispatch)
     })
-)(AgeDebtorScreen);
+)(DebtorBreakdownScreen);

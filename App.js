@@ -53,6 +53,7 @@ import TaxReturnListScreen from './src/screens/TaxReturnListScreen';
 import TaxViewScreen from './src/screens/TaxViewScreen';
 import ViewTaxReportScreen from './src/screens/ViewTaxReportScreen';
 import AgeDebtorScreen from './src/screens/AgeDebtorScreen';
+import DebtorBreakdownScreen from './src/screens/DebtorBreakdownScreen';
 
 const App = () => {
 
@@ -110,6 +111,7 @@ const App = () => {
       <Stack.Screen name='TaxViewScreen' component={TaxViewScreen} options={{ title: 'Tax View' }} />
       <Stack.Screen name='ViewTaxReportScreen' component={ViewTaxReportScreen} options={{ title: 'Tax Report' }} />
       <Stack.Screen name='AgeDebtorScreen' component={AgeDebtorScreen} options={{ title: 'Age Debtor' }} />
+      <Stack.Screen name='DebtorBreakdownScreen' component={DebtorBreakdownScreen} options={{ title: 'Aged Debtors Breakdown' }} />
 
     </Stack.Navigator>
   </NavigationContainer>

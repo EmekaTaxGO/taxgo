@@ -6,6 +6,7 @@ const initialState = {
     fetchingTaxList: false,
     fetchTaxListError: undefined,
     taxList: [],
+    
     productData: undefined,
     salesLedgers: [],
     purchaseLedgers: [],

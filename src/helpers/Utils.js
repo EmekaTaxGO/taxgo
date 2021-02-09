@@ -13,7 +13,7 @@ export const openLink = (navigation, title, url) => {
 }
 
 export const isEmpty = text => {
-    return text === undefined || text.length === 0;
+    return text === undefined || text === null || text.length === 0;
 }
 export const isFloat = text => {
     if (text === undefined || text === null || isEmpty(text)) {
@@ -85,14 +85,11 @@ export const validateMobile = mobile => {
     if (mobile === undefined || mobile.length === 0) {
         return true;
     } else {
-        console.log('Safe');
         return Number.isSafeInteger(Number(mobile));
     }
 }
-
 export const isClientError = err => {
     const { status } = err.response;
-    console.log('Status: ', status);
     return status >= 400 && status < 500;
 }
 export const isServerError = err => {

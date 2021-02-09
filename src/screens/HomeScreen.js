@@ -23,6 +23,7 @@ import PurchaseInvoiceStack from '../components/drawerStack/PurchaseInvoiceStack
 import * as authActions from '../redux/actions/authActions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import ReportStack from '../components/drawerStack/ReportStack';
 
 class HomeScreen extends Component {
 
@@ -118,6 +119,12 @@ class HomeScreen extends Component {
                 options={{
                     title: 'Banking', drawerIcon: ({ color }) =>
                         <MaterialCommunityIcon name='bank' size={DRAWER_ICON_SIZE} color={color} />
+                }} />
+            <Drawer.Screen name='ReportFragment'
+                component={ReportStack}
+                options={{
+                    title: 'Report', drawerIcon: ({ color }) =>
+                        <MaterialCommunityIcon name='file-document-edit-outline' size={DRAWER_ICON_SIZE} color={color} />
                 }} />
             <Drawer.Screen name='UserFragment'
                 component={UserStack}

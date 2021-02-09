@@ -39,6 +39,21 @@ import MyLedgerScreen from './src/screens/MyLedgerScreen';
 import BankAccountScreen from './src/screens/BankAccountScreen';
 import SelectCustomerScreen from './src/screens/SelectCustomerScreen';
 import SelectProductScreen from './src/screens/SelectProductScreen';
+import SelectBankScreen from './src/screens/SelectBankScreen';
+import BankDetailScreen from './src/screens/BankDetailScreen';
+import CustomerReceiptScreen from './src/screens/CustomerReceiptScreen';
+import SupplierPaymentScreen from './src/screens/SupplierPaymentScreen';
+import BankTransferScreen from './src/screens/BankTransferScreen';
+import OtherReceiptScreen from './src/screens/OtherReceiptScreen';
+import SupplierRefundScreen from './src/screens/SupplierRefundScreen';
+import OtherPaymentScreen from './src/screens/OtherPaymentScreen';
+import CustomerRefundScreen from './src/screens/CustomerRefundScreen';
+import AddMerchantScreen from './src/screens/AddMerchantScreen';
+import TaxReturnListScreen from './src/screens/TaxReturnListScreen';
+import TaxViewScreen from './src/screens/TaxViewScreen';
+import ViewTaxReportScreen from './src/screens/ViewTaxReportScreen';
+import AgeDebtorScreen from './src/screens/AgeDebtorScreen';
+import DebtorBreakdownScreen from './src/screens/DebtorBreakdownScreen';
 
 const App = () => {
 
@@ -82,6 +97,22 @@ const App = () => {
       <Stack.Screen name='MyLedgerScreen' component={MyLedgerScreen} options={{ title: 'My Ledger' }} />
       <Stack.Screen name='BankAccountScreen' component={BankAccountScreen} options={{ title: 'Bank Account' }} />
       <Stack.Screen name='SelectProductScreen' component={SelectProductScreen} options={{ title: 'Select Product' }} />
+      <Stack.Screen name='SelectBankScreen' component={SelectBankScreen} options={{ title: 'Select Bank' }} />
+      <Stack.Screen name='BankDetailScreen' component={BankDetailScreen} options={{ title: 'Bank Detail' }} />
+      <Stack.Screen name='CustomerReceiptScreen' component={CustomerReceiptScreen} options={{ title: 'Customer Receipt' }} />
+      <Stack.Screen name='SupplierPaymentScreen' component={SupplierPaymentScreen} options={{ title: 'Supplier Payment' }} />
+      <Stack.Screen name='BankTransferScreen' component={BankTransferScreen} options={{ title: 'Bank Transfer' }} />
+      <Stack.Screen name='OtherReceiptScreen' component={OtherReceiptScreen} options={{ title: 'Other Receipt' }} />
+      <Stack.Screen name='SupplierRefundScreen' component={SupplierRefundScreen} options={{ title: 'Supplier Refund' }} />
+      <Stack.Screen name='OtherPaymentScreen' component={OtherPaymentScreen} options={{ title: 'Other Payment' }} />
+      <Stack.Screen name='CustomerRefundScreen' component={CustomerRefundScreen} options={{ title: 'Customer Refund' }} />
+      <Stack.Screen name='AddMerchantScreen' component={AddMerchantScreen} options={{ title: 'Add Merchant Account' }} />
+      <Stack.Screen name='TaxReturnListScreen' component={TaxReturnListScreen} options={{ title: 'Tax Return List' }} />
+      <Stack.Screen name='TaxViewScreen' component={TaxViewScreen} options={{ title: 'Tax View' }} />
+      <Stack.Screen name='ViewTaxReportScreen' component={ViewTaxReportScreen} options={{ title: 'Tax Report' }} />
+      <Stack.Screen name='AgeDebtorScreen' component={AgeDebtorScreen} options={{ title: 'Age Debtor' }} />
+      <Stack.Screen name='DebtorBreakdownScreen' component={DebtorBreakdownScreen} options={{ title: 'Aged Debtors Breakdown' }} />
+
     </Stack.Navigator>
   </NavigationContainer>
 }

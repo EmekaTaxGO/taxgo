@@ -16,6 +16,7 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
+import Menu, { MenuItem } from 'react-native-material-menu';
 
 class BankFragment extends Component {
     constructor(props) {
@@ -24,11 +25,52 @@ class BankFragment extends Component {
         }
     }
 
+    _menuRef = React.createRef();
+
     onMenuPress = () => {
         this.props.navigation.openDrawer();
     }
     onAddClick = () => {
-        this.props.navigation.navigate('BankAccountScreen', {});
+        this.props.navigation.navigate('BankAccountScreen', {
+            onBankUpdated: () => {
+                this.fetchBankList()
+            }
+        });
+    }
+
+    showMenu = () => {
+        this._menuRef.current.show();
+    }
+    hideMenu = () => {
+        this._menuRef.current.hide();
+    }
+
+    salesPress = () => {
+        this.hideMenu();
+        this.props.navigation.push('CustomerReceiptScreen');
+    }
+    purchasePress = () => {
+        this.hideMenu();
+        this.props.navigation.push('SupplierPaymentScreen');
+    }
+    bankTransferPress = () => {
+        this.hideMenu();
+        this.props.navigation.push('BankTransferScreen');
+    }
+
+    renderPopup = () => {
+        return <Menu
+            ref={this._menuRef}
+            button={
+                <TouchableOpacity style={{ padding: 12 }} onPress={this.showMenu}>
+                    <Icon name='more-vert' size={30} color='white' />
+                </TouchableOpacity>
+            }>
+            <MenuItem onPress={this.salesPress}>Sales/Receipt</MenuItem>
+            <MenuItem onPress={this.purchasePress}>Purchase/Payment</MenuItem>
+            <MenuItem onPress={this.bankTransferPress}>Bank Transfer</MenuItem>
+            {/* <MenuItem onPress={this.hideMenu}>Import</MenuItem> */}
+        </Menu>
     }
 
     componentDidMount() {
@@ -39,9 +81,12 @@ class BankFragment extends Component {
                 </TouchableOpacity>
             },
             headerRight: () => {
-                return <TouchableOpacity onPress={this.onAddClick} style={styles.rightBtn}>
-                    <Icon name='add' size={30} color='white' />
-                </TouchableOpacity>
+                return <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={this.onAddClick} style={styles.rightBtn}>
+                        <Icon name='add' size={30} color='white' />
+                    </TouchableOpacity>
+                    {this.renderPopup()}
+                </View>
             }
         })
         this.fetchBankList();
@@ -97,16 +142,18 @@ class BankFragment extends Component {
 
     renderListItem = (data) => {
         const { item, index } = data;
+        const { list: account } = item
+        const isLast = this.props.bank.bankList.length === index + 1
         return <CardView
             cardElevation={4}
             cornerRadius={6}
-            style={styles.bankCard}>
+            style={[styles.bankCard, { marginBottom: isLast ? 16 : 0 }]}>
             <View style={{
                 flexDirection: 'column'
             }}>
 
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    {this.accountIcon(item.acctype)}
+                    {this.accountIcon(account.acctype)}
                     <View style={{
                         flex: 1,
                         justifyContent: 'flex-end',
@@ -120,7 +167,7 @@ class BankFragment extends Component {
                             fontSize: 16,
                             textAlign: 'center',
                             backgroundColor: '#43a8d4'
-                        }}>{item.acctype}</Text>
+                        }}>{account.acctype}</Text>
                     </View>
 
                 </View>
@@ -128,10 +175,10 @@ class BankFragment extends Component {
                     textAlign: 'center',
                     color: 'white',
                     fontSize: 20
-                }}>{item.accnum ? item.accnum : '****  ***  ****'}</Text>
-                {this.rowItem('Current Balance', item.total)}
-                {this.rowItem('Opening Balance', item.opening)}
-                {this.rowItem(item.userdate, item.acctype)}
+                }}>{account.accnum ? account.accnum : '****  ***  ****'}</Text>
+                {this.rowItem('Current Balance', account.total)}
+                {this.rowItem('Opening Balance', account.opening)}
+                {this.rowItem(account.userdate, account.acctype)}
             </View>
         </CardView>
     }
@@ -153,15 +200,24 @@ class BankFragment extends Component {
         </TouchableHighlight>
     }
 
-    onViewClick = () => {
-        console.log('View Click');
+    onViewClick = (item) => {
+        this.props.navigation.push('BankDetailScreen', {
+            bank: { ...item }
+        })
     }
-    onEditClick = () => {
-        console.log('Edit Click');
+    onEditClick = account => {
+        this.props.navigation.push('BankAccountScreen',
+            {
+                account,
+                onBankUpdated: () => {
+                    this.fetchBankList()
+                }
+            })
     }
 
     renderHiddenItem = (data) => {
         const { item, index } = data;
+        const { list: account } = item
         return <View style={{
             flex: 1,
             marginHorizontal: 20,
@@ -170,9 +226,9 @@ class BankFragment extends Component {
             flexDirection: 'row'
         }}>
             <View style={{ flex: 1 }}>
-                {this.hiddenElement('View', 'visibility', 'green', this.onViewClick)}
+                {this.hiddenElement('View', 'visibility', 'green', () => this.onViewClick(account))}
             </View>
-            {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
+            {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(account))}
         </View>
     }
 
@@ -194,7 +250,7 @@ class BankFragment extends Component {
                     backgroundColor: 'white'
                 }}
                 data={bank.bankList}
-                keyExtractor={(item, index) => `${item.id}`}
+                keyExtractor={(item, index) => `${item.list.id}`}
                 renderItem={(data, rowMap) => this.renderListItem(data)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}

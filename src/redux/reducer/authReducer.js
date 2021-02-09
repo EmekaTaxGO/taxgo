@@ -28,8 +28,7 @@ const initialState = {
     updatingPassword: false,
 
     updatingProfile: false,
-    profile: null,
-
+    profile: null
 }
 const authReducer = (state = initialState, action) => {
     switch (action.type) {

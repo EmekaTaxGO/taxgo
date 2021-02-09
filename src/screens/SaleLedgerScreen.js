@@ -10,6 +10,7 @@ import EmptyView from '../components/EmptyView';
 import SearchView from '../components/SearchView';
 import { isEmpty } from '../helpers/Utils';
 import ImageView from '../components/ImageView';
+import { log } from 'react-native-reanimated';
 
 class SaleLedgerScreen extends Component {
 
@@ -95,7 +96,7 @@ class SaleLedgerScreen extends Component {
                 placeholder='Search...' />
             <FlatList
                 data={this.listData()}
-                keyExtractor={item => `${item.id}`}
+                keyExtractor={(item, index) => `${index}`}
                 renderItem={({ item }) => this.renderListItem(item)}
             />
         </View>

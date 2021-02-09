@@ -1,8 +1,9 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { APP_LOGO } from '../constants/appConstant';
+const appIcon = require('../img/logo-trans.png');
 const AppLogo = () => {
-    return <Image source={{ uri: APP_LOGO }}
+    return <Image source={appIcon}
         style={styles.logo} />
 };
 const styles = StyleSheet.create({

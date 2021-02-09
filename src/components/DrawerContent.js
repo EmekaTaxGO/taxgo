@@ -1,10 +1,11 @@
-const { View, Image, StyleSheet, Text, ScrollView, ColorPropType, Alert } = require("react-native")
+const { View, Image, StyleSheet, Text, ScrollView, ColorPropType, Alert, TouchableHighlight } = require("react-native")
 import React, { useState } from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { colorAccent, colorPrimary } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { clearData, AUTH_DATA } from '../services/UserStorage';
+import { DrawerActions } from '@react-navigation/native';
 
 const DrawerContent = props => {
 
@@ -13,20 +14,32 @@ const DrawerContent = props => {
     const lName = profile ? profile.lastname : '';
     const email = profile ? profile.email : '';
     const renderHeader = () => {
-        return <View style={{
-            width: '100%',
-            height: 200,
-            flexDirection: 'column',
-            justifyContent: 'center',
-            backgroundColor: colorAccent
-        }}>
-            <Image
-                source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
-                style={styles.profileImage}
-            />
-            <Text style={styles.name}>{fName} {lName}</Text>
-            <Text style={styles.email}>{email}</Text>
-        </View>
+        return <TouchableHighlight
+            onPress={onHeaderClick}
+            underlayColor={colorPrimary}>
+            <View style={{
+                width: '100%',
+                height: 200,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                backgroundColor: colorAccent
+            }}>
+                <Image
+                    source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
+                    style={styles.profileImage}
+                />
+                <Text style={styles.name}>{fName} {lName}</Text>
+                <Text style={styles.email}>{email}</Text>
+            </View>
+        </TouchableHighlight>
+
+    }
+
+    const onHeaderClick = () => {
+        props.navigation.dispatch(DrawerActions.closeDrawer());
+        setTimeout(() => {
+            props.navigation.push('EditProfileScreen');
+        }, 200);
     }
 
     const onSignOutPress = () => {

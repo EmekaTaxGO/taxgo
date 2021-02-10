@@ -1,4 +1,4 @@
-import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL, FETCH_AGE_DEBTORS_REQUEST, FETCH_AGE_DEBTORS_SUCCESS, FETCH_AGE_DEBTORS_FAIL, FETCH_AGED_DEBTOR_BREAKDOWN_REQUEST, FETCH_AGED_DEBTOR_BREAKDOWN_SUCCESS, FETCH_AGED_DEBTOR_BREAKDOWN_FAIL } from "../../constants";
+import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL, FETCH_AGE_DEBTORS_REQUEST, FETCH_AGE_DEBTORS_SUCCESS, FETCH_AGE_DEBTORS_FAIL, FETCH_AGED_DEBTOR_BREAKDOWN_REQUEST, FETCH_AGED_DEBTOR_BREAKDOWN_SUCCESS, FETCH_AGED_DEBTOR_BREAKDOWN_FAIL, FETCH_AGE_CREDITOR_REQUEST, FETCH_AGE_CREDITOR_SUCCESS, FETCH_AGE_CREDITOR_FAIL, FETCH_AGED_CREDITOR_BREAKDOWN_REQUEST, FETCH_AGED_CREDITOR_BREAKDOWN_SUCCESS, FETCH_AGED_CREDITOR_BREAKDOWN_FAIL } from "../../constants";
 
 const { State } = require("react-native-gesture-handler")
 
@@ -21,9 +21,18 @@ const initialState = {
     fetchAgeDebtorsError: undefined,
     ageDebtors: [],
 
+    //Age Creditor
+    fetchingAgeCreditor: false,
+    fetchAgeCreditorError: undefined,
+    ageCreditor: [],
+
     fetchingAgedDebtorBreakdown: false,
     fetchAgedDebtorBreakdownError: undefined,
-    agedDebtorBreakdown: []
+    agedDebtorBreakdown: [],
+
+    fetchingAgedCreditorBreakdown: false,
+    fetchAgedCreditorBreakdownError: undefined,
+    agedCreditorBreakdown: []
 }
 const reportReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -99,6 +108,24 @@ const reportReducer = (state = initialState, action) => {
                 fetchingAgeDebtors: false,
                 fetchAgeDebtorsError: action.payload
             };
+        case FETCH_AGE_CREDITOR_REQUEST:
+            return {
+                ...state,
+                fetchingAgeCreditor: true,
+                fetchAgeCreditorError: undefined
+            };
+        case FETCH_AGE_CREDITOR_SUCCESS:
+            return {
+                ...state,
+                fetchingAgeCreditor: false,
+                ageCreditor: action.payload
+            };
+        case FETCH_AGE_CREDITOR_FAIL:
+            return {
+                ...state,
+                fetchingAgeCreditor: false,
+                fetchAgeCreditorError: action.payload
+            };
         case FETCH_AGED_DEBTOR_BREAKDOWN_REQUEST:
             return {
                 ...state,
@@ -116,6 +143,24 @@ const reportReducer = (state = initialState, action) => {
                 ...state,
                 fetchingAgedDebtorBreakdown: false,
                 fetchAgedDebtorBreakdownError: action.payload
+            };
+        case FETCH_AGED_CREDITOR_BREAKDOWN_REQUEST:
+            return {
+                ...state,
+                fetchingAgedCreditorBreakdown: true,
+                fetchAgedCreditorBreakdownError: undefined
+            };
+        case FETCH_AGED_CREDITOR_BREAKDOWN_SUCCESS:
+            return {
+                ...state,
+                fetchingAgedCreditorBreakdown: false,
+                agedCreditorBreakdown: action.payload
+            };
+        case FETCH_AGED_CREDITOR_BREAKDOWN_FAIL:
+            return {
+                ...state,
+                fetchingAgedCreditorBreakdown: false,
+                fetchAgedCreditorBreakdownError: action.payload
             };
         default:
             return state;

@@ -14,7 +14,13 @@ import {
     FETCH_AGE_DEBTORS_FAIL,
     FETCH_AGED_DEBTOR_BREAKDOWN_REQUEST,
     FETCH_AGED_DEBTOR_BREAKDOWN_SUCCESS,
-    FETCH_AGED_DEBTOR_BREAKDOWN_FAIL
+    FETCH_AGED_DEBTOR_BREAKDOWN_FAIL,
+    FETCH_AGE_CREDITOR_REQUEST,
+    FETCH_AGE_CREDITOR_SUCCESS,
+    FETCH_AGE_CREDITOR_FAIL,
+    FETCH_AGED_CREDITOR_BREAKDOWN_REQUEST,
+    FETCH_AGED_CREDITOR_BREAKDOWN_SUCCESS,
+    FETCH_AGED_CREDITOR_BREAKDOWN_FAIL
 } from '../../constants';
 import { log } from '../../components/Logger';
 import { getApiErrorMsg, toFloat } from '../../helpers/Utils';
@@ -133,6 +139,33 @@ export const fetchAgeDebtors = (date) => {
     }
 
 }
+export const fetchAgeCreditor = (date) => {
+    return (dispatch) => {
+        dispatch({ type: FETCH_AGE_CREDITOR_REQUEST })
+        const { authData } = Store.getState().auth;
+        return Api.get('https://taxgoglobal.com/newrestapi/reporting/agedcreditors', {
+            params: {
+                userid: authData.id,
+                sDate: date //Format - YYYY-MM-DD
+            }
+        })
+            .then(response => {
+                const payload = response.data.status === 'success' ? response.data.data : [];
+                dispatch({
+                    type: FETCH_AGE_CREDITOR_SUCCESS,
+                    payload
+                })
+            })
+            .catch(err => {
+                log('Error fetching Age Creditor', err);
+                dispatch({
+                    type: FETCH_AGE_CREDITOR_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+
+}
 export const fetchAgedDebtorBreakdown = (id, fDate) => {
     return (dispatch) => {
         dispatch({ type: FETCH_AGED_DEBTOR_BREAKDOWN_REQUEST })
@@ -145,7 +178,7 @@ export const fetchAgedDebtorBreakdown = (id, fDate) => {
             }
         })
             .then(async (response) => {
-                const payload = await sanetizeDebtorBreakdown(response.data)
+                const payload = await sanetizeBreakdown(response.data)
                 dispatch({
                     type: FETCH_AGED_DEBTOR_BREAKDOWN_SUCCESS,
                     payload
@@ -161,7 +194,37 @@ export const fetchAgedDebtorBreakdown = (id, fDate) => {
     }
 
 }
-const sanetizeDebtorBreakdown = async (data) => {
+
+export const fetchAgedCreditorBreakdown = (id, fDate) => {
+    return (dispatch) => {
+        dispatch({ type: FETCH_AGED_CREDITOR_BREAKDOWN_REQUEST })
+        const { authData } = Store.getState().auth;
+        return Api.get('https://taxgoglobal.com/newrestapi/reporting/nominalagecreditors', {
+            params: {
+                id,
+                fDate,
+                userid: authData.id
+            }
+        })
+            .then(async (response) => {
+                const payload = await sanetizeBreakdown(response.data)
+                dispatch({
+                    type: FETCH_AGED_CREDITOR_BREAKDOWN_SUCCESS,
+                    payload
+                })
+            })
+            .catch(err => {
+                log('Error fetching Creditor Breakdown', err);
+                dispatch({
+                    type: FETCH_AGED_CREDITOR_BREAKDOWN_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+
+}
+
+const sanetizeBreakdown = async (data) => {
     return new Promise(resolve => {
         if (data.status === 'success' && data.data && data.data['0']) {
             resolve(data.data['0']);

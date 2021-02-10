@@ -180,7 +180,7 @@ class ViewTaxReportScreen extends Component {
     renderItemRow = (label, value, background = '#ffffff') => {
         return <View style={{ flexDirection: 'row', padding: 12, backgroundColor: background }}>
             <Text style={{ flex: 1, fontSize: 15, textTransform: 'uppercase' }}>{label}</Text>
-            <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value}</Text>
+            <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value ? value : '-'}</Text>
         </View>
     }
 

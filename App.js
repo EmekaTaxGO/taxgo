@@ -54,6 +54,8 @@ import TaxViewScreen from './src/screens/TaxViewScreen';
 import ViewTaxReportScreen from './src/screens/ViewTaxReportScreen';
 import AgeDebtorScreen from './src/screens/AgeDebtorScreen';
 import DebtorBreakdownScreen from './src/screens/DebtorBreakdownScreen';
+import AgeCreditorScreen from './src/screens/AgeCreditorScreen';
+import CreditorBreakdownScreen from './src/screens/CreditorBreakdownScreen';
 
 const App = () => {
 
@@ -110,8 +112,10 @@ const App = () => {
       <Stack.Screen name='TaxReturnListScreen' component={TaxReturnListScreen} options={{ title: 'Tax Return List' }} />
       <Stack.Screen name='TaxViewScreen' component={TaxViewScreen} options={{ title: 'Tax View' }} />
       <Stack.Screen name='ViewTaxReportScreen' component={ViewTaxReportScreen} options={{ title: 'Tax Report' }} />
-      <Stack.Screen name='AgeDebtorScreen' component={AgeDebtorScreen} options={{ title: 'Age Debtor' }} />
+      <Stack.Screen name='AgeDebtorScreen' component={AgeDebtorScreen} options={{ title: 'Aged Debtors Report' }} />
       <Stack.Screen name='DebtorBreakdownScreen' component={DebtorBreakdownScreen} options={{ title: 'Aged Debtors Breakdown' }} />
+      <Stack.Screen name='AgeCreditorScreen' component={AgeCreditorScreen} options={{ title: 'Aged Creditors Report' }} />
+      <Stack.Screen name='CreditorBreakdownScreen' component={CreditorBreakdownScreen} options={{ title: 'Aged Creditors Breakdown' }} />
 
     </Stack.Navigator>
   </NavigationContainer>

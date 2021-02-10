@@ -30,13 +30,7 @@ class AgeDebtorScreen extends Component {
     DATE_FORMAT = 'YYYY-MM-DD';
 
     componentDidMount() {
-        this.configHeader();
         this.fetchAgeDebtors();
-    }
-
-    configHeader = () => {
-        const title = 'Aged debtors Report';
-        this.props.navigation.setOptions({ title })
     }
 
     fetchAgeDebtors = () => {
@@ -47,6 +41,7 @@ class AgeDebtorScreen extends Component {
 
     onUntilDateChange = (event, selectedDate) => {
         if (event.type !== 'set') {
+            this.setState({ showUntilDateDialog: false });
             return;
         }
         const currentDate = selectedDate || this.state.untilDate;
@@ -60,7 +55,6 @@ class AgeDebtorScreen extends Component {
     }
 
     onOutstandingClick = item => {
-        console.log('onOutstandingClick');
         this.props.navigation.push('DebtorBreakdownScreen', {
             untilDate: this.state.untilDate,
             debtor: item
@@ -110,7 +104,7 @@ class AgeDebtorScreen extends Component {
     renderItemRow = (label, value, background = '#ffffff') => {
         return <View style={{ flexDirection: 'row', padding: 12, backgroundColor: background }}>
             <Text style={{ flex: 1, fontSize: 15, textTransform: 'uppercase' }}>{label}</Text>
-            <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value}</Text>
+            <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value ? value : '-'}</Text>
         </View>
     }
 

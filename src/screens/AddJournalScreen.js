@@ -3,7 +3,6 @@ import { View, StyleSheet, TouchableOpacity, FlatList, Text, Platform } from 're
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { TextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
@@ -11,6 +10,7 @@ import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent, snackbarActionColor, colorWhite } from '../theme/Color';
 import CardView from 'react-native-cardview';
 import Snackbar from 'react-native-snackbar';
+import { OutlinedTextField } from 'react-native-material-textfield';
 class AddJournalScreen extends Component {
 
     constructor(props) {
@@ -131,7 +131,8 @@ class AddJournalScreen extends Component {
                 <View style={{
                     flexDirection: 'row',
                     flex: 1,
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    paddingHorizontal: 16
                 }}>
                     <Text style={{ fontSize: 16, flex: 1 }}>Ledger</Text>
                     <TouchableOpacity onPress={() => this.chooseLedgerClick(item, index)}>
@@ -148,21 +149,24 @@ class AddJournalScreen extends Component {
                             'Choose Ledger Account' : item.info.title}</Text>
                     </TouchableOpacity>
                 </View>
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textField}
                     label='Details'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
                     ref={item.detailsRef}
                     onSubmitEditing={() => this.focus(this.state.ledgers[index].debitRef)} />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textField}
                     label='Debit'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
                     ref={item.debitRef}
                     onSubmitEditing={() => this.focus(this.state.ledgers[index].creditRef)} />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textField}
                     label='Credit'
                     keyboardType='default'
                     returnKeyType={isLast ? 'done' : 'next'}
@@ -203,9 +207,10 @@ class AddJournalScreen extends Component {
 
     render() {
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
-            <View style={{ paddingHorizontal: 16 }}>
+            <View>
                 <TouchableOpacity onPress={() => this.setState({ showDate: true })}>
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Journal Date'
                         keyboardType='default'
                         returnKeyType='done'
@@ -221,7 +226,8 @@ class AddJournalScreen extends Component {
                     minimumDate={new Date()}
                     onChange={this.onJournalDateChanged}
                 /> : null}
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textField}
                     label='Journal Number'
                     keyboardType='numeric'
                     returnKeyType='next'
@@ -229,7 +235,8 @@ class AddJournalScreen extends Component {
                     title='*required'
                     ref={this.journalNumRef}
                     onSubmitEditing={() => this.focus(this.journalDesRef)} />
-                <TextField
+                <OutlinedTextField
+                    containerStyle={styles.textField}
                     label='Description'
                     keyboardType='default'
                     returnKeyType='done'
@@ -259,13 +266,16 @@ const styles = StyleSheet.create({
     },
     materialBtn: {
         padding: 26,
-        marginTop: 30,
         fontSize: 50
     },
     card: {
         marginHorizontal: 16,
-        marginTop: 12,
-        padding: 12
+        marginVertical: 12,
+        paddingVertical: 24
+    },
+    textField: {
+        marginTop: 18,
+        marginHorizontal: 16
     }
 });
 export default AddJournalScreen;

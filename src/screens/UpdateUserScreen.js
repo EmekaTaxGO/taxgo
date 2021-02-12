@@ -9,7 +9,6 @@ import {
     TouchableOpacity,
     StyleSheet
 } from 'react-native';
-import { TextField } from 'react-native-material-textfield';
 import { validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, isEmpty } from '../helpers/Utils';
 import { getFieldValue, focusField, setFieldValue } from '../helpers/TextFieldHelpers';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,6 +16,7 @@ import { DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
 import { colorAccent } from '../theme/Color';
 import { RaisedTextButton } from 'react-native-material-buttons';
+import { OutlinedTextField } from 'react-native-material-textfield';
 
 class UpdateUserScreen extends Component {
 
@@ -154,7 +154,7 @@ class UpdateUserScreen extends Component {
                         paddingHorizontal: 16,
                         flexDirection: 'column'
                     }}>
-                        <TextField
+                        <OutlinedTextField
                             label='First Name'
                             keyboardType='default'
                             returnKeyType='next'
@@ -165,7 +165,7 @@ class UpdateUserScreen extends Component {
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.lastNameRef)} />
 
-                        <TextField
+                        <OutlinedTextField
                             label='Last Name'
                             keyboardType='default'
                             returnKeyType='next'
@@ -176,7 +176,7 @@ class UpdateUserScreen extends Component {
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.emailRef)} />
 
-                        <TextField
+                        <OutlinedTextField
                             label='Email address'
                             keyboardType='email-address'
                             returnKeyType='next'
@@ -187,7 +187,7 @@ class UpdateUserScreen extends Component {
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.phoneRef)} />
 
-                        <TextField
+                        <OutlinedTextField
                             label='Phone'
                             keyboardType='numeric'
                             returnKeyType='done'
@@ -197,7 +197,7 @@ class UpdateUserScreen extends Component {
                             error={this.state.phoneError}
                             onChange={event => this.resetAllError()} />
                         <TouchableOpacity onPress={() => this.setState({ showDOBPicker: true })}>
-                            <TextField
+                            <OutlinedTextField
                                 label='Date Of Birth'
                                 keyboardType='default'
                                 returnKeyType='done'
@@ -215,7 +215,7 @@ class UpdateUserScreen extends Component {
                             maximumDate={new Date()}
                             onChange={this.onDOBChanged}
                         /> : null}
-                        <TextField
+                        <OutlinedTextField
                             label='Employee Id'
                             keyboardType='numeric'
                             returnKeyType='next'
@@ -225,7 +225,7 @@ class UpdateUserScreen extends Component {
                             error={this.state.empIdError}
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.uniqueIdRef)} />
-                        <TextField
+                        <OutlinedTextField
                             label='Unique ID/License No'
                             keyboardType='default'
                             returnKeyType='done'

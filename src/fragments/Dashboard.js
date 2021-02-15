@@ -38,7 +38,7 @@ class DashBoard extends Component {
             propsForDots: {
                 r: "6",
                 strokeWidth: "2",
-                stroke: "#ffa726"
+                stroke: "#002fff"
             }
         }
     }
@@ -68,8 +68,9 @@ class DashBoard extends Component {
         const stackedBarData = this.getStackedBarData();
         const chartConfig = this.getChartConfig();
 
-        return <View style={{ flexDirection: 'column' }}>
-            <Text>Bezier Line Chart</Text>
+        const chartWidth = Dimensions.get('screen').width * 0.92;
+
+        return <View style={{ flexDirection: 'column', alignItems: 'center' }}>
             <LineChart
                 data={{
                     labels: ["January", "February", "March", "April", "May", "June"],
@@ -86,39 +87,34 @@ class DashBoard extends Component {
                         }
                     ]
                 }}
-                width={Dimensions.get("window").width} // from react-native
+                width={chartWidth} // from react-native
                 height={220}
                 yAxisLabel="$"
                 yAxisSuffix="k"
                 yAxisInterval={1} // optional, defaults to 1
                 chartConfig={chartConfig}
-                withInnerLines={false}
-                withHorizontalLines={false}
                 bezier
                 style={{
-                    marginVertical: 8,
-                    borderRadius: 16
+                    borderRadius: 12,
+                    marginTop: 18
+                }}
+            />
+
+            <BarChart
+                data={barData}
+                width={chartWidth}
+                height={220}
+                yAxisLabel="$"
+                chartConfig={chartConfig}
+                verticalLabelRotation={0}
+                style={{
+                    borderRadius: 12,
+                    marginTop: 18
                 }}
             />
 
 
             {/* <CardView
-                cardElevation={4}
-                cornerRadius={6}
-                style={styles.card}>
-                <BarChart
-                    style={styles.barGraph}
-                    data={barData}
-                    width={Dimensions.get('screen').width}
-                    height={220}
-                    yAxisLabel="$"
-                    chartConfig={chartConfig}
-                    verticalLabelRotation={0}
-
-                />
-            </CardView> */}
-
-            <CardView
                 cardElevation={4}
                 cornerRadius={6}
                 style={styles.card}>
@@ -131,7 +127,7 @@ class DashBoard extends Component {
                     verticalLabelRotation={0}
 
                 />
-            </CardView>
+            </CardView> */}
         </View>
     }
 }
@@ -143,8 +139,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginVertical: 14
     },
-    barGraph: {
-
+    chart: {
+        borderRadius: 12
     }
 })
 export default DashBoard; 

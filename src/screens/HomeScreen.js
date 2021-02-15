@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerContent from '../components/DrawerContent';
 import ProductStack from '../components/drawerStack/ProductStack';
-import HomeStack from '../components/drawerStack/HomeStack';
+import DashboardStack from '../components/drawerStack/DashboardStack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -62,10 +62,10 @@ class HomeScreen extends Component {
 
             }}>
 
-            <Drawer.Screen name='HomeFragment'
-                component={HomeStack}
+            <Drawer.Screen name='Dashboard'
+                component={DashboardStack}
                 options={{
-                    title: 'Home', drawerIcon: ({ color }) =>
+                    title: 'Dashboard', drawerIcon: ({ color }) =>
                         <Icon name='dashboard' size={DRAWER_ICON_SIZE} color={color} />
                 }} />
             <Drawer.Screen name='ProductFragment'

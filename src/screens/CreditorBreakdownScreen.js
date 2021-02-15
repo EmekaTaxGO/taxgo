@@ -16,7 +16,7 @@ import { colorAccent } from '../theme/Color';
 import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
 
-class DebtorBreakdownScreen extends Component {
+class CreditorBreakdownScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -34,14 +34,14 @@ class DebtorBreakdownScreen extends Component {
     }
 
     componentDidMount() {
-        this.fetchDebtorBreakdown();
+        this.fetchCreditorBreakdown();
     }
 
-    fetchDebtorBreakdown = () => {
+    fetchCreditorBreakdown = () => {
         const { reportActions } = this.props;
-        const { debtor } = this.props.route.params;
+        const { creditor } = this.props.route.params;
         const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
-        reportActions.fetchAgedDebtorBreakdown(debtor.id, date);
+        reportActions.fetchAgedCreditorBreakdown(creditor.id, date);
     }
 
     presetState = () => {
@@ -60,12 +60,12 @@ class DebtorBreakdownScreen extends Component {
             showUntilDateDialog: false
         }, () => {
             setFieldValue(this._untilDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchDebtorBreakdown();
+            this.fetchCreditorBreakdown();
         })
     }
 
-    renderAgeDebtorItem = (item, index) => {
-        const count = this.props.report.agedDebtorBreakdown.length;
+    renderAgeCreditorItem = (item, index) => {
+        const count = this.props.report.agedCreditorBreakdown.length;
         const isLast = count === index + 1;
         return <CardView
             cardElevation={4}
@@ -81,7 +81,7 @@ class DebtorBreakdownScreen extends Component {
                 {this.renderItemRow('60Days', item.outamount6)}
                 {this.renderItemRow('90Days', item.outamount9, '#efefef')}
                 {this.renderItemRow('120Days', item.outamount12)}
-                {this.renderItemRow('Older', item.outamountOLD, '#efefef')}
+                {this.renderItemRow('Older', item.outamountold, '#efefef')}
             </View>
         </CardView>
     }
@@ -94,27 +94,24 @@ class DebtorBreakdownScreen extends Component {
     }
 
     renderReturnList = () => {
-        //     fetchingAgedDebtorBreakdown: false,
-        // fetchAgedDebtorBreakdownError: undefined,
-        // agedDebtorBreakdown: []
         const { report } = this.props;
-        if (report.fetchingAgedDebtorBreakdown) {
+        if (report.fetchingAgedCreditorBreakdown) {
             return <OnScreenSpinner />
         }
-        if (report.fetchAgedDebtorBreakdownError) {
-            return <FullScreenError tryAgainClick={this.fetchDebtorBreakdown} />
+        if (report.fetchAgedcreditorBreakdownError) {
+            return <FullScreenError tryAgainClick={this.fetchCreditorBreakdown} />
         }
-        if (report.agedDebtorBreakdown.length === 0) {
-            return <EmptyView message='No Debtors Breakdown  Found!' iconName='hail' />
+        if (report.agedCreditorBreakdown.length === 0) {
+            return <EmptyView message='No Creditor Breakdown  Found!' iconName='hail' />
         }
         return <FlatList
             keyExtractor={(item, index) => `${index}`}
-            data={report.agedDebtorBreakdown}
-            renderItem={({ item, index }) => this.renderAgeDebtorItem(item, index)}
+            data={report.agedCreditorBreakdown}
+            renderItem={({ item, index }) => this.renderAgeCreditorItem(item, index)}
         />
     }
     renderDate = () => {
-        const disableDate = this.props.report.fetchingAgedDebtorBreakdown;
+        const disableDate = this.props.report.fetchingAgedCreditorBreakdown;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
             <TouchableOpacity
                 style={{ width: '100%', marginEnd: 6 }}
@@ -137,7 +134,7 @@ class DebtorBreakdownScreen extends Component {
                 display='default'
                 onChange={this.onUntilDateChange}
             /> : null}
-            <Text>Choose the date for aged debtors report</Text>
+            <Text>Choose the date for aged Creditor report</Text>
         </View>
     }
 
@@ -164,4 +161,4 @@ export default connect(
     dispatch => ({
         reportActions: bindActionCreators(reportActions, dispatch)
     })
-)(DebtorBreakdownScreen);
+)(CreditorBreakdownScreen);

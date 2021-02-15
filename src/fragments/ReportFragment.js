@@ -89,8 +89,15 @@ class ReportFragment extends Component {
             case 0:
                 screen = 'TaxReturnListScreen';
                 break;
+            case 4:
+                screen = 'AgeDebtorScreen';
+                break;
+            case 5:
+                screen = 'AgeCreditorScreen';
+                break;
             default:
                 screen = 'AgeDebtorScreen';
+                break;
         }
         this.props.navigation.push(screen);
     }

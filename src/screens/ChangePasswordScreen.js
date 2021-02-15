@@ -1,7 +1,6 @@
 import React, { useEffect, Component } from 'react';
 import { StyleSheet, View, LogBox, Alert } from 'react-native';
 import CardView from 'react-native-cardview';
-import { TextField, FilledTextField } from 'react-native-material-textfield';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
 import { connect } from 'react-redux';
@@ -12,6 +11,7 @@ import { validatePass, PASSWORD_ERROR_MESSAGE, isEmpty, showError, getApiErrorMs
 import { getFieldValue } from '../helpers/TextFieldHelpers';
 import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
+import { OutlinedTextField } from 'react-native-material-textfield';
 
 class ChangePasswordScreen extends Component {
 
@@ -101,8 +101,9 @@ class ChangePasswordScreen extends Component {
                 cardElevation={4}
                 cornerRadius={6}
                 style={styles.card}>
-                <View style={{ flexDirection: 'column', padding: 12 }}>
-                    <TextField
+                <View style={{ flexDirection: 'column', paddingTop: 12 }}>
+                    <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Old Password'
                         returnKeyType='next'
                         ref={this.oldPassRef}
@@ -112,7 +113,8 @@ class ChangePasswordScreen extends Component {
                         error={this.state.oldPassError}
                         onSubmitEditing={() => { this.newPassRef.current.focus() }}
                     />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='New Password'
                         returnKeyType='next'
                         ref={this.newPassRef}
@@ -122,7 +124,8 @@ class ChangePasswordScreen extends Component {
                         onChange={event => this.resetError()}
                         onSubmitEditing={() => { this.confirmPassRef.current.focus() }}
                     />
-                    <TextField
+                    <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Confirm Password'
                         returnKeyType='done'
                         ref={this.confirmPassRef}
@@ -149,9 +152,13 @@ const styles = StyleSheet.create({
         margin: 12
     },
     updateBtn: {
-        padding: 20,
-        marginTop: 30,
-        marginBottom: 20
+        padding: 24,
+        marginVertical: 26,
+        marginHorizontal: 16
+    },
+    textField: {
+        marginHorizontal: 16,
+        marginTop: 18
     }
 });
 export default connect(

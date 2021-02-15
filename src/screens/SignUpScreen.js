@@ -20,7 +20,6 @@ import ProgressDialog from '../components/ProgressDialog';
 
 
 import * as authActions from '../redux/actions/authActions';
-import { TextField } from 'react-native-material-textfield';
 import { focusField, getFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import FBLoginButton from '../components/FBLoginButton';
@@ -30,6 +29,7 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import { call } from 'react-native-reanimated';
 import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateBusinessName, BUSINESS_NAME_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, validatePass, PASSWORD_ERROR_MESSAGE } from '../helpers/Utils';
 import { log } from '../components/Logger';
+import { OutlinedTextField } from 'react-native-material-textfield';
 
 class SignUpScreen extends Component {
 
@@ -253,7 +253,7 @@ class SignUpScreen extends Component {
                             color='gray'
                             size={40} /> : null}
                     </TouchableOpacity> */}
-                    <TextField
+                    <OutlinedTextField
                         label='First Name'
                         keyboardType='default'
                         returnKeyType='next'
@@ -263,7 +263,7 @@ class SignUpScreen extends Component {
                         error={this.state.firstNameError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.lastNameRef)} />
-                    <TextField
+                    <OutlinedTextField
                         label='Last Name'
                         keyboardType='default'
                         returnKeyType='next'
@@ -273,7 +273,7 @@ class SignUpScreen extends Component {
                         error={this.state.lastNameError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.emailRef)} />
-                    <TextField
+                    <OutlinedTextField
                         label='Email'
                         keyboardType='email-address'
                         returnKeyType='next'
@@ -283,7 +283,7 @@ class SignUpScreen extends Component {
                         error={this.state.emailError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.passwordRef)} />
-                    <TextField
+                    <OutlinedTextField
                         label='Password'
                         keyboardType='default'
                         returnKeyType='next'
@@ -294,7 +294,7 @@ class SignUpScreen extends Component {
                         error={this.state.passwordError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.businessNameRef)} />
-                    <TextField
+                    <OutlinedTextField
                         label='Business Name'
                         keyboardType='name-phone-pad'
                         returnKeyType='done'
@@ -308,7 +308,7 @@ class SignUpScreen extends Component {
                     {this.renderBusinessCategory()}
                     {this.renderCountry()}
                     {this.renderBusinessType()}
-                    <TextField
+                    <OutlinedTextField
                         label='Phone'
                         keyboardType='number-pad'
                         returnKeyType='done'

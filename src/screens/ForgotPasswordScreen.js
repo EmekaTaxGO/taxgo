@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { TextField } from 'react-native-material-textfield';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
 import AppLogo from '../components/AppLogo';
 import { validateEmail, EMAIL_ERROR_MESSAGE } from '../helpers/Utils';
 import { getFieldValue, focusField } from '../helpers/TextFieldHelpers';
+import { OutlinedTextField } from 'react-native-material-textfield';
 class ForgotPasswordScreen extends Component {
 
     constructor(props) {
@@ -48,7 +48,7 @@ class ForgotPasswordScreen extends Component {
             paddingHorizontal: 16
         }}>
             <AppLogo />
-            <TextField
+            <OutlinedTextField
                 label='Email'
                 keyboardType='email-address'
                 returnKeyType='done'

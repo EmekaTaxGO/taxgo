@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, KeyboardAvoidingView, Keyboard, SafeAreaView, ScrollView, Alert } from 'react-native';
-import { TextField, OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import { log } from '../components/Logger';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { color } from 'react-native-reanimated';
@@ -14,6 +13,7 @@ import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import { connect } from 'react-redux';
 import * as ledgerActions from '../redux/actions/ledgerActions';
 import { bindActionCreators } from 'redux';
+import { OutlinedTextField } from 'react-native-material-textfield';
 
 
 class AddLedgerScreen extends Component {
@@ -136,7 +136,7 @@ class AddLedgerScreen extends Component {
                     keyboardDismissMode='on-drag'
                     keyboardShouldPersistTaps='always'
                     style={{ paddingHorizontal: 16 }}>
-                    <TextField
+                    <OutlinedTextField
                         label='Ledger Account'
                         keyboardType='default'
                         returnKeyType='next'
@@ -146,7 +146,7 @@ class AddLedgerScreen extends Component {
                         titleTextStyle={{ color: 'red', textDecorationColor: 'black', textShadowColor: 'black' }}
                         ref={this.ledgerAccRef}
                         onSubmitEditing={() => this.codeRef.current.focus()} />
-                    <TextField
+                    <OutlinedTextField
                         label='Nominal Code'
                         returnKeyType='done'
                         keyboardType='default'
@@ -154,7 +154,7 @@ class AddLedgerScreen extends Component {
                         title='*Required'
                         ref={this.codeRef} />
                     <TouchableOpacity onPress={this.onCategoryClick}>
-                        <TextField
+                        <OutlinedTextField
                             label='Category'
                             returnKeyType='next'
                             keyboardType='default'
@@ -164,7 +164,7 @@ class AddLedgerScreen extends Component {
                             onSubmitEditing={() => this.catGroupRef.current.focus()} />
 
                     </TouchableOpacity>
-                    <TextField
+                    <OutlinedTextField
                         label='Category Group'
                         keyboardType='default'
                         returnKeyType='done'

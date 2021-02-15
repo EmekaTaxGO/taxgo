@@ -11,6 +11,7 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 import { isEmpty } from '../../helpers/Utils';
 import SearchView from '../SearchView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import * as color from '../../theme/Color';
 
 class DefaultLedgerTabItem extends Component {
 
@@ -53,7 +54,14 @@ class DefaultLedgerTabItem extends Component {
         this.setState({ query: q });
     }
 
+    firstLetter = (text) => {
+        return (text !== undefined && text !== null && text.length > 0) ? text.charAt(0) : '-';
+    }
+
     listItem = (item) => {
+        const firstLetter = this.firstLetter(item.laccount);
+        const colorIndex = `${firstLetter}`.charCodeAt(0) % color.rColor.length;
+        const bgColor = color.rColor[colorIndex];
         return <View style={{
             flex: 1,
             flexDirection: 'row',
@@ -61,14 +69,16 @@ class DefaultLedgerTabItem extends Component {
             paddingLeft: 16,
             backgroundColor: 'white'
         }}>
-            <Image style={{
+            <View style={{
                 width: 2 * this.imageRadius,
                 height: 2 * this.imageRadius,
-                borderRadius: this.imageRadius,
-                borderWidth: 1,
-                borderColor: 'lightgray'
-            }}
-                source={{ uri: this.imageUrl }} />
+                borderRadius: 2 * this.imageRadius,
+                backgroundColor: bgColor,
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <Text style={{ fontSize: 30, color: 'white' }}>{`${firstLetter}`.toUpperCase()}</Text>
+            </View>
             <View style={{
                 flex: 1,
                 flexDirection: 'column',

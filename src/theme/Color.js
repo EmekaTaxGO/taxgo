@@ -10,3 +10,7 @@ export const tabSelectedColor = tabIndicatorColor;
 export const bottomTabActiveColor = colorAccent;
 export const bottomTabInactiveColor = '#7f7c7e';
 export const bottomTabBackgroundColor = '#edebed';
+
+export const rColor = [
+    '#551be4', '#bf1f76', '#367b2f', '#3a9bc7', '#a5221b', '#c2470e', '#bf1f76', '#db940e'
+]

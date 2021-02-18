@@ -1,20 +1,17 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
-import moment from 'moment';
-import { FlatList } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import * as reportActions from '../redux/actions/reportActions';
 import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
-import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
-import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
+import BalanceSheet from '../components/balanceSheet/BalanceSheet';
 
 class BalanceSheetScreen extends Component {
 
@@ -23,6 +20,7 @@ class BalanceSheetScreen extends Component {
         this.state = {
             untilDate: new Date(),
             showUntilDateDialog: false,
+            balanceSheet: []
         }
     }
     _untilDateRef = React.createRef();
@@ -30,13 +28,24 @@ class BalanceSheetScreen extends Component {
     DATE_FORMAT = 'YYYY-MM-DD';
 
     componentDidMount() {
-        // this.fetchBalanceSheetInfo();
+        this.fetchBalanceSheet();
     }
 
-    fetchBalanceSheetInfo = () => {
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const { report: newReport } = newProps;
+        const { report: oldReport } = this.props;
+
+        if (!newReport.fetchingBalanceSheet && oldReport.fetchingBalanceSheet
+            && newReport.fetchBalanceSheetError === undefined) {
+            //Balance Sheet is Fetched
+            this.setState({ balanceSheet: newReport.balanceSheet });
+        }
+    }
+
+    fetchBalanceSheet = () => {
         const { reportActions } = this.props;
-        const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
-        reportActions.fetchAgeCreditor(date);
+        // const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
+        reportActions.fetchBalanceSheet();
     }
 
     onUntilDateChange = (event, selectedDate) => {
@@ -50,86 +59,36 @@ class BalanceSheetScreen extends Component {
             showUntilDateDialog: false
         }, () => {
             setFieldValue(this._untilDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchBalanceSheetInfo();
+            this.fetchBalanceSheet();
         })
     }
 
-    onOutstandingClick = item => {
-        this.props.navigation.push('CreditorBreakdownScreen', {
-            untilDate: this.state.untilDate,
-            creditor: item
-        });
+    onBalanceSheetChange = newSheet => {
+        this.setState({ balanceSheet: newSheet });
     }
 
-    renderAgeCreditorItem = (item, index) => {
-        const count = this.props.report.ageCreditor.length;
-        const isLast = count === index + 1;
-        const { age } = item;
-        return <CardView
-            cardElevation={4}
-            cornerRadius={6}
-            style={[styles.listCard, { marginBottom: isLast ? 24 : 0 }]}>
-            <View style={{ flexDirection: 'column' }}>
-                {this.renderItemRow('Supplier', item.sname, '#efefef')}
-
-                {this.renderClickableItemRow('O/S Amt', -1 * age.outstanding,
-                    () => this.onOutstandingClick(item))}
-
-                {this.renderItemRow('30days', age.total30, '#efefef')}
-                {this.renderItemRow('60days', age.total60)}
-                {this.renderItemRow('90days', age.total90, '#efefef')}
-                {this.renderItemRow('120days', age.total120)}
-                {this.renderItemRow('Older', age.totalOLD, '#efefef')}
-            </View>
-        </CardView>
-    }
-    renderClickableItemRow = (label, value, onClick, background = '#ffffff') => {
-        return <View style={{ flexDirection: 'row', backgroundColor: background }}>
-            <Text style={{
-                flex: 1,
-                fontSize: 15,
-                textTransform: 'uppercase',
-                padding: 12
-            }}>{label}</Text>
-            <TouchableOpacity onPress={onClick} style={{ padding: 12 }}>
-                <Text style={{
-                    flex: 1,
-                    textAlign: 'right',
-                    fontSize: 15,
-                    color: colorAccent
-                }}>{value}</Text>
-            </TouchableOpacity>
-        </View>
-    }
-    renderItemRow = (label, value, background = '#ffffff') => {
-        return <View style={{ flexDirection: 'row', padding: 12, backgroundColor: background }}>
-            <Text style={{ flex: 1, fontSize: 15, textTransform: 'uppercase' }}>{label}</Text>
-            <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value ? value : '-'}</Text>
-        </View>
-    }
 
     renderReturnList = () => {
         const { report } = this.props;
-        if (report.fetchingAgeCreditor) {
+        if (report.fetchingBalanceSheet) {
             return <OnScreenSpinner />
         }
-        if (report.fetchAgeCreditorError) {
-            return <FullScreenError tryAgainClick={this.fetchBalanceSheetInfo} />
+        if (report.fetchBalanceSheetError) {
+            return <FullScreenError tryAgainClick={this.fetchBalanceSheet} />
         }
-        if (report.ageCreditor.length === 0) {
-            return <EmptyView message='No Age Creditor Found!' iconName='hail' />
+        if (this.state.balanceSheet.length === 0) {
+            return <EmptyView message='No Balance Sheet Data Available!' iconName='hail' />
         }
-        return <FlatList
-            keyExtractor={(item, index) => `${index}`}
-            data={report.ageCreditor}
-            renderItem={({ item, index }) => this.renderAgeCreditorItem(item, index)}
+        return <BalanceSheet
+            sheet={this.state.balanceSheet}
+            onChange={this.onBalanceSheetChange}
         />
     }
     renderDate = () => {
         const disableDate = this.props.report.fetchingAgeCreditor;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
             <TouchableOpacity
-                style={{ width: '100%', marginEnd: 6 }}
+                style={{ width: '100%', marginEnd: 6,marginBottom:12 }}
                 onPress={() => this.setState({ showUntilDateDialog: true })}
                 disabled={disableDate}>
                 <OutlinedTextField
@@ -149,12 +108,12 @@ class BalanceSheetScreen extends Component {
                 display='default'
                 onChange={this.onUntilDateChange}
             /> : null}
-            <Text>Choose the date for aged Creditor report</Text>
         </View>
     }
 
 
     render() {
+
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 {this.renderDate()}
@@ -167,6 +126,13 @@ const styles = StyleSheet.create({
     listCard: {
         marginHorizontal: 16,
         marginTop: 24
+    },
+    sheetHeader: {
+        fontSize: 18,
+        color: 'white',
+        backgroundColor: 'black',
+        paddingHorizontal: 16,
+        paddingVertical: 12
     }
 })
 export default connect(

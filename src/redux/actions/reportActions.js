@@ -207,31 +207,25 @@ export const fetchAgedCreditorBreakdown = (id, fDate) => {
 
 }
 
-export const fetchBalanceSheet = () => {
+export const fetchBalanceSheet = (date) => {
     return async (dispatch) => {
         dispatch({ type: FETCH_BALANCE_SHEET_REQUEST })
         const { authData } = Store.getState().auth;
-
-        const bSheet = await BalanceSheetHelper.sanetizeBalanceSheet(balanceSheet.data);
-        dispatch({
-            type: FETCH_BALANCE_SHEET_SUCCESS,
-            payload: bSheet
-        })
-        // return Api.get('/report/balanceSheet')
-        //     .then(async (response) => {
-        //         const payload = await sanetizeBreakdown(response.data)
-        //         dispatch({
-        //             type: FETCH_BALANCE_SHEET_SUCCESS,
-        //             payload
-        //         })
-        //     })
-        //     .catch(err => {
-        //         log('Error fetching Balance Sheet', err);
-        //         dispatch({
-        //             type: FETCH_BALANCE_SHEET_FAIL,
-        //             payload: getApiErrorMsg(err)
-        //         });
-        //     })
+        return Api.get(`/profit/balancesheet/${authData.id}/${date}`)
+            .then(async (response) => {
+                const payload = await BalanceSheetHelper.sanetizeBalanceSheet(response.data);
+                dispatch({
+                    type: FETCH_BALANCE_SHEET_SUCCESS,
+                    payload
+                })
+            })
+            .catch(err => {
+                log('Error fetching Balance Sheet', err);
+                dispatch({
+                    type: FETCH_BALANCE_SHEET_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
     }
 
 }

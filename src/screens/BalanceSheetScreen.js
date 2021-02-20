@@ -44,8 +44,8 @@ class BalanceSheetScreen extends Component {
 
     fetchBalanceSheet = () => {
         const { reportActions } = this.props;
-        // const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
-        reportActions.fetchBalanceSheet();
+        const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
+        reportActions.fetchBalanceSheet(date);
     }
 
     onUntilDateChange = (event, selectedDate) => {
@@ -88,7 +88,7 @@ class BalanceSheetScreen extends Component {
         const disableDate = this.props.report.fetchingAgeCreditor;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
             <TouchableOpacity
-                style={{ width: '100%', marginEnd: 6,marginBottom:12 }}
+                style={{ width: '100%', marginEnd: 6, marginBottom: 12 }}
                 onPress={() => this.setState({ showUntilDateDialog: true })}
                 disabled={disableDate}>
                 <OutlinedTextField

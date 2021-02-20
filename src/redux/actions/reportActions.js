@@ -246,7 +246,6 @@ export const fetchTrialBalance = (sdate, ldate) => {
             }
         })
             .then(response => {
-                console.log('Data', JSON.stringify(response.data));
                 dispatch({
                     type: FETCH_TRIAL_BALANCE_SUCCESS,
                     payload: response.data.data

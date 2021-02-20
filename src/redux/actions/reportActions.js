@@ -23,13 +23,17 @@ import {
     FETCH_AGED_CREDITOR_BREAKDOWN_FAIL,
     FETCH_BALANCE_SHEET_SUCCESS,
     FETCH_BALANCE_SHEET_REQUEST,
-    FETCH_BALANCE_SHEET_FAIL
+    FETCH_BALANCE_SHEET_FAIL,
+    FETCH_TRIAL_BALANCE_REQUEST,
+    FETCH_TRIAL_BALANCE_SUCCESS,
+    FETCH_TRIAL_BALANCE_FAIL
 } from '../../constants';
 import { log } from '../../components/Logger';
 import { getApiErrorMsg, toFloat } from '../../helpers/Utils';
 import Store from '../Store';
 import balanceSheet from '../../data/balanceSheet';
 import BalanceSheetHelper from '../../helpers/BalanceSheetHelper';
+import { get } from 'lodash';
 
 export const fetchVatReport = (startDate, endDate) => {
     return (dispatch) => {
@@ -223,6 +227,35 @@ export const fetchBalanceSheet = (date) => {
                 log('Error fetching Balance Sheet', err);
                 dispatch({
                     type: FETCH_BALANCE_SHEET_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+
+}
+
+export const fetchTrialBalance = (sdate, ldate) => {
+    return async (dispatch) => {
+        dispatch({ type: FETCH_TRIAL_BALANCE_REQUEST })
+        const { authData } = Store.getState().auth;
+        return Api.get('https://taxgoglobal.com/newrestapi/trialbalance/trialbalance', {
+            params: {
+                userid: authData.id,
+                sdate,
+                ldate
+            }
+        })
+            .then(response => {
+                console.log('Data', JSON.stringify(response.data));
+                dispatch({
+                    type: FETCH_TRIAL_BALANCE_SUCCESS,
+                    payload: response.data.data
+                })
+            })
+            .catch(err => {
+                log('Error fetching Trial Balance', err);
+                dispatch({
+                    type: FETCH_TRIAL_BALANCE_FAIL,
                     payload: getApiErrorMsg(err)
                 });
             })

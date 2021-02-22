@@ -26,10 +26,13 @@ import {
     FETCH_BALANCE_SHEET_FAIL,
     FETCH_TRIAL_BALANCE_REQUEST,
     FETCH_TRIAL_BALANCE_SUCCESS,
-    FETCH_TRIAL_BALANCE_FAIL
+    FETCH_TRIAL_BALANCE_FAIL,
+    FETCH_PROFIT_LOSS_REPORT_REQUEST,
+    FETCH_PROFIT_LOSS_REPORT_SUCCESS,
+    FETCH_PROFIT_LOSS_REPORT_FAIL
 } from '../../constants';
 import { log } from '../../components/Logger';
-import { getApiErrorMsg, toFloat } from '../../helpers/Utils';
+import { getApiErrorMsg, toFloat, isEmpty } from '../../helpers/Utils';
 import Store from '../Store';
 import balanceSheet from '../../data/balanceSheet';
 import BalanceSheetHelper from '../../helpers/BalanceSheetHelper';
@@ -238,13 +241,7 @@ export const fetchTrialBalance = (sdate, ldate) => {
     return async (dispatch) => {
         dispatch({ type: FETCH_TRIAL_BALANCE_REQUEST })
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/trialbalance/trialbalance', {
-            params: {
-                userid: authData.id,
-                sdate,
-                ldate
-            }
-        })
+        return Api.get(`/profit/trialBalance/${authData.id}/${sdate}/${ldate}`)
             .then(response => {
                 dispatch({
                     type: FETCH_TRIAL_BALANCE_SUCCESS,
@@ -260,6 +257,74 @@ export const fetchTrialBalance = (sdate, ldate) => {
             })
     }
 
+}
+export const fetchProfitAndLossReport = (sdate, edate) => {
+    return (dispatch) => {
+        dispatch({ type: FETCH_PROFIT_LOSS_REPORT_REQUEST })
+        const { authData } = Store.getState().auth;
+        return Api.get('https://taxgoglobal.com/newrestapi/Profitcalc/profitandloss', {
+            params: {
+                userid: authData.id,
+                sdate,
+                edate
+            }
+        })
+            .then(async (response) => {
+                const data = await sanetizeProfitLossReport(response.data);
+                dispatch({
+                    type: FETCH_PROFIT_LOSS_REPORT_SUCCESS,
+                    payload: data
+                })
+            })
+            .catch(err => {
+                log('Error fetching Profit Loss Report', err);
+                dispatch({
+                    type: FETCH_PROFIT_LOSS_REPORT_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
+            })
+    }
+
+}
+
+const sanetizeProfitLossReport = async (data) => {
+    return new Promise(resolve => {
+        const entities = [];
+        if (!isEmpty(get(data, 'sales'))) {
+            entities.push({
+                label: 'SALES',
+                total: data.totalsale,
+                rows: get(data, 'sales', [])
+            });
+        }
+        if (!isEmpty(get(data, 'others'))) {
+            entities.push({
+                label: 'OTHER INCOME',
+                total: data.totalother,
+                rows: get(data, 'others', [])
+            });
+        }
+        if (!isEmpty(get(data, 'directexpenses'))) {
+            entities.push({
+                label: 'DIRECT EXPENSES',
+                total: data.totaldirect,
+                rows: get(data, 'directexpenses', [])
+            });
+        }
+        if (!isEmpty(get(data, 'overhead'))) {
+            entities.push({
+                label: 'OVER HEAD',
+                total: data.totaloverhead,
+                rows: get(data, 'overhead', [])
+            });
+        }
+
+        resolve({
+            entities,
+            gprofit: data.gprofit,
+            nprofit: data.nprofit
+        });
+    })
 }
 
 const sanetizeBreakdown = async (data) => {

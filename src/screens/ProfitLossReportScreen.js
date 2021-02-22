@@ -16,8 +16,9 @@ import { colorAccent, colorPrimary } from '../theme/Color';
 import { log } from 'react-native-reanimated';
 import { isEmpty, get, isUndefined, isNumber, set } from 'lodash';
 import EmptyView from '../components/EmptyView';
+import ProfitLossReport from '../components/profitLoss/ProfitLossReport';
 
-class TrialBalanceScreen extends Component {
+class ProfitLossReportScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -52,14 +53,14 @@ class TrialBalanceScreen extends Component {
         this.configDate()
     }
     componentDidMount() {
-        this.fetchTrialBalance();
+        this.fetchProfitAndLoss();
     }
 
-    fetchTrialBalance = () => {
+    fetchProfitAndLoss = () => {
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
-        reportActions.fetchTrialBalance(startDate, endDate);
+        reportActions.fetchProfitAndLossReport(startDate, endDate);
     }
 
     configDate = () => {
@@ -82,7 +83,7 @@ class TrialBalanceScreen extends Component {
             showFromDateDialog: false
         }, () => {
             setFieldValue(this._fromDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchTrialBalance();
+            this.fetchProfitAndLoss();
         })
     }
 
@@ -97,7 +98,7 @@ class TrialBalanceScreen extends Component {
             showToDateDialog: false
         }, () => {
             setFieldValue(this._toDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchTrialBalance();
+            this.fetchProfitAndLoss();
         })
     }
 
@@ -154,68 +155,26 @@ class TrialBalanceScreen extends Component {
 
     }
 
-    renderTrialBalance = (item, index) => {
-        let debit = !isNumber(item.debit) ? '0.00' : item.debit;
-        if (debit < 0) {
-            debit *= -1;
-        }
-        const credit = !isNumber(item.credit) ? '0.00' : item.credit;
-
-        return (
-            <View style={styles.itemContainer}>
-                <Text style={styles.itemTxt}>{item.nominalcode}-{item.laccount}</Text>
-                <TouchableOpacity
-                    onPress={() => this.onPressDebit(item)}
-                    style={styles.itemTouch}>
-                    <Text style={styles.itemDebitTxt}>{debit}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => this.onPressCredit(item)}
-                    style={styles.itemTouch}>
-                    <Text style={styles.itemCreditTxt}>{credit}</Text>
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
     renderReturnList = () => {
         const { report } = this.props;
-        if (report.fetchingTrialBalance) {
+        const { fromDate, toDate } = this.state;
+        if (report.fetchingProfitLossReport) {
             return <OnScreenSpinner />
         }
-        if (report.fetchTrialBalanceError) {
-            return <FullScreenError tryAgainClick={this.fetchTrialBalance} />
+        if (report.fetchProfitLossReportError) {
+            return <FullScreenError tryAgainClick={this.fetchProfitAndLoss} />
         }
-        let { ledgers, debtotal, credtotal } = report.trialBalance;
-        if (debtotal < 0) {
-            debtotal *= -1;
+        const entities = get(report.profitLossReport, 'entities', []);
+        if (isEmpty(entities)) {
+            return <EmptyView message='No Profit & Loss Report Available' iconName='hail' />
         }
-        if (isEmpty(ledgers)) {
-            return <EmptyView message='No Trial Balance Report Available' iconName='hail' />
-        }
-        return (
 
-            <CardView
-                cardElevation={4}
-                cornerRadius={6}
-                style={styles.card}>
-                <View style={styles.headerContainer}>
-                    <Text style={styles.headerTxt}>Ledger</Text>
-                    <Text style={[styles.headerTxt, { textAlign: 'center' }]}>Debit</Text>
-                    <Text style={[styles.headerTxt, { textAlign: 'right' }]}>Credit</Text>
-                </View>
-                <FlatList
-                    keyExtractor={(item, index) => `${index}`}
-                    data={ledgers}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item, index }) => this.renderTrialBalance(item, index)}
-                />
-                <View style={styles.footerContainer}>
-                    <Text style={styles.footerTxt}>TRIAL BALANCE</Text>
-                    <Text style={[styles.footerTxt, { textAlign: 'center' }]}>{debtotal}</Text>
-                    <Text style={[styles.footerTxt, { textAlign: 'right' }]}>{credtotal}</Text>
-                </View>
-            </CardView>
+        return (
+            <ProfitLossReport
+                report={report.profitLossReport}
+                startDate={timeHelper.format(fromDate, this.DATE_FORMAT)}
+                endDate={timeHelper.format(toDate, this.DATE_FORMAT)}
+            />
         )
     }
 
@@ -264,7 +223,7 @@ class TrialBalanceScreen extends Component {
             setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
             setFieldValue(this._toDateRef, timeHelper.format(toDate, this.DATE_FORMAT));
             if (itemIndex < 6) {
-                this.fetchTrialBalance();
+                this.fetchProfitAndLoss();
             }
         })
     }
@@ -300,60 +259,7 @@ class TrialBalanceScreen extends Component {
     }
 }
 const styles = StyleSheet.create({
-    headerContainer: {
-        flexDirection: 'row',
-        backgroundColor: colorPrimary
-    },
-    headerTxt: {
-        flex: 1,
-        fontSize: 14,
-        color: 'white',
-        paddingVertical: 4,
-        paddingHorizontal: 6
-    },
-    card: {
-        marginHorizontal: 16,
-        marginVertical: 12,
-        flex: 1
-    },
-    itemContainer: {
-        flexDirection: 'row'
-    },
-    itemTxt: {
-        flex: 1,
-        paddingVertical: 12,
-        paddingHorizontal: 6,
-        fontSize: 10
-    },
-    itemDebitTxt: {
-        flex: 1,
-        fontSize: 10,
-        textAlign: 'center',
-        color: 'blue'
-    },
-    itemCreditTxt: {
-        flex: 1,
-        fontSize: 10,
-        textAlign: 'right',
-        color: 'blue'
-    },
-    itemTouch: {
-        paddingVertical: 12,
-        paddingHorizontal: 6,
-        flex: 1
-    },
-    footerContainer: {
-        flexDirection: 'row',
-        backgroundColor: '#f2f2f2'
-    },
-    footerTxt: {
-        color: 'black',
-        fontSize: 14,
-        fontWeight: 'bold',
-        paddingHorizontal: 6,
-        paddingVertical: 12,
-        flex: 1
-    }
+
 })
 export default connect(
     state => ({
@@ -362,4 +268,4 @@ export default connect(
     dispatch => ({
         reportActions: bindActionCreators(reportActions, dispatch)
     })
-)(TrialBalanceScreen);
+)(ProfitLossReportScreen);

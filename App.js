@@ -58,6 +58,7 @@ import AgeCreditorScreen from './src/screens/AgeCreditorScreen';
 import CreditorBreakdownScreen from './src/screens/CreditorBreakdownScreen';
 import BalanceSheetScreen from './src/screens/BalanceSheetScreen';
 import TrialBalanceScreen from './src/screens/TrialBalanceScreen';
+import ProfitLossReportScreen from './src/screens/ProfitLossReportScreen';
 
 const App = () => {
 
@@ -120,6 +121,7 @@ const App = () => {
       <Stack.Screen name='CreditorBreakdownScreen' component={CreditorBreakdownScreen} options={{ title: 'Aged Creditors Breakdown' }} />
       <Stack.Screen name='BalanceSheetScreen' component={BalanceSheetScreen} options={{ title: 'Balance Sheet' }} />
       <Stack.Screen name='TrialBalanceScreen' component={TrialBalanceScreen} options={{ title: 'Trial Balance Report' }} />
+      <Stack.Screen name='ProfitLossReportScreen' component={ProfitLossReportScreen} options={{ title: 'Profit & Loss Report' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

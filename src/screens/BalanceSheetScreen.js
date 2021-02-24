@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -12,6 +12,8 @@ import FullScreenError from '../components/FullScreenError';
 import { colorAccent } from '../theme/Color';
 import EmptyView from '../components/EmptyView';
 import BalanceSheet from '../components/balanceSheet/BalanceSheet';
+import { isEmpty } from 'lodash';
+import { BALANCE_SHEET, getSavedData } from '../services/UserStorage';
 
 class BalanceSheetScreen extends Component {
 
@@ -31,20 +33,41 @@ class BalanceSheetScreen extends Component {
         this.fetchBalanceSheet();
     }
 
+    UNSAFE_componentWillMount() {
+        this.fetchLocalBalanceSheet();
+    }
+    fetchLocalBalanceSheet = async () => {
+        const balanceSheet = await getSavedData(BALANCE_SHEET);
+        if (balanceSheet !== null) {
+            this.setState({ balanceSheet });
+        }
+    }
+
+    showHeaderProgress = (show) => {
+        this.props.navigation.setOptions({
+            headerRight: () => show ? <ActivityIndicator
+                color='white'
+                style={{ marginHorizontal: 12 }} /> : null
+        })
+    }
+
     UNSAFE_componentWillReceiveProps(newProps) {
         const { report: newReport } = newProps;
         const { report: oldReport } = this.props;
 
-        if (!newReport.fetchingBalanceSheet && oldReport.fetchingBalanceSheet
-            && newReport.fetchBalanceSheetError === undefined) {
+        if (!newReport.fetchingBalanceSheet && oldReport.fetchingBalanceSheet) {
             //Balance Sheet is Fetched
-            this.setState({ balanceSheet: newReport.balanceSheet });
+            this.showHeaderProgress(false)
+            if (newReport.fetchBalanceSheetError === undefined) {
+                this.setState({ balanceSheet: newReport.balanceSheet });
+            }
         }
     }
 
     fetchBalanceSheet = () => {
         const { reportActions } = this.props;
         const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
+        this.showHeaderProgress(true);
         reportActions.fetchBalanceSheet(date);
     }
 
@@ -70,15 +93,15 @@ class BalanceSheetScreen extends Component {
 
     renderReturnList = () => {
         const { report } = this.props;
-        if (report.fetchingBalanceSheet) {
+        if (report.fetchingBalanceSheet && isEmpty(this.state.balanceSheet)) {
             return <OnScreenSpinner />
         }
-        if (report.fetchBalanceSheetError) {
+        if (report.fetchBalanceSheetError && isEmpty(this.state.balanceSheet)) {
             return <FullScreenError tryAgainClick={this.fetchBalanceSheet} />
         }
-        if (this.state.balanceSheet.length === 0) {
-            return <EmptyView message='No Balance Sheet Data Available!' iconName='hail' />
-        }
+        // if (this.state.balanceSheet.length === 0) {
+        //     return <EmptyView message='No Balance Sheet Data Available!' iconName='hail' />
+        // }
         return <BalanceSheet
             sheet={this.state.balanceSheet}
             onChange={this.onBalanceSheetChange}

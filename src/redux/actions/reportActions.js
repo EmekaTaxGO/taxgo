@@ -34,9 +34,13 @@ import {
 import { log } from '../../components/Logger';
 import { getApiErrorMsg, toFloat, isEmpty } from '../../helpers/Utils';
 import Store from '../Store';
-import balanceSheet from '../../data/balanceSheet';
 import BalanceSheetHelper from '../../helpers/BalanceSheetHelper';
 import { get } from 'lodash';
+import {
+    BALANCE_SHEET,
+    saveToLocal,
+    PROFIT_LOSS_REPORT
+} from '../../services/UserStorage';
 
 export const fetchVatReport = (startDate, endDate) => {
     return (dispatch) => {
@@ -215,16 +219,18 @@ export const fetchAgedCreditorBreakdown = (id, fDate) => {
 }
 
 export const fetchBalanceSheet = (date) => {
-    return async (dispatch) => {
-        dispatch({ type: FETCH_BALANCE_SHEET_REQUEST })
+    return (dispatch) => {
+        dispatch({ type: FETCH_BALANCE_SHEET_REQUEST });
         const { authData } = Store.getState().auth;
         return Api.get(`/profit/balancesheet/${authData.id}/${date}`)
             .then(async (response) => {
                 const payload = await BalanceSheetHelper.sanetizeBalanceSheet(response.data);
+                await saveToLocal(BALANCE_SHEET, payload);
                 dispatch({
                     type: FETCH_BALANCE_SHEET_SUCCESS,
                     payload
                 })
+                return payload;
             })
             .catch(err => {
                 log('Error fetching Balance Sheet', err);
@@ -271,6 +277,7 @@ export const fetchProfitAndLossReport = (sdate, edate) => {
         })
             .then(async (response) => {
                 const data = await sanetizeProfitLossReport(response.data);
+                await saveToLocal(PROFIT_LOSS_REPORT, data);
                 dispatch({
                     type: FETCH_PROFIT_LOSS_REPORT_SUCCESS,
                     payload: data

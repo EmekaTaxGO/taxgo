@@ -4,7 +4,7 @@ import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navi
 import { colorAccent, colorPrimary } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { clearData, AUTH_DATA } from '../services/UserStorage';
+import { clearData, AUTH_DATA, clearAll } from '../services/UserStorage';
 import { DrawerActions } from '@react-navigation/native';
 
 const DrawerContent = props => {
@@ -51,7 +51,7 @@ const DrawerContent = props => {
                 text: 'YES',
                 style: 'default',
                 onPress: async () => {
-                    await clearData(AUTH_DATA);
+                    await clearAll();
                     props.navigation.replace('LoginScreen');
                 }
             }

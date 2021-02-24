@@ -1,18 +1,18 @@
-import React, { Component, PureComponent } from 'react';
-import { View, StyleSheet, FlatList, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
+import React, { Component } from 'react';
+import { View, StyleSheet, Text, TouchableHighlight } from 'react-native';
 import SearchView from '../SearchView';
 import { connect } from 'react-redux';
 import * as invoiceActions from '../../redux/actions/invoiceActions';
 import { bindActionCreators } from 'redux';
-import { colorAccent } from '../../theme/Color';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FullScreenError from '../../components/FullScreenError';
 import EmptyView from '../../components/EmptyView';
 import OnScreenSpinner from '../../components/OnScreenSpinner';
-import { isEmpty } from '../../helpers/Utils'
+import { isEmpty, size } from 'lodash';
+import { rColor } from '../../theme/Color';
+import SalesInvoiceListItem from './SalesInvoiceListItem';
 
 class SalesInvoiceList extends Component {
     constructor(props) {
@@ -43,20 +43,11 @@ class SalesInvoiceList extends Component {
     }
 
     renderListItem = (data, rowMap) => {
-        const { index, item } = data;
-        return <CardView
-            cardElevation={4}
-            cornerRadius={6}
-            style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text>{item.invoiceno}</Text>
-                    <Text>{item.type}</Text>
-                    <Text>Total: {item.total}</Text>
-                </View>
-
-            </View>
-        </CardView>
+        return (
+            <SalesInvoiceListItem
+                data={data}
+            />
+        )
     }
 
     hiddenElement = (label, icon, color, onPress) => {
@@ -157,14 +148,8 @@ class SalesInvoiceList extends Component {
     }
 };
 const styles = StyleSheet.create({
-    card: {
-        marginHorizontal: 8,
-        marginVertical: 12,
-        paddingHorizontal: 12,
-        paddingVertical: 8
-    },
     hiddenCard: {
-        marginHorizontal: 8,
+        marginHorizontal: 16,
         marginVertical: 12,
         flex: 1
     },

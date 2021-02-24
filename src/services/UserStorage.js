@@ -1,5 +1,5 @@
 import { log } from "../components/Logger"
-import { AsyncStorage } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function saveToLocal(key, value) {
     try {
@@ -17,6 +17,8 @@ export async function saveToLocal(key, value) {
 export const AUTH_DATA = 'AUTH_DATA';
 export const TAX_LIST = 'TAX_LIST';
 export const PROFILE_DATA = 'PROFILE_DATA';
+export const BALANCE_SHEET = 'BALANCE_SHEET';
+export const PROFIT_LOSS_REPORT = 'PROFIT_LOSS_REPORT';
 
 export async function getSavedData(key) {
     try {
@@ -35,5 +37,12 @@ export async function clearData(key) {
         await AsyncStorage.removeItem(key);
     } catch (err) {
         log('Error clearing Data:', err);
+    }
+}
+export async function clearAll() {
+    try {
+        await AsyncStorage.clear();
+    } catch (error) {
+        log('Error Clearing AsyncStorage', error);
     }
 }

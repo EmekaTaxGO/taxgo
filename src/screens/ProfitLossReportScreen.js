@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,6 +17,7 @@ import { log } from 'react-native-reanimated';
 import { isEmpty, get, isUndefined, isNumber, set } from 'lodash';
 import EmptyView from '../components/EmptyView';
 import ProfitLossReport from '../components/profitLoss/ProfitLossReport';
+import { getSavedData, PROFIT_LOSS_REPORT } from '../services/UserStorage';
 
 class ProfitLossReportScreen extends Component {
 
@@ -28,7 +29,8 @@ class ProfitLossReportScreen extends Component {
             fromDate: new Date(),
             showFromDateDialog: false,
             toDate: new Date(),
-            showToDateDialog: false
+            showToDateDialog: false,
+            report: {}
         }
     }
     _fromDateRef = React.createRef();
@@ -50,25 +52,49 @@ class ProfitLossReportScreen extends Component {
     }
 
     UNSAFE_componentWillMount() {
-        this.configDate()
+        this.presetState()
+
     }
     componentDidMount() {
         this.fetchProfitAndLoss();
+    }
+
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const { report: newReport } = newProps;
+        const { report: oldReport } = this.props;
+
+        if (!newReport.fetchingProfitLossReport && oldReport.fetchingProfitLossReport) {
+            //Profit Loss Report is Fetched
+            this.showHeaderProgress(false)
+            if (newReport.fetchProfitLossReportError === undefined) {
+                this.setState({ report: newReport.profitLossReport });
+            }
+        }
     }
 
     fetchProfitAndLoss = () => {
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
+        this.showHeaderProgress(true);
         reportActions.fetchProfitAndLossReport(startDate, endDate);
     }
+    showHeaderProgress = (show) => {
+        this.props.navigation.setOptions({
+            headerRight: () => show ? <ActivityIndicator
+                color='white'
+                style={{ marginHorizontal: 12 }} /> : null
+        })
+    }
 
-    configDate = () => {
+    presetState = async () => {
+        const report = await getSavedData(PROFIT_LOSS_REPORT);
         const from = moment().set('date', 1);
         const to = moment().set('date', from.daysInMonth());
         this.setState({
             fromDate: from,
-            toDate: to
+            toDate: to,
+            report: report !== null ? report : {}
         });
     }
 
@@ -157,21 +183,21 @@ class ProfitLossReportScreen extends Component {
 
     renderReturnList = () => {
         const { report } = this.props;
-        const { fromDate, toDate } = this.state;
-        if (report.fetchingProfitLossReport) {
+        const { fromDate, toDate, report: reportData } = this.state;
+        if (report.fetchingProfitLossReport && isEmpty(reportData.entities)) {
             return <OnScreenSpinner />
         }
-        if (report.fetchProfitLossReportError) {
+        if (report.fetchProfitLossReportError && isEmpty(reportData.entities)) {
             return <FullScreenError tryAgainClick={this.fetchProfitAndLoss} />
         }
-        const entities = get(report.profitLossReport, 'entities', []);
-        if (isEmpty(entities)) {
-            return <EmptyView message='No Profit & Loss Report Available' iconName='hail' />
-        }
+        // const entities = get(reportData, 'entities', []);
+        // if (isEmpty(entities)) {
+        //     return <EmptyView message='No Profit & Loss Report Available' iconName='hail' />
+        // }
 
         return (
             <ProfitLossReport
-                report={report.profitLossReport}
+                report={reportData}
                 startDate={timeHelper.format(fromDate, this.DATE_FORMAT)}
                 endDate={timeHelper.format(toDate, this.DATE_FORMAT)}
             />
@@ -187,30 +213,30 @@ class ProfitLossReportScreen extends Component {
             case 1:
                 //Current Quarter
                 fromDate = moment();
-                fromDate.set('month', 3 * fromDate.quarter() - 3).set('date', 1);
-                toDate = moment(fromDate).add('month', 3).subtract('day', 1);
+                fromDate.set('month', 3 * fromDate.quarter() - 3).set(1, 'date');
+                toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
                 break;
             case 2:
                 //Current year
                 fromDate = moment().set('month', 0).set('date', 1);
-                toDate = moment(fromDate).add('year', 1).subtract('day', 1);
+                toDate = moment(fromDate).add(1, 'year').subtract(1, 'day');
                 break;
             case 3:
                 //Last Month
-                fromDate = moment().subtract('month', 1).set('date', 1);
-                toDate = moment(fromDate).add('month', 1).subtract('day', 1);
+                fromDate = moment().subtract(1, 'month').set(1, 'date');
+                toDate = moment(fromDate).add(1, 'month').subtract(1, 'day');
                 break;
             case 4:
                 //Last Quarter
-                fromDate = moment().subtract('month', 3);
+                fromDate = moment().subtract(3, 'month');
                 fromDate.set('month', 3 * fromDate.quarter() - 3).set('date', 1);
-                toDate = moment(fromDate).add('month', 3).subtract('day', 1);
+                toDate = moment(fromDate).add('month', 3).subtract(1, 'day');
                 break;
             case 5:
                 //Last Year
-                fromDate = moment().subtract('year', 1);
+                fromDate = moment().subtract(1, 'year');
                 fromDate.set('month', 0).set('date', 1);
-                toDate = moment(fromDate).add('year', 1).subtract('day', 1);
+                toDate = moment(fromDate).add(1, 'year').subtract(1, 'day');
                 break;
             default:
                 fromDate = moment(this.state.fromDate);

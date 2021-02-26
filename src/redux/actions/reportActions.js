@@ -41,7 +41,12 @@ import {
     saveToLocal,
     PROFIT_LOSS_REPORT,
     getSavedData,
-    TRIAL_BALANCE_REPORT
+    TRIAL_BALANCE_REPORT,
+    TAX_RETURN_REPORT,
+    AGE_DEBTOR_REPORT,
+    AGE_CREDITOR_REPORT,
+    AGE_DEBTOR_BREAKDOWN,
+    AGE_CREDITOR_BREAKDOWN
 } from '../../services/UserStorage';
 
 export const fetchVatReport = (startDate, endDate) => {
@@ -57,6 +62,7 @@ export const fetchVatReport = (startDate, endDate) => {
         })
             .then(async (response) => {
                 const reports = await sanetizeVatReport(response.data.data.vatRate);
+                await saveToLocal(TAX_RETURN_REPORT, reports);
                 dispatch({
                     type: FETCH_VAT_REPORT_SUCCESS,
                     payload: reports
@@ -135,8 +141,9 @@ export const fetchAgeDebtors = (date) => {
         dispatch({ type: FETCH_AGE_DEBTORS_REQUEST })
         const { authData } = Store.getState().auth;
         return Api.get(`/report/agedebtors/${authData.id}/${date}`)
-            .then(response => {
-                const payload = response.data.status === 'success' ? response.data.data : [];
+            .then(async (response) => {
+                const payload = response.data.status === true ? response.data.data : [];
+                await saveToLocal(AGE_DEBTOR_REPORT, payload);
                 dispatch({
                     type: FETCH_AGE_DEBTORS_SUCCESS,
                     payload
@@ -157,8 +164,9 @@ export const fetchAgeCreditor = (date) => {
         dispatch({ type: FETCH_AGE_CREDITOR_REQUEST })
         const { authData } = Store.getState().auth;
         return Api.get(`/report/agedcreditors/${authData.id}/${date}`)
-            .then(response => {
-                const payload = response.data.status === 'success' ? response.data.data : [];
+            .then(async (response) => {
+                const payload = response.data.status === true ? response.data.data : [];
+                await saveToLocal(AGE_CREDITOR_REPORT, payload);
                 dispatch({
                     type: FETCH_AGE_CREDITOR_SUCCESS,
                     payload
@@ -180,7 +188,8 @@ export const fetchAgedDebtorBreakdown = (id, fDate) => {
         const { authData } = Store.getState().auth;
         return Api.get(`/report/nominalagedebtors/${authData.id}/${fDate}/${id}`)
             .then(async (response) => {
-                const payload = await sanetizeBreakdown(response.data)
+                const payload = await sanetizeBreakdown(response.data);
+                await saveToLocal(AGE_DEBTOR_BREAKDOWN, payload);
                 dispatch({
                     type: FETCH_AGED_DEBTOR_BREAKDOWN_SUCCESS,
                     payload
@@ -203,7 +212,8 @@ export const fetchAgedCreditorBreakdown = (id, fDate) => {
         const { authData } = Store.getState().auth;
         return Api.get(`/report/nominalagecreditors/${authData.id}/${fDate}/${id}`)
             .then(async (response) => {
-                const payload = await sanetizeBreakdown(response.data)
+                const payload = await sanetizeBreakdown(response.data);
+                await saveToLocal(AGE_CREDITOR_BREAKDOWN, payload);
                 dispatch({
                     type: FETCH_AGED_CREDITOR_BREAKDOWN_SUCCESS,
                     payload

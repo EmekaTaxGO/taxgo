@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -15,6 +15,8 @@ import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
 import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
+import { AGE_DEBTOR_REPORT, getSavedData } from '../services/UserStorage';
+import { showHeaderProgress } from '../helpers/ViewHelper';
 
 class AgeDebtorScreen extends Component {
 
@@ -23,7 +25,9 @@ class AgeDebtorScreen extends Component {
         this.state = {
             untilDate: new Date(),
             showUntilDateDialog: false,
+            ageDebtors: undefined
         }
+        this.presetState();
     }
     _untilDateRef = React.createRef();
 
@@ -33,10 +37,29 @@ class AgeDebtorScreen extends Component {
         this.fetchAgeDebtors();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        const { report: newReport } = this.props;
+        const { report: oldReport } = prevProps;
+        if (!newReport.fetchingAgeDebtors && oldReport.fetchingAgeDebtors) {
+            showHeaderProgress(this.props.navigation, false);
+            if (!newReport.fetchAgeDebtorsError) {
+                this.setState({ ageDebtors: newReport.ageDebtors });
+            }
+        }
+    }
+
+    presetState = async () => {
+        const ageDebtors = await getSavedData(AGE_DEBTOR_REPORT);
+        if (ageDebtors !== null) {
+            this.setState({ ageDebtors });
+        }
+    }
+
     fetchAgeDebtors = () => {
         const { reportActions } = this.props;
         const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
         reportActions.fetchAgeDebtors(date);
+        showHeaderProgress(this.props.navigation, true);
     }
 
     onUntilDateChange = (event, selectedDate) => {
@@ -110,18 +133,20 @@ class AgeDebtorScreen extends Component {
 
     renderReturnList = () => {
         const { report } = this.props;
-        if (report.fetchingAgeDebtors) {
+        const { ageDebtors } = this.state;
+        if (report.fetchingAgeDebtors && !ageDebtors) {
             return <OnScreenSpinner />
         }
-        if (report.fetchAgeDebtorsError) {
+        if (report.fetchAgeDebtorsError && !ageDebtors) {
             return <FullScreenError tryAgainClick={this.fetchAgeDebtors} />
         }
-        if (report.ageDebtors.length === 0) {
-            return <EmptyView message='No Age Debtors Found!' iconName='hail' />
+
+        if (!ageDebtors) {
+            return null;
         }
         return <FlatList
             keyExtractor={(item, index) => `${index}`}
-            data={report.ageDebtors}
+            data={ageDebtors}
             renderItem={({ item, index }) => this.renderAgeDebtorItem(item, index)}
         />
     }

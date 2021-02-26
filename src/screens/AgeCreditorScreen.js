@@ -15,6 +15,8 @@ import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
 import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
+import { showHeaderProgress } from '../helpers/ViewHelper';
+import { AGE_CREDITOR_REPORT, getSavedData } from '../services/UserStorage';
 
 class AgeCreditorScreen extends Component {
 
@@ -23,7 +25,9 @@ class AgeCreditorScreen extends Component {
         this.state = {
             untilDate: new Date(),
             showUntilDateDialog: false,
+            ageCreditor: undefined
         }
+        this.presetState();
     }
     _untilDateRef = React.createRef();
 
@@ -33,9 +37,28 @@ class AgeCreditorScreen extends Component {
         this.fetchAgeCreditor();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        const { report: newReport } = this.props;
+        const { report: oldReport } = prevProps;
+        if (!newReport.fetchingAgeCreditor && oldReport.fetchingAgeCreditor) {
+            showHeaderProgress(this.props.navigation, false);
+            if (!newReport.fetchAgeCreditorError) {
+                this.setState({ ageCreditor: newReport.ageCreditor });
+            }
+        }
+    }
+
+    presetState = async () => {
+        const ageCreditor = await getSavedData(AGE_CREDITOR_REPORT);
+        if (ageCreditor !== null) {
+            this.setState({ ageCreditor });
+        }
+    }
+
     fetchAgeCreditor = () => {
         const { reportActions } = this.props;
         const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
+        showHeaderProgress(this.props.navigation, true);
         reportActions.fetchAgeCreditor(date);
     }
 
@@ -110,18 +133,16 @@ class AgeCreditorScreen extends Component {
 
     renderReturnList = () => {
         const { report } = this.props;
-        if (report.fetchingAgeCreditor) {
+        const { ageCreditor } = this.state;
+        if (report.fetchingAgeCreditor && !ageCreditor) {
             return <OnScreenSpinner />
         }
-        if (report.fetchAgeCreditorError) {
+        if (report.fetchAgeCreditorError && !ageCreditor) {
             return <FullScreenError tryAgainClick={this.fetchAgeCreditor} />
-        }
-        if (report.ageCreditor.length === 0) {
-            return <EmptyView message='No Age Creditor Found!' iconName='hail' />
         }
         return <FlatList
             keyExtractor={(item, index) => `${index}`}
-            data={report.ageCreditor}
+            data={ageCreditor}
             renderItem={({ item, index }) => this.renderAgeCreditorItem(item, index)}
         />
     }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -13,7 +13,8 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
-import { log } from 'react-native-reanimated';
+import { getSavedData, TAX_RETURN_REPORT } from '../services/UserStorage';
+import { showHeaderProgress } from '../helpers/ViewHelper';
 
 class TaxReturnListScreen extends Component {
 
@@ -25,8 +26,10 @@ class TaxReturnListScreen extends Component {
             fromDate: new Date(),
             showFromDateDialog: false,
             toDate: new Date(),
-            showToDateDialog: false
+            showToDateDialog: false,
+            taxReports: undefined
         }
+        this.presetState();
     }
     _fromDateRef = React.createRef();
     _toDateRef = React.createRef();
@@ -45,11 +48,20 @@ class TaxReturnListScreen extends Component {
         ]
     }
 
-    UNSAFE_componentWillMount() {
-        this.configDate()
-    }
     componentDidMount() {
         this.fetchTaxReport();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+
+        const { report: newReport } = this.props;
+        const { report: oldReport } = prevProps;
+        if (!newReport.fetchingTaxReport && oldReport.fetchingTaxReport) {
+            showHeaderProgress(this.props.navigation, false);
+            if (newReport.fetchTaxReportError === undefined) {
+                this.setState({ taxReports: newReport.taxReports });
+            }
+        }
     }
 
     fetchTaxReport = () => {
@@ -57,12 +69,18 @@ class TaxReturnListScreen extends Component {
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
         reportActions.fetchVatReport(startDate, endDate);
+        showHeaderProgress(this.props.navigation, true);
     }
 
-    configDate = () => {
+    presetState = async () => {
+        const taxReports = await getSavedData(TAX_RETURN_REPORT);
         const fromDate = moment().set('month', 0).set('date', 1).toDate();
         const toDate = moment().set('month', 2).set('date', 31).toDate();
-        this.setState({ fromDate, toDate })
+        this.setState({
+            fromDate,
+            toDate,
+            taxReports: taxReports !== undefined ? taxReports : undefined
+        })
     }
 
     onFromDateChange = (event, selectedDate) => {
@@ -196,15 +214,19 @@ class TaxReturnListScreen extends Component {
 
     renderReturnList = () => {
         const { report } = this.props;
-        if (report.fetchingTaxReport) {
+        const { taxReports } = this.state;
+        if (report.fetchingTaxReport && !taxReports) {
             return <OnScreenSpinner />
         }
-        if (report.fetchTaxReportError) {
+        if (report.fetchTaxReportError && !taxReports) {
             return <FullScreenError tryAgainClick={this.fetchTaxReport} />
+        }
+        if (!taxReports) {
+            return null;
         }
         return <FlatList
             keyExtractor={(item, index) => `${index}`}
-            data={report.taxReports}
+            data={taxReports}
             renderItem={({ item, index }) => this.renderReportItem(item, index)}
         />
     }

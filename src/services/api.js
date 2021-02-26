@@ -3,7 +3,7 @@ import axios from 'axios';
 import { BASE_URL } from '../constants/appConstant';
 import Store from '../redux/Store';
 
-const PRINT_REQUEST = false;
+const PRINT_REQUEST = true;
 const PRINT_RESPONSE = true;
 
 const AxiosInstance = axios.create({
@@ -24,7 +24,7 @@ AxiosInstance.interceptors.request.use(config => {
     }
 
     if (PRINT_REQUEST && __DEV__) {
-        console.log('Api Request:', JSON.stringify(newConfig));
+        console.log('Api Request:', JSON.stringify(newConfig, null, 2));
     }
     return newConfig;
 });

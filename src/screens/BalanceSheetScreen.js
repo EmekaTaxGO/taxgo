@@ -14,6 +14,7 @@ import EmptyView from '../components/EmptyView';
 import BalanceSheet from '../components/balanceSheet/BalanceSheet';
 import { isEmpty } from 'lodash';
 import { BALANCE_SHEET, getSavedData } from '../services/UserStorage';
+import { showHeaderProgress } from '../helpers/ViewHelper';
 
 class BalanceSheetScreen extends Component {
 
@@ -43,21 +44,13 @@ class BalanceSheetScreen extends Component {
         }
     }
 
-    showHeaderProgress = (show) => {
-        this.props.navigation.setOptions({
-            headerRight: () => show ? <ActivityIndicator
-                color='white'
-                style={{ marginHorizontal: 12 }} /> : null
-        })
-    }
-
     UNSAFE_componentWillReceiveProps(newProps) {
         const { report: newReport } = newProps;
         const { report: oldReport } = this.props;
 
         if (!newReport.fetchingBalanceSheet && oldReport.fetchingBalanceSheet) {
             //Balance Sheet is Fetched
-            this.showHeaderProgress(false)
+            showHeaderProgress(this.props.navigation, false);
             if (newReport.fetchBalanceSheetError === undefined) {
                 this.setState({ balanceSheet: newReport.balanceSheet });
             }
@@ -67,7 +60,7 @@ class BalanceSheetScreen extends Component {
     fetchBalanceSheet = () => {
         const { reportActions } = this.props;
         const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
-        this.showHeaderProgress(true);
+        showHeaderProgress(this.props.navigation, true);
         reportActions.fetchBalanceSheet(date);
     }
 

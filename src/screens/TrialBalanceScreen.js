@@ -16,6 +16,7 @@ import { colorAccent, colorPrimary } from '../theme/Color';
 import { isEmpty, get, isUndefined, isNumber, set } from 'lodash';
 import EmptyView from '../components/EmptyView';
 import { getSavedData, TRIAL_BALANCE_REPORT } from '../services/UserStorage';
+import { showHeaderProgress } from '../helpers/ViewHelper';
 
 class TrialBalanceScreen extends Component {
 
@@ -58,26 +59,18 @@ class TrialBalanceScreen extends Component {
         const { report: oldReport } = prevProps;
         const { report: newReport } = this.props;
         if (!newReport.fetchingTrialBalance && oldReport.fetchingTrialBalance) {
-            this.showHeaderProgress(false);
+            showHeaderProgress(this.props.navigation, false);
             if (newReport.fetchTrialBalanceError === undefined) {
                 this.setState({ trialBalance: newReport.trialBalance })
             }
         }
     }
 
-    showHeaderProgress = (show) => {
-        this.props.navigation.setOptions({
-            headerRight: () => show ? <ActivityIndicator
-                color='white'
-                style={{ marginHorizontal: 12 }} /> : null
-        })
-    }
-
     fetchTrialBalance = () => {
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
-        this.showHeaderProgress(true);
+        showHeaderProgress(this.props.navigation, true);
         reportActions.fetchTrialBalance(startDate, endDate);
     }
 

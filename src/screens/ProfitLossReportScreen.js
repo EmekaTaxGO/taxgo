@@ -15,6 +15,7 @@ import { isEmpty } from 'lodash';
 import ProfitLossReport from '../components/profitLoss/ProfitLossReport';
 import { getSavedData, PROFIT_LOSS_REPORT } from '../services/UserStorage';
 import { DATE_FORMAT } from '../constants/appConstant';
+import { showHeaderProgress } from '../helpers/ViewHelper';
 
 class ProfitLossReportScreen extends Component {
 
@@ -63,7 +64,7 @@ class ProfitLossReportScreen extends Component {
 
         if (!newReport.fetchingProfitLossReport && oldReport.fetchingProfitLossReport) {
             //Profit Loss Report is Fetched
-            this.showHeaderProgress(false)
+            showHeaderProgress(this.props.navigation, false);
             if (newReport.fetchProfitLossReportError === undefined) {
                 this.setState({ report: newReport.profitLossReport });
             }
@@ -74,15 +75,8 @@ class ProfitLossReportScreen extends Component {
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
-        this.showHeaderProgress(true);
+        showHeaderProgress(this.props.navigation, true);
         reportActions.fetchProfitAndLossReport(startDate, endDate);
-    }
-    showHeaderProgress = (show) => {
-        this.props.navigation.setOptions({
-            headerRight: () => show ? <ActivityIndicator
-                color='white'
-                style={{ marginHorizontal: 12 }} /> : null
-        })
     }
 
     presetState = async () => {
@@ -241,8 +235,6 @@ class ProfitLossReportScreen extends Component {
                 fromDate = moment(this.state.fromDate);
                 toDate = moment(this.state.toDate);
         }
-        // fromDate = fromDate.toDate();
-        // toDate = toDate.toDate();
         console.log('From Date:', timeHelper.format(fromDate, DATE_FORMAT));
         console.log('From To Date:', timeHelper.format(toDate, DATE_FORMAT));
         this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
@@ -255,7 +247,6 @@ class ProfitLossReportScreen extends Component {
         })
     }
     render() {
-        console.log('Rendering');
         const { periods, periodIndex } = this.state;
         const { report } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

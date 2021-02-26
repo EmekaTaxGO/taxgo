@@ -1,23 +1,20 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
 import moment from 'moment';
-import { FlatList } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import * as reportActions from '../redux/actions/reportActions';
 import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
-import CardView from 'react-native-cardview';
-import { colorAccent, colorPrimary } from '../theme/Color';
-import { log } from 'react-native-reanimated';
-import { isEmpty, get, isUndefined, isNumber, set } from 'lodash';
-import EmptyView from '../components/EmptyView';
+import { colorAccent } from '../theme/Color';
+import { isEmpty } from 'lodash';
 import ProfitLossReport from '../components/profitLoss/ProfitLossReport';
 import { getSavedData, PROFIT_LOSS_REPORT } from '../services/UserStorage';
+import { DATE_FORMAT } from '../constants/appConstant';
 
 class ProfitLossReportScreen extends Component {
 
@@ -26,12 +23,13 @@ class ProfitLossReportScreen extends Component {
         this.state = {
             periods: this.buildPeriods(),
             periodIndex: 0,
-            fromDate: new Date(),
+            fromDate: moment(),
             showFromDateDialog: false,
-            toDate: new Date(),
+            toDate: moment(),
             showToDateDialog: false,
             report: {}
         }
+        this.presetState()
     }
     _fromDateRef = React.createRef();
     _toDateRef = React.createRef();
@@ -51,17 +49,17 @@ class ProfitLossReportScreen extends Component {
         ]
     }
 
-    UNSAFE_componentWillMount() {
-        this.presetState()
+    // UNSAFE_componentWillMount() {
+    //     this.presetState()
 
-    }
+    // }
     componentDidMount() {
         this.fetchProfitAndLoss();
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {
-        const { report: newReport } = newProps;
-        const { report: oldReport } = this.props;
+    componentDidUpdate(prevProps, prevState) {
+        const { report: newReport } = this.props;
+        const { report: oldReport } = prevProps;
 
         if (!newReport.fetchingProfitLossReport && oldReport.fetchingProfitLossReport) {
             //Profit Loss Report is Fetched
@@ -210,6 +208,7 @@ class ProfitLossReportScreen extends Component {
             case 0:
                 fromDate = moment().set('date', 1);
                 toDate = moment().set('date', fromDate.daysInMonth());
+                break;
             case 1:
                 //Current Quarter
                 fromDate = moment();
@@ -242,8 +241,10 @@ class ProfitLossReportScreen extends Component {
                 fromDate = moment(this.state.fromDate);
                 toDate = moment(this.state.toDate);
         }
-        fromDate = fromDate.toDate();
-        toDate = toDate.toDate();
+        // fromDate = fromDate.toDate();
+        // toDate = toDate.toDate();
+        console.log('From Date:', timeHelper.format(fromDate, DATE_FORMAT));
+        console.log('From To Date:', timeHelper.format(toDate, DATE_FORMAT));
         this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
 
             setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
@@ -254,6 +255,7 @@ class ProfitLossReportScreen extends Component {
         })
     }
     render() {
+        console.log('Rendering');
         const { periods, periodIndex } = this.state;
         const { report } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

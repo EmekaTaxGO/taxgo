@@ -39,7 +39,9 @@ import { get } from 'lodash';
 import {
     BALANCE_SHEET,
     saveToLocal,
-    PROFIT_LOSS_REPORT
+    PROFIT_LOSS_REPORT,
+    getSavedData,
+    TRIAL_BALANCE_REPORT
 } from '../../services/UserStorage';
 
 export const fetchVatReport = (startDate, endDate) => {
@@ -244,11 +246,12 @@ export const fetchBalanceSheet = (date) => {
 }
 
 export const fetchTrialBalance = (sdate, ldate) => {
-    return async (dispatch) => {
+    return (dispatch) => {
         dispatch({ type: FETCH_TRIAL_BALANCE_REQUEST })
         const { authData } = Store.getState().auth;
         return Api.get(`/profit/trialBalance/${authData.id}/${sdate}/${ldate}`)
-            .then(response => {
+            .then(async (response) => {
+                await saveToLocal(TRIAL_BALANCE_REPORT, response.data.data);
                 dispatch({
                     type: FETCH_TRIAL_BALANCE_SUCCESS,
                     payload: response.data.data
@@ -297,34 +300,29 @@ export const fetchProfitAndLossReport = (sdate, edate) => {
 const sanetizeProfitLossReport = async (data) => {
     return new Promise(resolve => {
         const entities = [];
-        if (!isEmpty(get(data, 'sales'))) {
-            entities.push({
-                label: 'SALES',
-                total: data.totalsale,
-                rows: get(data, 'sales', [])
-            });
-        }
-        if (!isEmpty(get(data, 'others'))) {
-            entities.push({
-                label: 'OTHER INCOME',
-                total: data.totalother,
-                rows: get(data, 'others', [])
-            });
-        }
-        if (!isEmpty(get(data, 'directexpenses'))) {
-            entities.push({
-                label: 'DIRECT EXPENSES',
-                total: data.totaldirect,
-                rows: get(data, 'directexpenses', [])
-            });
-        }
-        if (!isEmpty(get(data, 'overhead'))) {
-            entities.push({
-                label: 'OVER HEAD',
-                total: data.totaloverhead,
-                rows: get(data, 'overhead', [])
-            });
-        }
+        entities.push({
+            label: 'SALES',
+            total: data.totalsale,
+            rows: get(data, 'sales', [])
+        });
+
+        entities.push({
+            label: 'OTHER INCOME',
+            total: data.totalother,
+            rows: get(data, 'others', [])
+        });
+
+        entities.push({
+            label: 'DIRECT EXPENSES',
+            total: data.totaldirect,
+            rows: get(data, 'directexpenses', [])
+        });
+
+        entities.push({
+            label: 'OVER HEAD',
+            total: data.totaloverhead,
+            rows: get(data, 'overhead', [])
+        });
 
         resolve({
             entities,

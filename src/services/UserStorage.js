@@ -19,6 +19,7 @@ export const TAX_LIST = 'TAX_LIST';
 export const PROFILE_DATA = 'PROFILE_DATA';
 export const BALANCE_SHEET = 'BALANCE_SHEET';
 export const PROFIT_LOSS_REPORT = 'PROFIT_LOSS_REPORT';
+export const TRIAL_BALANCE_REPORT = 'TRIAL_BALANCE_REPORT';
 
 export async function getSavedData(key) {
     try {

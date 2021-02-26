@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -13,9 +13,9 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent, colorPrimary } from '../theme/Color';
-import { log } from 'react-native-reanimated';
 import { isEmpty, get, isUndefined, isNumber, set } from 'lodash';
 import EmptyView from '../components/EmptyView';
+import { getSavedData, TRIAL_BALANCE_REPORT } from '../services/UserStorage';
 
 class TrialBalanceScreen extends Component {
 
@@ -27,8 +27,10 @@ class TrialBalanceScreen extends Component {
             fromDate: new Date(),
             showFromDateDialog: false,
             toDate: new Date(),
-            showToDateDialog: false
+            showToDateDialog: false,
+            trialBalance: undefined
         }
+        this.presetState()
     }
     _fromDateRef = React.createRef();
     _toDateRef = React.createRef();
@@ -48,26 +50,45 @@ class TrialBalanceScreen extends Component {
         ]
     }
 
-    UNSAFE_componentWillMount() {
-        this.configDate()
-    }
     componentDidMount() {
         this.fetchTrialBalance();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const { report: oldReport } = prevProps;
+        const { report: newReport } = this.props;
+        if (!newReport.fetchingTrialBalance && oldReport.fetchingTrialBalance) {
+            this.showHeaderProgress(false);
+            if (newReport.fetchTrialBalanceError === undefined) {
+                this.setState({ trialBalance: newReport.trialBalance })
+            }
+        }
+    }
+
+    showHeaderProgress = (show) => {
+        this.props.navigation.setOptions({
+            headerRight: () => show ? <ActivityIndicator
+                color='white'
+                style={{ marginHorizontal: 12 }} /> : null
+        })
     }
 
     fetchTrialBalance = () => {
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
+        this.showHeaderProgress(true);
         reportActions.fetchTrialBalance(startDate, endDate);
     }
 
-    configDate = () => {
+    presetState = async () => {
+        const trialBalance = await getSavedData(TRIAL_BALANCE_REPORT);
         const from = moment().set('date', 1);
         const to = moment().set('date', from.daysInMonth());
         this.setState({
             fromDate: from,
-            toDate: to
+            toDate: to,
+            trialBalance: trialBalance !== null ? trialBalance : undefined
         });
     }
 
@@ -180,19 +201,23 @@ class TrialBalanceScreen extends Component {
 
     renderReturnList = () => {
         const { report } = this.props;
-        if (report.fetchingTrialBalance) {
+        const { trialBalance } = this.state;
+        if (report.fetchingTrialBalance && !trialBalance) {
             return <OnScreenSpinner />
         }
-        if (report.fetchTrialBalanceError) {
+        if (report.fetchTrialBalanceError && !trialBalance) {
             return <FullScreenError tryAgainClick={this.fetchTrialBalance} />
         }
-        let { ledgers, debtotal, credtotal } = report.trialBalance;
+        if (!trialBalance) {
+            return null;
+        }
+        let { ledgers, debtotal, credtotal } = trialBalance;
         if (debtotal < 0) {
             debtotal *= -1;
         }
-        if (isEmpty(ledgers)) {
-            return <EmptyView message='No Trial Balance Report Available' iconName='hail' />
-        }
+        // if (isEmpty(ledgers)) {
+        //     return <EmptyView message='No Trial Balance Report Available' iconName='hail' />
+        // }
         return (
 
             <CardView

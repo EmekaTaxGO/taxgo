@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, TouchableHighlight, Text } from 'react-native';
+import { View, TouchableHighlight, Text, StyleSheet } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import CardView from 'react-native-cardview';
 
 class SwipeHiddenView extends Component {
-    
+
     shouldComponentUpdate(newProps, nextState) {
         return newProps.item.id !== this.props.item.id;
     }
@@ -27,12 +28,25 @@ class SwipeHiddenView extends Component {
 
     render() {
         const { item } = this.props;
-        return <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1 }}>
-                {this.hiddenElement('View', 'visibility', 'red', () => this.props.onViewClick(item))}
+        return <CardView
+            cardElevation={12}
+            cornerRadius={6}
+            style={styles.card}>
+            <View style={{
+                flexDirection: 'row'
+            }}>
+                <View style={{ flex: 1 }}>
+                    {this.hiddenElement('View', 'visibility', 'red', () => this.props.onViewClick(item))}
+                </View>
+                {this.hiddenElement('Edit', 'edit', 'blue', () => this.props.onEditClick(item))}
             </View>
-            {this.hiddenElement('Edit', 'edit', 'blue', () => this.props.onEditClick(item))}
-        </View>
+        </CardView>
     }
 }
+const styles = StyleSheet.create({
+    card: {
+        marginHorizontal: 16,
+        marginVertical: 12
+    }
+})
 export default SwipeHiddenView;

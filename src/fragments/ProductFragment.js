@@ -14,8 +14,8 @@ import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 import { isEmpty } from '../helpers/Utils';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import ProductItem from '../product/ProductItem';
 import SwipeHiddenView from '../product/SwipeHiddenView';
+import ProductListItem from '../product/ProductListItem';
 
 class ProductFragment extends Component {
 
@@ -71,7 +71,11 @@ class ProductFragment extends Component {
 
     renderListItem = (data) => {
         const { item } = data;
-        return <ProductItem item={item} />
+        return (
+            <ProductListItem
+                data={data}
+            />
+        )
     }
     renderHiddenItem = (data) => {
         const { item, index } = data;

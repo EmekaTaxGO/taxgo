@@ -3,8 +3,8 @@ import axios from 'axios';
 import { BASE_URL } from '../constants/appConstant';
 import Store from '../redux/Store';
 
-const PRINT_REQUEST = true;
-const PRINT_RESPONSE = true;
+const PRINT_REQUEST = false;
+const PRINT_RESPONSE = false;
 
 const AxiosInstance = axios.create({
     baseURL: BASE_URL,

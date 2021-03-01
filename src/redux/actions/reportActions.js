@@ -53,15 +53,9 @@ export const fetchVatReport = (startDate, endDate) => {
     return (dispatch) => {
         dispatch({ type: FETCH_VAT_REPORT_REQUEST })
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/reporting/overAllVatReport', {
-            params: {
-                userid: authData.id,
-                fdate: startDate, //Format - YYYY-MM-DD
-                ldate: endDate
-            }
-        })
+        return Api.get(`/report/overallVatReport/${authData.id}/${startDate}/${endDate}`)
             .then(async (response) => {
-                const reports = await sanetizeVatReport(response.data.data.vatRate);
+                const reports = await sanetizeVatReport(response.data.data);
                 await saveToLocal(TAX_RETURN_REPORT, reports);
                 dispatch({
                     type: FETCH_VAT_REPORT_SUCCESS,
@@ -78,18 +72,12 @@ export const fetchVatReport = (startDate, endDate) => {
     }
 
 }
+
 export const fetchTaxNominalList = (id, startDate, endDate) => {
     return (dispatch) => {
         dispatch({ type: FETCH_NOMINAL_TAX_LIST_REQUEST })
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/reporting/vatnominallist', {
-            params: {
-                userid: authData.id,
-                fdate: startDate, //Format - YYYY-MM-DD
-                ldate: endDate,
-                id
-            }
-        })
+        return Api.get(`/report/getVatNominalList/${authData.id}/${id}/${startDate}/${endDate}`)
             .then(response => {
                 dispatch({
                     type: FETCH_NOMINAL_TAX_LIST_SUCCESS,
@@ -110,15 +98,7 @@ export const fetchNominalTaxReturn = (id, ledger, startDate, endDate) => {
     return (dispatch) => {
         dispatch({ type: FETCH_NOMINAL_TAX_RETURN_REQUEST })
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/reporting/nominalvatreturn', {
-            params: {
-                userid: authData.id,
-                fdate: startDate, //Format - YYYY-MM-DD
-                ldate: endDate,
-                id,
-                ledger
-            }
-        })
+        return Api.get(`/report/getNominalVat/${authData.id}/${id}/${ledger}/${startDate}/${endDate}`)
             .then(response => {
                 const payload = response.data.status === 'success' ? response.data.data : [];
                 dispatch({

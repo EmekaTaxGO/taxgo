@@ -6,6 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { clearData, AUTH_DATA, clearAll } from '../services/UserStorage';
 import { DrawerActions } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const DrawerContent = props => {
 
@@ -24,10 +25,14 @@ const DrawerContent = props => {
                 justifyContent: 'center',
                 backgroundColor: colorAccent
             }}>
-                <Image
-                    source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
-                    style={styles.profileImage}
-                />
+                {/* <Image
+                        source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
+                        style={styles.profileImage}
+                    /> */}
+                <View style={styles.profileImage}>
+                    <Icon name='person' size={60} color='white' />
+                </View>
+
                 <Text style={styles.name}>{fName} {lName}</Text>
                 <Text style={styles.email}>{email}</Text>
             </View>
@@ -85,7 +90,10 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        marginLeft: 12
+        marginLeft: 12,
+        backgroundColor: '#80808040',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     name: {
         fontSize: 16,

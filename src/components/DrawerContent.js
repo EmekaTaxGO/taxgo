@@ -30,7 +30,7 @@ const DrawerContent = props => {
                 <TouchableOpacity
                     style={styles.editBtn}
                     onPress={onEditClick}>
-                    <Icon name='edit' size={20} color='black' />
+                    <Icon name='edit' size={16} color='black' />
                 </TouchableOpacity>
 
             </View>

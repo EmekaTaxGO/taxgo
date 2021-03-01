@@ -3,11 +3,12 @@ import { FlatList, StyleSheet, View, Text } from 'react-native';
 class BalanceSheetData extends Component {
 
     renderData = ({ item, index }) => {
+        const amount = Number(item.amount).toFixed(2);
         return (
             <View style={styles.container}>
                 <Text style={styles.dataTxt}>{item.reference}</Text>
                 <Text style={[styles.dataTxt, { textAlign: 'center' }]}>{item.ledger}</Text>
-                <Text style={[styles.dataTxt, { textAlign: 'right', fontWeight: 'bold' }]}>{item.amount}</Text>
+                <Text style={[styles.dataTxt, { textAlign: 'right', fontWeight: 'bold' }]}>{amount}</Text>
             </View>
         )
     }

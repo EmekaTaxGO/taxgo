@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+import moment from 'moment';
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import CardView from 'react-native-cardview';
@@ -6,18 +7,34 @@ import Icons from 'react-native-vector-icons/MaterialIcons';
 import { rColor } from '../../theme/Color';
 class SalesInvoiceListItem extends Component {
 
+    DATE_FORMAT = 'YYYY-MM-DD';
 
     shouldComponentUpdate(newProps, newState) {
         const { item: newItem } = newProps.data;
         const { item: oldItem } = this.props.data;
         return newItem.id !== oldItem.id;
     }
+
+    getStatus = (status) => {
+        switch (status) {
+            case 0:
+            default:
+                return 'unpaid';
+            case 1:
+                return 'part paid';
+            case 2:
+                return 'paid'
+        }
+    }
+
     render() {
 
         const { index, item } = this.props.data;
         const color = rColor[index % rColor.length];
         const customerName = get(item, 'customer_detail.bname');
         const title = item.invoiceno + (customerName ? '-' + customerName : '');
+        const isPast = moment(item.ldate).isBefore(moment().format(this.DATE_FORMAT));
+        const dueColor = (isPast && item.status !== 2) ? 'red' : '#099903';
         return (
             <CardView
                 cardElevation={12}
@@ -37,8 +54,8 @@ class SalesInvoiceListItem extends Component {
                         </View>
                         <Text style={styles.descriptionTxt}>Delivery Address: {item.deladdress}</Text>
                         <View style={styles.dueContainer}>
-                            <Text style={styles.dueTxt}>DUE:20-03-2021</Text>
-                            <Text style={styles.statusTxt}>UNPAIN</Text>
+                            <Text style={[styles.dueTxt, { color: dueColor }]}>DUE:{item.ldate}</Text>
+                            <Text style={styles.statusTxt}>{this.getStatus(item.status)}</Text>
                         </View>
                     </View>
                 </View>

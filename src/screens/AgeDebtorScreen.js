@@ -17,6 +17,7 @@ import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
 import { AGE_DEBTOR_REPORT, getSavedData } from '../services/UserStorage';
 import { showHeaderProgress } from '../helpers/ViewHelper';
+import { get } from 'lodash';
 
 class AgeDebtorScreen extends Component {
 
@@ -78,10 +79,13 @@ class AgeDebtorScreen extends Component {
     }
 
     onOutstandingClick = item => {
-        this.props.navigation.push('DebtorBreakdownScreen', {
-            untilDate: this.state.untilDate,
-            debtor: item
-        });
+        if (get(item, 'age.outstanding', 0) !== 0) {
+            this.props.navigation.push('DebtorBreakdownScreen', {
+                untilDate: this.state.untilDate,
+                debtor: item
+            });
+        }
+
     }
 
     renderAgeDebtorItem = (item, index) => {
@@ -95,14 +99,14 @@ class AgeDebtorScreen extends Component {
             <View style={{ flexDirection: 'column' }}>
                 {this.renderItemRow('Customer', item.cname, '#efefef')}
 
-                {this.renderClickableItemRow('O/S Amt', age.outstanding,
+                {this.renderClickableItemRow('O/S Amt', Number(age.outstanding).toFixed(2),
                     () => this.onOutstandingClick(item))}
 
-                {this.renderItemRow('30days', age.total30, '#efefef')}
-                {this.renderItemRow('60days', age.total60)}
-                {this.renderItemRow('90days', age.total90, '#efefef')}
-                {this.renderItemRow('120days', age.total120)}
-                {this.renderItemRow('Older', age.totalOLD, '#efefef')}
+                {this.renderItemRow('30days', Number(age.total30).toFixed(2), '#efefef')}
+                {this.renderItemRow('60days', Number(age.total60).toFixed(2))}
+                {this.renderItemRow('90days', Number(age.total90).toFixed(2), '#efefef')}
+                {this.renderItemRow('120days', Number(age.total120).toFixed(2))}
+                {this.renderItemRow('Older', Number(age.totalOLD).toFixed(2), '#efefef')}
             </View>
         </CardView>
     }
@@ -127,7 +131,7 @@ class AgeDebtorScreen extends Component {
     renderItemRow = (label, value, background = '#ffffff') => {
         return <View style={{ flexDirection: 'row', padding: 12, backgroundColor: background }}>
             <Text style={{ flex: 1, fontSize: 15, textTransform: 'uppercase' }}>{label}</Text>
-            <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value ? value : '-'}</Text>
+            <Text style={{ flex: 1, textAlign: 'right', fontSize: 15 }}>{value}</Text>
         </View>
     }
 

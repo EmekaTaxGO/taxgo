@@ -16,6 +16,8 @@ class BalanceSheet extends Component {
         this.props.onChange(newSheets);
     }
     renderSheetItem = ({ item, index }) => {
+
+        const total = Number(item.total).toFixed(2);
         return (
             <View style={styles.container}>
                 <Text style={styles.headerTxt}>{item.label}</Text>
@@ -27,7 +29,7 @@ class BalanceSheet extends Component {
                         rows={item.rows}
                         onChange={newRows => this.onChangeRows(newRows, index)}
                     />
-                    <Text style={styles.totalTxt}>Total {item.label}: {item.total}</Text>
+                    <Text style={styles.totalTxt}>Total {item.label}: {total}</Text>
                 </CardView>
             </View>
         )
@@ -64,8 +66,9 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         fontSize: 16,
         backgroundColor: colorPrimary,
-        color: 'black',
-        textTransform: 'capitalize'
+        color: 'white',
+        textTransform: 'capitalize',
+
     }
 })
 export default BalanceSheet;

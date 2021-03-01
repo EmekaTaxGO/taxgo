@@ -17,6 +17,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import Menu, { MenuItem } from 'react-native-material-menu';
+import { rColor } from '../theme/Color';
 
 class BankFragment extends Component {
     constructor(props) {
@@ -144,10 +145,14 @@ class BankFragment extends Component {
         const { item, index } = data;
         const { list: account } = item
         const isLast = this.props.bank.bankList.length === index + 1
+        const bgColor = rColor[index % rColor.length];
         return <CardView
             cardElevation={4}
-            cornerRadius={6}
-            style={[styles.bankCard, { marginBottom: isLast ? 16 : 0 }]}>
+            cornerRadius={12}
+            style={[styles.bankCard, {
+                backgroundColor: bgColor,
+                marginBottom: isLast ? 16 : 0
+            }]}>
             <View style={{
                 flexDirection: 'column'
             }}>
@@ -166,7 +171,7 @@ class BankFragment extends Component {
                             paddingVertical: 8,
                             fontSize: 16,
                             textAlign: 'center',
-                            backgroundColor: '#43a8d4'
+                            backgroundColor: '#f2f2f2'
                         }}>{account.acctype}</Text>
                     </View>
 

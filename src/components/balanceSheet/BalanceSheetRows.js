@@ -40,12 +40,13 @@ class BalanceSheetRows extends Component {
 
     renderRowItem = ({ item, index }) => {
         const expanded = item.expanded ? item.expanded : false;
+        const total = Number(item.total).toFixed(2);
         return (
             <View style={{ flexDirection: 'column' }}>
                 <View style={styles.arrowContainer}>
                     <View style={styles.container}>
                         <Text style={styles.label}>{item.label}</Text>
-                        <Text style={styles.value}>Total {item.label}: {item.total}</Text>
+                        <Text style={styles.value}>Total {item.label}: {total}</Text>
                     </View>
                     <TouchableOpacity style={styles.arrowBox} onPress={() => this.onArrowPress(item, index)}>
                         <Icons name={expanded ? 'expand-less' : 'expand-more'} size={30} />

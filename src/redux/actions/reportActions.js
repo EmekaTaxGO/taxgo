@@ -216,7 +216,7 @@ export const fetchBalanceSheet = (date) => {
         const { authData } = Store.getState().auth;
         return Api.get(`/profit/balancesheet/${authData.id}/${date}`)
             .then(async (response) => {
-                const payload = await BalanceSheetHelper.sanetizeBalanceSheet(response.data);
+                const payload = await BalanceSheetHelper.sanetizeBalanceSheet(response.data.data);
                 await saveToLocal(BALANCE_SHEET, payload);
                 dispatch({
                     type: FETCH_BALANCE_SHEET_SUCCESS,

@@ -235,8 +235,7 @@ class ProfitLossReportScreen extends Component {
                 fromDate = moment(this.state.fromDate);
                 toDate = moment(this.state.toDate);
         }
-        console.log('From Date:', timeHelper.format(fromDate, DATE_FORMAT));
-        console.log('From To Date:', timeHelper.format(toDate, DATE_FORMAT));
+
         this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
 
             setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
@@ -257,11 +256,11 @@ class ProfitLossReportScreen extends Component {
                     <View style={{
                         borderWidth: 1,
                         borderRadius: 12,
-                        borderColor: 'lightgray',
+                        borderColor: report.fetchingProfitLossReport ? 'lightgray' : colorAccent,
                         marginTop: 10
                     }}>
                         <Picker
-                            enabled={!report.fetchingTrialBalance}
+                            enabled={!report.fetchingProfitLossReport}
                             selectedValue={periods[periodIndex]}
                             mode='dropdown'
                             onValueChange={this.onPeriodChange}>
@@ -269,7 +268,7 @@ class ProfitLossReportScreen extends Component {
                                 label={value} value={value} key={value} />)}
                         </Picker>
                     </View>
-                    <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify trial balance between dates</Text>
+                    <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify Profit & Loss between dates</Text>
                     {periodIndex === 6 && this.renderDateRange()}
                 </View>
                 {this.renderReturnList()}

@@ -101,7 +101,7 @@ class BalanceSheetScreen extends Component {
         />
     }
     renderDate = () => {
-        const disableDate = this.props.report.fetchingAgeCreditor;
+        const disableDate = this.props.report.fetchingBalanceSheet;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
             <TouchableOpacity
                 style={{ width: '100%', marginEnd: 6, marginBottom: 12 }}

@@ -6,8 +6,9 @@ export const showHeaderProgress = (navigation, show) => {
         headerRight: () => show ? <HeaderProgressbar /> : null
     })
 }
-export const appFont = ''
-export const appFontBold = ''
+export const appFont = 'Nunito-Regular'
+export const appFontBold = 'Nunito-Bold'
+
 export default {
     showHeaderProgress,
     appFont,

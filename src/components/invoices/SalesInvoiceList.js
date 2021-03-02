@@ -68,7 +68,10 @@ class SalesInvoiceList extends Component {
     }
 
     onViewClick = (data) => {
-        console.log('View Click!');
+        this.props.navigation.push('ViewInvoiceScreen', {
+            title: 'Sale',
+            data
+        })
     }
 
     onEditClick = (data) => {
@@ -131,12 +134,6 @@ class SalesInvoiceList extends Component {
                     color: 'gray',
                     textTransform: 'uppercase'
                 }}>Sales Invoices</Text>
-                {/* <CheckBox
-                    tintColors={{ true: colorAccent, false: 'gray' }}
-                    style={{ borderColor: colorAccent }}
-                    value={this.state.allChecked}
-                    onValueChange={checked => this.setState({ allChecked: checked })} />
-                <Text style={{ color: 'gray' }}>All</Text> */}
             </View>
             <SwipeListView
                 data={this.listdata()}

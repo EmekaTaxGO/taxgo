@@ -6,4 +6,10 @@ export const showHeaderProgress = (navigation, show) => {
         headerRight: () => show ? <HeaderProgressbar /> : null
     })
 }
-export default { showHeaderProgress };
+export const appFont = ''
+export const appFontBold = ''
+export default {
+    showHeaderProgress,
+    appFont,
+    appFontBold
+};

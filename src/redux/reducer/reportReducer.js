@@ -1,4 +1,4 @@
-import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL, FETCH_AGE_DEBTORS_REQUEST, FETCH_AGE_DEBTORS_SUCCESS, FETCH_AGE_DEBTORS_FAIL, FETCH_AGED_DEBTOR_BREAKDOWN_REQUEST, FETCH_AGED_DEBTOR_BREAKDOWN_SUCCESS, FETCH_AGED_DEBTOR_BREAKDOWN_FAIL, FETCH_AGE_CREDITOR_REQUEST, FETCH_AGE_CREDITOR_SUCCESS, FETCH_AGE_CREDITOR_FAIL, FETCH_AGED_CREDITOR_BREAKDOWN_REQUEST, FETCH_AGED_CREDITOR_BREAKDOWN_SUCCESS, FETCH_AGED_CREDITOR_BREAKDOWN_FAIL } from "../../constants";
+import { FETCH_VAT_REPORT_REQUEST, FETCH_VAT_REPORT_SUCCESS, FETCH_VAT_REPORT_FAIL, FETCH_NOMINAL_TAX_LIST_REQUEST, FETCH_NOMINAL_TAX_LIST_FAIL, FETCH_NOMINAL_TAX_LIST_SUCCESS, FETCH_NOMINAL_TAX_RETURN_REQUEST, FETCH_NOMINAL_TAX_RETURN_SUCCESS, FETCH_NOMINAL_TAX_RETURN_FAIL, FETCH_AGE_DEBTORS_REQUEST, FETCH_AGE_DEBTORS_SUCCESS, FETCH_AGE_DEBTORS_FAIL, FETCH_AGED_DEBTOR_BREAKDOWN_REQUEST, FETCH_AGED_DEBTOR_BREAKDOWN_SUCCESS, FETCH_AGED_DEBTOR_BREAKDOWN_FAIL, FETCH_AGE_CREDITOR_REQUEST, FETCH_AGE_CREDITOR_SUCCESS, FETCH_AGE_CREDITOR_FAIL, FETCH_AGED_CREDITOR_BREAKDOWN_REQUEST, FETCH_AGED_CREDITOR_BREAKDOWN_SUCCESS, FETCH_AGED_CREDITOR_BREAKDOWN_FAIL, FETCH_BALANCE_SHEET_REQUEST, FETCH_BALANCE_SHEET_FAIL, FETCH_BALANCE_SHEET_SUCCESS, FETCH_TRIAL_BALANCE_REQUEST, FETCH_TRIAL_BALANCE_SUCCESS, FETCH_TRIAL_BALANCE_FAIL, FETCH_PROFIT_LOSS_REPORT_REQUEST, FETCH_PROFIT_LOSS_REPORT_SUCCESS, FETCH_PROFIT_LOSS_REPORT_FAIL } from "../../constants";
 
 const { State } = require("react-native-gesture-handler")
 
@@ -32,7 +32,19 @@ const initialState = {
 
     fetchingAgedCreditorBreakdown: false,
     fetchAgedCreditorBreakdownError: undefined,
-    agedCreditorBreakdown: []
+    agedCreditorBreakdown: [],
+
+    fetchingBalanceSheet: false,
+    fetchBalanceSheetError: undefined,
+    balanceSheet: [],
+
+    fetchingTrialBalance: false,
+    fetchTrialBalanceError: undefined,
+    trialBalance: [],
+
+    fetchingProfitLossReport: false,
+    fetchProfitLossReportError: undefined,
+    profitLossReport: undefined
 }
 const reportReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -161,6 +173,60 @@ const reportReducer = (state = initialState, action) => {
                 ...state,
                 fetchingAgedCreditorBreakdown: false,
                 fetchAgedCreditorBreakdownError: action.payload
+            };
+        case FETCH_BALANCE_SHEET_REQUEST:
+            return {
+                ...state,
+                fetchingBalanceSheet: true,
+                fetchBalanceSheetError: undefined
+            };
+        case FETCH_BALANCE_SHEET_FAIL:
+            return {
+                ...state,
+                fetchingBalanceSheet: false,
+                fetchBalanceSheetError: action.payload
+            };
+        case FETCH_BALANCE_SHEET_SUCCESS:
+            return {
+                ...state,
+                fetchingBalanceSheet: false,
+                balanceSheet: action.payload
+            };
+        case FETCH_TRIAL_BALANCE_REQUEST:
+            return {
+                ...state,
+                fetchingTrialBalance: true,
+                fetchTrialBalanceError: undefined
+            };
+        case FETCH_TRIAL_BALANCE_SUCCESS:
+            return {
+                ...state,
+                fetchingTrialBalance: false,
+                trialBalance: action.payload
+            };
+        case FETCH_TRIAL_BALANCE_FAIL:
+            return {
+                ...state,
+                fetchingTrialBalance: false,
+                fetchTrialBalanceError: action.payload
+            };
+        case FETCH_PROFIT_LOSS_REPORT_REQUEST:
+            return {
+                ...state,
+                fetchingProfitLossReport: true,
+                fetchProfitLossReportError: undefined
+            };
+        case FETCH_PROFIT_LOSS_REPORT_SUCCESS:
+            return {
+                ...state,
+                fetchingProfitLossReport: false,
+                profitLossReport: action.payload
+            };
+        case FETCH_PROFIT_LOSS_REPORT_FAIL:
+            return {
+                ...state,
+                fetchingProfitLossReport: false,
+                fetchProfitLossReportError: action.payload
             };
         default:
             return state;

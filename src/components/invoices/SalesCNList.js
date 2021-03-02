@@ -13,6 +13,7 @@ import OnScreenSpinner from '../OnScreenSpinner';
 import FullScreenError from '../FullScreenError';
 import EmptyView from '../EmptyView';
 import { isEmpty } from '../../helpers/Utils';
+import SalesInvoiceListItem from './SalesInvoiceListItem';
 
 class SalesCNList extends Component {
     constructor(props) {
@@ -41,20 +42,11 @@ class SalesCNList extends Component {
     }
 
     renderListItem = (data, rowMap) => {
-        const { index, item } = data;
-        return <CardView
-            cardElevation={4}
-            cornerRadius={6}
-            style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text>{item.invoiceno}</Text>
-                    <Text>{item.type}</Text>
-                    <Text>Total: {item.total}</Text>
-                </View>
-
-            </View>
-        </CardView>
+        return (
+            <SalesInvoiceListItem
+                data={data}
+            />
+        )
     }
 
     hiddenElement = (label, icon, color, onPress) => {
@@ -168,7 +160,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8
     },
     hiddenCard: {
-        marginHorizontal: 8,
+        marginHorizontal: 16,
         marginVertical: 12,
         flex: 1
     },

@@ -87,7 +87,10 @@ export const login = (navigation, body) => {
 export const fetchAuthdata = () => {
     return async (dispatch) => {
         const data = await getSavedData(AUTH_DATA);
-        dispatch({ type: SAVE_AUTH, payload: data });
+        dispatch({
+            type: SAVE_AUTH,
+            payload: data
+        });
     }
 }
 

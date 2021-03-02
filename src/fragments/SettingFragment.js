@@ -2,8 +2,10 @@ import React, { useLayoutEffect } from 'react';
 import { View, StyleSheet, Text, SectionList } from 'react-native';
 import { TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { rColor } from '../theme/Color';
 const SettingFragment = props => {
 
+    let i = 0;
     const form = [
         {
             title: {
@@ -124,13 +126,16 @@ const SettingFragment = props => {
             props.navigation.push(screen);
         }
     }
-    const Item = ({ item }) => {
+    const Item = ({ item, index }) => {
+        const iconColor = rColor[i++ % rColor.length];
         return <TouchableOpacity style={{
             flex: 1,
             flexDirection: 'row',
             alignItems: 'center'
         }} onPress={() => onItemPress(item)}>
-            <Icon name={item.icon} size={30} color='black' style={{ padding: 16 }} />
+
+            <Icon name={item.icon} size={30} color={iconColor} style={{ padding: 16 }} />
+
             <View style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -139,7 +144,7 @@ const SettingFragment = props => {
                 paddingVertical: 16,
                 marginStart: 8
             }}>
-                <Text style={{ fontSize: 18 }}>{item.label}</Text>
+                <Text style={{ fontSize: 18, color: iconColor }}>{item.label}</Text>
             </View>
         </TouchableOpacity>
     }
@@ -149,7 +154,7 @@ const SettingFragment = props => {
         sections={form}
         keyExtractor={item => item.label}
         renderSectionHeader={({ section }) => <SectionHeader section={section} />}
-        renderItem={({ item }) => <Item item={item} />}
+        renderItem={({ item, index }) => <Item item={item} index={index} />}
     />
 }
 const styles = StyleSheet.create({

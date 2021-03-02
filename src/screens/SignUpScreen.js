@@ -254,6 +254,7 @@ class SignUpScreen extends Component {
                             size={40} /> : null}
                     </TouchableOpacity> */}
                     <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='First Name'
                         keyboardType='default'
                         returnKeyType='next'
@@ -264,6 +265,7 @@ class SignUpScreen extends Component {
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.lastNameRef)} />
                     <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Last Name'
                         keyboardType='default'
                         returnKeyType='next'
@@ -274,6 +276,7 @@ class SignUpScreen extends Component {
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.emailRef)} />
                     <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Email'
                         keyboardType='email-address'
                         returnKeyType='next'
@@ -284,6 +287,7 @@ class SignUpScreen extends Component {
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.passwordRef)} />
                     <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Password'
                         keyboardType='default'
                         returnKeyType='next'
@@ -295,6 +299,7 @@ class SignUpScreen extends Component {
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.businessNameRef)} />
                     <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Business Name'
                         keyboardType='name-phone-pad'
                         returnKeyType='done'
@@ -309,6 +314,7 @@ class SignUpScreen extends Component {
                     {this.renderCountry()}
                     {this.renderBusinessType()}
                     <OutlinedTextField
+                        containerStyle={styles.textField}
                         label='Phone'
                         keyboardType='number-pad'
                         returnKeyType='done'
@@ -401,6 +407,9 @@ const styles = StyleSheet.create({
         padding: 26,
         marginTop: 15,
         fontSize: 50
+    },
+    textField: {
+        marginTop: 16
     }
 });
 export default connect(

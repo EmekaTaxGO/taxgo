@@ -12,6 +12,7 @@ import { getFieldValue } from '../helpers/TextFieldHelpers';
 import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
 import { OutlinedTextField } from 'react-native-material-textfield';
+import AppLogo from '../components/AppLogo';
 
 class ChangePasswordScreen extends Component {
 
@@ -102,6 +103,7 @@ class ChangePasswordScreen extends Component {
                 cornerRadius={6}
                 style={styles.card}>
                 <View style={{ flexDirection: 'column', paddingTop: 12 }}>
+                    <AppLogo />
                     <OutlinedTextField
                         containerStyle={styles.textField}
                         label='Old Password'

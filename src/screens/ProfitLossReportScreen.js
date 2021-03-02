@@ -1,35 +1,36 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
 import moment from 'moment';
-import { FlatList } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import * as reportActions from '../redux/actions/reportActions';
 import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
-import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
-import { getSavedData, TAX_RETURN_REPORT } from '../services/UserStorage';
+import { isEmpty } from 'lodash';
+import ProfitLossReport from '../components/profitLoss/ProfitLossReport';
+import { getSavedData, PROFIT_LOSS_REPORT } from '../services/UserStorage';
+import { DATE_FORMAT } from '../constants/appConstant';
 import { showHeaderProgress } from '../helpers/ViewHelper';
 
-class TaxReturnListScreen extends Component {
+class ProfitLossReportScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             periods: this.buildPeriods(),
             periodIndex: 0,
-            fromDate: new Date(),
+            fromDate: moment(),
             showFromDateDialog: false,
-            toDate: new Date(),
+            toDate: moment(),
             showToDateDialog: false,
-            taxReports: undefined
+            report: {}
         }
-        this.presetState();
+        this.presetState()
     }
     _fromDateRef = React.createRef();
     _toDateRef = React.createRef();
@@ -39,86 +40,98 @@ class TaxReturnListScreen extends Component {
 
     buildPeriods = () => {
         return [
-            'Select Period',
-            'First',
-            'Second',
-            'Third',
-            'Fourth',
+            'This Month',
+            'This Quarter',
+            'This Year',
+            'Last Month',
+            'Last Quarter',
+            'Last Year',
             'Custom'
         ]
     }
 
+    // UNSAFE_componentWillMount() {
+    //     this.presetState()
+
+    // }
     componentDidMount() {
-        this.fetchTaxReport();
+        this.fetchProfitAndLoss();
     }
 
     componentDidUpdate(prevProps, prevState) {
-
         const { report: newReport } = this.props;
         const { report: oldReport } = prevProps;
-        if (!newReport.fetchingTaxReport && oldReport.fetchingTaxReport) {
+
+        if (!newReport.fetchingProfitLossReport && oldReport.fetchingProfitLossReport) {
+            //Profit Loss Report is Fetched
             showHeaderProgress(this.props.navigation, false);
-            if (newReport.fetchTaxReportError === undefined) {
-                this.setState({ taxReports: newReport.taxReports });
+            if (newReport.fetchProfitLossReportError === undefined) {
+                this.setState({ report: newReport.profitLossReport });
             }
         }
     }
 
-    fetchTaxReport = () => {
+    fetchProfitAndLoss = () => {
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
-        reportActions.fetchVatReport(startDate, endDate);
         showHeaderProgress(this.props.navigation, true);
+        reportActions.fetchProfitAndLossReport(startDate, endDate);
     }
 
     presetState = async () => {
-        const taxReports = await getSavedData(TAX_RETURN_REPORT);
-        const fromDate = moment().set('month', 0).set('date', 1).toDate();
-        const toDate = moment().set('month', 2).set('date', 31).toDate();
+        const report = await getSavedData(PROFIT_LOSS_REPORT);
+        const from = moment().set('date', 1);
+        const to = moment().set('date', from.daysInMonth());
         this.setState({
-            fromDate,
-            toDate,
-            taxReports: taxReports !== undefined ? taxReports : undefined
-        })
+            fromDate: from,
+            toDate: to,
+            report: report !== null ? report : {}
+        });
     }
 
     onFromDateChange = (event, selectedDate) => {
+        if (event.type !== 'set') {
+            this.setState({ showFromDateDialog: false });
+            return;
+        }
         const currentDate = selectedDate || this.state.fromDate;
         this.setState({
             fromDate: currentDate,
             showFromDateDialog: false
         }, () => {
             setFieldValue(this._fromDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchTaxReport();
+            this.fetchProfitAndLoss();
         })
     }
 
     onToDateChange = (event, selectedDate) => {
+        if (event.type !== 'set') {
+            this.setState({ showToDateDialog: false });
+            return;
+        }
         const currentDate = selectedDate || this.state.toDate;
         this.setState({
             toDate: currentDate,
             showToDateDialog: false
         }, () => {
             setFieldValue(this._toDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
-            this.fetchTaxReport();
+            this.fetchProfitAndLoss();
         })
     }
 
     renderDateRange = () => {
-        const disableDate = this.state.periodIndex !== 5;
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
             <TouchableOpacity
                 style={{ flex: 1, marginEnd: 6 }}
-                onPress={() => this.setState({ showFromDateDialog: true })}
-                disabled={disableDate}>
+                onPress={() => this.setState({ showFromDateDialog: true })}>
                 <OutlinedTextField
                     containerStyle={{ color: colorAccent }}
                     label='From'
                     returnKeyType='done'
                     lineWidth={1}
                     editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
+                    baseColor={colorAccent}
                     value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
                     ref={this._fromDateRef}
                 />
@@ -132,14 +145,13 @@ class TaxReturnListScreen extends Component {
             /> : null}
             <TouchableOpacity
                 style={{ flex: 1, marginStart: 6 }}
-                onPress={() => this.setState({ showToDateDialog: true })}
-                disabled={disableDate}>
+                onPress={() => this.setState({ showToDateDialog: true })}>
                 <OutlinedTextField
                     label='To'
                     returnKeyType='done'
                     lineWidth={1}
                     editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
+                    baseColor={colorAccent}
                     value={timeHelper.format(this.state.toDate, this.DATE_FORMAT)}
                     ref={this._toDateRef}
                 />
@@ -154,111 +166,88 @@ class TaxReturnListScreen extends Component {
         </View>
     }
 
-    renderItemRow = (ledger, item) => {
-        return <View style={{ flexDirection: 'row', padding: 12 }}>
-            <Text style={{ flex: 1, fontSize: 14, fontFamily: '' }}>{ledger} ({item.percentage})</Text>
-            <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>{item.percentage}</Text>
-            <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>{item.total}</Text>
-        </View>
-    }
+    onPressDebit = (item) => {
 
-    onPricePress = item => {
-        this.props.navigation.push('TaxViewScreen', {
-            item,
-            periodIndex: this.state.periodIndex,
-            fromDate: this.state.fromDate,
-            toDate: this.state.toDate
-        })
     }
+    onPressCredit = (item) => {
 
-    renderReportItem = (item, index) => {
-        const count = this.props.report.taxReports.length;
-        const isLast = count === index + 1;
-        return <CardView
-            cardElevation={4}
-            cornerRadius={6}
-            style={[styles.listCard, { marginBottom: isLast ? 16 : 0 }]}>
-            <View style={{
-                flexDirection: 'row',
-                backgroundColor: '#f5f5f5',
-                padding: 12
-            }}>
-                <Text style={{ flex: 1, fontSize: 14, fontFamily: '' }}>Ledger</Text>
-                <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>Rate</Text>
-                <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>Amount</Text>
-            </View>
-            {item.vatRate.map(value => this.renderItemRow(item.ledger, value))}
-            <View style={{
-                flexDirection: 'row',
-                borderTopColor: 'lightgray',
-                borderTopWidth: 1
-            }}>
-                <Text style={{
-                    flex: 1,
-                    textAlign: 'left',
-                    fontSize: 14,
-                    fontWeight: 'bold',
-                    padding: 12
-                }}>Total {item.ledger}</Text>
-                <TouchableOpacity onPress={() => this.onPricePress(item)} style={{ padding: 12 }}>
-                    <Text style={{
-                        flex: 1,
-                        textAlign: 'right',
-                        fontSize: 14,
-                        color: colorAccent
-                    }}>{item.totalTax}</Text>
-                </TouchableOpacity>
-            </View>
-        </CardView>
     }
 
     renderReturnList = () => {
         const { report } = this.props;
-        const { taxReports } = this.state;
-        if (report.fetchingTaxReport && !taxReports) {
+        const { fromDate, toDate, report: reportData } = this.state;
+        if (report.fetchingProfitLossReport && isEmpty(reportData.entities)) {
             return <OnScreenSpinner />
         }
-        if (report.fetchTaxReportError && !taxReports) {
-            return <FullScreenError tryAgainClick={this.fetchTaxReport} />
+        if (report.fetchProfitLossReportError && isEmpty(reportData.entities)) {
+            return <FullScreenError tryAgainClick={this.fetchProfitAndLoss} />
         }
-        if (!taxReports) {
-            return null;
-        }
-        return <FlatList
-            keyExtractor={(item, index) => `${index}`}
-            data={taxReports}
-            renderItem={({ item, index }) => this.renderReportItem(item, index)}
-        />
+        // const entities = get(reportData, 'entities', []);
+        // if (isEmpty(entities)) {
+        //     return <EmptyView message='No Profit & Loss Report Available' iconName='hail' />
+        // }
+
+        return (
+            <ProfitLossReport
+                report={reportData}
+                startDate={timeHelper.format(fromDate, this.DATE_FORMAT)}
+                endDate={timeHelper.format(toDate, this.DATE_FORMAT)}
+            />
+        )
     }
 
     onPeriodChange = (itemValue, itemIndex) => {
-        let startMonth;
+        let fromDate, toDate;
         switch (itemIndex) {
+            case 0:
+                fromDate = moment().set('date', 1);
+                toDate = moment().set('date', fromDate.daysInMonth());
+                break;
+            case 1:
+                //Current Quarter
+                fromDate = moment();
+                fromDate.set('month', 3 * fromDate.quarter() - 3).set(1, 'date');
+                toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
+                break;
             case 2:
-                startMonth = 3;
+                //Current year
+                fromDate = moment().set('month', 0).set('date', 1);
+                toDate = moment(fromDate).add(1, 'year').subtract(1, 'day');
                 break;
             case 3:
-                startMonth = 6;
+                //Last Month
+                fromDate = moment().subtract(1, 'month').set(1, 'date');
+                toDate = moment(fromDate).add(1, 'month').subtract(1, 'day');
                 break;
             case 4:
-                startMonth = 9;
+                //Last Quarter
+                fromDate = moment().subtract(3, 'month');
+                fromDate.set('month', 3 * fromDate.quarter() - 3).set('date', 1);
+                toDate = moment(fromDate).add('month', 3).subtract(1, 'day');
+                break;
+            case 5:
+                //Last Year
+                fromDate = moment().subtract(1, 'year');
+                fromDate.set('month', 0).set('date', 1);
+                toDate = moment(fromDate).add(1, 'year').subtract(1, 'day');
                 break;
             default:
-                startMonth = 0;
+                fromDate = moment(this.state.fromDate);
+                toDate = moment(this.state.toDate);
         }
-        const fromDate = moment().set('month', startMonth).set('date', 1).toDate();
-        const toDate = moment(fromDate).add('month', 3).subtract('day', 1).toDate();
+
         this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
 
             setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
             setFieldValue(this._toDateRef, timeHelper.format(toDate, this.DATE_FORMAT));
-            if (itemIndex > 0 && itemIndex < 5) {
-                this.fetchTaxReport();
+            if (itemIndex < 6) {
+                this.fetchProfitAndLoss();
             }
         })
     }
     render() {
         const { periods, periodIndex } = this.state;
+        const { report } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
 
@@ -267,10 +256,11 @@ class TaxReturnListScreen extends Component {
                     <View style={{
                         borderWidth: 1,
                         borderRadius: 12,
-                        borderColor: 'lightgray',
+                        borderColor: report.fetchingProfitLossReport ? 'lightgray' : colorAccent,
                         marginTop: 10
                     }}>
                         <Picker
+                            enabled={!report.fetchingProfitLossReport}
                             selectedValue={periods[periodIndex]}
                             mode='dropdown'
                             onValueChange={this.onPeriodChange}>
@@ -278,8 +268,8 @@ class TaxReturnListScreen extends Component {
                                 label={value} value={value} key={value} />)}
                         </Picker>
                     </View>
-                    <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify Tax return between dates</Text>
-                    {this.renderDateRange()}
+                    <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify Profit & Loss between dates</Text>
+                    {periodIndex === 6 && this.renderDateRange()}
                 </View>
                 {this.renderReturnList()}
             </KeyboardAvoidingView>
@@ -287,10 +277,7 @@ class TaxReturnListScreen extends Component {
     }
 }
 const styles = StyleSheet.create({
-    listCard: {
-        marginHorizontal: 16,
-        marginTop: 16
-    }
+
 })
 export default connect(
     state => ({
@@ -299,4 +286,4 @@ export default connect(
     dispatch => ({
         reportActions: bindActionCreators(reportActions, dispatch)
     })
-)(TaxReturnListScreen);
+)(ProfitLossReportScreen);

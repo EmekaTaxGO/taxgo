@@ -2,10 +2,11 @@ const { View, Image, StyleSheet, Text, ScrollView, ColorPropType, Alert, Touchab
 import React, { useState } from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { colorAccent, colorPrimary } from '../theme/Color';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { clearData, AUTH_DATA } from '../services/UserStorage';
+import { clearData, AUTH_DATA, clearAll } from '../services/UserStorage';
 import { DrawerActions } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const DrawerContent = props => {
 
@@ -14,28 +15,32 @@ const DrawerContent = props => {
     const lName = profile ? profile.lastname : '';
     const email = profile ? profile.email : '';
     const renderHeader = () => {
-        return <TouchableHighlight
-            onPress={onHeaderClick}
-            underlayColor={colorPrimary}>
-            <View style={{
-                width: '100%',
-                height: 200,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                backgroundColor: colorAccent
-            }}>
-                <Image
-                    source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
-                    style={styles.profileImage}
-                />
-                <Text style={styles.name}>{fName} {lName}</Text>
-                <Text style={styles.email}>{email}</Text>
-            </View>
-        </TouchableHighlight>
+        return <View style={{
+            height: 200,
+            flexDirection: 'column',
+            justifyContent: 'center',
+            backgroundColor: colorAccent
+        }}>
+            {/* <Image
+                        source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
+                        style={styles.profileImage}
+                    /> */}
+            <View style={styles.profileImage}>
+                <Icon name='person' size={60} color='white' />
+                <TouchableOpacity
+                    style={styles.editBtn}
+                    onPress={onEditClick}>
+                    <Icon name='edit' size={16} color='black' />
+                </TouchableOpacity>
 
+            </View>
+
+            <Text style={styles.name}>{fName} {lName}</Text>
+            <Text style={styles.email}>{email}</Text>
+        </View>
     }
 
-    const onHeaderClick = () => {
+    const onEditClick = () => {
         props.navigation.dispatch(DrawerActions.closeDrawer());
         setTimeout(() => {
             props.navigation.push('EditProfileScreen');
@@ -51,7 +56,7 @@ const DrawerContent = props => {
                 text: 'YES',
                 style: 'default',
                 onPress: async () => {
-                    await clearData(AUTH_DATA);
+                    await clearAll();
                     props.navigation.replace('LoginScreen');
                 }
             }
@@ -71,10 +76,13 @@ const DrawerContent = props => {
         </TouchableOpacity>
     }
 
-    return <DrawerContentScrollView>
+    return <DrawerContentScrollView
+        contentContainerStyle={{ paddingVertical: 0 }}>
         <View style={styles.container} >
             {renderHeader()}
-            <DrawerItemList {...props} style={{ backgroundColor: 'black' }} />
+            <DrawerItemList {...props} style={{ backgroundColor: 'black' }}
+
+            />
             {renderFooter()}
         </View>
     </DrawerContentScrollView>
@@ -85,7 +93,21 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        marginLeft: 12
+        marginLeft: 12,
+        backgroundColor: '#80808040',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    editBtn: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        right: 0
     },
     name: {
         fontSize: 16,

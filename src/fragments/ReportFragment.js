@@ -89,6 +89,15 @@ class ReportFragment extends Component {
             case 0:
                 screen = 'TaxReturnListScreen';
                 break;
+            case 1:
+                screen = 'BalanceSheetScreen';
+                break;
+            case 2:
+                screen = 'ProfitLossReportScreen';
+                break;
+            case 3:
+                screen = 'TrialBalanceScreen';
+                break;
             case 4:
                 screen = 'AgeDebtorScreen';
                 break;

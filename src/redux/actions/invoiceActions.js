@@ -12,10 +12,14 @@ import {
     PURCHASE_INVOICE_LIST_FAIL,
     PURCHASE_CN_LIST_REQUEST,
     PURCHASE_CN_LIST_SUCCESS,
-    PURCHASE_CN_LIST_FAIL
+    PURCHASE_CN_LIST_FAIL,
+    FETCH_SALES_INVOICE_REQUEST,
+    FETCH_SALES_INVOICE_SUCCESS,
+    FETCH_SALES_INVOICE_FAIL
 } from '../../constants';
 import Store from '../Store';
 import { log } from '../../components/Logger';
+import { getApiErrorMsg } from '../../helpers/Utils';
 
 export const getSalesInvoiceList = () => {
     return (dispatch) => {
@@ -85,6 +89,27 @@ export const getPurchaseCNInvoiceList = () => {
             .catch(err => {
                 log('Error fetching Invoice..', err);
                 dispatch({ type: PURCHASE_CN_LIST_FAIL });
+            })
+    }
+}
+
+export const getSalesInvoice = () => {
+    return (dispatch) => {
+        dispatch({ type: FETCH_SALES_INVOICE_REQUEST });
+        const { authData } = Store.getState().auth;
+        return Api.get('https://taxgoglobal.com/newrestapi/Sales/salesview/?id=4509&page=sales')
+            .then(response => {
+                dispatch({
+                    type: FETCH_SALES_INVOICE_SUCCESS,
+                    payload: response.data
+                });
+            })
+            .catch(err => {
+                log('Error fetching Sales Invoice..', err);
+                dispatch({
+                    type: FETCH_SALES_INVOICE_FAIL,
+                    payload: getApiErrorMsg(err)
+                });
             })
     }
 }

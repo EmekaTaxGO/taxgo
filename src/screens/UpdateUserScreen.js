@@ -155,6 +155,7 @@ class UpdateUserScreen extends Component {
                         flexDirection: 'column'
                     }}>
                         <OutlinedTextField
+                            containerStyle={styles.fieldStyle}
                             label='First Name'
                             keyboardType='default'
                             returnKeyType='next'
@@ -166,6 +167,7 @@ class UpdateUserScreen extends Component {
                             onSubmitEditing={() => focusField(this.lastNameRef)} />
 
                         <OutlinedTextField
+                            containerStyle={styles.fieldStyle}
                             label='Last Name'
                             keyboardType='default'
                             returnKeyType='next'
@@ -177,6 +179,7 @@ class UpdateUserScreen extends Component {
                             onSubmitEditing={() => focusField(this.emailRef)} />
 
                         <OutlinedTextField
+                            containerStyle={styles.fieldStyle}
                             label='Email address'
                             keyboardType='email-address'
                             returnKeyType='next'
@@ -188,6 +191,7 @@ class UpdateUserScreen extends Component {
                             onSubmitEditing={() => focusField(this.phoneRef)} />
 
                         <OutlinedTextField
+                            containerStyle={styles.fieldStyle}
                             label='Phone'
                             keyboardType='numeric'
                             returnKeyType='done'
@@ -196,7 +200,9 @@ class UpdateUserScreen extends Component {
                             ref={this.phoneRef}
                             error={this.state.phoneError}
                             onChange={event => this.resetAllError()} />
-                        <TouchableOpacity onPress={() => this.setState({ showDOBPicker: true })}>
+                        <TouchableOpacity
+                            onPress={() => this.setState({ showDOBPicker: true })}
+                            style={styles.fieldStyle}>
                             <OutlinedTextField
                                 label='Date Of Birth'
                                 keyboardType='default'
@@ -216,6 +222,7 @@ class UpdateUserScreen extends Component {
                             onChange={this.onDOBChanged}
                         /> : null}
                         <OutlinedTextField
+                            containerStyle={styles.fieldStyle}
                             label='Employee Id'
                             keyboardType='numeric'
                             returnKeyType='next'
@@ -226,6 +233,7 @@ class UpdateUserScreen extends Component {
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.uniqueIdRef)} />
                         <OutlinedTextField
+                            containerStyle={styles.fieldStyle}
                             label='Unique ID/License No'
                             keyboardType='default'
                             returnKeyType='done'
@@ -267,6 +275,9 @@ const styles = StyleSheet.create({
         marginBottom: 24,
         fontSize: 50,
         marginHorizontal: 16
+    },
+    fieldStyle: {
+        marginTop: 16
     }
 });
 export default UpdateUserScreen;

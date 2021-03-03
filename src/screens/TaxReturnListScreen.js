@@ -156,7 +156,7 @@ class TaxReturnListScreen extends Component {
 
     renderItemRow = (ledger, item) => {
         return <View style={{ flexDirection: 'row', padding: 12 }}>
-            <Text style={{ flex: 1, fontSize: 14, fontFamily: '' }}>{ledger} ({item.percentage})</Text>
+            <Text style={{ flex: 1, fontSize: 14 }}>{ledger} ({item.percentage})</Text>
             <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>{item.percentage}</Text>
             <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>{item.total}</Text>
         </View>

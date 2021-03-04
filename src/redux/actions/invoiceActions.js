@@ -113,3 +113,14 @@ export const getSalesInvoice = () => {
             })
     }
 }
+
+
+export const printSalesInvoice = (body) => {
+    return (dispatch) => {
+        const { authData } = Store.getState().auth;
+        return Api.post('https://taxgoglobal.com/newrestapi/Accounting/saveviewemail', body)
+            .then(response => {
+                return response.data.data;
+            })
+    }
+}

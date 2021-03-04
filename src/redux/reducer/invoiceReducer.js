@@ -24,7 +24,7 @@ const initialState = {
 
     fetchingSalesInvoiceDetail: false,
     salesInvoiceDetail: undefined,
-    fetchSalesInvoiceDetailError: undefined
+    fetchSalesInvoiceDetailError: undefined,
 };
 const invoiceReducer = (state = initialState, action) => {
     switch (action.type) {

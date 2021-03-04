@@ -44,6 +44,7 @@
     "react-native-material-menu": "^1.2.0",
     "react-native-material-textfield": "^0.16.1",
     "react-native-permissions": "^3.0.0",
+    "react-native-print": "^0.7.0",
     "react-native-qrcode-scanner": "^1.4.1",
     "react-native-radio-group": "^1.0.3",
     "react-native-reanimated": "^1.13.1",

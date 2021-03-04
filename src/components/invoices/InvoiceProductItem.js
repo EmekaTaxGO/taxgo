@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { appFont } from '../../helpers/ViewHelper';
 import Store from '../../redux/Store';
-class InvoiceProductList extends Component {
+class InvoiceProductItem extends Component {
 
-    symbol = ' '+get(Store.getState().auth, 'profile.countryInfo.symbol');
+    symbol = ' ' + get(Store.getState().auth, 'profile.countryInfo.symbol');
 
     renderBoxRow = (label, value) => {
         return (
@@ -16,24 +16,16 @@ class InvoiceProductList extends Component {
         )
     }
 
-    renderItem = ({ item, index }) => {
+    render() {
+        const { item, isLast } = this.props;
+        const style = { marginBottom: isLast ? 12 : 0 };
         return (
-            <View style={styles.boxContainer}>
+            <View style={[styles.boxContainer, style]}>
                 {this.renderBoxRow(item.description + '@' + item.quantity, item.costprice + this.symbol)}
                 {this.renderBoxRow('Vat@' + item.incomeTax, item.incomeTaxAmount + this.symbol)}
                 {this.renderBoxRow('Discount@' + item.percentage, item.discount + this.symbol)}
                 {this.renderBoxRow('Total', item.total + `${this.symbol}`)}
             </View>
-        )
-    }
-    render() {
-        const { data } = this.props;
-        return (
-            <FlatList
-                data={data}
-                keyExtractor={(item, index) => `${index}`}
-                renderItem={this.renderItem}
-            />
         )
     }
 }
@@ -61,4 +53,4 @@ const styles = StyleSheet.create({
         marginTop: 16
     }
 })
-export default InvoiceProductList;
+export default InvoiceProductItem;

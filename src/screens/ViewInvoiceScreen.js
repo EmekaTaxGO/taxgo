@@ -1,27 +1,46 @@
 import { get, sumBy } from 'lodash';
 import React, { Component } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import InvoiceProductList from '../components/invoices/InvoiceProductList';
+import InvoiceProductItem from '../components/invoices/InvoiceProductItem';
 import { appFont, appFontBold } from '../helpers/ViewHelper';
 import { colorAccent } from '../theme/Color';
 import * as invoiceActions from '../redux/actions/invoiceActions';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
+import printSalesInvoiceRequest from '../data/printSalesInvoiceRequest';
+import { getApiErrorMsg, showError } from '../helpers/Utils';
+import pdfHelper from '../helpers/PdfHelper';
+import ProgressDialog from '../components/ProgressDialog'
 
 class ViewInvoiceScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            invoice: {}
+            invoice: {},
+            fetching: false
         }
     }
 
-    onMoreClick = () => {
+    onPrintClick = () => {
+        this.setState({ fetching: true }, () => {
 
+            const { invoiceActions } = this.props;
+            invoiceActions.printSalesInvoice(printSalesInvoiceRequest)
+                .then(async (data) => {
+                    await pdfHelper.print(data.template, data.attachment);
+                    this.setState({ fetching: false });
+                })
+                .catch(err => {
+                    console.log('Error fetching Print Data', err);
+                    this.setState({ fetching: false }, () => {
+                        showError(getApiErrorMsg(err));
+                    })
+                })
+        })
     }
     componentDidMount() {
 
@@ -30,9 +49,12 @@ class ViewInvoiceScreen extends Component {
             title,
             headerRight: () => {
                 return (
-                    <TouchableOpacity onPress={this.onMoreClick} style={styles.rightBtn}>
-                        <Icon name='add' size={30} color='white' />
-                    </TouchableOpacity>
+                    <View style={styles.headerRightContainer}>
+                        <TouchableOpacity onPress={this.onPrintClick} style={styles.rightBtn}>
+                            <Icon name='print' size={30} color='white' />
+                        </TouchableOpacity>
+                    </View>
+
                 )
             }
         })
@@ -74,11 +96,32 @@ class ViewInvoiceScreen extends Component {
             </View>
         )
     }
-    render() {
 
-        // fetchingSalesInvoiceDetail: false,
-        // salesInvoiceDetail: undefined,
-        // fetchSalesInvoiceDetailError: undefined
+    renderHeader = () => {
+        const salesView = get(this.state.invoice, 'salesView', {});
+        const customer = get(this.state.invoice, 'cname', {});
+
+        return (
+            <View style={styles.container}>
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.invNumLabel}>Invoice No:</Text>
+                    <Text style={styles.invNumValue}>{salesView.invoiceno}</Text>
+                </View>
+                <Text style={styles.buyerLabel}>Buyers</Text>
+                <Text style={styles.email}>{customer.email}</Text>
+                <View style={styles.dateContainer}>
+                    <Text style={styles.createdTxt}>Created: {salesView.sdate}</Text>
+                    <Text style={styles.dueDateTxt}>Due: {salesView.ldate}</Text>
+                </View>
+                {this.renderSectionLabel('near-me', 'Invoice Address')}
+                <Text style={styles.sectionTxt}>{salesView.inaddress}</Text>
+                {this.renderSectionLabel('place', 'Deliver Address')}
+                <Text style={styles.sectionTxt}>{salesView.deladdress}</Text>
+                <Text style={styles.productTxt}>Products</Text>
+            </View>
+        )
+    }
+    render() {
         const { invoice } = this.props;
 
         if (invoice.fetchingSalesInvoiceDetail) {
@@ -87,36 +130,23 @@ class ViewInvoiceScreen extends Component {
         if (invoice.fetchSalesInvoiceDetailError) {
             <FullScreenError tryAgainClick={this.fetchInvoiceDetails} />
         }
-        const salesView = get(this.state.invoice, 'salesView', {});
-        const customer = get(this.state.invoice, 'cname', {});
         const salesList = get(this.state.invoice, 'salesList', []);
 
         const total = sumBy(this.state.products, product => parseFloat(product.total));
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-                <ScrollView>
-                    <View style={styles.container}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.invNumLabel}>Invoice No:</Text>
-                            <Text style={styles.invNumValue}>{salesView.invoiceno}</Text>
-                        </View>
-                        <Text style={styles.buyerLabel}>Buyers</Text>
-                        <Text style={styles.email}>{customer.email}</Text>
-                        <View style={styles.dateContainer}>
-                            <Text style={styles.createdTxt}>Created: {salesView.sdate}</Text>
-                            <Text style={styles.dueDateTxt}>Due: {salesView.ldate}</Text>
-                        </View>
-                        {this.renderSectionLabel('near-me', 'Invoice Address')}
-                        <Text style={styles.sectionTxt}>{salesView.inaddress}</Text>
-                        {this.renderSectionLabel('place', 'Deliver Address')}
-                        <Text style={styles.sectionTxt}>{salesView.deladdress}</Text>
-                        <Text style={styles.productTxt}>Products</Text>
-                        <InvoiceProductList
-                            data={salesList}
-                        />
-                    </View>
-                </ScrollView>
+                <FlatList
+                    data={salesList}
+                    keyExtractor={(item, index) => `${index}`}
+                    renderItem={({ item, index }) => (
+                        <InvoiceProductItem
+                            item={item}
+                            isLast={index + 1 === salesList.length} />
+                    )}
+                    ListHeaderComponent={() => this.renderHeader()}
+                />
                 {this.renderCheckoutContainer(total)}
+                <ProgressDialog visible={this.state.fetching} />
             </SafeAreaView>
         )
     }
@@ -209,7 +239,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#f2f2f2'
+        borderTopColor: 'lightgray'
     },
     paymentTxtContainer: {
         flexDirection: 'column',
@@ -244,6 +274,9 @@ const styles = StyleSheet.create({
         borderTopColor: 'lightgray',
         borderTopWidth: 1,
         paddingTop: 12
+    },
+    headerRightContainer: {
+        flexDirection: 'row'
     }
 })
 export default connect(

@@ -13,8 +13,6 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
-import { log } from 'react-native-reanimated';
-import taxList from '../files/NominalTaxList.json';
 import EmptyView from '../components/EmptyView';
 
 class ViewTaxReportScreen extends Component {

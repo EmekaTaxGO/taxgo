@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableHighlight, View, Text } from 'react-native';
-import { colorPrimary, tabSelectedColor } from '../theme/Color';
+import { colorPrimary, tabBackgroundColor, tabColor, tabSelectedColor } from '../theme/Color';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -33,21 +33,21 @@ class AppTab extends Component {
         const { title, onTabPress, icon, iconType, selected } = this.props;
         return <TouchableHighlight style={{
             flex: 1,
-            backgroundColor: colorPrimary,
+            backgroundColor: tabBackgroundColor,
             paddingVertical: icon ? 6 : 13,
             borderBottomWidth: selected ? 2 : 0,
             borderBottomColor: tabSelectedColor,
         }}
             onPress={onTabPress}
-            underlayColor={colorPrimary}>
+            underlayColor={tabBackgroundColor}>
             <View style={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
-                {this.getIcon(icon, iconType, selected ? tabSelectedColor : 'white')}
+                {this.getIcon(icon, iconType, selected ? tabSelectedColor : tabColor)}
                 <Text style={[styles.text, {
-                    color: selected ? tabSelectedColor : 'white'
+                    color: selected ? tabSelectedColor : tabColor
                 }]}>{title}</Text>
             </View>
         </TouchableHighlight>
@@ -55,8 +55,9 @@ class AppTab extends Component {
 }
 const styles = StyleSheet.create({
     text: {
-        fontSize: 14,
-        fontFamily: appFontBold
+        fontSize: 16,
+        fontFamily: appFontBold,
+        textTransform: 'capitalize'
     }
 });
 export default AppTab;

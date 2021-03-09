@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { StyleSheet } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
+import { appFont, appFontBold } from '../helpers/ViewHelper';
 import { colorAccent, colorPrimary } from '../theme/Color';
 class AppTextField extends Component {
 
@@ -11,9 +13,22 @@ class AppTextField extends Component {
                 ref={fieldRef}
                 tintColor='black'
                 baseColor='gray'
+                titleTextStyle={styles.text}
+                labelTextStyle={styles.label}
+                fontSize={18}
+                fontFamily={appFont}
                 {...this.props}
             />
         )
     }
 }
+const styles = StyleSheet.create({
+    text: {
+        fontFamily: appFontBold,
+        color: 'black'
+    },
+    label: {
+        
+    }
+})
 export default AppTextField;

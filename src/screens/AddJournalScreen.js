@@ -253,6 +253,7 @@ class AddJournalScreen extends Component {
                 keyExtractor={(item, index) => `${index}`}
             />
             <AppButton
+                containerStyle={{ marginHorizontal: 16 }}
                 title='Save'
                 onPress={() => console.log('Pressed!')} />
         </View>

@@ -257,6 +257,7 @@ class UpdateUserScreen extends Component {
                     }}>
                         Please resolve all errors.</Text> : null}
                     <AppButton
+                        containerStyle={styles.appBtn}
                         title={'Update'}
                         onPress={this.validateAndSubmitForm} />
 
@@ -269,6 +270,10 @@ class UpdateUserScreen extends Component {
 const styles = StyleSheet.create({
     fieldStyle: {
         marginTop: 16
+    },
+    appBtn: {
+        marginHorizontal: 12,
+        marginTop: 30
     }
 });
 export default UpdateUserScreen;

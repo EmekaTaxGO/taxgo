@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         fontFamily: appFontBold,
         fontSize: 17,
         color: 'white',
-        textTransform: 'uppercase'
+        textTransform: 'capitalize'
     }
 })
 export default AppButton;

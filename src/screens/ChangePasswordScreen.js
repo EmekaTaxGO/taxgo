@@ -139,6 +139,7 @@ class ChangePasswordScreen extends Component {
                         onSubmitEditing={() => { }}
                     />
                     <AppButton
+                        containerStyle={{ marginHorizontal: 16 }}
                         title='Update'
                         onPress={this.onUpdatePassPress} />
                 </View>

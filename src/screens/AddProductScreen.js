@@ -911,6 +911,7 @@ class AddProductScreen extends Component {
                 {isStock ? this.renderStock() : null}
                 {isStock ? this.renderOther() : null}
                 <AppButton
+                    containerStyle={{ marginHorizontal: 16 }}
                     title={this.isEditMode() ? 'Update' : 'Add'}
                     onPress={this.validateAndSubmitForm} />
                 <ProgressDialog visible={this.props.product.updatingProduct} />

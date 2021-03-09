@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -18,6 +17,7 @@ import EmptyView from '../components/EmptyView';
 import { AGE_DEBTOR_REPORT, getSavedData } from '../services/UserStorage';
 import { showHeaderProgress } from '../helpers/ViewHelper';
 import { get } from 'lodash';
+import AppTextField from '../components/AppTextField';
 
 class AgeDebtorScreen extends Component {
 
@@ -161,7 +161,7 @@ class AgeDebtorScreen extends Component {
                 style={{ width: '100%', marginEnd: 6 }}
                 onPress={() => this.setState({ showUntilDateDialog: true })}
                 disabled={disableDate}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={{ color: colorAccent }}
                     label='Until'
                     returnKeyType='done'
@@ -169,7 +169,7 @@ class AgeDebtorScreen extends Component {
                     editable={false}
                     baseColor={disableDate ? 'gray' : colorAccent}
                     value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    ref={this._untilDateRef}
+                    fieldRef={this._untilDateRef}
                 />
             </TouchableOpacity>
             {this.state.showUntilDateDialog ? <DateTimePicker

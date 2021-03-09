@@ -4,6 +4,9 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import CardView from 'react-native-cardview';
 import Icons from 'react-native-vector-icons/MaterialIcons';
+import SubTitle from '../components/item/SubTitle';
+import Title from '../components/item/Title';
+import { appFont, appFontBold } from '../helpers/ViewHelper';
 import Store from '../redux/Store';
 import { rColor } from '../theme/Color';
 class ProductListItem extends Component {
@@ -51,11 +54,11 @@ class ProductListItem extends Component {
                     </View>
                     <View style={styles.mainContent}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titleTxt} numberOfLines={1}>{item.idescription}</Text>
+                            <Title style={styles.titleTxt} numberOfLines={1}>{item.idescription}</Title>
                             <Text style={styles.amountTxt}>{costPrice}
                                 <Text style={styles.amtSymbolTxt}> {this.symbol}</Text></Text>
                         </View>
-                        <Text style={styles.descriptionTxt}>Item Code: {item.icode}</Text>
+                        <SubTitle style={styles.descriptionTxt}>Item Code: {item.icode}</SubTitle>
                         {/* <Text style={styles.descriptionTxt}>Location: {item.location}</Text> */}
                         <View style={styles.dueContainer}>
                             <Text style={[styles.dueTxt, { color: stockColor }]}>{stockText}</Text>
@@ -96,30 +99,26 @@ const styles = StyleSheet.create({
         flex: 1
     },
     titleTxt: {
-        color: 'black',
-        fontWeight: 'bold',
-        fontSize: 16,
         flex: 1,
         marginEnd: 12
     },
     descriptionTxt: {
-        color: '#777777',
-        fontSize: 14,
         flex: 1,
         marginTop: 4
     },
     amountTxt: {
         fontSize: 16,
         color: '#727272',
-        fontWeight: 'bold'
+        fontFamily: appFontBold
     },
     amtSymbolTxt: {
         color: 'black',
-        fontSize: 14
+        fontSize: 14,
+        fontFamily: appFont
     },
     statusTxt: {
         color: '#6e6e6e',
-        fontWeight: 'bold',
+        fontFamily: appFontBold,
         textTransform: 'uppercase',
         fontSize: 14
     },
@@ -127,7 +126,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         color: '#099903',
-        flex: 1
+        flex: 1,
+        fontFamily: appFont
     },
     dueContainer: {
         flexDirection: 'row',

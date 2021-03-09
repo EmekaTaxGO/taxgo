@@ -60,6 +60,7 @@ import BalanceSheetScreen from './src/screens/BalanceSheetScreen';
 import TrialBalanceScreen from './src/screens/TrialBalanceScreen';
 import ProfitLossReportScreen from './src/screens/ProfitLossReportScreen';
 import ViewInvoiceScreen from './src/screens/ViewInvoiceScreen';
+import { appFont, appFontBold } from './src/helpers/ViewHelper';
 
 const App = () => {
 
@@ -73,7 +74,7 @@ const App = () => {
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
-        headerTitleStyle: { fontWeight: '400' }
+        headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold }
       }}>
 
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />

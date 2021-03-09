@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, SafeAreaView, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import { focusField, getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent, colorPrimary } from '../theme/Color';
@@ -11,7 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProgressDialog from '../components/ProgressDialog';
 import Store from '../redux/Store';
-import { color } from 'react-native-reanimated';
+import AppTextField from '../components/AppTextField';
 
 class AddCustomerScreen extends Component {
 
@@ -174,111 +173,111 @@ class AddCustomerScreen extends Component {
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Name'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
                         title='*required'
-                        ref={this.nameRef}
+                        fieldRef={this.nameRef}
                         editable={isFormEditabled}
                         error={this.state.nameError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.businessRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Business Name'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
                         title='*required'
-                        ref={this.businessRef}
+                        fieldRef={this.businessRef}
                         error={this.state.businessNameError}
                         editable={isFormEditabled}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.emailRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Email'
                         keyboardType='email-address'
                         returnKeyType='next'
                         lineWidth={1}
                         title='*required'
-                        ref={this.emailRef}
+                        fieldRef={this.emailRef}
                         error={this.state.emailError}
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.mobileRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Mobile'
                         keyboardType='numeric'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.mobileRef}
+                        fieldRef={this.mobileRef}
                         error={this.state.mobileError}
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.telephoneRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Telephone'
                         keyboardType='numeric'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.telephoneRef}
+                        fieldRef={this.telephoneRef}
                         error={this.state.telephoneError}
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.addressRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Address'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.addressRef}
+                        fieldRef={this.addressRef}
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.townRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Town/City'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.townRef}
+                        fieldRef={this.townRef}
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.postCodeRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle} eld
                         label='Postal Code'
                         keyboardType='numeric'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.postCodeRef}
+                        fieldRef={this.postCodeRef}
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.notesRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Notes'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.notesRef}
+                        fieldRef={this.notesRef}
                         onChange={event => this.resetAllError()}
                         editable={isFormEditabled}
                         onSubmitEditing={() => focusField(this.referenceRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Reference'
                         keyboardType='default'
                         returnKeyType='done'
                         lineWidth={1}
-                        ref={this.referenceRef}
+                        fieldRef={this.referenceRef}
                         editable={isFormEditabled}
                         onChange={event => this.resetAllError()} />
                     {this.hasAnyError() ? <Text style={{

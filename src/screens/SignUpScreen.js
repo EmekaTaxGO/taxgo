@@ -6,17 +6,17 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     SafeAreaView,
-    Picker,
     TouchableOpacity,
     Linking,
     Image
 } from 'react-native';
-import { colorPrimary, colorAccent } from '../theme/Color';
+import { colorAccent } from '../theme/Color';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProgressDialog from '../components/ProgressDialog';
+import { Picker } from '@react-native-community/picker';
 
 
 import * as authActions from '../redux/actions/authActions';
@@ -29,7 +29,8 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import { call } from 'react-native-reanimated';
 import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateBusinessName, BUSINESS_NAME_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, validatePass, PASSWORD_ERROR_MESSAGE } from '../helpers/Utils';
 import { log } from '../components/Logger';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
+import AppPicker from '../components/AppPicker';
 
 class SignUpScreen extends Component {
 
@@ -76,16 +77,14 @@ class SignUpScreen extends Component {
         const selectedCategory = businesses[this.state.categoryIndex].btitle;
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
             <Text>Business Category</Text>
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
-                <Picker
-                    selectedValue={selectedCategory}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ categoryIndex: itemIndex })}>
+            <AppPicker
+                selectedValue={selectedCategory}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ categoryIndex: itemIndex })}>
 
-                    {businesses.map((value, index) => <Picker.Item
-                        label={value.btitle} value={value.btitle} key={`${index}`} />)}
-                </Picker>
-            </View>
+                {businesses.map((value, index) => <Picker.Item
+                    label={value.btitle} value={value.btitle} key={`${index}`} />)}
+            </AppPicker>
         </View>
     }
 
@@ -98,16 +97,14 @@ class SignUpScreen extends Component {
         const selectedCountry = countries[this.state.countryIndex].currency;
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
             <Text>Currency</Text>
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
-                <Picker
-                    selectedValue={selectedCountry}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ countryIndex: itemIndex })}>
+            <AppPicker
+                selectedValue={selectedCountry}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ countryIndex: itemIndex })}>
 
-                    {countries.map((value, index) => <Picker.Item
-                        label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
-                </Picker>
-            </View>
+                {countries.map((value, index) => <Picker.Item
+                    label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
+            </AppPicker>
 
         </View>
     }
@@ -115,16 +112,14 @@ class SignUpScreen extends Component {
         const selectedBType = this.state.businessType[this.state.businessTypeIndex];
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
             <Text>Business Type</Text>
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
-                <Picker
-                    selectedValue={selectedBType}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
+            <AppPicker
+                selectedValue={selectedBType}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
 
-                    {this.state.businessType.map((value, index) => <Picker.Item
-                        label={value} value={value} key={value} />)}
-                </Picker>
-            </View>
+                {this.state.businessType.map((value, index) => <Picker.Item
+                    label={value} value={value} key={value} />)}
+            </AppPicker>
 
         </View>
     }
@@ -253,40 +248,40 @@ class SignUpScreen extends Component {
                             color='gray'
                             size={40} /> : null}
                     </TouchableOpacity> */}
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='First Name'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
                         title='*required'
-                        ref={this.firstNameRef}
+                        fieldRef={this.firstNameRef}
                         error={this.state.firstNameError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.lastNameRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Last Name'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
                         title='*required'
-                        ref={this.lastNameRef}
+                        fieldRef={this.lastNameRef}
                         error={this.state.lastNameError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.emailRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Email'
                         keyboardType='email-address'
                         returnKeyType='next'
                         lineWidth={1}
                         title='*required'
-                        ref={this.emailRef}
+                        fieldRef={this.emailRef}
                         error={this.state.emailError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.passwordRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Password'
                         keyboardType='default'
@@ -294,11 +289,11 @@ class SignUpScreen extends Component {
                         lineWidth={1}
                         secureTextEntry={true}
                         title='*required'
-                        ref={this.passwordRef}
+                        fieldRef={this.passwordRef}
                         error={this.state.passwordError}
                         onChange={event => this.resetAllError()}
                         onSubmitEditing={() => focusField(this.businessNameRef)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Business Name'
                         keyboardType='name-phone-pad'
@@ -308,19 +303,19 @@ class SignUpScreen extends Component {
                         title='*required'
                         error={this.state.businessNameError}
                         onChange={event => this.resetAllError()}
-                        ref={this.businessNameRef}
+                        fieldRef={this.businessNameRef}
                     />
                     {this.renderBusinessCategory()}
                     {this.renderCountry()}
                     {this.renderBusinessType()}
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Phone'
                         keyboardType='number-pad'
                         returnKeyType='done'
                         lineWidth={1}
                         error={this.state.phoneError}
-                        ref={this.phoneNumberRef}
+                        fieldRef={this.phoneNumberRef}
                         onChange={event => this.resetAllError()}
                     />
                     <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', marginTop: 12 }}>

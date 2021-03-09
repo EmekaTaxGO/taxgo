@@ -5,7 +5,7 @@ import { colorAccent } from '../theme/Color';
 import AppLogo from '../components/AppLogo';
 import { validateEmail, EMAIL_ERROR_MESSAGE } from '../helpers/Utils';
 import { getFieldValue, focusField } from '../helpers/TextFieldHelpers';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
 class ForgotPasswordScreen extends Component {
 
     constructor(props) {
@@ -48,12 +48,12 @@ class ForgotPasswordScreen extends Component {
             paddingHorizontal: 16
         }}>
             <AppLogo />
-            <OutlinedTextField
+            <AppTextField
                 label='Email'
                 keyboardType='email-address'
                 returnKeyType='done'
                 error={this.state.emailError}
-                ref={this.emailRef}
+                fieldRef={this.emailRef}
                 lineWidth={1}
                 onChange={event => this.resetState()}
                 onSubmitEditing={() => { }} />

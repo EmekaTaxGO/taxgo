@@ -2,7 +2,6 @@ import React, { useEffect, Component } from 'react';
 import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Picker, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ImageView from '../components/ImageView';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import AppButton from '../components/AppButton';
 import { RaisedButton, RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
@@ -15,6 +14,7 @@ import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
 import { isInteger, isEmpty } from '../helpers/Utils';
 import { API_ERROR_MESSAGE } from '../constants/appConstant';
+import AppTextField from '../components/AppTextField';
 
 class EditProfileScreen extends Component {
 
@@ -244,62 +244,62 @@ class EditProfileScreen extends Component {
                     }}
                     source={require('../assets/product.png')}
                 />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textFieldContainerStyle}
                     label='First Name'
                     keyboardType='name-phone-pad'
                     returnKeyType='next'
                     // error={this.state.emailError}
-                    ref={this.firstNameRef}
+                    fieldRef={this.firstNameRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.lastNameRef.current.focus() }} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textFieldContainerStyle}
                     label='Last Name'
                     keyboardType='name-phone-pad'
                     returnKeyType='next'
                     // error={this.state.emailError}
-                    ref={this.lastNameRef}
+                    fieldRef={this.lastNameRef}
                     lineWidth={1}
                     style={{ marginTop: 100 }}
                     onSubmitEditing={() => { this.emailRef.current.focus() }} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textFieldContainerStyle}
                     label='Email'
                     keyboardType='email-address'
                     returnKeyType='next'
                     // error={this.state.emailError}
-                    ref={this.emailRef}
+                    fieldRef={this.emailRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.businessNameRef.current.focus() }} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textFieldContainerStyle}
                     label='Business Name'
                     keyboardType='name-phone-pad'
                     returnKeyType='next'
                     // error={this.state.emailError}
-                    ref={this.businessNameRef}
+                    fieldRef={this.businessNameRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.phoneRef.current.focus() }} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textFieldContainerStyle}
                     label='Phone Number'
                     keyboardType='phone-pad'
                     returnKeyType='next'
                     // error={this.state.emailError}
-                    ref={this.phoneRef}
+                    fieldRef={this.phoneRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.businessTypeRef.current.focus() }} />
                 {this.renderBusinessCategory()}
                 {this.renderCountry()}
                 {this.renderBusinessType()}
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textFieldContainerStyle}
                     label='Registration Number'
                     keyboardType='numbers-and-punctuation'
                     returnKeyType='next'
                     // error={this.state.emailError}
-                    ref={this.regNumRef}
+                    fieldRef={this.regNumRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.countryRef.current.focus() }} />
                 <RaisedTextButton

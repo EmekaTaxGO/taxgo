@@ -10,7 +10,7 @@ import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent, snackbarActionColor, colorWhite } from '../theme/Color';
 import CardView from 'react-native-cardview';
 import Snackbar from 'react-native-snackbar';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
 class AddJournalScreen extends Component {
 
     constructor(props) {
@@ -149,29 +149,29 @@ class AddJournalScreen extends Component {
                             'Choose Ledger Account' : item.info.title}</Text>
                     </TouchableOpacity>
                 </View>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Details'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
-                    ref={item.detailsRef}
+                    fieldRef={item.detailsRef}
                     onSubmitEditing={() => this.focus(this.state.ledgers[index].debitRef)} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Debit'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
-                    ref={item.debitRef}
+                    fieldRef={item.debitRef}
                     onSubmitEditing={() => this.focus(this.state.ledgers[index].creditRef)} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Credit'
                     keyboardType='default'
                     returnKeyType={isLast ? 'done' : 'next'}
                     lineWidth={1}
-                    ref={item.creditRef}
+                    fieldRef={item.creditRef}
                     onSubmitEditing={() => {
                         if (isLast === false) {
                             this.focus(this.state.ledgers[index + 1].detailsRef);
@@ -209,7 +209,7 @@ class AddJournalScreen extends Component {
         return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View>
                 <TouchableOpacity onPress={() => this.setState({ showDate: true })}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Journal Date'
                         keyboardType='default'
@@ -217,7 +217,7 @@ class AddJournalScreen extends Component {
                         lineWidth={1}
                         editable={false}
                         title='*required'
-                        ref={this.dateRef} />
+                        fieldRef={this.dateRef} />
                 </TouchableOpacity>
                 {this.state.showDate ? <DateTimePicker
                     value={this.state.date}
@@ -226,23 +226,23 @@ class AddJournalScreen extends Component {
                     minimumDate={new Date()}
                     onChange={this.onJournalDateChanged}
                 /> : null}
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Journal Number'
                     keyboardType='numeric'
                     returnKeyType='next'
                     lineWidth={1}
                     title='*required'
-                    ref={this.journalNumRef}
+                    fieldRef={this.journalNumRef}
                     onSubmitEditing={() => this.focus(this.journalDesRef)} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Description'
                     keyboardType='default'
                     returnKeyType='done'
                     lineWidth={1}
                     title='*required'
-                    ref={this.journalDesRef} />
+                    fieldRef={this.journalDesRef} />
 
             </View>
             <FlatList

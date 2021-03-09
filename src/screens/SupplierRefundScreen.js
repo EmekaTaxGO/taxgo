@@ -12,7 +12,6 @@ import {
     Text,
     Alert
 } from 'react-native';
-import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers';
@@ -37,6 +36,7 @@ import paymentHelper from '../helpers/PaymentHelper';
 import bankHelper from '../helpers/BankHelper';
 import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
+import AppTextField from '../components/AppTextField';
 
 class SupplierRefundScreen extends Component {
 
@@ -325,7 +325,7 @@ class SupplierRefundScreen extends Component {
             <TouchableOpacity
                 onPress={this.onCustomerPress}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Supplier Name'
                     keyboardType='default'
@@ -334,12 +334,12 @@ class SupplierRefundScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this._supplier ? this._supplier.name : ''}
-                    ref={this.supplierRef} />
+                    fieldRef={this.supplierRef} />
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={this.onPaidIntoPress}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Paid Into Bank Account'
                     keyboardType='default'
@@ -348,7 +348,7 @@ class SupplierRefundScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this.bankName(this._bank)}
-                    ref={this.paidIntoRef} />
+                    fieldRef={this.paidIntoRef} />
             </TouchableOpacity>
             {/* Select Method Picker */}
             <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
@@ -364,7 +364,7 @@ class SupplierRefundScreen extends Component {
             <TouchableOpacity
                 onPress={() => this.setState({ showPaidDate: true })}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Date Paid'
                     keyboardType='default'
@@ -373,7 +373,7 @@ class SupplierRefundScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this.formattedDate(paidDate)}
-                    ref={this.datePaidRef} />
+                    fieldRef={this.datePaidRef} />
             </TouchableOpacity>
             {this.state.showPaidDate ? <DateTimePicker
                 value={this.state.paidDate ? this.state.paidDate : new Date()}
@@ -382,7 +382,7 @@ class SupplierRefundScreen extends Component {
                 maximumDate={new Date()}
                 onChange={this.onPaidDateChange}
             /> : null}
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='Amount Refunded'
                 keyboardType='number-pad'
@@ -391,8 +391,8 @@ class SupplierRefundScreen extends Component {
                 title='*required'
                 editable={false}
                 value={`${this._amount}`}
-                ref={this.amountRefundedRef} />
-            <OutlinedTextField
+                fieldRef={this.amountRefundedRef} />
+            <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'
                 keyboardType='default'
@@ -400,7 +400,7 @@ class SupplierRefundScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 value={this._reference}
-                ref={this.referenceRef} />
+                fieldRef={this.referenceRef} />
             <RaisedTextButton
                 title='Save'
                 color={colorAccent}

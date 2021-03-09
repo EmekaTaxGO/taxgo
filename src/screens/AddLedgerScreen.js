@@ -13,7 +13,7 @@ import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import { connect } from 'react-redux';
 import * as ledgerActions from '../redux/actions/ledgerActions';
 import { bindActionCreators } from 'redux';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
 
 
 class AddLedgerScreen extends Component {
@@ -136,7 +136,7 @@ class AddLedgerScreen extends Component {
                     keyboardDismissMode='on-drag'
                     keyboardShouldPersistTaps='always'
                     style={{ paddingHorizontal: 16 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         label='Ledger Account'
                         keyboardType='default'
                         returnKeyType='next'
@@ -144,33 +144,33 @@ class AddLedgerScreen extends Component {
                         errorColor='green'
                         title='*Required'
                         titleTextStyle={{ color: 'red', textDecorationColor: 'black', textShadowColor: 'black' }}
-                        ref={this.ledgerAccRef}
+                        fieldRef={this.ledgerAccRef}
                         onSubmitEditing={() => this.codeRef.current.focus()} />
-                    <OutlinedTextField
+                    <AppTextField
                         label='Nominal Code'
                         returnKeyType='done'
                         keyboardType='default'
                         lineWidth={1}
                         title='*Required'
-                        ref={this.codeRef} />
+                        fieldRef={this.codeRef} />
                     <TouchableOpacity onPress={this.onCategoryClick}>
-                        <OutlinedTextField
+                        <AppTextField
                             label='Category'
                             returnKeyType='next'
                             keyboardType='default'
                             lineWidth={1}
                             editable={false}
-                            ref={this.categoryRef}
+                            fieldRef={this.categoryRef}
                             onSubmitEditing={() => this.catGroupRef.current.focus()} />
 
                     </TouchableOpacity>
-                    <OutlinedTextField
+                    <AppTextField
                         label='Category Group'
                         keyboardType='default'
                         returnKeyType='done'
                         lineWidth={1}
                         editable={false}
-                        ref={this.catGroupRef}
+                        fieldRef={this.catGroupRef}
                         onSubmitEditing={() => log('Call Api.')} />
 
                     <RaisedTextButton

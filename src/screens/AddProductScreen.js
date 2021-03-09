@@ -21,7 +21,7 @@ import { log } from '../components/Logger';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
 
 
 class AddProductScreen extends Component {
@@ -551,32 +551,32 @@ class AddProductScreen extends Component {
                 />
             </View>
             <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Quantity'
                     keyboardType='numeric'
                     returnKeyType='next'
                     lineWidth={1}
                     editable={this.state.alreadyHaveStock}
-                    ref={this.stockQtyRef}
+                    fieldRef={this.stockQtyRef}
                     onSubmitEditing={() => this.focus(this.stockPriceRef)} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Cost Price'
                     keyboardType='number-pad'
                     returnKeyType='done'
                     lineWidth={1}
                     editable={this.state.alreadyHaveStock}
-                    ref={this.stockPriceRef} />
+                    fieldRef={this.stockPriceRef} />
                 {this.state.alreadyHaveStock ? <TouchableOpacity onPress={() => this.setState({ showStockDateDialog: true })}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='As of Date'
                         keyboardType='default'
                         returnKeyType='next'
                         editable={false}
                         lineWidth={1}
-                        ref={this.stockDateRef} />
+                        fieldRef={this.stockDateRef} />
                 </TouchableOpacity> : null}
 
                 {this.state.showStockDateDialog ? <DateTimePicker
@@ -595,67 +595,67 @@ class AddProductScreen extends Component {
                 {this.renderStrip('Others')}
             </View>
             <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Location'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
-                    ref={this.locationRef}
+                    fieldRef={this.locationRef}
                     onSubmitEditing={() => this.focus(this.weightRef)} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Weight'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
-                    ref={this.weightRef}
+                    fieldRef={this.weightRef}
                     onSubmitEditing={() => this.focus(this.barcodeRef)} />
-                {/* <OutlinedTextField
+                {/* <AppTextField
                     label='Barcode'
                     keyboardType='default'
                     returnKeyType='next'
                     lineWidth={1}
-                    ref={this.barcodeRef}
+                    fieldRef={this.barcodeRef}
                     onSubmitEditing={() => this.focus(this.notesRef)} /> */}
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Notes'
                     keyboardType='default'
                     returnKeyType='done'
                     lineWidth={1}
-                    ref={this.notesRef} />
+                    fieldRef={this.notesRef} />
             </View>
         </View>;
     }
 
     renderPriceField = () => {
         return <View style={{ flexDirection: 'column' }}>
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='Sales Price'
                 keyboardType='numeric'
                 returnKeyType='next'
-                ref={this.salePriceRef}
+                fieldRef={this.salePriceRef}
                 lineWidth={1}
                 onChangeText={text => {
                     setTimeout(this.onPriceChange, 200);
                 }}
                 onSubmitEditing={() => { this.tradePriceRef.current.focus() }} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='Trade Price'
                 keyboardType='default'
                 returnKeyType='next'
-                ref={this.tradePriceRef}
+                fieldRef={this.tradePriceRef}
                 lineWidth={1}
                 onSubmitEditing={() => { this.wholesalePriceRef.current.focus() }} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='Whole Sale Price'
                 keyboardType='default'
                 returnKeyType='done'
-                ref={this.wholesalePriceRef}
+                fieldRef={this.wholesalePriceRef}
                 lineWidth={1}
                 onSubmitEditing={() => { }} />
         </View>;
@@ -716,33 +716,33 @@ class AddProductScreen extends Component {
                 </View>
 
                 <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Code/Name'
                         keyboardType='default'
                         returnKeyType='next'
-                        ref={this.codeRef}
+                        fieldRef={this.codeRef}
                         lineWidth={1}
                         editable={!editMode}
                         onSubmitEditing={() => { this.descriptionRef.current.focus() }} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Description'
                         keyboardType='default'
                         returnKeyType={isStock ? 'next' : 'done'}
-                        ref={this.descriptionRef}
+                        fieldRef={this.descriptionRef}
                         lineWidth={1}
                         onSubmitEditing={() => {
                             if (isStock) {
                                 this.salePriceRef.current.focus()
                             }
                         }} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Bar Code'
                         keyboardType='default'
                         returnKeyType='next'
-                        ref={this.barcodeRef}
+                        fieldRef={this.barcodeRef}
                         editable={!editMode}
                         lineWidth={1}
                     />
@@ -753,23 +753,23 @@ class AddProductScreen extends Component {
 
                 <View style={{ paddingHorizontal: 16 }}>
                     <TouchableOpacity onPress={this.onSalesAccountClick}>
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.textField}
                             label='Sales Acc.'
                             keyboardType='default'
                             returnKeyType='next'
-                            ref={this.saleAccountRef}
+                            fieldRef={this.saleAccountRef}
                             lineWidth={1}
                             editable={false}
                             onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
                     </TouchableOpacity>
                     {!isStock ?
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.textField}
                             label='Rate'
                             keyboardType='number-pad'
                             returnKeyType='done'
-                            ref={this.rateRef}
+                            fieldRef={this.rateRef}
                             lineWidth={1}
                             onChangeText={text => setTimeout(this.onPriceChange, 200)}
                         /> : null}
@@ -787,14 +787,14 @@ class AddProductScreen extends Component {
                         label={value} value={value} key={`${index}`} />)}
                 </Picker>
                 <View style={{ paddingHorizontal: 16 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Vat Amount'
                         keyboardType='default'
                         returnKeyType='done'
                         lineWidth={1}
                         editable={false}
-                        ref={this.vatAmountRef}
+                        fieldRef={this.vatAmountRef}
                         onSubmitEditing={() => { }} />
                 </View>
                 <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginTop: 12 }}>
@@ -808,14 +808,14 @@ class AddProductScreen extends Component {
                 </View>
 
                 <View style={{ paddingHorizontal: 16 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Total'
                         keyboardType='default'
                         returnKeyType='done'
                         lineWidth={1}
                         editable={false}
-                        ref={this.totalAmountRef}
+                        fieldRef={this.totalAmountRef}
                         onSubmitEditing={() => { }} />
                 </View>
                 <View style={{ marginTop: 24 }}>
@@ -824,64 +824,64 @@ class AddProductScreen extends Component {
 
                 <View style={{ paddingHorizontal: 16 }}>
                     <TouchableOpacity onPress={this.onSupplierPress}>
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.textField}
                             label='Supplier'
                             keyboardType='default'
                             returnKeyType='next'
                             lineWidth={1}
                             editable={false}
-                            ref={this.supplierRef}
+                            fieldRef={this.supplierRef}
                             onSubmitEditing={() => this.SICodeRef.current.focus()} />
 
                     </TouchableOpacity>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='SI Code'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.SICodeRef}
+                        fieldRef={this.SICodeRef}
                         onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
 
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Purchase Desc.'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.purchaseDescRef}
+                        fieldRef={this.purchaseDescRef}
                         onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
 
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Cost Price'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.purchasePriceRef}
+                        fieldRef={this.purchasePriceRef}
                         onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
                     <TouchableOpacity onPress={this.onPurchaseAccPress}>
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.textField}
                             label='Purchase Acc.'
                             keyboardType='default'
                             returnKeyType='next'
                             lineWidth={1}
                             editable={false}
-                            ref={this.purchaseAccRef}
+                            fieldRef={this.purchaseAccRef}
                             onSubmitEditing={() => { }} />
 
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => this.setState({ showExpiryDateDialog: true })}>
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.textField}
                             label='Expiry Date'
                             keyboardType='default'
                             returnKeyType='next'
                             lineWidth={1}
                             editable={false}
-                            ref={this.expiryDateRef} />
+                            fieldRef={this.expiryDateRef} />
                     </TouchableOpacity>
                     {this.state.showExpiryDateDialog ? <DateTimePicker
                         value={this.state.purchaseExpiryDate}
@@ -890,22 +890,22 @@ class AddProductScreen extends Component {
                         onChange={this.onPurchaseExpiryChange}
                     /> : null}
 
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Reorder Level.'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.reorderLevelRef}
+                        fieldRef={this.reorderLevelRef}
                         onSubmitEditing={() => this.focus(this.reorderQtyRef)} />
 
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Reorder Quantity'
                         keyboardType='numeric'
                         returnKeyType='next'
                         lineWidth={1}
-                        ref={this.reorderQtyRef} />
+                        fieldRef={this.reorderQtyRef} />
                 </View>
                 {isStock ? this.renderStock() : null}
                 {isStock ? this.renderOther() : null}

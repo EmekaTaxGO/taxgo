@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -17,6 +16,7 @@ import { isEmpty, get, isUndefined, isNumber, set } from 'lodash';
 import EmptyView from '../components/EmptyView';
 import { getSavedData, TRIAL_BALANCE_REPORT } from '../services/UserStorage';
 import { showHeaderProgress } from '../helpers/ViewHelper';
+import AppTextField from '../components/AppTextField';
 
 class TrialBalanceScreen extends Component {
 
@@ -120,7 +120,7 @@ class TrialBalanceScreen extends Component {
             <TouchableOpacity
                 style={{ flex: 1, marginEnd: 6 }}
                 onPress={() => this.setState({ showFromDateDialog: true })}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={{ color: colorAccent }}
                     label='From'
                     returnKeyType='done'
@@ -128,7 +128,7 @@ class TrialBalanceScreen extends Component {
                     editable={false}
                     baseColor={colorAccent}
                     value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    ref={this._fromDateRef}
+                    fieldRef={this._fromDateRef}
                 />
             </TouchableOpacity>
             {this.state.showFromDateDialog ? <DateTimePicker
@@ -141,14 +141,14 @@ class TrialBalanceScreen extends Component {
             <TouchableOpacity
                 style={{ flex: 1, marginStart: 6 }}
                 onPress={() => this.setState({ showToDateDialog: true })}>
-                <OutlinedTextField
+                <AppTextField
                     label='To'
                     returnKeyType='done'
                     lineWidth={1}
                     editable={false}
                     baseColor={colorAccent}
                     value={timeHelper.format(this.state.toDate, this.DATE_FORMAT)}
-                    ref={this._toDateRef}
+                    fieldRef={this._toDateRef}
                 />
             </TouchableOpacity>
             {this.state.showToDateDialog ? <DateTimePicker

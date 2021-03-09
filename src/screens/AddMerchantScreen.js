@@ -2,7 +2,6 @@ const { Component } = require("react");
 import React from 'react';
 import { SafeAreaView, View, KeyboardAvoidingView, StyleSheet, Text, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
 import RadioForm from 'react-native-simple-radio-button';
@@ -13,6 +12,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import { connect } from 'react-redux';
 import * as merchantActions from '../redux/actions/merchantActions';
 import { bindActionCreators } from 'redux';
+import AppTextField from '../components/AppTextField';
 
 class AddMerchantScreen extends Component {
 
@@ -198,27 +198,27 @@ class AddMerchantScreen extends Component {
 
     renderBrainTreeField = () => {
         return <View style={{ flexDirection: 'column' }}>
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='Merchant Id'
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._merchantId}
                 onChangeText={text => this._merchantId = text} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='Private Key'
                 secureTextEntry={true}
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._privateKey}
                 onChangeText={text => this._privateKey = text} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='Public Key'
                 secureTextEntry={true}
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._publicKey}
                 onChangeText={text => this._publicKey = text} />
         </View>
@@ -226,39 +226,39 @@ class AddMerchantScreen extends Component {
 
     renderSmartPayField = () => {
         return <View style={{ flexDirection: 'column' }}>
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='POS vendor Name'
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._posVendName}
                 onChangeText={text => this._posVendName = text} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='Device Id'
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._deviceId}
                 onChangeText={text => this._deviceId = text} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='POS Registered ID'
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._posRegId}
                 onChangeText={text => this._posRegId = text} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='POS Registered Name'
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._posRegName}
                 onChangeText={text => this._posRegName = text} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='POS Business Name'
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 value={this._posBusName}
                 onChangeText={text => this._posBusName = text} />
         </View>
@@ -300,20 +300,20 @@ class AddMerchantScreen extends Component {
                                 animation={false}
                             />
                         </View> : null}
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Account Name'
                             lineWidth={1}
-                            ref={this.passRef}
+                            fieldRef={this.passRef}
                             value={this._accName}
                             onChangeText={text => this._accName = text} />
                         {isBrainTree ? this.renderBrainTreeField() : null}
                         {!isBrainTree ? this.renderSmartPayField() : null}
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Payment Type'
                             lineWidth={1}
-                            ref={this._paymentTypeRef}
+                            fieldRef={this._paymentTypeRef}
                             editable={false}
                             value={this._paymentType}
                             onChangeText={text => this._paymentType = text} />

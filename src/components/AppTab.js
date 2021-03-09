@@ -5,6 +5,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import { appFont, appFontBold } from '../helpers/ViewHelper';
 
 class AppTab extends Component {
 
@@ -45,15 +46,17 @@ class AppTab extends Component {
                 justifyContent: 'center'
             }}>
                 {this.getIcon(icon, iconType, selected ? tabSelectedColor : 'white')}
-                <Text style={{
-                    color: selected ? tabSelectedColor : 'white',
-                    fontSize: 14
-                }}>{title}</Text>
+                <Text style={[styles.text, {
+                    color: selected ? tabSelectedColor : 'white'
+                }]}>{title}</Text>
             </View>
         </TouchableHighlight>
     }
 }
 const styles = StyleSheet.create({
-
+    text: {
+        fontSize: 14,
+        fontFamily: appFontBold
+    }
 });
 export default AppTab;

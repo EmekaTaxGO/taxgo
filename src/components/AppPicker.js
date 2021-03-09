@@ -9,10 +9,12 @@ class AppPicker extends Component {
             ...styles.container,
             ...this.props.style
         }
+        const newProps = { ...this.props };
+        delete newProps.style;
         return (
             <View style={newStyle}>
                 <Picker
-                    {...this.props}>
+                    {...newProps}>
                     {this.props.children}
                 </Picker>
             </View>
@@ -23,7 +25,7 @@ const styles = StyleSheet.create({
     container: {
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: 'lightgray',
+        borderColor: 'gray',
         marginTop: 6
     }
 })

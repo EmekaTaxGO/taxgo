@@ -8,9 +8,10 @@ class AppTextField extends Component {
         const { fieldRef } = this.props;
         return (
             <OutlinedTextField
-                {...this.props}
                 ref={fieldRef}
                 tintColor='black'
+                baseColor='gray'
+                {...this.props}
             />
         )
     }

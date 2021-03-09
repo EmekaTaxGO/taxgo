@@ -36,6 +36,7 @@ import Store from '../redux/Store';
 import bankHelper from '../helpers/BankHelper';
 import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class CustomerReceiptScreen extends Component {
 
@@ -388,11 +389,8 @@ class CustomerReceiptScreen extends Component {
                 title='*required'
                 value={this._reference}
                 fieldRef={this.referenceRef} />
-            <RaisedTextButton
+            <AppButton
                 title='Save'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={this.validateAndSave} />
         </View>
 

@@ -1,22 +1,48 @@
 
-import React from 'react';
-import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent } from '../theme/Color';
-import { StyleSheet } from 'react-native';
-const AppButton = props => {
+import React, { Component } from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { appFont, appFontBold } from '../helpers/ViewHelper';
+import { colorAccent, colorPrimary } from '../theme/Color';
+class AppButton extends Component {
 
-    return <RaisedTextButton
-        title='Title'
-        color={colorAccent}
-        titleColor='white'
-        {...props}
-        style={styles.button} />
+
+    render() {
+        const { onPress, textStyle, containerStyle, title } = this.props;
+
+        const newTextStyle = {
+            ...styles.text,
+            ...textStyle
+        }
+        const newContainerStyle = {
+            ...styles.container,
+            ...containerStyle
+        }
+        return (
+            <TouchableOpacity
+                onPress={onPress}
+                style={newContainerStyle}>
+                <Text style={newTextStyle}>
+                    {title}
+                </Text>
+            </TouchableOpacity>
+        )
+    }
 }
 const styles = StyleSheet.create({
-    button: {
-        padding: 26,
-        marginTop:30,
-        fontSize:50
+    container: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 8,
+        backgroundColor: colorPrimary,
+        paddingVertical: 15,
+        marginBottom: 12,
+        marginTop: 12
+    },
+    text: {
+        fontFamily: appFontBold,
+        fontSize: 17,
+        color: 'white',
+        textTransform: 'uppercase'
     }
-});
+})
 export default AppButton;

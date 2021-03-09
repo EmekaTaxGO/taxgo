@@ -34,6 +34,7 @@ import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
 import paymentHelper from '../helpers/PaymentHelper';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class SupplierPaymentScreen extends Component {
 
@@ -383,11 +384,8 @@ class SupplierPaymentScreen extends Component {
                 title='*required'
                 value={this._reference}
                 fieldRef={this.referenceRef} />
-            <RaisedTextButton
+            <AppButton
                 title='Save'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={this.validateAndSave} />
         </View>
 

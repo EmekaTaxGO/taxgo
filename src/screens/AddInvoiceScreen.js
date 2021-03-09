@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput, FlatList, Switch } from 'react-native';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, FlatList, Switch } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -25,6 +24,8 @@ import { CreditCardInput } from 'react-native-credit-card-input';
 import CardView from 'react-native-cardview';
 import Store from '../redux/Store';
 import AppTextField from '../components/AppTextField';
+import AppPicker from '../components/AppPicker';
+import { Picker } from '@react-native-community/picker';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -298,16 +299,15 @@ class AddInvoiceScreen extends Component {
                     paddingLeft: 16,
                     paddingTop: 20
                 }}>Status</Text>
-                <View style={styles.pickerBox}>
-                    <Picker
-                        style={{ marginHorizontal: 12 }}
-                        selectedValue={issuedCat}
-                        mode='dropdown'
-                        onValueChange={(itemValue, itemIndex) => this.setState({ selectedIssuedCatIndex: itemIndex })}>
-                        {this.state.issuedcats.map((value, index) => <Picker.Item
-                            label={value} value={value} key={`${index}`} />)}
-                    </Picker>
-                </View>
+
+                <AppPicker
+                    style={styles.picker}
+                    selectedValue={issuedCat}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedIssuedCatIndex: itemIndex })}>
+                    {this.state.issuedcats.map((value, index) => <Picker.Item
+                        label={value} value={value} key={`${index}`} />)}
+                </AppPicker>
 
             </View> : null}
 
@@ -1231,6 +1231,9 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         marginHorizontal: 16,
         marginTop: 8
+    },
+    picker: {
+        marginHorizontal: 12
     }
 });
 export default connect(

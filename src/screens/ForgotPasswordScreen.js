@@ -6,6 +6,7 @@ import AppLogo from '../components/AppLogo';
 import { validateEmail, EMAIL_ERROR_MESSAGE } from '../helpers/Utils';
 import { getFieldValue, focusField } from '../helpers/TextFieldHelpers';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 class ForgotPasswordScreen extends Component {
 
     constructor(props) {
@@ -57,11 +58,8 @@ class ForgotPasswordScreen extends Component {
                 lineWidth={1}
                 onChange={event => this.resetState()}
                 onSubmitEditing={() => { }} />
-            <RaisedTextButton
+            <AppButton
                 title='Submit'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={this.validateAndResetPass} />
         </View>
     }

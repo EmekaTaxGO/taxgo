@@ -37,6 +37,7 @@ import bankHelper from '../helpers/BankHelper';
 import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class SupplierRefundScreen extends Component {
 
@@ -401,11 +402,8 @@ class SupplierRefundScreen extends Component {
                 title='*required'
                 value={this._reference}
                 fieldRef={this.referenceRef} />
-            <RaisedTextButton
+            <AppButton
                 title='Save'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={this.validateAndSave} />
         </View>
 

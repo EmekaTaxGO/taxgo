@@ -13,6 +13,7 @@ import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
 import AppLogo from '../components/AppLogo';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class ChangePasswordScreen extends Component {
 
@@ -137,12 +138,9 @@ class ChangePasswordScreen extends Component {
                         onChange={event => this.resetError()}
                         onSubmitEditing={() => { }}
                     />
-                    <RaisedTextButton
+                    <AppButton
                         title='Update'
-                        color={colorAccent}
-                        titleColor='white'
-                        onPress={this.onUpdatePassPress}
-                        style={styles.updateBtn} />
+                        onPress={this.onUpdatePassPress} />
                 </View>
             </CardView>
             <ProgressDialog visible={updatingPassword} />

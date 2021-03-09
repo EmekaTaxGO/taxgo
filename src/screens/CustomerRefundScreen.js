@@ -37,6 +37,7 @@ import bankHelper from '../helpers/BankHelper';
 import ProgressDialog from '../components/ProgressDialog';
 import paymentHelper from '../helpers/PaymentHelper';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class CustomerRefundScreen extends Component {
 
@@ -408,11 +409,8 @@ class CustomerRefundScreen extends Component {
                 title='*required'
                 value={this._reference}
                 fieldRef={this.referenceRef} />
-            <RaisedTextButton
+            <AppButton
                 title='Save'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={this.validateAndSave} />
         </View>
 

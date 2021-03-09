@@ -11,6 +11,7 @@ import { colorAccent, snackbarActionColor, colorWhite } from '../theme/Color';
 import CardView from 'react-native-cardview';
 import Snackbar from 'react-native-snackbar';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 class AddJournalScreen extends Component {
 
     constructor(props) {
@@ -251,11 +252,8 @@ class AddJournalScreen extends Component {
                 renderItem={({ item, index }) => this.renderLedgerItem(item, index)}
                 keyExtractor={(item, index) => `${index}`}
             />
-            <RaisedTextButton
+            <AppButton
                 title='Save'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={() => console.log('Pressed!')} />
         </View>
     }

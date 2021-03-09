@@ -17,6 +17,7 @@ import moment from 'moment';
 import { colorAccent } from '../theme/Color';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class UpdateUserScreen extends Component {
 
@@ -255,11 +256,8 @@ class UpdateUserScreen extends Component {
                         fontSize: 14
                     }}>
                         Please resolve all errors.</Text> : null}
-                    <RaisedTextButton
+                    <AppButton
                         title={'Update'}
-                        color={colorAccent}
-                        titleColor='white'
-                        style={styles.materialBtn}
                         onPress={this.validateAndSubmitForm} />
 
 
@@ -269,13 +267,6 @@ class UpdateUserScreen extends Component {
     }
 };
 const styles = StyleSheet.create({
-    materialBtn: {
-        padding: 26,
-        marginTop: 30,
-        marginBottom: 24,
-        fontSize: 50,
-        marginHorizontal: 16
-    },
     fieldStyle: {
         marginTop: 16
     }

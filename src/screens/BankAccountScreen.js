@@ -14,6 +14,8 @@ import Store from '../redux/Store';
 import moment from 'moment';
 import bankHelper from '../helpers/BankHelper';
 import AppTextField from '../components/AppTextField';
+import AppPicker from '../components/AppPicker';
+import AppButton from '../components/AppButton';
 
 
 class BankAccountScreen extends Component {
@@ -53,7 +55,7 @@ class BankAccountScreen extends Component {
         this.setTitle();
 
         if (this.showAccInfo) {
-            console.log('Acc Info', this.accountData());
+
         }
     }
 
@@ -248,23 +250,16 @@ class BankAccountScreen extends Component {
                         paddingTop: 14,
                         fontSize: 14
                     }}>A/C Type*</Text>
-                    <View style={{
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        borderColor: 'lightgray',
-                        marginTop: 10,
-                        marginHorizontal: 14
-                    }}>
-                        <Picker
-                            style={{ marginHorizontal: 6 }}
-                            selectedValue={accTypes[accTypeIndex].label}
-                            mode='dropdown'
-                            onValueChange={(itemValue, itemIndex) => this.setState({ accTypeIndex: itemIndex })}>
 
-                            {accTypes.map((value, index) => <Picker.Item
-                                label={value.label} value={value.label} key={`${value.id}`} />)}
-                        </Picker>
-                    </View>
+                    <AppPicker
+                        style={styles.picker}
+                        selectedValue={accTypes[accTypeIndex].label}
+                        mode='dropdown'
+                        onValueChange={(itemValue, itemIndex) => this.setState({ accTypeIndex: itemIndex })}>
+
+                        {accTypes.map((value, index) => <Picker.Item
+                            label={value.label} value={value.label} key={`${value.id}`} />)}
+                    </AppPicker>
                     <View style={{ paddingHorizontal: 16 }}>
                         <AppTextField
                             containerStyle={{ marginTop: 20 }}
@@ -358,13 +353,17 @@ class BankAccountScreen extends Component {
                                 fieldRef={this.sortCode3Ref}
                             />
                         </View> : null}
-                        <RaisedTextButton
+                        {/* <RaisedTextButton
                             containerStyle={styles.fieldStyle}
                             title={editMode ? 'Update' : 'Save'}
                             color={colorAccent}
                             titleColor='white'
                             style={styles.materialBtn}
-                            onPress={this.validateAndUpdate} />
+                            onPress={this.validateAndUpdate} /> */}
+                        <AppButton
+                            title={editMode ? 'Update' : 'Save'}
+                            onPress={this.validateAndUpdate}
+                        />
                     </View>
                     <ProgressDialog visible={updatingBankDetail} />
                 </ScrollView>
@@ -381,6 +380,11 @@ const styles = StyleSheet.create({
     },
     fieldStyle: {
         marginTop: 16
+    },
+    picker: {
+        marginHorizontal: 14,
+        marginTop: 10,
+        marginBottom: 10
     }
 });
 export default connect(

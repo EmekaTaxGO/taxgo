@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import * as ledgerActions from '../redux/actions/ledgerActions';
 import { bindActionCreators } from 'redux';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 
 class AddLedgerScreen extends Component {
@@ -173,11 +174,8 @@ class AddLedgerScreen extends Component {
                         fieldRef={this.catGroupRef}
                         onSubmitEditing={() => log('Call Api.')} />
 
-                    <RaisedTextButton
+                    <AppButton
                         title='Save'
-                        color={colorAccent}
-                        titleColor='white'
-                        style={styles.btn}
                         onPress={this.validateAndCreate} />
                     <ProgressDialog visible={ledger.updatingLedger} />
                 </ScrollView>

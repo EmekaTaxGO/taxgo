@@ -11,6 +11,7 @@ import { bindActionCreators } from 'redux';
 import ProgressDialog from '../components/ProgressDialog';
 import Store from '../redux/Store';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class AddCustomerScreen extends Component {
 
@@ -285,11 +286,8 @@ class AddCustomerScreen extends Component {
                         paddingVertical: 6
                     }}>Resolve All Error.</Text> : null}
 
-                    {isFormEditabled ? <RaisedTextButton
+                    {isFormEditabled ? <AppButton
                         title={this.isEditMode() ? 'Update' : 'Create'}
-                        color={colorAccent}
-                        titleColor='white'
-                        style={styles.materialBtn}
                         onPress={this.validateAndProcess} /> : null}
 
                     <ProgressDialog visible={this.isUpdating()} />

@@ -302,11 +302,8 @@ class EditProfileScreen extends Component {
                     fieldRef={this.regNumRef}
                     lineWidth={1}
                     onSubmitEditing={() => { this.countryRef.current.focus() }} />
-                <RaisedTextButton
+                <AppButton
                     title='Update'
-                    color={colorAccent}
-                    titleColor='white'
-                    style={styles.updateBtn}
                     onPress={this.onUpdatePress}
                 />
             </ScrollView>

@@ -11,6 +11,7 @@ import SearchView from '../components/SearchView';
 import { isEmpty } from '../helpers/Utils';
 import ImageView from '../components/ImageView';
 import { log } from 'react-native-reanimated';
+import { appFont } from '../helpers/ViewHelper';
 
 class SaleLedgerScreen extends Component {
 
@@ -70,7 +71,7 @@ class SaleLedgerScreen extends Component {
                     borderBottomWidth: 1,
                     paddingVertical: 18
                 }}>
-                    <Text style={{ color: 'black', fontSize: 16 }}>{item.nominalcode}-{item.laccount}</Text>
+                    <Text style={{ color: 'black', fontSize: 16, fontFamily: appFont }}>{item.nominalcode}-{item.laccount}</Text>
                     {/* <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Category: {item.category}</Text> */}
                 </View>
             </View>

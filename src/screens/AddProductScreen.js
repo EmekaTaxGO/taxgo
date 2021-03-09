@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Picker, StyleSheet, KeyboardAvoidingView, ScrollView, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, ScrollView, Switch, Alert } from 'react-native';
 import { colorAccent, colorWhite } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,11 +17,13 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { bindActionCreators } from 'redux';
 import Store from '../redux/Store';
 import Snackbar from 'react-native-snackbar';
-import { log } from '../components/Logger';
+import { Picker } from '@react-native-community/picker';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
+import AppPicker from '../components/AppPicker';
+import AppButton from '../components/AppButton';
 
 
 class AddProductScreen extends Component {
@@ -703,17 +705,16 @@ class AddProductScreen extends Component {
 
                 {this.renderStrip('Item')}
                 {this.renderLabel('Type')}
-                <View style={styles.typeBox}>
-                    <Picker
-                        style={{ marginHorizontal: 12 }}
-                        selectedValue={types[selectedTypeIndex].value}
-                        mode='dropdown'
-                        onValueChange={(itemValue, itemIndex) => this.setState({ selectedTypeIndex: itemIndex })}>
 
-                        {types.map((value, index) => <Picker.Item
-                            label={value.value} value={value.value} key={`${index}`} />)}
-                    </Picker>
-                </View>
+                <AppPicker
+                    style={styles.typeBox}
+                    selectedValue={types[selectedTypeIndex].value}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedTypeIndex: itemIndex })}>
+
+                    {types.map((value, index) => <Picker.Item
+                        label={value.value} value={value.value} key={`${index}`} />)}
+                </AppPicker>
 
                 <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
                     <AppTextField
@@ -777,15 +778,15 @@ class AddProductScreen extends Component {
                 </View>
 
                 {this.renderLabel('VAT/GST')}
-                <Picker
-                    style={{ marginHorizontal: 12 }}
+                <AppPicker
+                    style={styles.typeBox}
                     selectedValue={taxList[selectedTaxIndex]}
                     mode='dropdown'
                     onValueChange={this.onVatChange}>
 
                     {taxList.map((value, index) => <Picker.Item
                         label={value} value={value} key={`${index}`} />)}
-                </Picker>
+                </AppPicker>
                 <View style={{ paddingHorizontal: 16 }}>
                     <AppTextField
                         containerStyle={styles.textField}
@@ -909,11 +910,8 @@ class AddProductScreen extends Component {
                 </View>
                 {isStock ? this.renderStock() : null}
                 {isStock ? this.renderOther() : null}
-                <RaisedTextButton
+                <AppButton
                     title={this.isEditMode() ? 'Update' : 'Add'}
-                    color={colorAccent}
-                    titleColor='white'
-                    style={styles.materialBtn}
                     onPress={this.validateAndSubmitForm} />
                 <ProgressDialog visible={this.props.product.updatingProduct} />
             </ScrollView>
@@ -932,11 +930,9 @@ const styles = StyleSheet.create({
         margin: 16
     },
     typeBox: {
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: 'lightgray',
         marginHorizontal: 16,
-        marginTop: 12
+        marginTop: 12,
+        marginBottom: 12
     }
 });
 export default connect(

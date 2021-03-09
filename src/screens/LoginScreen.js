@@ -125,7 +125,8 @@ class LoginScreen extends Component {
                 <Text style={styles.forgotPass}>Forgot password?</Text>
             </TouchableOpacity>
 
-            <AppButton onPress={this.onLoginClick}
+            <AppButton
+                onPress={this.onLoginClick}
                 title='Login' />
         </View>
     }

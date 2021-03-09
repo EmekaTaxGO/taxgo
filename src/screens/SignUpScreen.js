@@ -31,6 +31,7 @@ import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, va
 import { log } from '../components/Logger';
 import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
+import AppButton from '../components/AppButton';
 
 class SignUpScreen extends Component {
 
@@ -335,11 +336,8 @@ class SignUpScreen extends Component {
                                 fontSize: 11,
                                 alignSelf: 'center'
                             }}>Resolve All Error First!</Text> : null}
-                    <RaisedTextButton
+                    <AppButton
                         title='Sign Up'
-                        color={colorAccent}
-                        titleColor='white'
-                        style={styles.materialBtn}
                         onPress={this.validateAndSignUp} />
                     <View style={{ flexDirection: 'row', marginVertical: 18, alignItems: 'center' }}>
                         <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
@@ -398,11 +396,7 @@ class SignUpScreen extends Component {
     }
 }
 const styles = StyleSheet.create({
-    materialBtn: {
-        padding: 26,
-        marginTop: 15,
-        fontSize: 50
-    },
+
     textField: {
         marginTop: 16
     }

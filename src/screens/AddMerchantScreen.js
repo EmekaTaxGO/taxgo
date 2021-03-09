@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import * as merchantActions from '../redux/actions/merchantActions';
 import { bindActionCreators } from 'redux';
 import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class AddMerchantScreen extends Component {
 
@@ -317,11 +318,8 @@ class AddMerchantScreen extends Component {
                             editable={false}
                             value={this._paymentType}
                             onChangeText={text => this._paymentType = text} />
-                        <RaisedTextButton
+                        <AppButton
                             title={this.isEditMode() ? 'Update' : 'Save'}
-                            color={colorAccent}
-                            titleColor='white'
-                            style={styles.materialBtn}
                             onPress={this.validateAndSave} />
                     </View>
                 </ScrollView>

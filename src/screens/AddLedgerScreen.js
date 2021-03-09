@@ -131,13 +131,14 @@ class AddLedgerScreen extends Component {
     render() {
         const { ledger } = this.props;
 
-        return <SafeAreaView style={{ flex: 1 }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ flex: 1 }}
                     keyboardDismissMode='on-drag'
                     keyboardShouldPersistTaps='always'
                     style={{ paddingHorizontal: 16 }}>
                     <AppTextField
+                        containerStyle={styles.fieldStyle}
                         label='Ledger Account'
                         keyboardType='default'
                         returnKeyType='next'
@@ -148,6 +149,7 @@ class AddLedgerScreen extends Component {
                         fieldRef={this.ledgerAccRef}
                         onSubmitEditing={() => this.codeRef.current.focus()} />
                     <AppTextField
+                        containerStyle={styles.fieldStyle}
                         label='Nominal Code'
                         returnKeyType='done'
                         keyboardType='default'
@@ -156,6 +158,7 @@ class AddLedgerScreen extends Component {
                         fieldRef={this.codeRef} />
                     <TouchableOpacity onPress={this.onCategoryClick}>
                         <AppTextField
+                            containerStyle={styles.fieldStyle}
                             label='Category'
                             returnKeyType='next'
                             keyboardType='default'
@@ -166,6 +169,7 @@ class AddLedgerScreen extends Component {
 
                     </TouchableOpacity>
                     <AppTextField
+                        containerStyle={styles.fieldStyle}
                         label='Category Group'
                         keyboardType='default'
                         returnKeyType='done'
@@ -189,6 +193,9 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         paddingHorizontal: 20,
         paddingVertical: 24
+    },
+    fieldStyle: {
+        marginTop: 20
     }
 });
 export default connect(

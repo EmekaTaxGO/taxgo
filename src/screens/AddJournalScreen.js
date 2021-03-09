@@ -206,8 +206,8 @@ class AddJournalScreen extends Component {
         ref.current.focus();
     }
 
-    render() {
-        return <View style={{ flex: 1, backgroundColor: 'white' }}>
+    renderHeader = () => {
+        return (
             <View>
                 <TouchableOpacity onPress={() => this.setState({ showDate: true })}>
                     <AppTextField
@@ -246,11 +246,17 @@ class AddJournalScreen extends Component {
                     fieldRef={this.journalDesRef} />
 
             </View>
+        )
+    }
+
+    render() {
+        return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <FlatList
                 style={{ flex: 1 }}
                 data={this.state.ledgers}
                 renderItem={({ item, index }) => this.renderLedgerItem(item, index)}
                 keyExtractor={(item, index) => `${index}`}
+                ListHeaderComponent={this.renderHeader}
             />
             <AppButton
                 containerStyle={{ marginHorizontal: 16 }}

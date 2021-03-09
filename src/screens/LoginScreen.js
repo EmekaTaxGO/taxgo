@@ -102,7 +102,6 @@ class LoginScreen extends Component {
                 returnKeyType='next'
                 error={this.state.emailError}
                 lineWidth={1}
-                tintColor={colorAccent}
                 onChange={event => this.resetState()}
                 fieldRef={this.emailRef}
                 onSubmitEditing={() => {

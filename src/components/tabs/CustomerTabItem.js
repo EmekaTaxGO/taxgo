@@ -9,6 +9,9 @@ import * as contactActions from '../../redux/actions/contactActions';
 import { bindActionCreators } from 'redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ContactAvatarItem from '../ContactAvatarItem';
+import { rColor } from '../../theme/Color';
+import { get, isEmpty } from 'lodash';
 
 class CustomerTabItem extends Component {
 
@@ -50,35 +53,17 @@ class CustomerTabItem extends Component {
 
     renderListItem = (data, rowMap) => {
         const { index, item } = data;
-        return <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingLeft: 16,
-            backgroundColor: 'white'
-        }}>
-            <Text style={{
-                fontSize: 34,
-                borderRadius: 4,
-                borderWidth: 1,
-                borderColor: 'green',
-                paddingHorizontal: 16,
-                paddingVertical: 4
-            }}>{item.name.charAt(0)}</Text>
-            <View style={{
-                flex: 1,
-                flexDirection: 'column',
-                paddingVertical: 14,
-                marginLeft: 16,
-                justifyContent: 'center',
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 1
-            }}>
-                <Text style={{ color: 'black' }}>{item.name}</Text>
-                <Text style={{ marginTop: 2, color: 'gray' }}>{item.email}</Text>
-                <Text style={{ marginTop: 2, color: 'gray' }}>{item.mobile}</Text>
-            </View>
-        </View>
+        const color = rColor[index % rColor.length];
+        const firstChar = isEmpty(get(item, 'name', '')) ? '-' : item.name.charAt(0);
+        return (
+            <ContactAvatarItem
+                color={color}
+                text={firstChar}
+                title={item.name}
+                subtitle={item.email}
+                description={item.mobile}
+            />
+        )
     }
     onViewClick = (data) => {
         const { item } = data;

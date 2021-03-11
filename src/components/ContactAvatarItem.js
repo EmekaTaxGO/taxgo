@@ -25,9 +25,9 @@ class ContactAvatarItem extends Component {
                     text={text}
                 />
                 <View style={styles.content}>
-                    <Title >{title}</Title>
-                    <SubTitle style={styles.subtitle}>{subtitle}</SubTitle>
-                    <AppText style={styles.description}>{description}</AppText>
+                    {title ? <Title>{title}</Title> : null}
+                    {subtitle ? <SubTitle style={styles.subtitle}>{subtitle}</SubTitle> : null}
+                    {description ? <AppText style={styles.description}>{description}</AppText> : null}
                 </View>
             </View>
         )

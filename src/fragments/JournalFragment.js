@@ -10,6 +10,8 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 import { isEmpty } from '../helpers/Utils';
+import ContactAvatarItem from '../components/ContactAvatarItem';
+import { rColor } from '../theme/Color';
 
 class JournalFragment extends Component {
 
@@ -46,37 +48,16 @@ class JournalFragment extends Component {
     }
 
     listItem = ({ item, index }) => {
-        return <View style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center'
-        }}>
-            <View style={{
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-                backgroundColor: '#023380',
-                marginLeft: 16,
-                marginVertical: 12,
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
-                <Text style={{ fontSize: 30, color: 'white' }}>J</Text>
-            </View>
-            <View style={{
-                flex: 1,
-                flexDirection: 'column',
-                justifyContent: 'center',
-                borderBottomWidth: 1,
-                marginLeft: 18,
-                borderColor: 'lightgray',
-                paddingVertical: 12
-            }}>
-                <Text style={styles.textStyle}>{item.description}</Text>
-                <Text style={[styles.textStyle, { marginTop: 4 }]}>{item.total}</Text>
-                <Text style={[styles.textStyle, { marginTop: 4 }]}>{item.date}</Text>
-            </View>
-        </View>
+        const color = rColor[2 % rColor.length];
+        return (
+            <ContactAvatarItem
+                color={color}
+                text='J'
+                title={item.description}
+                subtitle={item.total}
+                description={item.date}
+            />
+        )
     }
 
     fetchMyJournal = () => {

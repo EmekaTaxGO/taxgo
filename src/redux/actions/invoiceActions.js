@@ -93,11 +93,11 @@ export const getPurchaseCNInvoiceList = () => {
     }
 }
 
-export const getSalesInvoice = () => {
+export const getSalesInvoice = (id) => {
     return (dispatch) => {
         dispatch({ type: FETCH_SALES_INVOICE_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/Sales/salesview/?id=4509&page=sales')
+        return Api.get(`/sales/viewInvoice/${id}/${authData.id}/sales`)
             .then(response => {
                 dispatch({
                     type: FETCH_SALES_INVOICE_SUCCESS,

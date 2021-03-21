@@ -63,7 +63,8 @@ class ViewInvoiceScreen extends Component {
 
     fetchInvoiceDetails = () => {
         const { invoiceActions } = this.props;
-        invoiceActions.getSalesInvoice();
+        const { invoiceId } = this.props.route.params;
+        invoiceActions.getSalesInvoice(invoiceId);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -98,25 +99,25 @@ class ViewInvoiceScreen extends Component {
     }
 
     renderHeader = () => {
-        const salesView = get(this.state.invoice, 'salesView', {});
-        const customer = get(this.state.invoice, 'cname', {});
+        const data = get(this.state.invoice, 'data', {});
+        const customer = get(this.state.invoice, 'customer', {});
 
         return (
             <View style={styles.container}>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.invNumLabel}>Invoice No:</Text>
-                    <Text style={styles.invNumValue}>{salesView.invoiceno}</Text>
+                    <Text style={styles.invNumValue}>{data.invoiceno}</Text>
                 </View>
                 <Text style={styles.buyerLabel}>Buyers</Text>
                 <Text style={styles.email}>{customer.email}</Text>
                 <View style={styles.dateContainer}>
-                    <Text style={styles.createdTxt}>Created: {salesView.sdate}</Text>
-                    <Text style={styles.dueDateTxt}>Due: {salesView.ldate}</Text>
+                    <Text style={styles.createdTxt}>Created: {data.sdate}</Text>
+                    <Text style={styles.dueDateTxt}>Due: {data.ldate}</Text>
                 </View>
                 {this.renderSectionLabel('near-me', 'Invoice Address')}
-                <Text style={styles.sectionTxt}>{salesView.inaddress}</Text>
+                <Text style={styles.sectionTxt}>{data.inaddress}</Text>
                 {this.renderSectionLabel('place', 'Deliver Address')}
-                <Text style={styles.sectionTxt}>{salesView.deladdress}</Text>
+                <Text style={styles.sectionTxt}>{data.deladdress}</Text>
                 <Text style={styles.productTxt}>Products</Text>
             </View>
         )
@@ -130,7 +131,7 @@ class ViewInvoiceScreen extends Component {
         if (invoice.fetchSalesInvoiceDetailError) {
             <FullScreenError tryAgainClick={this.fetchInvoiceDetails} />
         }
-        const salesList = get(this.state.invoice, 'salesList', []);
+        const salesList = get(this.state.invoice, 'invoiceItems', []);
 
         const total = sumBy(this.state.products, product => parseFloat(product.total));
         return (

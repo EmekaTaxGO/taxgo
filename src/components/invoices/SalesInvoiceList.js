@@ -71,7 +71,7 @@ class SalesInvoiceList extends Component {
         const { item } = data;
         this.props.navigation.push('ViewInvoiceScreen', {
             title: 'Sale',
-            invoiceId: item.id
+            item
         })
     }
 

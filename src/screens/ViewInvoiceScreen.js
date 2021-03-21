@@ -63,8 +63,8 @@ class ViewInvoiceScreen extends Component {
 
     fetchInvoiceDetails = () => {
         const { invoiceActions } = this.props;
-        const { invoiceId } = this.props.route.params;
-        invoiceActions.getSalesInvoice(invoiceId);
+        const { item } = this.props.route.params;
+        invoiceActions.getSalesInvoice(item.id);
     }
 
     componentDidUpdate(prevProps, prevState) {

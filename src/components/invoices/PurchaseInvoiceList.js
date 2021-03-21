@@ -69,7 +69,11 @@ class PurchaseInvoiceList extends Component {
     }
 
     onViewClick = (data) => {
-        console.log('View Click!');
+        const { item } = data;
+        this.props.navigation.push('ViewInvoiceScreen', {
+            title: 'Purchase',
+            item
+        })
     }
 
     onEditClick = (data) => {

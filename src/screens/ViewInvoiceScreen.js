@@ -11,9 +11,11 @@ import * as invoiceActions from '../redux/actions/invoiceActions';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import printSalesInvoiceRequest from '../data/printSalesInvoiceRequest';
-import { getApiErrorMsg, showError } from '../helpers/Utils';
+import { getApiErrorMsg, showError, toFloat } from '../helpers/Utils';
 import pdfHelper from '../helpers/PdfHelper';
 import ProgressDialog from '../components/ProgressDialog'
+import timehelper from '../helpers/TimeHelper';
+import { DATE_FORMAT } from '../constants/appConstant';
 
 class ViewInvoiceScreen extends Component {
 
@@ -64,7 +66,8 @@ class ViewInvoiceScreen extends Component {
     fetchInvoiceDetails = () => {
         const { invoiceActions } = this.props;
         const { item } = this.props.route.params;
-        invoiceActions.getSalesInvoice(item.id);
+        console.log('Item is:', JSON.stringify(item, null, 2));
+        invoiceActions.getViewInvoice(item.id, item.type);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -111,8 +114,8 @@ class ViewInvoiceScreen extends Component {
                 <Text style={styles.buyerLabel}>Buyers</Text>
                 <Text style={styles.email}>{customer.email}</Text>
                 <View style={styles.dateContainer}>
-                    <Text style={styles.createdTxt}>Created: {data.sdate}</Text>
-                    <Text style={styles.dueDateTxt}>Due: {data.ldate}</Text>
+                    <Text style={styles.createdTxt}>Created: {timehelper.format(data.sdate, 'DD-MM-YYYY')}</Text>
+                    <Text style={styles.dueDateTxt}>Due: {timehelper.format(data.ldate, 'DD-MM-YYYY')}</Text>
                 </View>
                 {this.renderSectionLabel('near-me', 'Invoice Address')}
                 <Text style={styles.sectionTxt}>{data.inaddress}</Text>
@@ -132,8 +135,11 @@ class ViewInvoiceScreen extends Component {
             <FullScreenError tryAgainClick={this.fetchInvoiceDetails} />
         }
         const salesList = get(this.state.invoice, 'invoiceItems', []);
+        const data = get(this.state.invoice, 'data', {});
 
-        const total = sumBy(this.state.products, product => parseFloat(product.total));
+        // const total = sumBy(this.state.products, product => parseFloat(product.total));
+        const total = toFloat(get(data, 'outstanding', '0'));
+        const hasOutstanding = data.status === 0 || data.status === 1;
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
                 <FlatList
@@ -146,7 +152,7 @@ class ViewInvoiceScreen extends Component {
                     )}
                     ListHeaderComponent={() => this.renderHeader()}
                 />
-                {this.renderCheckoutContainer(total)}
+                {hasOutstanding ? this.renderCheckoutContainer(total) : null}
                 <ProgressDialog visible={this.state.fetching} />
             </SafeAreaView>
         )

@@ -93,11 +93,13 @@ export const getPurchaseCNInvoiceList = () => {
     }
 }
 
-export const getSalesInvoice = (id) => {
+export const getViewInvoice = (id, type) => {
     return (dispatch) => {
         dispatch({ type: FETCH_SALES_INVOICE_REQUEST });
         const { authData } = Store.getState().auth;
-        return Api.get(`/sales/viewInvoice/${id}/${authData.id}/sales`)
+
+        const pathSegment = (type === 'sales' || type === 'scredit') ? 'sales' : 'purchase';
+        return Api.get(`/${pathSegment}/viewInvoice/${id}/${authData.id}/${type}`)
             .then(response => {
                 dispatch({
                     type: FETCH_SALES_INVOICE_SUCCESS,

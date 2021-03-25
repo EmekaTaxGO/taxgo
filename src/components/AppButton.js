@@ -7,7 +7,7 @@ class AppButton extends Component {
 
 
     render() {
-        const { onPress, textStyle, containerStyle, title } = this.props;
+        const { onPress, textStyle, containerStyle, title, disabled } = this.props;
 
         const newTextStyle = {
             ...styles.text,
@@ -17,8 +17,12 @@ class AppButton extends Component {
             ...styles.container,
             ...containerStyle
         }
+        if (disabled) {
+            newContainerStyle.backgroundColor = 'lightgray';
+        }
         return (
             <TouchableOpacity
+                disabled={disabled}
                 onPress={onPress}
                 style={newContainerStyle}>
                 <Text style={newTextStyle}>

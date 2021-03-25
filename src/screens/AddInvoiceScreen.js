@@ -837,18 +837,18 @@ class AddInvoiceScreen extends Component {
             flexDirection: 'column',
             flex: 1
         }}>
-            <Picker
+            <AppPicker
                 style={{ marginHorizontal: 16 }}
                 selectedValue={this.state.paymentMode[this.state.paymentIndex]}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) => this.setState({ paymentIndex: itemIndex })}>
                 {this.state.paymentMode.map((value, index) => <Picker.Item
                     label={value} value={value} key={`${index}`} />)}
-            </Picker>
-            <View style={{
+            </AppPicker>
+            {/* <View style={{
                 borderBottomColor: 'lightgray',
                 borderBottomWidth: 1
-            }} />
+            }} /> */}
             {this.state.paymentIndex === 2 ? this.renderRecordPayment() : null}
             {this.state.paymentIndex === 1 ? this.renderCardInfo() : null}
 

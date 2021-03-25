@@ -122,6 +122,19 @@ export const showError = (message) => {
     });
 }
 
+export const showSuccess = (message) => {
+    Snackbar.show({
+        text: message,
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: 'green',
+        action: {
+            text: 'OK',
+            textColor: colorWhite,
+            onPress: () => { }
+        }
+    });
+}
+
 export const DEFAULT_PICKER_OPTIONS = {
     mediaType: 'photo',
     quality: 0,

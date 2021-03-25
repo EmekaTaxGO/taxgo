@@ -10,6 +10,7 @@ import Title from '../../components/item/Title';
 import SubTitle from '../../components/item/SubTitle';
 import { appFont, appFontBold } from '../../helpers/ViewHelper';
 import timeHelper from '../../helpers/TimeHelper';
+import { H_DATE_FORMAT } from '../../constants/appConstant';
 class SalesInvoiceListItem extends Component {
 
     DATE_FORMAT = 'YYYY-MM-DD';
@@ -73,7 +74,7 @@ class SalesInvoiceListItem extends Component {
                         </View>
                         <SubTitle style={styles.descriptionTxt}>Delivery Address: {item.deladdress}</SubTitle>
                         <View style={styles.dueContainer}>
-                            <Text style={[styles.dueTxt, { color: dueColor }]}>DUE:{timeHelper.format(item.ldate, 'DD-MM-YYYY')}</Text>
+                            <Text style={[styles.dueTxt, { color: dueColor }]}>DUE:{timeHelper.format(item.ldate, H_DATE_FORMAT)}</Text>
                             <Text style={[styles.statusTxt, { color: statusColor }]}>{this.getStatus(item.status)}</Text>
                         </View>
                     </View>

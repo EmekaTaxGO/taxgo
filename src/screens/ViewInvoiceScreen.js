@@ -1,4 +1,4 @@
-import { get, sumBy } from 'lodash';
+import { get, isEmpty, sumBy } from 'lodash';
 import React, { Component } from 'react';
 import { FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -11,11 +11,14 @@ import * as invoiceActions from '../redux/actions/invoiceActions';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import printSalesInvoiceRequest from '../data/printSalesInvoiceRequest';
-import { getApiErrorMsg, showError, toFloat } from '../helpers/Utils';
+import { getApiErrorMsg, showError, showSuccess, toFloat } from '../helpers/Utils';
 import pdfHelper from '../helpers/PdfHelper';
 import ProgressDialog from '../components/ProgressDialog'
 import timehelper from '../helpers/TimeHelper';
-import { DATE_FORMAT } from '../constants/appConstant';
+import { CUSTOMER_SALES_PAYMENT, DATE_FORMAT, H_DATE_FORMAT } from '../constants/appConstant';
+import AppText from '../components/AppText';
+import InvoicePaymentInfo from '../components/payment/InvoicePaymentInfo';
+import nav from '../helpers/NavigationHelper';
 
 class ViewInvoiceScreen extends Component {
 
@@ -66,7 +69,6 @@ class ViewInvoiceScreen extends Component {
     fetchInvoiceDetails = () => {
         const { invoiceActions } = this.props;
         const { item } = this.props.route.params;
-        console.log('Item is:', JSON.stringify(item, null, 2));
         invoiceActions.getViewInvoice(item.id, item.type);
     }
 
@@ -87,6 +89,49 @@ class ViewInvoiceScreen extends Component {
             </View>
         )
     }
+
+    onPayPress = () => {
+        const data = get(this.state.invoice, 'data', {});
+        const customer = get(this.state.invoice, 'customer', {});
+        const payload = {
+            outstanding: data.outstanding,
+            url: '/sales/customerPayment',
+            showPaymentChooser: false,
+            source: CUSTOMER_SALES_PAYMENT,
+            payment_request: {
+                customerid: customer.id,
+                sinvoice: `${data.id}`
+            }
+        };
+        nav.pushPaymentScreen(this.props.navigation, payload, data => {
+
+            this.fetchInvoiceDetails();
+            this.refreshInvoiceList();
+            setTimeout(() => {
+                showSuccess('Paid Successfully!');
+            }, 400);
+        })
+    }
+
+    refreshInvoiceList = () => {
+        const { item } = this.props.route.params;
+        const { invoiceActions } = this.props;
+        switch (item.type) {
+            case 'sales':
+            default:
+                invoiceActions.getSalesInvoiceList();
+                break;
+            case 'scredit':
+                invoiceActions.getSalesCNInvoiceList();
+                break;
+            case 'purchase':
+                invoiceActions.getPurchaseInvoiceList();
+                break;
+            case 'pcredit':
+                invoiceActions.getPurchaseCNInvoiceList();
+                break;
+        }
+    }
     renderCheckoutContainer = (total) => {
         return (
             <View style={styles.paymentContainer}>
@@ -94,7 +139,7 @@ class ViewInvoiceScreen extends Component {
                     <Text style={styles.payableLabel}>Total Payable</Text>
                     <Text style={styles.amountVal}>{total.toFixed(2)}</Text>
                 </View>
-                <TouchableOpacity style={styles.payBtn}>
+                <TouchableOpacity style={styles.payBtn} onPress={this.onPayPress}>
                     <Text style={styles.payTxt}>Pay Now</Text>
                 </TouchableOpacity>
             </View>
@@ -114,14 +159,40 @@ class ViewInvoiceScreen extends Component {
                 <Text style={styles.buyerLabel}>Buyers</Text>
                 <Text style={styles.email}>{customer.email}</Text>
                 <View style={styles.dateContainer}>
-                    <Text style={styles.createdTxt}>Created: {timehelper.format(data.sdate, 'DD-MM-YYYY')}</Text>
-                    <Text style={styles.dueDateTxt}>Due: {timehelper.format(data.ldate, 'DD-MM-YYYY')}</Text>
+                    <Text style={styles.createdTxt}>Created: {timehelper.format(data.sdate, H_DATE_FORMAT)}</Text>
+                    <Text style={styles.dueDateTxt}>Due: {timehelper.format(data.ldate, H_DATE_FORMAT)}</Text>
                 </View>
                 {this.renderSectionLabel('near-me', 'Invoice Address')}
                 <Text style={styles.sectionTxt}>{data.inaddress}</Text>
                 {this.renderSectionLabel('place', 'Deliver Address')}
                 <Text style={styles.sectionTxt}>{data.deladdress}</Text>
-                <Text style={styles.productTxt}>Products</Text>
+                <Text style={styles.titleStyle}>Products</Text>
+            </View>
+        )
+    }
+
+    renderFooter = () => {
+        const banking = get(this.state.invoice, 'banking', []);
+        return (
+            <View style={{ flexDirection: 'column', paddingVertical: 12 }}>
+                <AppText
+                    style={styles.titleStyle}>Payment Information</AppText>
+                <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginTop: 12 }}>
+                    <AppText style={styles.paymentHeader}>A/c no</AppText>
+                    <AppText style={[styles.paymentHeader, { textAlign: 'center' }]}>Paid Method</AppText>
+                    <AppText style={[styles.paymentHeader, { textAlign: 'center' }]}>Amount</AppText>
+                    <AppText style={[styles.paymentHeader, { textAlign: 'right' }]}>Date</AppText>
+                </View>
+                <FlatList
+                    style={{ paddingHorizontal: 16 }}
+                    data={banking}
+                    keyExtractor={(item, index) => `${index}`}
+                    renderItem={({ item, index }) => (
+                        <InvoicePaymentInfo
+                            item={item}
+                        />
+                    )}
+                />
             </View>
         )
     }
@@ -139,6 +210,7 @@ class ViewInvoiceScreen extends Component {
 
         // const total = sumBy(this.state.products, product => parseFloat(product.total));
         const total = toFloat(get(data, 'outstanding', '0'));
+        const banking = get(this.state.invoice, 'banking', []);
         const hasOutstanding = data.status === 0 || data.status === 1;
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -151,6 +223,7 @@ class ViewInvoiceScreen extends Component {
                             isLast={index + 1 === salesList.length} />
                     )}
                     ListHeaderComponent={() => this.renderHeader()}
+                    ListFooterComponent={() => banking ? this.renderFooter() : null}
                 />
                 {hasOutstanding ? this.renderCheckoutContainer(total) : null}
                 <ProgressDialog visible={this.state.fetching} />
@@ -164,7 +237,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flexDirection: 'column',
-        paddingVertical: 12
+        paddingTop: 12
     },
     text: {
         fontSize: 40,
@@ -273,7 +346,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 12
     },
-    productTxt: {
+    titleStyle: {
         color: 'black',
         fontFamily: appFontBold,
         paddingHorizontal: 16,
@@ -284,6 +357,14 @@ const styles = StyleSheet.create({
     },
     headerRightContainer: {
         flexDirection: 'row'
+    },
+    paymentHeader: {
+        textAlign: 'left',
+        color: 'black',
+        fontSize: 14,
+        paddingVertical: 4,
+        flex: 1,
+        fontFamily: appFontBold
     }
 })
 export default connect(

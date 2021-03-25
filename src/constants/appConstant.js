@@ -1,6 +1,7 @@
 
 export const DRAWER_ICON_SIZE = 26
 export const DATE_FORMAT = 'DD MMMM, YYYY';
+export const H_DATE_FORMAT = 'YYYY-MM-DD';
 export const UI_ALERT_CONTROLLER = 'UIAlertController';
 export const API_ERROR_MESSAGE = 'Something went wrong!';
 export const NO_INTERNET_ERROR = 'No Internet!';
@@ -10,3 +11,6 @@ export const BASE_URL = 'https://api.parcel-king.com/taxgo';
 
 export const TERMS_AND_CONDITION_URL = 'https://taxgoglobal.com/termsandconditions';
 export const PRIVACY_POLICY_URL = 'https://taxgoglobal.com/privacy';
+
+export const CUSTOMER_SALES_PAYMENT = 'customer_sales_payment';
+export const CUSTOMER_PURCHASE_PAYMENT = 'customer_purchase_payment';

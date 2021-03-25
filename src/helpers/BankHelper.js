@@ -1,3 +1,5 @@
+const { get, isEmpty } = require("lodash");
+
 getAccTypeIndex = accType => {
     switch (accType) {
         case 'savings':
@@ -77,10 +79,37 @@ getPaidMethod = (index) => {
             return '';
     }
 }
+getBankName = bank => {
+    const nominalcode = get(bank, 'nominalcode');
+    const laccount = get(bank, 'laccount');
+    if (isEmpty(nominalcode)) {
+        return '';
+    }
+    return nominalcode + '-' + laccount;
+}
+getPayMethodIndex = (method) => {
+    switch (method) {
+        case 'cash':
+            return 1;
+        case 'current':
+            return 2;
+        case 'electronic':
+            return 3;
+        case 'credit/debit card':
+            return 4;
+        case 'paypal':
+            return 5;
+        default:
+            return 0;
+    }
+}
+
 module.exports = {
     getAccType,
     getAccTypeIndex,
     getAccTypeArray,
     getPaidMethodArray,
-    getPaidMethod
+    getPaidMethod,
+    getBankName,
+    getPayMethodIndex
 }

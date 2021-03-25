@@ -26,7 +26,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 5,
         borderColor: 'gray',
-        marginTop: 6
+        marginTop: 6,
+        paddingVertical: 4
     }
 })
 export default AppPicker;

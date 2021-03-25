@@ -6,6 +6,11 @@ import CardView from 'react-native-cardview';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import Store from '../../redux/Store';
 import { rColor } from '../../theme/Color';
+import Title from '../../components/item/Title';
+import SubTitle from '../../components/item/SubTitle';
+import { appFont, appFontBold } from '../../helpers/ViewHelper';
+import timeHelper from '../../helpers/TimeHelper';
+import { H_DATE_FORMAT } from '../../constants/appConstant';
 class SalesInvoiceListItem extends Component {
 
     DATE_FORMAT = 'YYYY-MM-DD';
@@ -29,6 +34,18 @@ class SalesInvoiceListItem extends Component {
         }
     }
 
+    getStatusColor = status => {
+        switch (status) {
+            case 0:
+            default:
+                return 'red';
+            case 1:
+                return 'orange';
+            case 2:
+                return '#099903';
+        }
+    }
+
     render() {
 
         const { index, item } = this.props.data;
@@ -37,6 +54,7 @@ class SalesInvoiceListItem extends Component {
         const title = item.invoiceno + (customerName ? '-' + customerName : '');
         const isPast = moment(item.ldate).isBefore(moment().format(this.DATE_FORMAT));
         const dueColor = (isPast && item.status !== 2) ? 'red' : '#099903';
+        const statusColor = this.getStatusColor(item.status);
         return (
             <CardView
                 cardElevation={12}
@@ -50,14 +68,14 @@ class SalesInvoiceListItem extends Component {
                     </View>
                     <View style={styles.mainContent}>
                         <View style={{ flexDirection: 'row' }}>
-                            <Text style={styles.titleTxt} numberOfLines={1}>{title}</Text>
+                            <Title style={styles.titleTxt} numberOfLines={1}>{title}</Title>
                             <Text style={styles.amountTxt}>{item.total}
                                 <Text style={styles.amtSymbolTxt}> {this.symbol}</Text></Text>
                         </View>
-                        <Text style={styles.descriptionTxt}>Delivery Address: {item.deladdress}</Text>
+                        <SubTitle style={styles.descriptionTxt}>Delivery Address: {item.deladdress}</SubTitle>
                         <View style={styles.dueContainer}>
-                            <Text style={[styles.dueTxt, { color: dueColor }]}>DUE:{item.ldate}</Text>
-                            <Text style={styles.statusTxt}>{this.getStatus(item.status)}</Text>
+                            <Text style={[styles.dueTxt, { color: dueColor }]}>DUE:{timeHelper.format(item.ldate, H_DATE_FORMAT)}</Text>
+                            <Text style={[styles.statusTxt, { color: statusColor }]}>{this.getStatus(item.status)}</Text>
                         </View>
                     </View>
                 </View>
@@ -94,36 +112,32 @@ const styles = StyleSheet.create({
         flex: 1
     },
     titleTxt: {
-        color: 'black',
-        fontWeight: 'bold',
-        fontSize: 16,
         flex: 1,
         marginEnd: 12
     },
     descriptionTxt: {
-        color: '#777777',
-        fontSize: 14,
         flex: 1,
         marginTop: 4
     },
     amountTxt: {
         fontSize: 16,
         color: '#727272',
-        fontWeight: 'bold'
+        fontFamily: appFontBold
     },
     amtSymbolTxt: {
         color: 'black',
-        fontSize: 14
+        fontSize: 14,
+        fontFamily: appFont
     },
     statusTxt: {
         color: '#6e6e6e',
-        fontWeight: 'bold',
+        fontFamily: appFontBold,
         textTransform: 'uppercase',
         fontSize: 14
     },
     dueTxt: {
         fontSize: 15,
-        fontWeight: 'bold',
+        fontFamily: appFontBold,
         color: '#099903',
         flex: 1
     },

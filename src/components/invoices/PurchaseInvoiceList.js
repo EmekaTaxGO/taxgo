@@ -13,6 +13,7 @@ import FullScreenError from '../../components/FullScreenError';
 import EmptyView from '../../components/EmptyView';
 import OnScreenSpinner from '../../components/OnScreenSpinner';
 import { isEmpty } from '../../helpers/Utils'
+import SalesInvoiceListItem from './SalesInvoiceListItem';
 
 class PurchaseInvoiceList extends Component {
     constructor(props) {
@@ -43,20 +44,11 @@ class PurchaseInvoiceList extends Component {
     }
 
     renderListItem = (data, rowMap) => {
-        const { index, item } = data;
-        return <CardView
-            cardElevation={4}
-            cornerRadius={6}
-            style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <Text>{item.invoiceno}</Text>
-                    <Text>{item.type}</Text>
-                    <Text>Total: {item.total}</Text>
-                </View>
-
-            </View>
-        </CardView>
+        return (
+            <SalesInvoiceListItem
+                data={data}
+            />
+        )
     }
 
     hiddenElement = (label, icon, color, onPress) => {
@@ -77,7 +69,11 @@ class PurchaseInvoiceList extends Component {
     }
 
     onViewClick = (data) => {
-        console.log('View Click!');
+        const { item } = data;
+        this.props.navigation.push('ViewInvoiceScreen', {
+            title: 'Purchase',
+            item
+        })
     }
 
     onEditClick = (data) => {
@@ -169,7 +165,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8
     },
     hiddenCard: {
-        marginHorizontal: 8,
+        marginHorizontal: 16,
         marginVertical: 12,
         flex: 1
     },

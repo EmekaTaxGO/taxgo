@@ -13,7 +13,8 @@ import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import { connect } from 'react-redux';
 import * as ledgerActions from '../redux/actions/ledgerActions';
 import { bindActionCreators } from 'redux';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 
 class AddLedgerScreen extends Component {
@@ -130,13 +131,14 @@ class AddLedgerScreen extends Component {
     render() {
         const { ledger } = this.props;
 
-        return <SafeAreaView style={{ flex: 1 }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 <ScrollView style={{ flex: 1 }}
                     keyboardDismissMode='on-drag'
                     keyboardShouldPersistTaps='always'
                     style={{ paddingHorizontal: 16 }}>
-                    <OutlinedTextField
+                    <AppTextField
+                        containerStyle={styles.fieldStyle}
                         label='Ledger Account'
                         keyboardType='default'
                         returnKeyType='next'
@@ -144,40 +146,40 @@ class AddLedgerScreen extends Component {
                         errorColor='green'
                         title='*Required'
                         titleTextStyle={{ color: 'red', textDecorationColor: 'black', textShadowColor: 'black' }}
-                        ref={this.ledgerAccRef}
+                        fieldRef={this.ledgerAccRef}
                         onSubmitEditing={() => this.codeRef.current.focus()} />
-                    <OutlinedTextField
+                    <AppTextField
+                        containerStyle={styles.fieldStyle}
                         label='Nominal Code'
                         returnKeyType='done'
                         keyboardType='default'
                         lineWidth={1}
                         title='*Required'
-                        ref={this.codeRef} />
+                        fieldRef={this.codeRef} />
                     <TouchableOpacity onPress={this.onCategoryClick}>
-                        <OutlinedTextField
+                        <AppTextField
+                            containerStyle={styles.fieldStyle}
                             label='Category'
                             returnKeyType='next'
                             keyboardType='default'
                             lineWidth={1}
                             editable={false}
-                            ref={this.categoryRef}
+                            fieldRef={this.categoryRef}
                             onSubmitEditing={() => this.catGroupRef.current.focus()} />
 
                     </TouchableOpacity>
-                    <OutlinedTextField
+                    <AppTextField
+                        containerStyle={styles.fieldStyle}
                         label='Category Group'
                         keyboardType='default'
                         returnKeyType='done'
                         lineWidth={1}
                         editable={false}
-                        ref={this.catGroupRef}
+                        fieldRef={this.catGroupRef}
                         onSubmitEditing={() => log('Call Api.')} />
 
-                    <RaisedTextButton
+                    <AppButton
                         title='Save'
-                        color={colorAccent}
-                        titleColor='white'
-                        style={styles.btn}
                         onPress={this.validateAndCreate} />
                     <ProgressDialog visible={ledger.updatingLedger} />
                 </ScrollView>
@@ -191,6 +193,9 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         paddingHorizontal: 20,
         paddingVertical: 24
+    },
+    fieldStyle: {
+        marginTop: 20
     }
 });
 export default connect(

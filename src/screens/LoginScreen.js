@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import { colorAccent } from '../theme/Color';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import AppButton from '../components/AppButton';
@@ -19,6 +18,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import { validateEmail, EMAIL_ERROR_MESSAGE, PASSWORD_ERROR_MESSAGE, validatePass } from '../helpers/Utils';
 import { APP_LOGO } from '../constants/appConstant';
 import AppLogo from '../components/AppLogo';
+import AppTextField from '../components/AppTextField';
 
 class LoginScreen extends Component {
 
@@ -95,23 +95,26 @@ class LoginScreen extends Component {
 
     renderLoginForm = () => {
         return <View>
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='Email'
                 keyboardType='email-address'
                 returnKeyType='next'
                 error={this.state.emailError}
-                ref={this.emailRef}
                 lineWidth={1}
                 onChange={event => this.resetState()}
-                onSubmitEditing={() => { this.passRef.current.focus() }} />
-            <OutlinedTextField
+                fieldRef={this.emailRef}
+                onSubmitEditing={() => {
+                    console.log('On Submitted!')
+                    this.passRef.current.focus()
+                }} />
+            <AppTextField
                 containerStyle={styles.fieldStyle}
                 label='Password'
                 secureTextEntry={true}
                 error={this.state.passError}
                 lineWidth={1}
-                ref={this.passRef}
+                fieldRef={this.passRef}
                 onChange={event => this.resetState()}
                 onSubmitEditing={e => this.onLoginClick()} />
 
@@ -121,7 +124,8 @@ class LoginScreen extends Component {
                 <Text style={styles.forgotPass}>Forgot password?</Text>
             </TouchableOpacity>
 
-            <AppButton onPress={this.onLoginClick}
+            <AppButton
+                onPress={this.onLoginClick}
                 title='Login' />
         </View>
     }

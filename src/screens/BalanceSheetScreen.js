@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -15,6 +14,7 @@ import BalanceSheet from '../components/balanceSheet/BalanceSheet';
 import { isEmpty } from 'lodash';
 import { BALANCE_SHEET, getSavedData } from '../services/UserStorage';
 import { showHeaderProgress } from '../helpers/ViewHelper';
+import AppTextField from '../components/AppTextField';
 
 class BalanceSheetScreen extends Component {
 
@@ -107,7 +107,7 @@ class BalanceSheetScreen extends Component {
                 style={{ width: '100%', marginEnd: 6, marginBottom: 12 }}
                 onPress={() => this.setState({ showUntilDateDialog: true })}
                 disabled={disableDate}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={{ color: colorAccent }}
                     label='Until'
                     returnKeyType='done'
@@ -115,7 +115,7 @@ class BalanceSheetScreen extends Component {
                     editable={false}
                     baseColor={disableDate ? 'gray' : colorAccent}
                     value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    ref={this._untilDateRef}
+                    fieldRef={this._untilDateRef}
                 />
             </TouchableOpacity>
             {this.state.showUntilDateDialog ? <DateTimePicker

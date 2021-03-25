@@ -16,7 +16,8 @@ import { DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
 import { colorAccent } from '../theme/Color';
 import { RaisedTextButton } from 'react-native-material-buttons';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class UpdateUserScreen extends Component {
 
@@ -154,63 +155,63 @@ class UpdateUserScreen extends Component {
                         paddingHorizontal: 16,
                         flexDirection: 'column'
                     }}>
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='First Name'
                             keyboardType='default'
                             returnKeyType='next'
                             lineWidth={1}
                             title='*required'
-                            ref={this.firstNameRef}
+                            fieldRef={this.firstNameRef}
                             error={this.state.firstNameError}
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.lastNameRef)} />
 
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Last Name'
                             keyboardType='default'
                             returnKeyType='next'
                             lineWidth={1}
                             title='*required'
-                            ref={this.lastNameRef}
+                            fieldRef={this.lastNameRef}
                             error={this.state.lastNameError}
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.emailRef)} />
 
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Email address'
                             keyboardType='email-address'
                             returnKeyType='next'
                             lineWidth={1}
                             title='*required'
-                            ref={this.emailRef}
+                            fieldRef={this.emailRef}
                             error={this.state.emailError}
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.phoneRef)} />
 
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Phone'
                             keyboardType='numeric'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            ref={this.phoneRef}
+                            fieldRef={this.phoneRef}
                             error={this.state.phoneError}
                             onChange={event => this.resetAllError()} />
                         <TouchableOpacity
                             onPress={() => this.setState({ showDOBPicker: true })}
                             style={styles.fieldStyle}>
-                            <OutlinedTextField
+                            <AppTextField
                                 label='Date Of Birth'
                                 keyboardType='default'
                                 returnKeyType='done'
                                 lineWidth={1}
                                 editable={false}
                                 title='*required'
-                                ref={this.dateOfBirthRef}
+                                fieldRef={this.dateOfBirthRef}
                                 error={this.state.dateOfBirthError}
                                 onChange={event => this.resetAllError()} />
                         </TouchableOpacity>
@@ -221,25 +222,25 @@ class UpdateUserScreen extends Component {
                             maximumDate={new Date()}
                             onChange={this.onDOBChanged}
                         /> : null}
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Employee Id'
                             keyboardType='numeric'
                             returnKeyType='next'
                             lineWidth={1}
                             title='*required'
-                            ref={this.empIdRef}
+                            fieldRef={this.empIdRef}
                             error={this.state.empIdError}
                             onChange={event => this.resetAllError()}
                             onSubmitEditing={() => focusField(this.uniqueIdRef)} />
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Unique ID/License No'
                             keyboardType='default'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            ref={this.uniqueIdRef}
+                            fieldRef={this.uniqueIdRef}
                             error={this.state.uniqueIdError}
                             onChange={event => this.resetAllError()} />
 
@@ -255,11 +256,9 @@ class UpdateUserScreen extends Component {
                         fontSize: 14
                     }}>
                         Please resolve all errors.</Text> : null}
-                    <RaisedTextButton
+                    <AppButton
+                        containerStyle={styles.appBtn}
                         title={'Update'}
-                        color={colorAccent}
-                        titleColor='white'
-                        style={styles.materialBtn}
                         onPress={this.validateAndSubmitForm} />
 
 
@@ -269,15 +268,12 @@ class UpdateUserScreen extends Component {
     }
 };
 const styles = StyleSheet.create({
-    materialBtn: {
-        padding: 26,
-        marginTop: 30,
-        marginBottom: 24,
-        fontSize: 50,
-        marginHorizontal: 16
-    },
     fieldStyle: {
         marginTop: 16
+    },
+    appBtn: {
+        marginHorizontal: 12,
+        marginTop: 30
     }
 });
 export default UpdateUserScreen;

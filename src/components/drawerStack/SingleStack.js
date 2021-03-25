@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { colorPrimary, colorWhite } from '../../theme/Color';
+import { appFontBold } from '../../helpers/ViewHelper';
 
 const SingleStack = ({ name, component, title }) => {
 
@@ -11,7 +12,7 @@ const SingleStack = ({ name, component, title }) => {
         screenOptions={{
             headerStyle: { backgroundColor: colorPrimary },
             headerTintColor: colorWhite,
-            headerTitleStyle: { fontWeight: '400' }
+            headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold }
         }}>
         <Stack.Screen name={name} component={component}
             options={{ title: title }} />

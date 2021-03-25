@@ -12,7 +12,6 @@ import {
     Text,
     Alert
 } from 'react-native';
-import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers';
@@ -34,6 +33,8 @@ import bankHelper from '../helpers/BankHelper';
 import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
 import paymentHelper from '../helpers/PaymentHelper';
+import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class SupplierPaymentScreen extends Component {
 
@@ -307,7 +308,7 @@ class SupplierPaymentScreen extends Component {
             <TouchableOpacity
                 onPress={this.onSupplierPress}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Supplier'
                     keyboardType='default'
@@ -316,12 +317,12 @@ class SupplierPaymentScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this._supplier ? this._supplier.name : ''}
-                    ref={this.supplierRef} />
+                    fieldRef={this.supplierRef} />
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={this.onPaidIntoPress}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Paid Into'
                     keyboardType='default'
@@ -330,7 +331,7 @@ class SupplierPaymentScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this.bankName(this._bank)}
-                    ref={this.paidIntoRef} />
+                    fieldRef={this.paidIntoRef} />
             </TouchableOpacity>
             {/* Select Method Picker */}
             <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
@@ -346,7 +347,7 @@ class SupplierPaymentScreen extends Component {
             <TouchableOpacity
                 onPress={() => this.setState({ showReceivedDate: true })}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Date Received'
                     keyboardType='default'
@@ -355,7 +356,7 @@ class SupplierPaymentScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this.formattedDate(receivedDate)}
-                    ref={this.dateReceivedRef} />
+                    fieldRef={this.dateReceivedRef} />
             </TouchableOpacity>
             {this.state.showReceivedDate ? <DateTimePicker
                 value={this.state.receivedDate ? this.state.receivedDate : new Date()}
@@ -364,7 +365,7 @@ class SupplierPaymentScreen extends Component {
                 maximumDate={new Date()}
                 onChange={this.onReceiveDateChange}
             /> : null}
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='Amount Received'
                 keyboardType='number-pad'
@@ -373,8 +374,8 @@ class SupplierPaymentScreen extends Component {
                 title='*required'
                 editable={false}
                 value={`${this._amount}`}
-                ref={this.amountReceivedRef} />
-            <OutlinedTextField
+                fieldRef={this.amountReceivedRef} />
+            <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'
                 keyboardType='default'
@@ -382,12 +383,9 @@ class SupplierPaymentScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 value={this._reference}
-                ref={this.referenceRef} />
-            <RaisedTextButton
+                fieldRef={this.referenceRef} />
+            <AppButton
                 title='Save'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={this.validateAndSave} />
         </View>
 

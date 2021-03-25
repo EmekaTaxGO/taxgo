@@ -12,7 +12,6 @@ import {
     Text,
     Alert
 } from 'react-native';
-import { OutlinedTextField, FilledTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers';
@@ -36,6 +35,8 @@ import paymentHelper from '../helpers/PaymentHelper';
 import Store from '../redux/Store';
 import bankHelper from '../helpers/BankHelper';
 import ProgressDialog from '../components/ProgressDialog';
+import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class CustomerReceiptScreen extends Component {
 
@@ -312,7 +313,7 @@ class CustomerReceiptScreen extends Component {
             <TouchableOpacity
                 onPress={this.onCustomerPress}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Customer'
                     keyboardType='default'
@@ -321,12 +322,12 @@ class CustomerReceiptScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this._customer ? this._customer.name : ''}
-                    ref={this.customerRef} />
+                    fieldRef={this.customerRef} />
             </TouchableOpacity>
             <TouchableOpacity
                 onPress={this.onPaidIntoPress}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Paid Into'
                     keyboardType='default'
@@ -335,7 +336,7 @@ class CustomerReceiptScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this.bankName(this._bank)}
-                    ref={this.paidIntoRef} />
+                    fieldRef={this.paidIntoRef} />
             </TouchableOpacity>
             {/* Select Method Picker */}
             <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
@@ -351,7 +352,7 @@ class CustomerReceiptScreen extends Component {
             <TouchableOpacity
                 onPress={() => this.setState({ showReceivedDate: true })}
                 style={{ marginTop: 20 }}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.fieldStyle}
                     label='Date Received'
                     keyboardType='default'
@@ -360,7 +361,7 @@ class CustomerReceiptScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this.formattedDate(receivedDate)}
-                    ref={this.dateReceivedRef} />
+                    fieldRef={this.dateReceivedRef} />
             </TouchableOpacity>
             {this.state.showReceivedDate ? <DateTimePicker
                 value={this.state.receivedDate ? this.state.receivedDate : new Date()}
@@ -369,7 +370,7 @@ class CustomerReceiptScreen extends Component {
                 maximumDate={new Date()}
                 onChange={this.onReceiveDateChange}
             /> : null}
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='Amount Received'
                 keyboardType='number-pad'
@@ -378,8 +379,8 @@ class CustomerReceiptScreen extends Component {
                 title='*required'
                 editable={false}
                 value={`${this._amount}`}
-                ref={this.amountReceivedRef} />
-            <OutlinedTextField
+                fieldRef={this.amountReceivedRef} />
+            <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'
                 keyboardType='default'
@@ -387,12 +388,9 @@ class CustomerReceiptScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 value={this._reference}
-                ref={this.referenceRef} />
-            <RaisedTextButton
+                fieldRef={this.referenceRef} />
+            <AppButton
                 title='Save'
-                color={colorAccent}
-                titleColor='white'
-                style={styles.materialBtn}
                 onPress={this.validateAndSave} />
         </View>
 

@@ -24,6 +24,7 @@ import * as authActions from '../redux/actions/authActions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReportStack from '../components/drawerStack/ReportStack';
+import { appFont } from '../helpers/ViewHelper';
 
 class HomeScreen extends Component {
 
@@ -53,7 +54,11 @@ class HomeScreen extends Component {
             drawerContentOptions={{
                 activeTintColor: colorAccent,
                 inactiveTintColor: 'black',
-                profile: this.props.auth.profile
+                profile: this.props.auth.profile,
+                labelStyle: {
+                    fontFamily: appFont,
+                    fontSize: 15
+                }
             }}
             screenOptions={{
                 // headerStyle: { backgroundColor: colorPrimary },

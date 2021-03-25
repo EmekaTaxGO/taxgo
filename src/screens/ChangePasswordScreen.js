@@ -11,8 +11,9 @@ import { validatePass, PASSWORD_ERROR_MESSAGE, isEmpty, showError, getApiErrorMs
 import { getFieldValue } from '../helpers/TextFieldHelpers';
 import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import AppLogo from '../components/AppLogo';
+import AppTextField from '../components/AppTextField';
+import AppButton from '../components/AppButton';
 
 class ChangePasswordScreen extends Component {
 
@@ -104,45 +105,43 @@ class ChangePasswordScreen extends Component {
                 style={styles.card}>
                 <View style={{ flexDirection: 'column', paddingTop: 12 }}>
                     <AppLogo />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Old Password'
                         returnKeyType='next'
-                        ref={this.oldPassRef}
+                        fieldRef={this.oldPassRef}
                         lineWidth={1}
                         secureTextEntry={true}
                         onChange={event => this.resetError()}
                         error={this.state.oldPassError}
                         onSubmitEditing={() => { this.newPassRef.current.focus() }}
                     />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='New Password'
                         returnKeyType='next'
-                        ref={this.newPassRef}
+                        fieldRef={this.newPassRef}
                         lineWidth={1}
                         secureTextEntry={true}
                         error={this.state.newPasswordError}
                         onChange={event => this.resetError()}
                         onSubmitEditing={() => { this.confirmPassRef.current.focus() }}
                     />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Confirm Password'
                         returnKeyType='done'
-                        ref={this.confirmPassRef}
+                        fieldRef={this.confirmPassRef}
                         lineWidth={1}
                         secureTextEntry={true}
                         error={this.state.confirmPassErr}
                         onChange={event => this.resetError()}
                         onSubmitEditing={() => { }}
                     />
-                    <RaisedTextButton
+                    <AppButton
+                        containerStyle={{ marginHorizontal: 16 }}
                         title='Update'
-                        color={colorAccent}
-                        titleColor='white'
-                        onPress={this.onUpdatePassPress}
-                        style={styles.updateBtn} />
+                        onPress={this.onUpdatePassPress} />
                 </View>
             </CardView>
             <ProgressDialog visible={updatingPassword} />

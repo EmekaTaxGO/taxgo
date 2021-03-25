@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -13,9 +12,8 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
-import { log } from 'react-native-reanimated';
-import taxList from '../files/NominalTaxList.json';
 import EmptyView from '../components/EmptyView';
+import AppTextField from '../components/AppTextField';
 
 class ViewTaxReportScreen extends Component {
 
@@ -113,7 +111,7 @@ class ViewTaxReportScreen extends Component {
                 style={{ flex: 1, marginEnd: 6 }}
                 onPress={() => this.setState({ showFromDateDialog: true })}
                 disabled={disableDate}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={{ color: colorAccent }}
                     label='From'
                     returnKeyType='done'
@@ -121,7 +119,7 @@ class ViewTaxReportScreen extends Component {
                     editable={false}
                     baseColor={disableDate ? 'gray' : colorAccent}
                     value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    ref={this._fromDateRef}
+                    fieldRef={this._fromDateRef}
                 />
             </TouchableOpacity>
             {this.state.showFromDateDialog ? <DateTimePicker
@@ -135,14 +133,14 @@ class ViewTaxReportScreen extends Component {
                 style={{ flex: 1, marginStart: 6 }}
                 onPress={() => this.setState({ showToDateDialog: true })}
                 disabled={disableDate}>
-                <OutlinedTextField
+                <AppTextField
                     label='To'
                     returnKeyType='done'
                     lineWidth={1}
                     editable={false}
                     baseColor={disableDate ? 'gray' : colorAccent}
                     value={timeHelper.format(this.state.toDate, this.DATE_FORMAT)}
-                    ref={this._toDateRef}
+                    fieldRef={this._toDateRef}
                 />
             </TouchableOpacity>
             {this.state.showToDateDialog ? <DateTimePicker

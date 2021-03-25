@@ -4,7 +4,7 @@ import { StyleSheet, Text } from 'react-native';
 class AppText extends Component {
 
     render() {
-        
+
         return (
             <Text
                 style={[styles.textStyle, this.props.style]}

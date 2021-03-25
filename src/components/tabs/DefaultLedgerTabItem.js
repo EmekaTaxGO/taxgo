@@ -12,6 +12,7 @@ import { isEmpty } from '../../helpers/Utils';
 import SearchView from '../SearchView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as color from '../../theme/Color';
+import ContactAvatarItem from '../ContactAvatarItem';
 
 class DefaultLedgerTabItem extends Component {
 
@@ -58,41 +59,18 @@ class DefaultLedgerTabItem extends Component {
         return (text !== undefined && text !== null && text.length > 0) ? text.charAt(0) : '-';
     }
 
-    listItem = (item) => {
+    listItem = ({ item, index }) => {
         const firstLetter = this.firstLetter(item.laccount);
-        const colorIndex = `${firstLetter}`.charCodeAt(0) % color.rColor.length;
-        const bgColor = color.rColor[colorIndex];
-        return <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingLeft: 16,
-            backgroundColor: 'white'
-        }}>
-            <View style={{
-                width: 2 * this.imageRadius,
-                height: 2 * this.imageRadius,
-                borderRadius: 2 * this.imageRadius,
-                backgroundColor: bgColor,
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}>
-                <Text style={{ fontSize: 30, color: 'white' }}>{`${firstLetter}`.toUpperCase()}</Text>
-            </View>
-            <View style={{
-                flex: 1,
-                flexDirection: 'column',
-                paddingVertical: 14,
-                marginLeft: 16,
-                justifyContent: 'center',
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 1
-            }}>
-                <Text style={{ color: 'black' }}>{`${item.nominalcode}-${item.laccount}`}</Text>
-                <Text style={{ marginTop: 2, color: 'gray' }}>{item.category}</Text>
-                <Text style={{ marginTop: 2, color: 'gray' }}>{item.categorygroup}</Text>
-            </View>
-        </View>
+        const bgColor = color.rColor[index % color.rColor.length];
+        return (
+            <ContactAvatarItem
+                title={`${item.nominalcode}-${item.laccount}`}
+                subtitle={item.category}
+                description={item.categorygroup}
+                color={bgColor}
+                text={firstLetter}
+            />
+        )
     }
     hiddenElement = (label, icon, color, onPress) => {
         return <TouchableHighlight onPress={onPress} underlayColor={color}>
@@ -151,7 +129,7 @@ class DefaultLedgerTabItem extends Component {
             <SwipeListView
                 style={{ flex: 1 }}
                 data={this.listData()}
-                renderItem={(data, rowMap) => this.listItem(data.item)}
+                renderItem={(data, rowMap) => this.listItem(data)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data.item)}
                 leftOpenValue={70}
                 rightOpenValue={-70}

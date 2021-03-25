@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, TouchableHighlight, View, Text } from 'react-native';
-import { colorPrimary, tabSelectedColor } from '../theme/Color';
+import { colorPrimary, tabBackgroundColor, tabColor, tabSelectedColor } from '../theme/Color';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import { appFont, appFontBold } from '../helpers/ViewHelper';
 
 class AppTab extends Component {
 
@@ -32,28 +33,31 @@ class AppTab extends Component {
         const { title, onTabPress, icon, iconType, selected } = this.props;
         return <TouchableHighlight style={{
             flex: 1,
-            backgroundColor: colorPrimary,
+            backgroundColor: tabBackgroundColor,
             paddingVertical: icon ? 6 : 13,
             borderBottomWidth: selected ? 2 : 0,
             borderBottomColor: tabSelectedColor,
         }}
             onPress={onTabPress}
-            underlayColor={colorPrimary}>
+            underlayColor={tabBackgroundColor}>
             <View style={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
-                {this.getIcon(icon, iconType, selected ? tabSelectedColor : 'white')}
-                <Text style={{
-                    color: selected ? tabSelectedColor : 'white',
-                    fontSize: 14
-                }}>{title}</Text>
+                {this.getIcon(icon, iconType, selected ? tabSelectedColor : tabColor)}
+                <Text style={[styles.text, {
+                    color: selected ? tabSelectedColor : tabColor
+                }]}>{title}</Text>
             </View>
         </TouchableHighlight>
     }
 }
 const styles = StyleSheet.create({
-
+    text: {
+        fontSize: 16,
+        fontFamily: appFontBold,
+        textTransform: 'capitalize'
+    }
 });
 export default AppTab;

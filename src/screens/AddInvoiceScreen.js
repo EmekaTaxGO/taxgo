@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, Picker, TextInput, FlatList, Switch } from 'react-native';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, FlatList, Switch } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -24,7 +23,9 @@ import Snackbar from 'react-native-snackbar';
 import { CreditCardInput } from 'react-native-credit-card-input';
 import CardView from 'react-native-cardview';
 import Store from '../redux/Store';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import AppTextField from '../components/AppTextField';
+import AppPicker from '../components/AppPicker';
+import { Picker } from '@react-native-community/picker';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -238,27 +239,27 @@ class AddInvoiceScreen extends Component {
         }}>
             <View>
                 <TouchableOpacity onPress={this.onCustomerPress}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label={isSaleInvoice ? 'Customer' : 'Supplier'}
                         keyboardType='default'
                         returnKeyType='done'
                         lineWidth={1}
-                        ref={this.customerRef}
+                        fieldRef={this.customerRef}
                         value={this._customer}
                         editable={false}
                         onSubmitEditing={() => { }} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => this.setState({ showInvDatePicker: true })}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Invoice Date'
                         keyboardType='default'
                         returnKeyType='done'
                         editable={false}
                         lineWidth={1}
-                        ref={this.invoiceDateRef}
+                        fieldRef={this.invoiceDateRef}
                         value={this.formattedDate(this.state.invDate)}
                         onSubmitEditing={() => { }} />
                 </TouchableOpacity>
@@ -272,14 +273,14 @@ class AddInvoiceScreen extends Component {
 
                 {/* Due Date */}
                 <TouchableOpacity onPress={() => this.setState({ showDueDatePicker: true })}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.textField}
                         label='Due Date'
                         keyboardType='default'
                         returnKeyType='done'
                         editable={false}
                         lineWidth={1}
-                        ref={this.dueDateRef}
+                        fieldRef={this.dueDateRef}
                         value={this.formattedDate(this.state.dueDate)}
                         onSubmitEditing={() => { }} />
                 </TouchableOpacity>
@@ -298,16 +299,15 @@ class AddInvoiceScreen extends Component {
                     paddingLeft: 16,
                     paddingTop: 20
                 }}>Status</Text>
-                <View style={styles.pickerBox}>
-                    <Picker
-                        style={{ marginHorizontal: 12 }}
-                        selectedValue={issuedCat}
-                        mode='dropdown'
-                        onValueChange={(itemValue, itemIndex) => this.setState({ selectedIssuedCatIndex: itemIndex })}>
-                        {this.state.issuedcats.map((value, index) => <Picker.Item
-                            label={value} value={value} key={`${index}`} />)}
-                    </Picker>
-                </View>
+
+                <AppPicker
+                    style={styles.picker}
+                    selectedValue={issuedCat}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedIssuedCatIndex: itemIndex })}>
+                    {this.state.issuedcats.map((value, index) => <Picker.Item
+                        label={value} value={value} key={`${index}`} />)}
+                </AppPicker>
 
             </View> : null}
 
@@ -837,18 +837,18 @@ class AddInvoiceScreen extends Component {
             flexDirection: 'column',
             flex: 1
         }}>
-            <Picker
+            <AppPicker
                 style={{ marginHorizontal: 16 }}
                 selectedValue={this.state.paymentMode[this.state.paymentIndex]}
                 mode='dropdown'
                 onValueChange={(itemValue, itemIndex) => this.setState({ paymentIndex: itemIndex })}>
                 {this.state.paymentMode.map((value, index) => <Picker.Item
                     label={value} value={value} key={`${index}`} />)}
-            </Picker>
-            <View style={{
+            </AppPicker>
+            {/* <View style={{
                 borderBottomColor: 'lightgray',
                 borderBottomWidth: 1
-            }} />
+            }} /> */}
             {this.state.paymentIndex === 2 ? this.renderRecordPayment() : null}
             {this.state.paymentIndex === 1 ? this.renderCardInfo() : null}
 
@@ -868,7 +868,7 @@ class AddInvoiceScreen extends Component {
             <CreditCardInput
                 onChange={this.onCreditCardInfoChange}
             />
-            {/* <OutlinedTextField
+            {/* <AppTextField
                 label='Card Number'
                 keyboardType='name-phone-pad'
                 textContentType='creditCardNumber'
@@ -879,19 +879,19 @@ class AddInvoiceScreen extends Component {
                 placeholder='Cred'
                 textContentType='creditCardNumber'
                 autoCompleteType='cc-number' />
-            <OutlinedTextField
+            <AppTextField
                 label='MM'
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required' />
-            <OutlinedTextField
+            <AppTextField
                 label='YYYY'
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required' />
-            <OutlinedTextField
+            <AppTextField
                 label='CVV'
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
@@ -958,7 +958,7 @@ class AddInvoiceScreen extends Component {
             paddingBottom: 12
         }}>
             <TouchableOpacity onPress={this.onBankPress}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Bank'
                     keyboardType='name-phone-pad'
@@ -967,10 +967,10 @@ class AddInvoiceScreen extends Component {
                     value={this.bankName(bank)}
                     title='*required'
                     editable={false}
-                    ref={this.bankRef} />
+                    fieldRef={this.bankRef} />
 
             </TouchableOpacity>
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='A/c Name'
                 keyboardType='name-phone-pad'
@@ -978,9 +978,9 @@ class AddInvoiceScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 editable={false}
-                ref={this.accNameRef}
+                fieldRef={this.accNameRef}
                 value={bank ? bank.laccount : ''} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='A/c No.'
                 keyboardType='number-pad'
@@ -988,9 +988,9 @@ class AddInvoiceScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 editable={false}
-                ref={this.accNumRef}
+                fieldRef={this.accNumRef}
                 value={bank ? bank.accnum : ''} />
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='A/c Type'
                 keyboardType='name-phone-pad'
@@ -999,8 +999,8 @@ class AddInvoiceScreen extends Component {
                 title='*required'
                 editable={false}
                 value={bank ? bank.acctype : ''}
-                ref={this.accTypeRef} />
-            <OutlinedTextField
+                fieldRef={this.accTypeRef} />
+            <AppTextField
                 containerStyle={styles.textField}
                 label='BIC/Swift'
                 keyboardType='name-phone-pad'
@@ -1009,9 +1009,9 @@ class AddInvoiceScreen extends Component {
                 editable={false}
                 title='*required'
                 value={bank ? bank.bicnum : ''}
-                ref={this.swiftCodeRef} />
+                fieldRef={this.swiftCodeRef} />
 
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='IBAN No'
                 keyboardType='name-phone-pad'
@@ -1019,27 +1019,27 @@ class AddInvoiceScreen extends Component {
                 lineWidth={1}
                 editable={false}
                 value={bank ? bank.ibannum : ''}
-                ref={this.ibanNumRef} />
+                fieldRef={this.ibanNumRef} />
 
-            {isCreditNote ? <OutlinedTextField
+            {isCreditNote ? <AppTextField
                 containerStyle={styles.textField}
                 label='Reference'
                 keyboardType='name-phone-pad'
                 returnKeyType='next'
                 lineWidth={1}
-                ref={this.refNumRef}
+                fieldRef={this.refNumRef}
                 value={this._reference}
                 onChangeText={text => this._reference = text} /> : null}
 
-            <OutlinedTextField
+            <AppTextField
                 containerStyle={styles.textField}
                 label='Amount Paid'
                 keyboardType='number-pad'
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                ref={this.amtPaidRef} />
-            <OutlinedTextField
+                fieldRef={this.amtPaidRef} />
+            <AppTextField
                 containerStyle={styles.textField}
                 label='Out. Amount'
                 keyboardType='name-phone-pad'
@@ -1047,7 +1047,7 @@ class AddInvoiceScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 editable={false}
-                ref={this.outAmtRef} />
+                fieldRef={this.outAmtRef} />
             {/* Select Method Picker */}
             <View style={styles.pickerBox}>
                 <Picker
@@ -1060,7 +1060,7 @@ class AddInvoiceScreen extends Component {
             </View>
 
             <TouchableOpacity onPress={() => this.setState({ showPayDateDialog: true })}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={styles.textField}
                     label='Pay Date'
                     keyboardType='name-phone-pad'
@@ -1069,7 +1069,7 @@ class AddInvoiceScreen extends Component {
                     title='*required'
                     editable={false}
                     value={this.formattedDate(this.state.payDate)}
-                    ref={this.payDateRef} />
+                    fieldRef={this.payDateRef} />
             </TouchableOpacity>
             {this.state.showPayDateDialog ? <DateTimePicker
                 value={this.state.payDate}
@@ -1231,6 +1231,9 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         marginHorizontal: 16,
         marginTop: 8
+    },
+    picker: {
+        marginHorizontal: 12
     }
 });
 export default connect(

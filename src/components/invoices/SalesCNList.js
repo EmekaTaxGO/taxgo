@@ -67,7 +67,11 @@ class SalesCNList extends Component {
     }
 
     onViewClick = (data) => {
-        console.log('View Click!');
+        const { item } = data;
+        this.props.navigation.push('ViewInvoiceScreen', {
+            title: 'Sale Credit Note',
+            item
+        })
     }
 
     onEditClick = (data) => {

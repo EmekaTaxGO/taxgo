@@ -3,6 +3,7 @@ import { StyleSheet, View, TouchableOpacity, SafeAreaView, FlatList, Text } from
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CardView from 'react-native-cardview';
 import InAppIcon from '../components/InAppIcon';
+import AppText from '../components/AppText';
 
 
 class ReportFragment extends Component {
@@ -144,8 +145,8 @@ class ReportFragment extends Component {
                         size={34}
                     />
                 </View>
-                <Text style={{ color: 'black', fontSize: 16, textAlign: 'center' }}>{item.title}</Text>
-                <Text style={{ color: 'gray', marginTop: 2, textAlign: 'center' }}>{item.description}</Text>
+                <AppText style={{ color: 'black', fontSize: 16, textAlign: 'center' }}>{item.title}</AppText>
+                <AppText style={{ color: 'gray', marginTop: 2, textAlign: 'center' }}>{item.description}</AppText>
             </TouchableOpacity>
         </CardView>
     }

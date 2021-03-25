@@ -60,6 +60,8 @@ import BalanceSheetScreen from './src/screens/BalanceSheetScreen';
 import TrialBalanceScreen from './src/screens/TrialBalanceScreen';
 import ProfitLossReportScreen from './src/screens/ProfitLossReportScreen';
 import ViewInvoiceScreen from './src/screens/ViewInvoiceScreen';
+import { appFont, appFontBold } from './src/helpers/ViewHelper';
+import PaymentScreen from './src/screens/PaymentScreen';
 
 const App = () => {
 
@@ -73,7 +75,7 @@ const App = () => {
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
-        headerTitleStyle: { fontWeight: '400' }
+        headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold }
       }}>
 
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />
@@ -124,6 +126,7 @@ const App = () => {
       <Stack.Screen name='TrialBalanceScreen' component={TrialBalanceScreen} options={{ title: 'Trial Balance Report' }} />
       <Stack.Screen name='ProfitLossReportScreen' component={ProfitLossReportScreen} options={{ title: 'Profit & Loss Report' }} />
       <Stack.Screen name='ViewInvoiceScreen' component={ViewInvoiceScreen} options={{ title: 'Sales' }} />
+      <Stack.Screen name='PaymentScreen' component={PaymentScreen} options={{ title: 'Payment' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

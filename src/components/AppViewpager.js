@@ -28,7 +28,7 @@ const AppViewPager = ({
         <ViewPager
             style={{ flex: 1 }}
             initialPage={selectedTab}
-            ref={viewPager}>
+            fieldRef={viewPager}>
             {indexes.map((value, index) => renderPage(index, selectedTab))}
         </ViewPager>
     </View>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -15,6 +14,7 @@ import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
 import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
+import AppTextField from '../components/AppTextField';
 
 class CreditorBreakdownScreen extends Component {
 
@@ -117,7 +117,7 @@ class CreditorBreakdownScreen extends Component {
                 style={{ width: '100%', marginEnd: 6 }}
                 onPress={() => this.setState({ showUntilDateDialog: true })}
                 disabled={disableDate}>
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={{ color: colorAccent }}
                     label='Until'
                     returnKeyType='done'
@@ -125,7 +125,7 @@ class CreditorBreakdownScreen extends Component {
                     editable={false}
                     baseColor={disableDate ? 'gray' : colorAccent}
                     value={timeHelper.format(this.state.untilDate, this.DATE_FORMAT)}
-                    ref={this._untilDateRef}
+                    fieldRef={this._untilDateRef}
                 />
             </TouchableOpacity>
             {this.state.showUntilDateDialog ? <DateTimePicker

@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 
 import * as bankActions from '../redux/actions/bankActions';
 import { bindActionCreators } from 'redux';
-import { TextField, OutlinedTextField } from 'react-native-material-textfield';
 import { focusField, getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent } from '../theme/Color';
@@ -14,6 +13,9 @@ import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import Store from '../redux/Store';
 import moment from 'moment';
 import bankHelper from '../helpers/BankHelper';
+import AppTextField from '../components/AppTextField';
+import AppPicker from '../components/AppPicker';
+import AppButton from '../components/AppButton';
 
 
 class BankAccountScreen extends Component {
@@ -53,7 +55,7 @@ class BankAccountScreen extends Component {
         this.setTitle();
 
         if (this.showAccInfo) {
-            console.log('Acc Info', this.accountData());
+
         }
     }
 
@@ -248,25 +250,18 @@ class BankAccountScreen extends Component {
                         paddingTop: 14,
                         fontSize: 14
                     }}>A/C Type*</Text>
-                    <View style={{
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        borderColor: 'lightgray',
-                        marginTop: 10,
-                        marginHorizontal: 14
-                    }}>
-                        <Picker
-                            style={{ marginHorizontal: 6 }}
-                            selectedValue={accTypes[accTypeIndex].label}
-                            mode='dropdown'
-                            onValueChange={(itemValue, itemIndex) => this.setState({ accTypeIndex: itemIndex })}>
 
-                            {accTypes.map((value, index) => <Picker.Item
-                                label={value.label} value={value.label} key={`${value.id}`} />)}
-                        </Picker>
-                    </View>
+                    <AppPicker
+                        style={styles.picker}
+                        selectedValue={accTypes[accTypeIndex].label}
+                        mode='dropdown'
+                        onValueChange={(itemValue, itemIndex) => this.setState({ accTypeIndex: itemIndex })}>
+
+                        {accTypes.map((value, index) => <Picker.Item
+                            label={value.label} value={value.label} key={`${value.id}`} />)}
+                    </AppPicker>
                     <View style={{ paddingHorizontal: 16 }}>
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={{ marginTop: 20 }}
                             label='A/c Name'
                             keyboardType='default'
@@ -274,55 +269,55 @@ class BankAccountScreen extends Component {
                             lineWidth={1}
                             title='*required'
                             value={account ? account.laccount : ''}
-                            ref={this.accNameRef} />
-                        {showAccNum ? <OutlinedTextField
+                            fieldRef={this.accNameRef} />
+                        {showAccNum ? <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='A/c Number'
                             keyboardType='number-pad'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            ref={this.accNumRef}
+                            fieldRef={this.accNumRef}
                             value={account ? account.accnum : ''} /> : null}
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Opening Bal'
                             keyboardType='numeric'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            ref={this.openingBalRef}
+                            fieldRef={this.openingBalRef}
                             value={account ? `${account.opening}` : ''} />
-                        <OutlinedTextField
+                        <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Nominal Code'
                             keyboardType='numeric'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            ref={this.nominalCodeRef}
+                            fieldRef={this.nominalCodeRef}
                             disabled={editMode}
                             value={account ? account.nominalcode : ''} />
-                        {this.showCreditCard() ? <OutlinedTextField
+                        {this.showCreditCard() ? <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Credit Card Last 4 digit No.'
                             keyboardType='numeric'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            ref={this.ccRef}
+                            fieldRef={this.ccRef}
                             value={account ? account.cardnum : ''} /> : null}
 
-                        {showAccNum ? <OutlinedTextField
+                        {showAccNum ? <AppTextField
                             containerStyle={styles.fieldStyle}
                             keyboardType='default'
                             label='IBAN No.'
                             returnKeyType='done'
                             lineWidth={1}
                             title='*required'
-                            ref={this.ibanNumRef}
+                            fieldRef={this.ibanNumRef}
                             value={account ? account.ibannum : ''} /> : null}
-                        {showAccNum ? <OutlinedTextField
+                        {showAccNum ? <AppTextField
                             containerStyle={styles.fieldStyle}
                             label='Bic/Swift'
                             returnKeyType='done'
@@ -330,41 +325,45 @@ class BankAccountScreen extends Component {
                             lineWidth={1}
                             title='*required'
                             value={account ? account.bicnum : ''}
-                            ref={this.swiftCodeRef}
+                            fieldRef={this.swiftCodeRef}
                         /> : null}
                         {showAccNum ? <View style={{ flexDirection: 'row', marginTop: 12 }}>
-                            <OutlinedTextField
+                            <AppTextField
                                 containerStyle={{ flex: 1, marginRight: 8 }}
                                 label='Sort Code 1'
                                 returnKeyType='done'
                                 lineWidth={1}
                                 value={account ? account.sortcode1 : ''}
-                                ref={this.sortCode1Ref}
+                                fieldRef={this.sortCode1Ref}
                             />
-                            <OutlinedTextField
+                            <AppTextField
                                 containerStyle={{ flex: 1, marginRight: 8 }}
                                 label='Sort Code 2'
                                 returnKeyType='done'
                                 lineWidth={1}
                                 value={account ? account.sortcode2 : ''}
-                                ref={this.sortCode2Ref}
+                                fieldRef={this.sortCode2Ref}
                             />
-                            <OutlinedTextField
+                            <AppTextField
                                 containerStyle={{ flex: 1 }}
                                 label='Sort Code 3'
                                 returnKeyType='done'
                                 lineWidth={1}
                                 value={account ? account.sortcode3 : ''}
-                                ref={this.sortCode3Ref}
+                                fieldRef={this.sortCode3Ref}
                             />
                         </View> : null}
-                        <RaisedTextButton
+                        {/* <RaisedTextButton
                             containerStyle={styles.fieldStyle}
                             title={editMode ? 'Update' : 'Save'}
                             color={colorAccent}
                             titleColor='white'
                             style={styles.materialBtn}
-                            onPress={this.validateAndUpdate} />
+                            onPress={this.validateAndUpdate} /> */}
+                        <AppButton
+                            title={editMode ? 'Update' : 'Save'}
+                            onPress={this.validateAndUpdate}
+                        />
                     </View>
                     <ProgressDialog visible={updatingBankDetail} />
                 </ScrollView>
@@ -381,6 +380,11 @@ const styles = StyleSheet.create({
     },
     fieldStyle: {
         marginTop: 16
+    },
+    picker: {
+        marginHorizontal: 14,
+        marginTop: 10,
+        marginBottom: 10
     }
 });
 export default connect(

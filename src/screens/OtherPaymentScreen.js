@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, StyleSheet, Picker, FlatList, Text } from 'react-native';
 import AppTab from '../components/AppTab';
-import { OutlinedTextField } from 'react-native-material-textfield';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { DATE_FORMAT } from '../constants/appConstant';
@@ -18,6 +17,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Snackbar from 'react-native-snackbar';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AppTextField from '../components/AppTextField';
 
 class OtherPaymentScreen extends Component {
 
@@ -185,7 +185,7 @@ class OtherPaymentScreen extends Component {
                 <TouchableOpacity
                     onPress={this.onCustomerPress}
                     style={{ marginTop: 20 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Customer'
                         keyboardType='default'
@@ -194,12 +194,12 @@ class OtherPaymentScreen extends Component {
                         title='*required'
                         editable={false}
                         value={this._customer ? this._customer.name : ''}
-                        ref={this.customerRef} />
+                        fieldRef={this.customerRef} />
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={this.onPaidIntoPress}
                     style={{ marginTop: 20 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Paid Into'
                         keyboardType='default'
@@ -208,7 +208,7 @@ class OtherPaymentScreen extends Component {
                         title='*required'
                         editable={false}
                         value={this.bankName(this._bank)}
-                        ref={this.paidIntoRef} />
+                        fieldRef={this.paidIntoRef} />
                 </TouchableOpacity>
                 {/* Select Method Picker */}
                 <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
@@ -224,7 +224,7 @@ class OtherPaymentScreen extends Component {
                 <TouchableOpacity
                     onPress={() => this.setState({ showReceivedDate: true })}
                     style={{ marginTop: 20 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Date Received'
                         keyboardType='default'
@@ -233,7 +233,7 @@ class OtherPaymentScreen extends Component {
                         title='*required'
                         editable={false}
                         value={this.formattedDate(receivedDate)}
-                        ref={this.dateReceivedRef} />
+                        fieldRef={this.dateReceivedRef} />
                 </TouchableOpacity>
                 {this.state.showReceivedDate ? <DateTimePicker
                     value={this.state.receivedDate ? this.state.receivedDate : new Date()}
@@ -242,7 +242,7 @@ class OtherPaymentScreen extends Component {
                     maximumDate={new Date()}
                     onChange={this.onReceiveDateChange}
                 /> : null}
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={{ marginTop: 20 }}
                     label='Amount Received'
                     keyboardType='number-pad'
@@ -251,8 +251,8 @@ class OtherPaymentScreen extends Component {
                     title='*required'
                     editable={false}
                     value={`${this._amount}`}
-                    ref={this.amountReceivedRef} />
-                <OutlinedTextField
+                    fieldRef={this.amountReceivedRef} />
+                <AppTextField
                     containerStyle={{ marginTop: 20 }}
                     label='References'
                     keyboardType='default'
@@ -260,7 +260,7 @@ class OtherPaymentScreen extends Component {
                     lineWidth={1}
                     title='*required'
                     value={this._reference}
-                    ref={this.referenceRef} />
+                    fieldRef={this.referenceRef} />
             </View>
         </ScrollView>
 
@@ -322,14 +322,14 @@ class OtherPaymentScreen extends Component {
                 paddingHorizontal: 16,
                 paddingVertical: 24
             }}>
-                <OutlinedTextField
+                <AppTextField
                     label='Ledger'
                     keyboardType='default'
                     lineWidth={1}
                     title='*required'
                     value={item.ledger}
                     onChangeText={text => item.ledger = text} />
-                <OutlinedTextField
+                <AppTextField
                     containerStyle={{ marginTop: 12 }}
                     label='Details'
                     keyboardType='default'
@@ -339,7 +339,7 @@ class OtherPaymentScreen extends Component {
                     onChangeText={text => item.details = text} />
                 <View style={{ flexDirection: 'row', paddingTop: 12 }}>
 
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={{ flex: 1, marginRight: 8 }}
                         label='Amount'
                         keyboardType='default'
@@ -347,13 +347,13 @@ class OtherPaymentScreen extends Component {
                         title='*required'
                         value={item.amount}
                         onChangeText={text => this.onLedgerAmountChange(index, text)} />
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={{ flex: 1, marginLeft: 8 }}
                         label='Vat (Amt)'
                         keyboardType='default'
                         lineWidth={1}
                         title='*required'
-                        ref={item.taxAmtRef}
+                        fieldRef={item.taxAmtRef}
                         value={`${this.ledgerTaxAmt(index)}`}
                         disabled={true} />
 
@@ -390,14 +390,14 @@ class OtherPaymentScreen extends Component {
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 16 }}>
-                    <OutlinedTextField
+                    <AppTextField
                         containerStyle={{ flex: 1, marginRight: 8 }}
                         label='Total'
                         keyboardType='default'
                         lineWidth={1}
                         title='*required'
                         disabled={true}
-                        ref={item.totalRef}
+                        fieldRef={item.totalRef}
                         value={`${this.ledgerTotal(index)}`} />
                     {isLast ? <View style={{ flexDirection: 'row', alignItems: 'center', }}>
 

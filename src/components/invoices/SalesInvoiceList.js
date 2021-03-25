@@ -68,9 +68,10 @@ class SalesInvoiceList extends Component {
     }
 
     onViewClick = (data) => {
+        const { item } = data;
         this.props.navigation.push('ViewInvoiceScreen', {
             title: 'Sale',
-            data
+            item
         })
     }
 

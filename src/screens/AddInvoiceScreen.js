@@ -1103,13 +1103,13 @@ class AddInvoiceScreen extends Component {
                 selected={selected === 'refund'}
                 onTabPress={() => this.selectTab('refund')} />
                 : null}
-            {(invoiceAmount > 0 && !this.isCreditNote()) ?
+            {/* {(invoiceAmount > 0 && !this.isCreditNote()) ?
                 <AppTab
                     title='Payment'
                     icon='payment'
                     selected={selected === 'payment'}
                     onTabPress={() => this.selectTab('payment')} />
-                : null}
+                : null} */}
 
 
         </View>

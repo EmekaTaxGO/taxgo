@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import EditProfileScreen from './EditProfileScreen';
-import { tabBackgroundColor, tabIndicatorColor, tabSelectedColor } from '../theme/Color';
-import { appFont, appFontBold } from '../helpers/ViewHelper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import TabLayout from '../components/materialTabs/TabLayout';
 import GeneralTab from '../components/profile/GeneralTab';
@@ -16,26 +13,48 @@ class EditProfileV2 extends Component {
 
     Tab = createMaterialTopTabNavigator();
     iconSize = 26;
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: 1
+        }
+    }
+
+    onClickBtn = () => {
+        console.log('State Updated!');
+        this.setState({ value: this.state.value + 1 });
+    }
     render() {
 
+        const showBusiness = this.state.value % 2 === 1;
         return (
             <TabLayout tab={this.Tab}>
 
                 <this.Tab.Screen
                     name='General'
-                    component={GeneralTab}
                     options={{
                         tabBarIcon: ({ focused, color }) =>
                             <Icon name='account-circle' size={this.iconSize} color={color} />
-                    }} />
+                    }}>
+                    {props => <GeneralTab
+                        {...props}
+                        onClick={this.onClickBtn}
+                    />}
+                </this.Tab.Screen>
 
                 <this.Tab.Screen
                     name='Business'
-                    component={BusinessTab}
                     options={{
                         tabBarIcon: ({ focused, color }) =>
                             <Icon name='account-circle' size={this.iconSize} color={color} />
-                    }} />
+
+                    }}>
+                    {props => <BusinessTab
+                        {...props}
+                        id='Business_Tab'
+                        onClick={this.onClickBtn} />}
+                </this.Tab.Screen>
                 <this.Tab.Screen
                     name='Accounting'
                     component={AccountingTab}

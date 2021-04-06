@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import CardView from 'react-native-cardview';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         marginVertical: 12,
         paddingHorizontal: 12,
         backgroundColor: 'white',
-        paddingVertical: 12
+        paddingVertical: Platform.select({ ios: 12, android: 0 })
     }
 });
 export default SearchView;

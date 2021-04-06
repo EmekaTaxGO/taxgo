@@ -14,8 +14,7 @@ class AppPicker extends Component {
         return (
             <View style={newStyle}>
                 <Picker
-                    {...newProps}
-                    mode='dialog'>
+                    {...newProps}>
                     {this.props.children}
                 </Picker>
             </View>

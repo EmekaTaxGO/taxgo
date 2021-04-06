@@ -4,7 +4,11 @@ import AppButton from '../AppButton';
 import AppTextField from '../AppTextField';
 class GeneralTab extends Component {
 
+    componentDidMount() {
+        console.log('Screen:', 'General Tab');
+    }
     render() {
+        const { onClick } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
             <ScrollView style={{ flex: 1 }}>
                 <AppTextField
@@ -30,6 +34,7 @@ class GeneralTab extends Component {
                     containerStyle={styles.textField}
                 />
                 <AppButton
+                    onPress={onClick}
                     containerStyle={styles.btnStyle}
                     title='Update' />
             </ScrollView>

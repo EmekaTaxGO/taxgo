@@ -26,8 +26,6 @@ class EditProfileV2 extends Component {
         this.setState({ value: this.state.value + 1 });
     }
     render() {
-
-        const showBusiness = this.state.value % 2 === 1;
         return (
             <TabLayout tab={this.Tab}>
 

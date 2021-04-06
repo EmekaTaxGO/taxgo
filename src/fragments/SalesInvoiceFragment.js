@@ -1,13 +1,12 @@
-import React, { Component, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { colorPrimary, colorAccent, bottomTabActiveColor, bottomTabInactiveColor, bottomTabBackgroundColor } from '../theme/Color';
-import SalesInvoiceStack from '../components/drawerStack/SalesInvoiceStack';
 import SalesCNList from '../components/invoices/SalesCNList';
 import SalesInvoiceList from '../components/invoices/SalesInvoiceList';
+import BottomTabLayout from '../components/materialTabs/BottomTabLayout';
 
 class SalesInvoiceFragment extends Component {
 
@@ -66,47 +65,28 @@ class SalesInvoiceFragment extends Component {
     // Tab = createBottomTabNavigator();
     render() {
         const Tab = createBottomTabNavigator();
-        return <Tab.Navigator
-            screenOptions={({ route }) => ({
+        return (
+            <BottomTabLayout tab={Tab}>
+                <Tab.Screen name='sales'
+                    component={SalesInvoiceList}
+                    options={{
+                        title: 'Sales',
+                        tabBarIcon: ({ focused, color, size }) =>
+                            <Icon name='point-of-sale' color={color} size={size} />
+                    }}
+                    listeners={{ tabPress: e => this._tab = 'sales' }}
+                />
 
-                tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
-                    if (route.name === 'sales') {
-                        iconName = 'point-of-sale';
-                    } else {
-                        iconName = 'description';
-                    }
-                    return <Icon name={iconName}
-                        color={focused ? bottomTabActiveColor : bottomTabInactiveColor} size={30} />
-                }
-            })}
-            tabBarOptions={{
-                activeTintColor: colorAccent,
-                inactiveTintColor: bottomTabInactiveColor,
-                activeBackgroundColor: bottomTabBackgroundColor,
-                inactiveBackgroundColor: bottomTabBackgroundColor,
-                labelStyle: {
-                    fontSize: 14
-                },
-                style: {
-                    backgroundColor: bottomTabBackgroundColor,
-                    padding: 12,
-                    height: 60
-                },
-                tabStyle: {
-                    padding: 2
-                }
-            }}>
-            <Tab.Screen name='sales'
-                component={SalesInvoiceList}
-                options={{ title: 'Sales' }}
-                listeners={{ tabPress: e => this._tab = 'sales' }} />
-
-            <Tab.Screen name='c_note'
-                component={SalesCNList}
-                options={{ title: 'C.Note' }}
-                listeners={{ tabPress: e => this._tab = 'c_note' }} />
-        </Tab.Navigator>
+                <Tab.Screen name='c_note'
+                    component={SalesCNList}
+                    options={{
+                        title: 'C.Note',
+                        tabBarIcon: ({ focused, color, size }) =>
+                            <Icon name='description' color={color} size={size} />
+                    }}
+                    listeners={{ tabPress: e => this._tab = 'c_note' }} />
+            </BottomTabLayout>
+        )
     }
 }
 const styles = StyleSheet.create({

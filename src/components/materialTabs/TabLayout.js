@@ -22,9 +22,7 @@ class TabLayout extends Component {
                     indicatorStyle: { backgroundColor: tabSelectedColor }
                 }}
                 lazy={true}
-                {...this.props}>
-                {/* {...this.props.children} */}
-            </tab.Navigator>
+                {...this.props} />
         )
     }
 }

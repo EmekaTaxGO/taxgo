@@ -10,6 +10,9 @@ import ProgressDialog from '../components/ProgressDialog';
 import EmptyView from '../components/EmptyView';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import ContactAvatarItem from '../components/ContactAvatarItem';
+import { get, isEmpty } from 'lodash';
+import { rColor } from '../theme/Color';
 
 class MerchantAccountScreen extends Component {
 
@@ -87,29 +90,17 @@ class MerchantAccountScreen extends Component {
 
     renderItem = data => {
         const { index, item } = data;
-        return <View style={{
-            flexDirection: 'row',
-            flex: 1,
-            alignItems: 'center',
-            backgroundColor: 'white'
-        }}>
-            <Text style={{
-                fontSize: 24,
-                paddingHorizontal: 24,
-                paddingVertical: 12
-            }}>{item.accname.toUpperCase().charAt(0)}</Text>
-            <View style={{
-                flexDirection: 'column',
-                flex: 1,
-                justifyContent: 'center',
-                paddingVertical: 12,
-                borderBottomWidth: 1,
-                borderColor: 'lightgray'
-            }}>
-                <Text>{item.accname}</Text>
-                <Text style={{ marginTop: 4, color: 'gray' }}>{item.type}</Text>
-            </View>
-        </View>
+        let firstChar = get(item, 'accname', '-')
+        firstChar = isEmpty(firstChar) ? '-' : firstChar.charAt(0);
+        const colorIdx = index % rColor.length;
+        return (
+            <ContactAvatarItem
+                title={item.accname}
+                subtitle={item.type}
+                text={firstChar}
+                color={rColor[colorIdx]}
+            />
+        )
     }
 
 

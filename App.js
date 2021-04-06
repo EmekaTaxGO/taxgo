@@ -76,7 +76,7 @@ const App = () => {
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
-        headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold },
+        headerTitleStyle: { fontFamily: appFont, fontSize: 20 },
         headerBackTitleVisible: false
       }}>
 

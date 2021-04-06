@@ -29,7 +29,7 @@ class MerchantAccountScreen extends Component {
         this.props.navigation.setOptions({
             headerRight: () => {
                 return <TouchableOpacity onPress={this.onAddClick}
-                    style={{ padding: 12 }}>
+                    style={{ paddingRight: 12 }}>
                     <Icon name='plus-a' size={20} color='white' />
                 </TouchableOpacity>
             }

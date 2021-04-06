@@ -55,7 +55,7 @@ class ProductFragment extends Component {
                 </TouchableOpacity>
             },
             headerRight: () => {
-                return <TouchableOpacity onPress={this.onAddClick} style={{ padding: 12 }}>
+                return <TouchableOpacity onPress={this.onAddClick} style={{ paddingRight: 12 }}>
                     <MaterialIcon name='add' size={30} color='white' />
                 </TouchableOpacity>
             }

@@ -24,7 +24,7 @@ import * as authActions from '../redux/actions/authActions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReportStack from '../components/drawerStack/ReportStack';
-import { appFont } from '../helpers/ViewHelper';
+import { appFont, appFontBold } from '../helpers/ViewHelper';
 
 class HomeScreen extends Component {
 

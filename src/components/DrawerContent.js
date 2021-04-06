@@ -2,7 +2,7 @@ const { View, Image, StyleSheet, Text, ScrollView, ColorPropType, Alert, Touchab
 import React, { useState } from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { colorAccent, colorPrimary } from '../theme/Color';
-import { TouchableOpacity } from 'react-native';
+import { SafeAreaView, TouchableOpacity } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { clearData, AUTH_DATA, clearAll } from '../services/UserStorage';
 import { DrawerActions } from '@react-navigation/native';
@@ -76,16 +76,20 @@ const DrawerContent = props => {
         </TouchableOpacity>
     }
 
-    return <DrawerContentScrollView
-        contentContainerStyle={{ paddingVertical: 0 }}>
-        <View style={styles.container} >
-            {renderHeader()}
-            <DrawerItemList {...props} style={{ backgroundColor: 'black' }}
+    return <SafeAreaView style={{ flex: 1, backgroundColor: colorAccent }}>
+        {renderHeader()}
+        <DrawerContentScrollView
+            contentContainerStyle={{ paddingVertical: 0 }}>
+            <View style={styles.container} >
+                <View style={{ backgroundColor: 'white' }}>
 
-            />
-            {renderFooter()}
-        </View>
-    </DrawerContentScrollView>
+                    <DrawerItemList {...props} style={{ backgroundColor: 'black' }} />
+                </View>
+            </View>
+        </DrawerContentScrollView>
+
+        {renderFooter()}
+    </SafeAreaView>
 
 };
 const styles = StyleSheet.create({

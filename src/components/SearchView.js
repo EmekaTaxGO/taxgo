@@ -28,6 +28,7 @@ const SearchView = ({
             <AntIcon name='search1' size={24} />
             <TextInput
                 value={value}
+                autoCorrect={false}
                 keyboardType='default'
                 placeholder={placeholder}
                 onChangeText={text => onChangeQuery(text)}
@@ -45,7 +46,9 @@ const styles = StyleSheet.create({
     card: {
         marginHorizontal: 8,
         marginVertical: 12,
-        paddingHorizontal: 12
+        paddingHorizontal: 12,
+        backgroundColor: 'white',
+        paddingVertical: 12
     }
 });
 export default SearchView;

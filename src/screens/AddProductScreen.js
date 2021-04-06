@@ -483,7 +483,7 @@ class AddProductScreen extends Component {
             title,
             headerRight: () => {
                 return !this.isEditMode() ?
-                    <TouchableOpacity onPress={this.onBarcodePress} style={{ padding: 12 }}>
+                    <TouchableOpacity onPress={this.onBarcodePress} style={{ paddingRight: 12 }}>
                         <MaterialIcon name='qr-code-scanner' size={30} color='white' />
                     </TouchableOpacity> : null
             }

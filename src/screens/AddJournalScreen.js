@@ -267,7 +267,7 @@ class AddJournalScreen extends Component {
 }
 const styles = StyleSheet.create({
     rightBtn: {
-        padding: 12
+        paddingRight: 12
     },
     materialBtn: {
         padding: 26,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { colorPrimary, colorWhite } from '../../theme/Color';
-import { appFontBold } from '../../helpers/ViewHelper';
+import { appFont, appFontBold } from '../../helpers/ViewHelper';
 
 const SingleStack = ({ name, component, title, showHeader = true }) => {
 
@@ -12,7 +12,7 @@ const SingleStack = ({ name, component, title, showHeader = true }) => {
         screenOptions={{
             headerStyle: { backgroundColor: colorPrimary },
             headerTintColor: colorWhite,
-            headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold },
+            headerTitleStyle: { fontFamily: appFont, fontSize: 20 },
             headerShown: showHeader
         }}>
         <Stack.Screen name={name} component={component}

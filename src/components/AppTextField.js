@@ -17,6 +17,7 @@ class AppTextField extends Component {
                 labelTextStyle={styles.label}
                 fontSize={18}
                 fontFamily={appFont}
+                autoCorrect={false}
                 {...this.props}
             />
         )
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     label: {
-        
+
     }
 })
 export default AppTextField;

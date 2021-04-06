@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
         paddingLeft: 12
     },
     rightBtn: {
-        padding: 12
+        paddingRight: 12
     },
     bankCard: {
         marginHorizontal: 16,

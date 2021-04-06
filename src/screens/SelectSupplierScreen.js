@@ -37,7 +37,7 @@ class SelectSupplierScreen extends Component {
     configHeader = () => {
         this.props.navigation.setOptions({
             headerRight: () => {
-                return <TouchableOpacity onPress={this.onAddClick} style={{ padding: 12 }}>
+                return <TouchableOpacity onPress={this.onAddClick} style={{ paddingRight: 12 }}>
                     <Icon name='add' size={30} color='white' />
                 </TouchableOpacity>
             }

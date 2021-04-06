@@ -88,7 +88,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginVertical: 12,
         paddingHorizontal: 12,
-        paddingVertical: 8
+        paddingVertical: 8,
+        backgroundColor: 'white'
     },
     itemContainer: {
         flexDirection: 'row'

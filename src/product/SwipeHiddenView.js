@@ -17,7 +17,8 @@ class SwipeHiddenView extends Component {
                 width: 70,
                 height: '100%',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                borderRadius: 6
             }}>
 
                 <MaterialIcon name={icon} color='white' size={24} />
@@ -29,8 +30,8 @@ class SwipeHiddenView extends Component {
     render() {
         const { item } = this.props;
         return <CardView
-            cardElevation={12}
-            cornerRadius={6}
+            cardElevation={6}
+            cornerRadius={12}
             style={styles.card}>
             <View style={{
                 flexDirection: 'row'
@@ -45,8 +46,9 @@ class SwipeHiddenView extends Component {
 }
 const styles = StyleSheet.create({
     card: {
-        marginHorizontal: 16,
-        marginVertical: 12
+        marginHorizontal: 17,
+        marginVertical: 13,
+        backgroundColor: 'white'
     }
 })
 export default SwipeHiddenView;

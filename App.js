@@ -76,7 +76,8 @@ const App = () => {
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
-        headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold }
+        headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold },
+        headerBackTitleVisible: false
       }}>
 
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />

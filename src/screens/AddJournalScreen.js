@@ -222,8 +222,8 @@ class AddJournalScreen extends Component {
                 </TouchableOpacity>
                 {this.state.showDate ? <DateTimePicker
                     value={this.state.date}
-                    mode={'datetime'}
-                    display='default'
+                    mode={'date'}
+                    display='inline'
                     minimumDate={new Date()}
                     onChange={this.onJournalDateChanged}
                 /> : null}

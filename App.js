@@ -77,7 +77,8 @@ const App = () => {
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
         headerTitleStyle: { fontFamily: appFont, fontSize: 20 },
-        headerBackTitleVisible: false
+        headerBackTitleVisible: false,
+
       }}>
 
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />

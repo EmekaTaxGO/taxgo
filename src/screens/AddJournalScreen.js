@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, FlatList, Text, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, FlatList, Text, Platform, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -250,7 +250,7 @@ class AddJournalScreen extends Component {
     }
 
     render() {
-        return <View style={{ flex: 1, backgroundColor: 'white' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <FlatList
                 style={{ flex: 1 }}
                 data={this.state.ledgers}
@@ -262,7 +262,7 @@ class AddJournalScreen extends Component {
                 containerStyle={{ marginHorizontal: 16 }}
                 title='Save'
                 onPress={() => console.log('Pressed!')} />
-        </View>
+        </SafeAreaView>
     }
 }
 const styles = StyleSheet.create({
@@ -276,7 +276,8 @@ const styles = StyleSheet.create({
     card: {
         marginHorizontal: 16,
         marginVertical: 12,
-        paddingVertical: 24
+        paddingVertical: 24,
+        backgroundColor: 'white'
     },
     textField: {
         marginTop: 18,

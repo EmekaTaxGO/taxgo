@@ -150,7 +150,8 @@ class ChangePasswordScreen extends Component {
 }
 const styles = StyleSheet.create({
     card: {
-        margin: 12
+        margin: 12,
+        backgroundColor: 'white'
     },
     updateBtn: {
         padding: 24,

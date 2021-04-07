@@ -57,7 +57,8 @@ class SalesCNList extends Component {
                 width: 70,
                 height: '100%',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                borderRadius: 12
             }}>
 
                 <Icon name={icon} color='white' size={24} />

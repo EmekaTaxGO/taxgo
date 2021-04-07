@@ -59,7 +59,8 @@ class PurchaseInvoiceList extends Component {
                 width: 70,
                 height: '100%',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                borderRadius: 12
             }}>
 
                 <Icon name={icon} color='white' size={24} />
@@ -140,12 +141,6 @@ class PurchaseInvoiceList extends Component {
                     color: 'gray',
                     textTransform: 'uppercase'
                 }}>Invoices</Text>
-                {/* <CheckBox
-                    tintColors={{ true: colorAccent, false: 'gray' }}
-                    style={{ borderColor: colorAccent }}
-                    value={this.state.allChecked}
-                    onValueChange={checked => this.setState({ allChecked: checked })} />
-                <Text style={{ color: 'gray' }}>All</Text> */}
             </View>
             <SwipeListView
                 data={this.listdata()}

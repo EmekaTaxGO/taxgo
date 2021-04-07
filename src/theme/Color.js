@@ -1,13 +1,13 @@
 
 export const colorPrimary = '#4363a8';
-export const colorAccent = '#3ca9ec';
+export const colorAccent = colorPrimary;
 export const colorWhite = '#ffffff';
 export const colorDark = '#000000';
 export const snackbarActionColor = colorAccent;
-export const tabBackgroundColor = 'white';
+export const tabBackgroundColor = colorPrimary;
 export const tabIndicatorColor = '#b83b5d';
-export const tabSelectedColor = tabIndicatorColor;
-export const tabColor = 'lightgray';
+export const tabSelectedColor = 'white';
+export const tabColor = '#ffffff66';
 export const bottomTabActiveColor = colorAccent;
 export const bottomTabInactiveColor = '#7f7c7e';
 export const bottomTabBackgroundColor = '#edebed';

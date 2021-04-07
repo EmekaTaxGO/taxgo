@@ -217,13 +217,15 @@ class AddProductScreen extends Component {
     }
 
     onUpdateError = message => {
-        Alert.alert('Alert', message, [
-            {
-                style: 'default',
-                text: 'OK',
-                onPress: () => { }
-            }
-        ], { cancelable: false });
+        setTimeout(() => {
+            Alert.alert('Alert', message, [
+                {
+                    style: 'default',
+                    text: 'OK',
+                    onPress: () => { }
+                }
+            ], { cancelable: false });
+        }, 200);
     }
 
     isStock = () => {

@@ -45,7 +45,6 @@ class HomeScreen extends Component {
         return <Drawer.Navigator
             initialRouteName='HomeFragment'
             drawerType={this.dimension.width > 760 ? 'permanent' : 'front'}
-            overlayColor='transparent'
             drawerPosition='left'
             drawerStyle={{ backgroundColor: 'white', width: InitialRender ? 0 : this.drawerWidth }}
             drawerContent={DrawerContent}
@@ -61,10 +60,6 @@ class HomeScreen extends Component {
                 }
             }}
             screenOptions={{
-                // headerStyle: { backgroundColor: colorPrimary },
-                // headerTintColor: colorWhite,
-                // headerTitleStyle: { fontWeight: '400' }
-
             }}>
 
             <Drawer.Screen name='Dashboard'

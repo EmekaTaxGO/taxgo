@@ -83,7 +83,10 @@ const DrawerContent = props => {
             <View style={styles.container} >
                 <View style={{ backgroundColor: 'white' }}>
 
-                    <DrawerItemList {...props} style={{ backgroundColor: 'black' }} />
+                    <DrawerItemList
+                        {...props}
+                        style={{ backgroundColor: 'black' }}
+                    />
                 </View>
             </View>
         </DrawerContentScrollView>

@@ -12,7 +12,7 @@ class BottomTabLayout extends Component {
                 tabBarOptions={{
                     showLabel: true,
                     activeTintColor: tabSelectedColor,
-                    inactiveTintColor: 'gray',
+                    inactiveTintColor: tabColor,
                     labelStyle: {
                         fontSize: 17,
                         fontFamily: appFontBold

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>taxgoMobile</string>
+	<string>Tax Go</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -78,5 +78,18 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
 	</array>
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+  <key>CFBundleURLSchemes</key>
+  <array>
+    <string>fb2209420276004281</string>
+  </array>
+  </dict>
+</array>
+<key>FacebookAppID</key>
+<string>2209420276004281</string>
+<key>FacebookDisplayName</key>
+<string>Tax go</string>
 </dict>
 </plist>

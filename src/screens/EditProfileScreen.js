@@ -12,12 +12,13 @@ import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers'
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
-import { isInteger, isEmpty } from '../helpers/Utils';
+import { isInteger, isEmpty, bufferToBase64 } from '../helpers/Utils';
 import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import AppTextField from '../components/AppTextField';
 import { Picker } from '@react-native-community/picker';
 import AppPicker from '../components/AppPicker';
 import Store from '../redux/Store';
+import { Buffer } from 'buffer';
 
 class EditProfileScreen extends Component {
 
@@ -183,10 +184,11 @@ class EditProfileScreen extends Component {
     onUpdatePress = () => {
         const { profileActions } = this.props;
         const { profile } = this.props;
+        const { company, address1, address2, defaultmail, defaultTerms } = profile.profile;
         const { businessTypeIndex, businessType } = this.state;
         const { authData } = Store.getState().auth;
         const body = {
-            ...this.props.profile.profile,
+            ...profile.profile,
             userid: authData.id,
             firstname: getFieldValue(this.firstNameRef),
             lastname: getFieldValue(this.lastNameRef),
@@ -196,8 +198,14 @@ class EditProfileScreen extends Component {
             bcategory: `${profile.businesses[this.state.categoryIndex].id}`,
             country: `${profile.countries[this.state.countryIndex].id}`,
             btype: businessTypeIndex === 0 ? '' : businessType[businessTypeIndex],
-            registerno: getFieldValue(this.regNumRef)
+            registerno: getFieldValue(this.regNumRef),
+            company: Buffer.from(company).toString(),
+            address1: Buffer.from(address1).toString(),
+            address2: Buffer.from(address2).toString(),
+            defaultmail: Buffer.from(defaultmail).toString(),
+            defaultTerms: Buffer.from(defaultTerms).toString()
         };
+        console.log('Body: ', body);
         profileActions.updateProfile(body, this.onErrorEditProfile,
             this.onSuccessEditProfile);
     }

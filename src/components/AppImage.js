@@ -13,16 +13,13 @@ class AppImage extends Component {
     }
 
     onError = e => {
-        console.log('On load Error');
         this.setState({ showPlaceholder: true })
     }
 
     onLoad = e => {
-        console.log('On Load Success');
         this.setState({ showPlaceholder: false })
     }
     render() {
-        console.log('Rendering AppImage');
         const placeholder = get(this.props, 'placeholder', 'camera-alt');
         const defaultPlaceholderSize = get(this.props, 'style.width', 60) / 2;
         const placeholderSize = get(this.props, 'placeholderSize', defaultPlaceholderSize);

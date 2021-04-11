@@ -91,5 +91,9 @@
 <string>2209420276004281</string>
 <key>FacebookDisplayName</key>
 <string>Tax go</string>
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>itms-apps</string>
+</array>
 </dict>
 </plist>

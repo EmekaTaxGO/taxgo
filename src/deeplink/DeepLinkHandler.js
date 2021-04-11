@@ -1,8 +1,10 @@
 const { isEmpty } = require("lodash");
-import { Alert } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 // const { default: Deeplink } = require("./Deeplink");
 import Deeplink from '../deeplink/Deeplink';
 import { clearAll } from '../services/UserStorage';
+import DeviceInfo from 'react-native-device-info';
+import { showError } from '../helpers/Utils';
 
 const canHandle = deeplink => {
     const values = Object.values(Deeplink);
@@ -23,6 +25,20 @@ const signOutUser = (nav) => {
         }
     ])
 }
+const navigateToRateUS = async () => {
+    const packageName = await DeviceInfo.getInstallerPackageName();
+    const deeplink = Platform.select({
+        ios: 'itms-apps://itunes.apple.com/us/app/apple-store/id1513928912?mt=8',
+        android: `market://details?id=com.app.sploot`
+    });
+    const canOpen = await Linking.canOpenURL(deeplink);
+    if (canOpen) {
+        Linking.openURL(deeplink);
+    } else {
+        showError('Unable to open store!');
+    }
+
+}
 const handleDeepLink = (navigation, deeplink) => {
     if (isEmpty(deeplink)) {
         return;
@@ -42,6 +58,9 @@ const handleDeepLink = (navigation, deeplink) => {
             break;
         case Deeplink.SIGN_OUT:
             signOutUser(navigation);
+            break;
+        case Deeplink.RATE_US:
+            navigateToRateUS();
             break;
         default:
             console.log('Unhandled Deeplink!');

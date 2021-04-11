@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { appFontBold } from '../../helpers/ViewHelper';
+import AppImage from '../AppImage';
 import AppText from '../AppText';
 
 class ProfileHeader extends Component {
@@ -28,9 +29,11 @@ class ProfileHeader extends Component {
                 <TouchableOpacity
                     onPress={onPressProfile}
                     style={styles.profileSelector}>
-                    <Image
-                        source={{ uri: this.imagePath }}
+                    <AppImage
+                        url={this.imagePath}
                         style={styles.smallImg}
+                        placeholder='person'
+                        placeholderSize={20}
                     />
                     <AppText style={styles.smallName}>{name}</AppText>
                     <Icon name='keyboard-arrow-down' size={30} color='gray' />
@@ -64,7 +67,8 @@ const styles = StyleSheet.create({
     smallImg: {
         width: 30,
         height: 30,
-        borderRadius: 15
+        borderRadius: 15,
+        backgroundColor: 'lightgray'
     },
     smallName: {
         fontFamily: appFontBold,

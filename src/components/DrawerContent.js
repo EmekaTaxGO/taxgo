@@ -7,13 +7,15 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import { clearData, AUTH_DATA, clearAll } from '../services/UserStorage';
 import { DrawerActions } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AppImage from './AppImage';
+import { get, isNull } from 'lodash';
 
 const DrawerContent = props => {
 
-    const { profile } = props;
-    const fName = profile ? profile.firstname : '';
-    const lName = profile ? profile.lastname : '';
-    const email = profile ? profile.email : '';
+    const imagePath = 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80';
+
+    let profile = get(props, 'profile', {});
+    profile = isNull(profile) ? {} : profile;
     const renderHeader = () => {
         return <View style={{
             height: 200,
@@ -21,22 +23,24 @@ const DrawerContent = props => {
             justifyContent: 'center',
             backgroundColor: colorAccent
         }}>
-            {/* <Image
-                        source={{ uri: 'https://tse4.mm.bing.net/th?id=OIP.kblJvBOiO-XnU0fkjB1VyQHaFv&pid=Api&P=0&w=221&h=172' }}
+            <View>
+
+                <View style={styles.profileImageContainer}>
+                    <AppImage
+                        url={profile.bimage}
                         style={styles.profileImage}
-                    /> */}
-            <View style={styles.profileImage}>
-                <Icon name='person' size={60} color='white' />
+                        placeholderColor='white'
+                        placeholder='person'
+                    />
+                </View>
                 <TouchableOpacity
                     style={styles.editBtn}
                     onPress={onEditClick}>
                     <Icon name='edit' size={16} color='black' />
                 </TouchableOpacity>
-
             </View>
-
-            <Text style={styles.name}>{fName} {lName}</Text>
-            <Text style={styles.email}>{email}</Text>
+            <Text style={styles.name}>{profile.firstname} {profile.lastname}</Text>
+            <Text style={styles.email}>{profile.email}</Text>
         </View>
     }
 
@@ -100,10 +104,14 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        marginLeft: 12,
+        backgroundColor: '#80808040'
+    },
+    profileImageContainer: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
         backgroundColor: '#80808040',
-        justifyContent: 'center',
-        alignItems: 'center'
+        marginLeft: 12
     },
     editBtn: {
         width: 24,
@@ -114,7 +122,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'absolute',
         top: 0,
-        right: 0
+        left: 70
     },
     name: {
         fontSize: 16,
@@ -130,6 +138,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flexDirection: 'column'
+    },
+    imageContainer: {
+        alignItems: 'flex-start'
     }
 })
 export default DrawerContent;

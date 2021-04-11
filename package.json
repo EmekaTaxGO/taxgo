@@ -37,6 +37,7 @@
     "react-native-cardview": "^2.0.5",
     "react-native-chart-kit": "^6.11.0",
     "react-native-credit-card-input": "^0.4.1",
+    "react-native-device-info": "^8.0.8",
     "react-native-dialogs": "^1.1.1",
     "react-native-fbsdk": "^2.0.0",
     "react-native-gesture-handler": "^1.8.0",

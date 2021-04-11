@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { appFont, appFontBold } from '../../helpers/ViewHelper';
+import AppImage from '../AppImage';
 import AppText from '../AppText';
 import Divider from '../Divider';
 class ProfileCard extends Component {
@@ -20,9 +21,12 @@ class ProfileCard extends Component {
                     flexDirection: 'row',
                     paddingVertical: 20
                 }}>
-                    <Image
+                    <AppImage
                         style={styles.image}
-                        source={{ uri: this.imagePath }}
+                        url={this.imagePath}
+                        placeholderColor='#ffffff'
+                        placeholder='person'
+                        placeholderSize={40}
                     />
                     <View style={{ flexDirection: 'column', justifyContent: 'center', paddingStart: 16 }}>
                         <AppText style={styles.name}>{name}</AppText>
@@ -64,7 +68,8 @@ const styles = StyleSheet.create({
     image: {
         width: 60,
         height: 60,
-        borderRadius: 30
+        borderRadius: 30,
+        backgroundColor: 'gray'
     },
     locationTxt: {
         fontSize: 16,

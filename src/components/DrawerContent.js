@@ -9,6 +9,8 @@ import { DrawerActions } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AppImage from './AppImage';
 import { get, isNull } from 'lodash';
+import deepLinkHandler from '../deeplink/DeepLinkHandler';
+import Deeplink from '../deeplink/Deeplink';
 
 const DrawerContent = props => {
 
@@ -46,7 +48,7 @@ const DrawerContent = props => {
     const onEditClick = () => {
         props.navigation.dispatch(DrawerActions.closeDrawer());
         setTimeout(() => {
-            props.navigation.push('EditProfileScreen');
+            deepLinkHandler.handleDeepLink(props.navigation, Deeplink.EDIT_PROFILE);
         }, 200);
     }
 

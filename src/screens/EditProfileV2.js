@@ -8,6 +8,10 @@ import AccountingTab from '../components/profile/AccountingTab';
 import SecurityTab from '../components/profile/SecurityTab';
 import CustomizeTab from '../components/profile/CustomizeTab';
 import SubscriptionTab from '../components/profile/SubscriptionTab';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as authActions from '../redux/actions/authActions';
+import { get, isNull } from 'lodash';
 
 class EditProfileV2 extends Component {
 
@@ -17,7 +21,8 @@ class EditProfileV2 extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: 1
+            value: 1,
+            profile: this.getProfile()
         }
     }
 
@@ -25,7 +30,26 @@ class EditProfileV2 extends Component {
         console.log('State Updated!');
         this.setState({ value: this.state.value + 1 });
     }
+
+    getProfile = () => {
+        const profile = get(this.props.auth, 'profile', {});
+        return isNull(profile) ? {} : profile;
+    }
+
+    onSubmitForm = () => {
+        console.log('Form Submitting...');
+    }
+    onChangeForm = profile => {
+        const newProfile = {
+            ...this.state.profile,
+            ...profile
+        };
+        this.setState({ profile: newProfile }, () => {
+            console.log('New Form: ', JSON.stringify(newProfile, null, 2));
+        });
+    }
     render() {
+        const { profile } = this.state;
         return (
             <TabLayout tab={this.Tab}>
 
@@ -36,8 +60,9 @@ class EditProfileV2 extends Component {
                             <Icon name='account-circle' size={this.iconSize} color={color} />
                     }}>
                     {props => <GeneralTab
-                        {...props}
-                        onClick={this.onClickBtn}
+                        profile={profile}
+                        onSubmit={this.onSubmitForm}
+                        onChange={this.onChangeForm}
                     />}
                 </this.Tab.Screen>
 
@@ -45,7 +70,7 @@ class EditProfileV2 extends Component {
                     name='Business'
                     options={{
                         tabBarIcon: ({ focused, color }) =>
-                            <Icon name='account-circle' size={this.iconSize} color={color} />
+                            <Icon name='business' size={this.iconSize} color={color} />
 
                     }}>
                     {props => <BusinessTab
@@ -58,7 +83,7 @@ class EditProfileV2 extends Component {
                     component={AccountingTab}
                     options={{
                         tabBarIcon: ({ focused, color }) =>
-                            <Icon name='account-circle' size={this.iconSize} color={color} />
+                            <Icon name='menu-book' size={this.iconSize} color={color} />
                     }} />
                 <this.Tab.Screen
                     name='Security'
@@ -86,4 +111,11 @@ class EditProfileV2 extends Component {
         )
     }
 }
-export default EditProfileV2;
+export default connect(
+    state => ({
+        auth: state.auth
+    }),
+    dispatch => ({
+        authActions: bindActionCreators(authActions, dispatch)
+    })
+)(EditProfileV2);

@@ -95,5 +95,8 @@
 <array>
   <string>itms-apps</string>
 </array>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Permission required to access Photo Library</string>
+
 </dict>
 </plist>

@@ -2,26 +2,54 @@ import React, { Component } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import AppButton from '../AppButton';
 import AppTextField from '../AppTextField';
+import ImagePickerView from '../ImagePickerView';
 class GeneralTab extends Component {
 
     componentDidMount() {
-        console.log('Screen:', 'General Tab');
+
+    }
+    onChangeProfile = uri => {
+        const { onChange, profile } = this.props;
+        const newProfile = {
+            ...profile,
+            localUri: uri
+        };
+        onChange(newProfile);
+    }
+
+    onChangeText = (key, value) => {
+        const { profile, onChange } = this.props;
+        const newProfile = {
+            ...profile,
+            [key]: value
+        };
+        onChange(newProfile);
     }
     render() {
-        const { onClick } = this.props;
+        const { onSubmit, profile } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
             <ScrollView style={{ flex: 1 }}>
+                <ImagePickerView
+                    url={profile.localUri}
+                    onChange={this.onChangeProfile}
+                />
                 <AppTextField
                     label='First Name'
                     containerStyle={styles.textField}
+                    value={profile.firstname}
+                    onChangeText={text => this.onChangeText('firstname', text)}
                 />
                 <AppTextField
                     label='Last Name'
                     containerStyle={styles.textField}
+                    value={profile.lastname}
+                    onChangeText={text => this.onChangeText('lastname', text)}
                 />
                 <AppTextField
                     label='Email Address'
                     containerStyle={styles.textField}
+                    value={profile.email}
+                    onChangeText={text => this.onChangeText('email', text)}
                 />
                 <TouchableOpacity style={styles.textField}>
                     <AppTextField
@@ -34,7 +62,7 @@ class GeneralTab extends Component {
                     containerStyle={styles.textField}
                 />
                 <AppButton
-                    onPress={onClick}
+                    onPress={onSubmit}
                     containerStyle={styles.btnStyle}
                     title='Update' />
             </ScrollView>

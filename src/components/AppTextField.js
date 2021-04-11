@@ -29,7 +29,8 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     label: {
-
+        color: 'black',
+        fontFamily: appFont
     }
 })
 export default AppTextField;

@@ -26,10 +26,10 @@ const signOutUser = (nav) => {
     ])
 }
 const navigateToRateUS = async () => {
-    const packageName = await DeviceInfo.getInstallerPackageName();
+    const bundleId = DeviceInfo.getBundleId();
     const deeplink = Platform.select({
-        ios: 'itms-apps://itunes.apple.com/us/app/apple-store/id1513928912?mt=8',
-        android: `market://details?id=com.app.sploot`
+        ios: 'itms-apps://itunes.apple.com/us/app/apple-store/id1156521749?mt=8',
+        android: `market://details?id=${bundleId}`
     });
     const canOpen = await Linking.canOpenURL(deeplink);
     if (canOpen) {

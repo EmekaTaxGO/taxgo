@@ -15,7 +15,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
 import { colorAccent } from '../theme/Color';
-import { RaisedTextButton } from 'react-native-material-buttons';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
 

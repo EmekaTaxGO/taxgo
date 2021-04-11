@@ -7,9 +7,8 @@ import AppText from '../AppText';
 import Divider from '../Divider';
 class ProfileCard extends Component {
 
-    imagePath = 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80';
     render() {
-        const { name, email, address, onEditPress } = this.props;
+        const { name, email, address, image, onEditPress } = this.props;
         return (
             <View style={{
                 backgroundColor: 'white',
@@ -23,7 +22,7 @@ class ProfileCard extends Component {
                 }}>
                     <AppImage
                         style={styles.image}
-                        url={this.imagePath}
+                        url={image}
                         placeholderColor='#ffffff'
                         placeholder='person'
                         placeholderSize={40}

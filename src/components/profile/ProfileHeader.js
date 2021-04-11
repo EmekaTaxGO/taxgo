@@ -7,9 +7,8 @@ import AppText from '../AppText';
 
 class ProfileHeader extends Component {
 
-    imagePath = 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80';
     render() {
-        const { onPressProfile, name } = this.props;
+        const { onPressProfile, name, image } = this.props;
         return (
             <View style={{
                 flexDirection: 'row',
@@ -30,7 +29,7 @@ class ProfileHeader extends Component {
                     onPress={onPressProfile}
                     style={styles.profileSelector}>
                     <AppImage
-                        url={this.imagePath}
+                        url={image}
                         style={styles.smallImg}
                         placeholder='person'
                         placeholderSize={20}

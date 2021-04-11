@@ -1,6 +1,6 @@
-import { get } from 'lodash';
+import { get, isNull } from 'lodash';
 import React, { Component } from 'react';
-import { FlatList, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, Platform, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import AppText from '../components/AppText';
 import ProfileCard from '../components/profile/ProfileCard';
 import ProfileHeader from '../components/profile/ProfileHeader';
@@ -8,22 +8,31 @@ import SettingRowItem from '../components/SettingRowItem';
 import { appFontBold } from '../helpers/ViewHelper';
 import deepLinkHandler from '../deeplink/DeepLinkHandler';
 import Deeplink from '../deeplink/Deeplink';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import DeviceInfo from 'react-native-device-info';
+import * as authActions from '../redux/actions/authActions';
 
 class Profile extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            profile: {
-                name: 'Divan Raj',
-                email: 'delaney.daugh@mckenna.net',
-                address: '421 Lesly River Suite 478, Australia'
-            },
             data: this.createSettingData()
         }
     }
 
     createSettingData = () => {
+        const info = Platform.select({
+            ios: {
+                platform: 'iOS',
+                version: `${DeviceInfo.getBuildNumber()}.0`
+            },
+            android: {
+                platform: 'Android',
+                version: DeviceInfo.getVersion()
+            }
+        });
         return [
             {
                 label: 'profile settings',
@@ -96,14 +105,14 @@ class Profile extends Component {
                         hideDivider: false,
                         deeplink: Deeplink.RATE_US
                     },
-                    {
-                        bgColor: '#bf1f76',
-                        iconColor: 'white',
-                        iconName: 'payment',
-                        label: 'retail xpress',
-                        hasUnread: true,
-                        deeplink: Deeplink.RETAIL_XPRESS
-                    },
+                    // {
+                    //     bgColor: '#bf1f76',
+                    //     iconColor: 'white',
+                    //     iconName: 'payment',
+                    //     label: 'retail xpress',
+                    //     hasUnread: true,
+                    //     deeplink: Deeplink.RETAIL_XPRESS
+                    // },
                     {
                         bgColor: 'white',
                         iconColor: '#ee6171',
@@ -112,12 +121,17 @@ class Profile extends Component {
                         label: 'sign out',
                         hasUnread: true,
                         hideDivider: true,
-                        text: 'iOS v1.0',
+                        text: `${info.platform} v${info.version}`,
                         deeplink: Deeplink.SIGN_OUT
                     }
                 ]
             }
         ]
+    }
+
+    getProfile = () => {
+        const profile = get(this.props.auth, 'profile', {});
+        return isNull(profile) ? {} : profile;
     }
 
     onItemClick = deeplink => {
@@ -134,7 +148,7 @@ class Profile extends Component {
                 <AppText style={styles.section}>{item.label}</AppText>
                 <FlatList
                     data={item.data}
-                    keyExtractor={(index) => `${index}`}
+                    keyExtractor={(item, index) => `${index}`}
                     renderItem={({ item, index }) =>
                         <SettingRowItem
                             {...item}
@@ -150,26 +164,31 @@ class Profile extends Component {
     }
     renderHeader = () => {
 
-        const profile = get(this.state, 'profile', {});
+        const profile = this.getProfile();
+        const fullName = `${profile.firstname} ${profile.lastname}`;
         return <View style={{ flexDirection: 'column' }}>
             <ProfileHeader
-                name={profile.name}
+                name={fullName}
+                image={profile.bimage}
             />
             <ProfileCard
-                name={profile.name}
+                name={fullName}
                 email={profile.email}
-                address={profile.address}
+                address={profile.fullAddress}
+                image={profile.bimage}
                 onEditPress={this.handleEditPress}
             />
         </View>
     }
+
+
 
     render() {
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <FlatList
                     data={this.state.data}
-                    keyExtractor={(index) => `${index}`}
+                    keyExtractor={(item, index) => `${index}`}
                     renderItem={this.renderSettingItem}
                     ListHeaderComponent={this.renderHeader}
                 />
@@ -187,4 +206,11 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase'
     }
 })
-export default Profile;
+export default connect(
+    state => ({
+        auth: state.auth
+    }),
+    dispatch => ({
+        authActions: bindActionCreators(authActions, dispatch)
+    })
+)(Profile);

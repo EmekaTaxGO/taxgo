@@ -165,6 +165,7 @@ class Profile extends Component {
     renderHeader = () => {
 
         const profile = this.getProfile();
+        console.log('New Profile Data: ', JSON.stringify(profile, null, 2));
         const fullName = `${profile.firstname} ${profile.lastname}`;
         return <View style={{ flexDirection: 'column' }}>
             <ProfileHeader

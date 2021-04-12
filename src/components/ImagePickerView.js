@@ -54,6 +54,7 @@ class ImagePickerView extends Component {
                 <AppImage
                     style={styles.image}
                     url={url}
+                    placeholderColor='white'
                 />
                 <TouchableOpacity
                     style={{
@@ -61,7 +62,7 @@ class ImagePickerView extends Component {
                         justifyContent: 'center',
                         alignItems: 'center',
                         borderRadius: 4,
-                        backgroundColor: 'lightgray',
+                        backgroundColor: '#e0e0e0',
                         marginTop: 12,
                         paddingHorizontal: 12,
                         paddingVertical: 6
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: 'lightgray',
+        backgroundColor: '#bdbdbd',
         borderWidth: 1,
         borderColor: 'lightgray'
     },

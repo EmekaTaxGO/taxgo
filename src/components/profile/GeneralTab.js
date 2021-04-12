@@ -5,13 +5,16 @@ import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
 import ImagePickerView from '../ImagePickerView';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { isEmpty } from 'lodash';
+import { showError } from '../../helpers/Utils';
 
 class GeneralTab extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            showDobDialog: false
+            showDobDialog: false,
+            profile: props.profile
         }
     }
 
@@ -25,30 +28,48 @@ class GeneralTab extends Component {
     }
 
     onChangeProfile = uri => {
-        const { onChange, profile } = this.props;
+        const { profile } = this.state;
         const newProfile = {
             ...profile,
             localUri: uri
         };
-        onChange(newProfile);
+        this.setState({ profile: newProfile });
     }
 
     onChangeText = (key, value) => {
-        const { profile, onChange } = this.props;
+        const { profile } = this.state;
         const newProfile = {
             ...profile,
             [key]: value
         };
-        onChange(newProfile);
+        this.setState({ profile: newProfile });
     }
 
     onChangeDob = (show, date) => {
-        this.setState({ showDobDialog: show }, () => {
-            this.onChangeText('dob', date);
-        });
+        const { profile } = this.state;
+        const newProfile = {
+            ...profile,
+            dob: date
+        };
+        this.setState({ showDobDialog: show, profile: newProfile });
+    }
+
+    validateForm = () => {
+        const { profile } = this.state;
+        const { onSubmit } = this.props;
+        if (isEmpty(profile.firstname)) {
+            showError('Enter first name.')
+        }
+        else if (isEmpty(profile.lastname)) {
+            showError('Enter last name.')
+        }
+        else {
+            onSubmit(profile);
+        }
     }
     render() {
-        const { onSubmit, profile } = this.props;
+        const { onSubmit } = this.props;
+        const { profile } = this.state;
         return <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
@@ -94,7 +115,7 @@ class GeneralTab extends Component {
                     onChangeText={text => this.onChangeText('phonenumber', text)}
                 />
                 <AppButton
-                    onPress={onSubmit}
+                    onPress={this.validateForm}
                     containerStyle={styles.btnStyle}
                     title='Update' />
             </KeyboardAwareScrollView>

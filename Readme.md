@@ -6,4 +6,22 @@ Go to /Users/Karan/Projects/taxgo-mobile/node_modules/react-native-material-text
 <ImagePickerView
     url={profile.localUri}
     onChange={this.onChangeProfile}
-                />
+    />
+
+#3 AppDatePicker
+<AppDatePicker
+    showDialog={this.state.showDobDialog}
+    date={this.state.dob}
+    containerStyle={styles.textField}
+    textFieldProps={{
+        label: `Title`,
+        fieldRef: this.dobRef
+    }}
+    readFormat='DD/MM/YYYY'
+    displayFormat='DD MMM, YYYY HH:MM A'
+    pickerProps={{
+        mode: `datetime`,
+        display: `default`
+    }}
+    onChange={this.onChangeDob}
+    />

@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import AppButton from '../AppButton';
+import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
 import ImagePickerView from '../ImagePickerView';
 class GeneralTab extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            dob: '08/12/1994',
+            showDobDialog: false
+        }
+    }
+
+    dobRef = React.createRef();
     componentDidMount() {
 
     }
@@ -24,6 +34,13 @@ class GeneralTab extends Component {
             [key]: value
         };
         onChange(newProfile);
+    }
+
+    onChangeDob = (show, date) => {
+        this.setState({
+            showDobDialog: show,
+            dob: date
+        });
     }
     render() {
         const { onSubmit, profile } = this.props;
@@ -51,12 +68,28 @@ class GeneralTab extends Component {
                     value={profile.email}
                     onChangeText={text => this.onChangeText('email', text)}
                 />
-                <TouchableOpacity style={styles.textField}>
+                {/* <TouchableOpacity style={styles.textField}>
                     <AppTextField
                         label='Date Of Birth'
                         editable={false}
                     />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+                <AppDatePicker
+                    showDialog={this.state.showDobDialog}
+                    date={this.state.dob}
+                    containerStyle={styles.textField}
+                    textFieldProps={{
+                        label: 'Date Of Birth',
+                        fieldRef: this.dobRef
+                    }}
+                    readFormat='DD/MM/YYYY'
+                    displayFormat='DD MMM, YYYY HH:MM A'
+                    pickerProps={{
+                        mode: 'datetime',
+                        display: 'default'
+                    }}
+                    onChange={this.onChangeDob}
+                />
                 <AppTextField
                     label='Phone number'
                     containerStyle={styles.textField}

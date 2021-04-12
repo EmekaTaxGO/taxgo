@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
 import { OutlinedTextField } from 'react-native-material-textfield';
 import { appFont, appFontBold } from '../helpers/ViewHelper';
-import { colorAccent, colorPrimary } from '../theme/Color';
 class AppTextField extends Component {
 
 
@@ -18,6 +17,7 @@ class AppTextField extends Component {
                 fontSize={18}
                 fontFamily={appFont}
                 autoCorrect={false}
+                lineWidth={1}
                 {...this.props}
             />
         )

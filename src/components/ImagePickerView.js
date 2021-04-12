@@ -1,12 +1,9 @@
-import { trim } from 'lodash';
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import ActionSheet from 'react-native-actionsheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { appFontBold } from '../helpers/ViewHelper';
 import AppImage from './AppImage';
 import AppText from './AppText';
-import permissionHelper from '../helpers/PermissionHelper';
 import ImagePicker from 'react-native-image-picker';
 import { DEFAULT_PICKER_OPTIONS } from '../helpers/Utils';
 

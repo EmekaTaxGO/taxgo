@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as authActions from '../redux/actions/authActions';
 import { get, isNull } from 'lodash';
+import { Buffer } from 'buffer';
 
 class EditProfileV2 extends Component {
 
@@ -32,8 +33,17 @@ class EditProfileV2 extends Component {
     }
 
     getProfile = () => {
-        const profile = get(this.props.auth, 'profile', {});
-        return isNull(profile) ? {} : profile;
+        var profile = get(this.props.auth, 'profile', {});
+        var profile = isNull(profile) ? {} : profile;
+        return {
+            ...profile,
+            company: Buffer.from(profile.company).toString(),
+            address1: Buffer.from(profile.address1).toString(),
+            address2: Buffer.from(profile.address2).toString(),
+            defaultmail: Buffer.from(profile.defaultmail).toString(),
+            defaultTerms: Buffer.from(profile.defaultTerms).toString(),
+
+        }
     }
 
     onSubmitForm = () => {
@@ -74,38 +84,58 @@ class EditProfileV2 extends Component {
 
                     }}>
                     {props => <BusinessTab
-                        {...props}
-                        id='Business_Tab'
-                        onClick={this.onClickBtn} />}
+                        profile={profile}
+                        onSubmit={this.onSubmitForm}
+                        onChange={this.onChangeForm} />}
                 </this.Tab.Screen>
+
                 <this.Tab.Screen
                     name='Accounting'
-                    component={AccountingTab}
                     options={{
                         tabBarIcon: ({ focused, color }) =>
                             <Icon name='menu-book' size={this.iconSize} color={color} />
-                    }} />
+                    }}>
+                    {props => <AccountingTab
+                        profile={profile}
+                        onSubmit={this.onSubmitForm}
+                        onChange={this.onChangeForm} />}
+                </this.Tab.Screen>
+
                 <this.Tab.Screen
                     name='Security'
-                    component={SecurityTab}
                     options={{
                         tabBarIcon: ({ focused, color }) =>
                             <Icon name='security' size={this.iconSize} color={color} />
-                    }} />
+                    }}>
+                    {props => <SecurityTab
+                        profile={profile}
+                        onSubmit={this.onSubmitForm}
+                        onChange={this.onChangeForm} />}
+                </this.Tab.Screen>
+
                 <this.Tab.Screen
                     name='Customize'
-                    component={CustomizeTab}
                     options={{
                         tabBarIcon: ({ focused, color }) =>
                             <Icon name='dashboard-customize' size={this.iconSize} color={color} />
-                    }} />
+                    }}>
+                    {props => <CustomizeTab
+                        profile={profile}
+                        onSubmit={this.onSubmitForm}
+                        onChange={this.onChangeForm} />}
+                </this.Tab.Screen>
+
                 <this.Tab.Screen
                     name='Subscription'
-                    component={SubscriptionTab}
                     options={{
                         tabBarIcon: ({ focused, color }) =>
                             <Icon name='subscriptions' size={this.iconSize} color={color} />
-                    }} />
+                    }}>
+                    {props => <SubscriptionTab
+                        profile={profile}
+                        onSubmit={this.onSubmitForm}
+                        onChange={this.onChangeForm} />}
+                </this.Tab.Screen>
 
             </TabLayout>
         )

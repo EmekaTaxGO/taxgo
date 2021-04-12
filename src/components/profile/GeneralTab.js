@@ -1,23 +1,29 @@
 import React, { Component } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import AppButton from '../AppButton';
 import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
 import ImagePickerView from '../ImagePickerView';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 class GeneralTab extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            dob: '08/12/1994',
             showDobDialog: false
         }
     }
 
     dobRef = React.createRef();
+    scrollRef = React.createRef();
+
+
     componentDidMount() {
 
+
     }
+
     onChangeProfile = uri => {
         const { onChange, profile } = this.props;
         const newProfile = {
@@ -37,15 +43,17 @@ class GeneralTab extends Component {
     }
 
     onChangeDob = (show, date) => {
-        this.setState({
-            showDobDialog: show,
-            dob: date
+        this.setState({ showDobDialog: show }, () => {
+            this.onChangeText('dob', date);
         });
     }
     render() {
         const { onSubmit, profile } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
-            <ScrollView style={{ flex: 1 }}>
+            <KeyboardAwareScrollView
+                style={{ flex: 1 }}
+                ref={this.scrollRef}>
+
                 <ImagePickerView
                     url={profile.localUri}
                     onChange={this.onChangeProfile}
@@ -66,39 +74,30 @@ class GeneralTab extends Component {
                     label='Email Address'
                     containerStyle={styles.textField}
                     value={profile.email}
+                    disabled={true}
                     onChangeText={text => this.onChangeText('email', text)}
                 />
-                {/* <TouchableOpacity style={styles.textField}>
-                    <AppTextField
-                        label='Date Of Birth'
-                        editable={false}
-                    />
-                </TouchableOpacity> */}
                 <AppDatePicker
                     showDialog={this.state.showDobDialog}
-                    date={this.state.dob}
+                    date={profile.dob}
                     containerStyle={styles.textField}
                     textFieldProps={{
                         label: 'Date Of Birth',
                         fieldRef: this.dobRef
-                    }}
-                    readFormat='DD/MM/YYYY'
-                    displayFormat='DD MMM, YYYY HH:MM A'
-                    pickerProps={{
-                        mode: 'datetime',
-                        display: 'default'
                     }}
                     onChange={this.onChangeDob}
                 />
                 <AppTextField
                     label='Phone number'
                     containerStyle={styles.textField}
+                    value={profile.phonenumber}
+                    onChangeText={text => this.onChangeText('phonenumber', text)}
                 />
                 <AppButton
                     onPress={onSubmit}
                     containerStyle={styles.btnStyle}
                     title='Update' />
-            </ScrollView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     }
 }

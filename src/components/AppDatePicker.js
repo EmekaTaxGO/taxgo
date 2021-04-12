@@ -59,7 +59,7 @@ class AppDatePicker extends Component {
                 </TouchableOpacity>
                 {showDialog ? <DateTimePicker
                     value={date.toDate()}
-                    mode={'datetime'}
+                    mode={'date'}
                     display='default'
                     onChange={this.onDateChange}
                     {...pickerProps}

@@ -67,19 +67,20 @@ export const login = (navigation, body) => {
                 navigation.replace('HomeScreen');
             })
             .catch(err => {
-                if (err.response) {
-                    if (isClientError(err)) {
-                        Alert.alert('Alert', 'Incorrect Email or Password.');
-                    } else {
+                setTimeout(() => {
+                    if (err.response) {
+                        if (isClientError(err)) {
+                            Alert.alert('Alert', 'Incorrect Email or Password.');
+                        } else {
 
-                        Alert.alert('Alert', API_ERROR_MESSAGE);
+                            Alert.alert('Alert', API_ERROR_MESSAGE);
+                        }
+                    } else {
+                        Alert.alert('Alert', NO_INTERNET_ERROR);
                     }
-                } else {
-                    Alert.alert('Alert', NO_INTERNET_ERROR);
-                }
+                }, 300);
                 log('login Error', err);
                 dispatch({ type: LOGIN_FAIL });
-
             })
     }
 }

@@ -45,7 +45,7 @@ const handleDeepLink = (navigation, deeplink) => {
     }
     switch (deeplink) {
         case Deeplink.CHANGE_PASSWORD:
-            navigation.push('ChangePasswordScreen');
+            navigation.push('EditProfileV2', { tab: 'Security' });
             break;
         case Deeplink.EDIT_PROFILE:
             navigation.push('EditProfileV2');

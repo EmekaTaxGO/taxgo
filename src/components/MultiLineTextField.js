@@ -5,7 +5,7 @@ import AppText from './AppText';
 
 class MultiLineTextField extends Component {
     render() {
-        const { containerStyle, labelStyle, inputStyle, label, value } = this.props;
+        const { containerStyle, labelStyle, inputStyle, label, fieldRef } = this.props;
         const newContainerStyle = {
             ...styles.container,
             ...containerStyle
@@ -20,7 +20,8 @@ class MultiLineTextField extends Component {
         };
 
         return (
-            <View style={newContainerStyle}>
+            <View style={newContainerStyle}
+                ref={fieldRef}>
                 <AppText style={newLabelStyle}>{label}</AppText>
                 <TextInput
                     placeholderTextColor='gray'
@@ -52,8 +53,8 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     label: {
-        color:'black',
-        fontSize:17
+        color: 'black',
+        fontSize: 17
     }
 })
 export default MultiLineTextField;

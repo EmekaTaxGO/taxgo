@@ -31,6 +31,7 @@ class BusinessTab extends Component {
     taxNumRef = React.createRef();
     bAddressRef = React.createRef();
     scrollView = React.createRef();
+    businessAddress = React.createRef();
 
     getBTypeIndex = (bType) => {
         const bTypes = businessHelper.getBusinessTypes();
@@ -113,17 +114,26 @@ class BusinessTab extends Component {
             }
         });
     }
+
+    scrollTo = ref => {
+        setTimeout(() => {
+            ref.current.measure((fx, fy, width, height, px, py) => {
+                this.scrollView.scrollTo({ y: fy - 20, animated: true });
+            })
+        }, 300);
+    }
+
     render() {
         const { businesses } = this.props;
         const { categoryIdx, bTypeIdx, profile } = this.state;
         const businessTypes = businessHelper.getBusinessTypes();
-        return <SafeAreaView style={{ flex: 1,backgroundColor: '#f2f2f2' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
                 innerRef={ref => {
                     this.scrollView = ref;
                 }}
-                >
+            >
                 <AppTextField
                     label='Business Name'
                     fieldRef={this.bNameRef}
@@ -201,15 +211,12 @@ class BusinessTab extends Component {
                 /> */}
 
                 <MultiLineTextField
+                    fieldRef={this.businessAddress}
                     label='Business Address'
                     containerStyle={styles.addressField}
                     value={profile.fullAddress}
                     onChangeText={this.onChangeAddress}
-                    onFocus={event => {
-                        setTimeout(() => {
-                            this.scrollView.scrollTo({ y: 10000, animated: true });
-                        }, 300);
-                    }} />
+                    onFocus={event => this.scrollTo(this.businessAddress)} />
 
                 <AppButton
                     onPress={this.validateForm}

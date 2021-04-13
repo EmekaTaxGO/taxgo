@@ -1,26 +1,56 @@
+import { Picker } from '@react-native-community/picker';
 import React, { Component } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { getFieldValue } from '../../helpers/TextFieldHelpers';
 import { appFont, appFontBold } from '../../helpers/ViewHelper';
 import AppButton from '../AppButton';
 import AppDatePicker from '../AppDatePicker';
+import AppPicker from '../AppPicker';
 import AppTextField from '../AppTextField';
 import MultiLineTextField from '../MultiLineTextField';
 class AccountingTab extends Component {
 
     constructor(props) {
         super(props);
+        const reportTypes = this.createReports();
         this.state = {
             profile: props.profile,
-            showYrEndDialog: false
+            showYrEndDialog: false,
+            reportTypes: reportTypes,
+            reportIdx: this.getReportTypeIdx(reportTypes, props.profile.reportType)
         }
     }
 
     yearEndRef = React.createRef();
     scrollView = React.createRef();
+    invNote = React.createRef();
+    termCondition = React.createRef();
+
+    getReportTypeIdx = (reportTypes, reportType) => {
+        for (let i = 0; i < reportTypes.length; i++) {
+            const element = reportTypes[i];
+            if (element.id === reportType) {
+                return i;
+            }
+        }
+        return 0;
+    }
+    createReports = () => {
+        return [
+            {
+                id: 1,
+                title: 'Cash Receipt'
+            },
+            {
+                id: 2,
+                title: 'Invoice Receipt'
+            }
+        ]
+    }
 
     componentDidMount() {
-        console.log('Profile Info: ', JSON.stringify(this.state.profile, null, 2));
+
     }
 
     onChangeYrEnd = (show, date) => {
@@ -41,12 +71,25 @@ class AccountingTab extends Component {
         });
     }
 
-    validateForm=()=>{
-        
+    submitForm = () => {
+        const { reportTypes, reportIdx, profile } = this.state
+        const newProfile = {
+            ...profile,
+            reportType: reportTypes[reportIdx].id
+        };
+        const { onSubmit } = this.props;
+        onSubmit(newProfile);
     }
 
+    scrollTo = ref => {
+        setTimeout(() => {
+            ref.current.measure((fx, fy, width, height, px, py) => {
+                this.scrollView.scrollTo({ y: fy - 20, animated: true });
+            })
+        }, 300);
+    }
     render() {
-        const { profile } = this.state;
+        const { profile, reportTypes, reportIdx } = this.state;
         return <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
@@ -63,6 +106,14 @@ class AccountingTab extends Component {
                     }}
                     onChange={this.onChangeYrEnd}
                 />
+                <AppPicker
+                    style={styles.picker}
+                    selectedValue={reportTypes[reportIdx].title}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ reportIdx: itemIndex })}>
+                    {reportTypes.map((value, index) => <Picker.Item
+                        label={value.title} value={value.title} key={`${index}`} />)}
+                </AppPicker>
                 <MultiLineTextField
                     label='Default Email Content'
                     containerStyle={styles.multiLineField}
@@ -70,35 +121,29 @@ class AccountingTab extends Component {
                     value={profile.defaultmail}
                     onChangeText={text => this.onChangeMultiline('defaultmail', text)}
                     onFocus={event => {
-                        // setTimeout(() => {
-                        //     this.scrollView.scrollTo({ y: 10000, animated: true });
-                        // }, 300);
+
                     }} />
                 <MultiLineTextField
+                    fieldRef={this.termCondition}
                     label='Default Invoice Terms and Condition'
                     labelStyle={styles.multilineLabel}
                     containerStyle={styles.multiLineField}
                     value={profile.defaultTerms}
                     onChangeText={text => this.onChangeMultiline('defaultTerms', text)}
                     onFocus={event => {
-                        // setTimeout(() => {
-                        //     this.scrollView.scrollTo({ y: 10000, animated: true });
-                        // }, 300);
+                        this.scrollTo(this.termCondition);
                     }} />
                 <MultiLineTextField
+                    fieldRef={this.invNote}
                     label='Default Invoice Note'
                     labelStyle={styles.multilineLabel}
                     containerStyle={styles.multiLineField}
                     value={profile.cusNotes}
                     onChangeText={text => this.onChangeMultiline('cusNotes', text)}
-                    onFocus={event => {
-                        setTimeout(() => {
-                            this.scrollView.scrollTo({ y: 10000, animated: true });
-                        }, 300);
-                    }} />
+                    onFocus={event => this.scrollTo(this.invNote)} />
 
                 <AppButton
-                    onPress={this.validateForm}
+                    onPress={this.submitForm}
                     containerStyle={styles.btnStyle}
                     title='Update' />
             </KeyboardAwareScrollView>

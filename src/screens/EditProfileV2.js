@@ -32,8 +32,14 @@ class EditProfileV2 extends Component {
             fetching: true,
             error: undefined,
             businesses: [],
-            updating: false
+            updating: false,
+            routeName: this.getInitialRouteName()
         }
+    }
+
+    getInitialRouteName = () => {
+        const routeName = get(this.props, 'route.params.tab', 'General')
+        return routeName;
     }
 
     componentDidMount() {
@@ -96,6 +102,27 @@ class EditProfileV2 extends Component {
             })
     }
 
+    onPassChange = body => {
+        this.setState({ updating: true });
+        Api.post('/user/changePassword', body)
+            .then(response => {
+
+                this.setState({ updating: false }, () => {
+                    this.props.navigation.goBack();
+                    setTimeout(() => {
+                        showSuccess(response.data.message);
+                    }, 400);
+                });
+            })
+            .catch(err => {
+                console.log('Error Updating Password:', err);
+                this.setState({ updating: false }, () => {
+                    showError('Unable to change pass.');
+                })
+
+            })
+    }
+
     render() {
         if (this.state.fetching) {
             return <OnScreenSpinner />
@@ -107,7 +134,8 @@ class EditProfileV2 extends Component {
         return (
             <View style={{ flex: 1 }}>
 
-                <TabLayout tab={this.Tab}>
+                <TabLayout tab={this.Tab}
+                    initialRouteName={this.state.routeName}>
 
                     <this.Tab.Screen
                         name='General'
@@ -155,7 +183,8 @@ class EditProfileV2 extends Component {
                         }}>
                         {props => <SecurityTab
                             profile={profile}
-                            onSubmit={this.onSubmitForm} />}
+                            onSubmit={this.onSubmitForm}
+                            onPassChange={this.onPassChange} />}
                     </this.Tab.Screen>
 
                     <this.Tab.Screen

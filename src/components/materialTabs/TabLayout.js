@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { tabBackgroundColor, tabSelectedColor } from '../../theme/Color';
 import { appFontBold } from '../../helpers/ViewHelper';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 class TabLayout extends Component {
 
+    Tab = createMaterialTopTabNavigator();
     render() {
         const { tab } = this.props;
         return (

@@ -110,10 +110,10 @@ export const getApiErrorMsg = err => {
     }
 }
 
-export const showError = (message) => {
+export const showError = (message, duration = Snackbar.LENGTH_LONG) => {
     Snackbar.show({
         text: message,
-        duration: Snackbar.LENGTH_LONG,
+        duration: duration,
         backgroundColor: 'red',
         action: {
             text: 'OK',

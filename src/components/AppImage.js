@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, isEmpty, isNull } from 'lodash';
 import React, { Component } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -24,7 +24,9 @@ class AppImage extends Component {
         const defaultPlaceholderSize = get(this.props, 'style.width', 60) / 2;
         const placeholderSize = get(this.props, 'placeholderSize', defaultPlaceholderSize);
         const placeholderColor = get(this.props, 'placeholderColor', '#000000');
-        const url = get(this.props, 'url');
+        var url = get(this.props, 'url');
+        url = (isEmpty(url) || isNull(url)) ? 'emptyUrl' : url;
+        console.log('Url is:', url);
         const { showPlaceholder } = this.state;
 
         const newContainerStyle = {

@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
         fontFamily: appFont,
         fontSize: 18,
         height: 100,
-        color: 'black'
+        color: 'black',
+        textAlignVertical:'top'
     }
 })
 export default MultiLineTextField;

@@ -127,7 +127,7 @@ class BusinessTab extends Component {
         const { businesses } = this.props;
         const { categoryIdx, bTypeIdx, profile } = this.state;
         const businessTypes = businessHelper.getBusinessTypes();
-        return <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
                 innerRef={ref => {

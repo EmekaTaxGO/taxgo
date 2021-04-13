@@ -90,7 +90,7 @@ class AccountingTab extends Component {
     }
     render() {
         const { profile, reportTypes, reportIdx } = this.state;
-        return <SafeAreaView style={{ flex: 1 }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
                 innerRef={ref => {

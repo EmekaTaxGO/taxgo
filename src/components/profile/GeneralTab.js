@@ -70,7 +70,7 @@ class GeneralTab extends Component {
     render() {
         const { onSubmit } = this.props;
         const { profile } = this.state;
-        return <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
                 ref={this.scrollRef}>

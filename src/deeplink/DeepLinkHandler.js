@@ -54,7 +54,7 @@ const handleDeepLink = (navigation, deeplink) => {
             navigation.push('MerchantAccountScreen');
             break;
         case Deeplink.SUBSCRIPTIONS:
-            navigation.push('UpgradePlanScreen');
+            navigation.push('EditProfileV2', { tab: 'Subscription' });
             break;
         case Deeplink.SIGN_OUT:
             signOutUser(navigation);

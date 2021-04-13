@@ -138,7 +138,7 @@ class SubscriptionTab extends Component {
             data={this.state.items}
             keyExtractor={row => row.header}
             renderItem={({ item, index }) => this.renderListItem(item, index)}
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: 'white' }}
         />
     }
 }

@@ -118,6 +118,7 @@ class EditProfileV2 extends Component {
                         {props => <GeneralTab
                             profile={profile}
                             onSubmit={this.onSubmitForm}
+                            {...props}
                         />}
                     </this.Tab.Screen>
 
@@ -131,7 +132,8 @@ class EditProfileV2 extends Component {
                         {props => <BusinessTab
                             profile={profile}
                             onSubmit={this.onSubmitForm}
-                            businesses={this.state.businesses} />}
+                            businesses={this.state.businesses}
+                            {...props} />}
                     </this.Tab.Screen>
 
                     <this.Tab.Screen

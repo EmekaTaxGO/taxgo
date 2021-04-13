@@ -26,7 +26,6 @@ class AppImage extends Component {
         const placeholderColor = get(this.props, 'placeholderColor', '#000000');
         var url = get(this.props, 'url');
         url = (isEmpty(url) || isNull(url)) ? 'emptyUrl' : url;
-        console.log('Url is:', url);
         const { showPlaceholder } = this.state;
 
         const newContainerStyle = {

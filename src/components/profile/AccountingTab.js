@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { appFont, appFontBold } from '../../helpers/ViewHelper';
+import AppButton from '../AppButton';
 import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
 import MultiLineTextField from '../MultiLineTextField';
@@ -39,6 +41,10 @@ class AccountingTab extends Component {
         });
     }
 
+    validateForm=()=>{
+        
+    }
+
     render() {
         const { profile } = this.state;
         return <SafeAreaView style={{ flex: 1 }}>
@@ -58,8 +64,9 @@ class AccountingTab extends Component {
                     onChange={this.onChangeYrEnd}
                 />
                 <MultiLineTextField
-                    placeholder='Default Email Content'
-                    style={styles.multiLineField}
+                    label='Default Email Content'
+                    containerStyle={styles.multiLineField}
+                    labelStyle={styles.multilineLabel}
                     value={profile.defaultmail}
                     onChangeText={text => this.onChangeMultiline('defaultmail', text)}
                     onFocus={event => {
@@ -68,8 +75,9 @@ class AccountingTab extends Component {
                         // }, 300);
                     }} />
                 <MultiLineTextField
-                    placeholder='Default Invoice Terms and Condition'
-                    style={styles.multiLineField}
+                    label='Default Invoice Terms and Condition'
+                    labelStyle={styles.multilineLabel}
+                    containerStyle={styles.multiLineField}
                     value={profile.defaultTerms}
                     onChangeText={text => this.onChangeMultiline('defaultTerms', text)}
                     onFocus={event => {
@@ -78,8 +86,9 @@ class AccountingTab extends Component {
                         // }, 300);
                     }} />
                 <MultiLineTextField
-                    placeholder='Default Invoice Note'
-                    style={styles.multiLineField}
+                    label='Default Invoice Note'
+                    labelStyle={styles.multilineLabel}
+                    containerStyle={styles.multiLineField}
                     value={profile.cusNotes}
                     onChangeText={text => this.onChangeMultiline('cusNotes', text)}
                     onFocus={event => {
@@ -87,6 +96,11 @@ class AccountingTab extends Component {
                             this.scrollView.scrollTo({ y: 10000, animated: true });
                         }, 300);
                     }} />
+
+                <AppButton
+                    onPress={this.validateForm}
+                    containerStyle={styles.btnStyle}
+                    title='Update' />
             </KeyboardAwareScrollView>
         </SafeAreaView>
     }
@@ -113,6 +127,9 @@ const styles = StyleSheet.create({
     multiLineField: {
         marginHorizontal: 16,
         marginTop: 20
+    },
+    multilineLabel: {
+        color: 'gray'
     }
 })
 export default AccountingTab;

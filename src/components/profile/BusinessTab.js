@@ -117,13 +117,13 @@ class BusinessTab extends Component {
         const { businesses } = this.props;
         const { categoryIdx, bTypeIdx, profile } = this.state;
         const businessTypes = businessHelper.getBusinessTypes();
-        return <SafeAreaView style={{ flex: 1 }}>
+        return <SafeAreaView style={{ flex: 1,backgroundColor: '#f2f2f2' }}>
             <KeyboardAwareScrollView
                 style={{ flex: 1 }}
                 innerRef={ref => {
                     this.scrollView = ref;
                 }}
-                bounces={false}>
+                >
                 <AppTextField
                     label='Business Name'
                     fieldRef={this.bNameRef}
@@ -201,8 +201,8 @@ class BusinessTab extends Component {
                 /> */}
 
                 <MultiLineTextField
-                    placeholder='Business Address'
-                    style={styles.addressField}
+                    label='Business Address'
+                    containerStyle={styles.addressField}
                     value={profile.fullAddress}
                     onChangeText={this.onChangeAddress}
                     onFocus={event => {

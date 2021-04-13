@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { DATE_FORMAT } from '../constants/appConstant';
+import { DATE_FORMAT, H_DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent, snackbarActionColor, colorWhite } from '../theme/Color';
@@ -12,12 +12,13 @@ import CardView from 'react-native-cardview';
 import Snackbar from 'react-native-snackbar';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
+import AppDatePicker from '../components/AppDatePicker';
 class AddJournalScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            date: new Date(),
+            date: moment().format(H_DATE_FORMAT),
             showDate: false,
             ledgers: this.createLedgers()
         }
@@ -50,14 +51,11 @@ class AddJournalScreen extends Component {
         })
     }
 
-    onJournalDateChanged = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.date;
+    onJournalDateChanged = (show, date) => {
         this.setState({
-            date: currentDate,
-            showDate: false
-        }, () => {
-            this.setText(this.dateRef, moment(currentDate).format(DATE_FORMAT));
-        })
+            showDate: show,
+            date: date
+        });
     }
 
     setText = (ref, value) => {
@@ -209,24 +207,18 @@ class AddJournalScreen extends Component {
     renderHeader = () => {
         return (
             <View>
-                <TouchableOpacity onPress={() => this.setState({ showDate: true })}>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Journal Date'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        editable={false}
-                        title='*required'
-                        fieldRef={this.dateRef} />
-                </TouchableOpacity>
-                {this.state.showDate ? <DateTimePicker
-                    value={this.state.date}
-                    mode={'date'}
-                    display='inline'
-                    minimumDate={new Date()}
+                <AppDatePicker
+                    showDialog={this.state.showDate}
+                    date={this.state.date}
+                    readFormat={H_DATE_FORMAT}
+                    displayFormat={DATE_FORMAT}
+                    containerStyle={styles.textField}
+                    textFieldProps={{
+                        label: 'Journal Date',
+                        fieldRef: this.dateRef
+                    }}
                     onChange={this.onJournalDateChanged}
-                /> : null}
+                />
                 <AppTextField
                     containerStyle={styles.textField}
                     label='Journal Number'

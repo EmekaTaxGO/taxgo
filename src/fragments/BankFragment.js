@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, TouchableOpacity, StyleSheet, FlatList, Text, TouchableHighlight, SafeAreaView } from 'react-native';
-import SearchView from '../components/SearchView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';

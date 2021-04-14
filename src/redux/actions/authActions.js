@@ -98,31 +98,7 @@ export const fetchAuthdata = () => {
 export const signUp = (props, body) => {
     return (dispatch) => {
         dispatch({ type: SIGN_UP_REQUEST });
-        return Api.post('/user/register', body)
-            .then(async (response) => {
-                Alert.alert('Alert', 'Registration is successful, Please Login to use Taxgo Services.', [{
-                    onPress: () => {
-                        props.navigation.navigate('LoginScreen');
-                    },
-                    style: 'default',
-                    text: 'OK'
-                }], { cancelable: false })
-                dispatch({ type: SIGN_UP_SUCCESS, payload: response.data });
-            })
-            .catch(err => {
-                log('Error in Signup', err);
-                dispatch({ type: SIGN_UP_FAIL });
-                if (err.response) {
-                    if (isClientError(err)) {
-                        Alert.alert('Alert', err.response.data.message);
-                    } else {
-                        Alert.alert('Alert', API_ERROR_MESSAGE);
-                    }
-                } else {
-                    Alert.alert('Alert', NO_INTERNET_ERROR);
-                }
 
-            })
     }
 }
 

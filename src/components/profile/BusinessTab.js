@@ -66,7 +66,6 @@ class BusinessTab extends Component {
             ...profile,
             [key]: value
         };
-        console.log('New Profile: ', JSON.stringify(newProfile, null, 2));
         this.setState({ profile: newProfile });
     }
 
@@ -101,7 +100,6 @@ class BusinessTab extends Component {
             showError('Enter valid business email.');
         }
         else {
-            console.log('New Profile: ', JSON.stringify(newProfile, null, 2));
             onSubmit(newProfile);
         }
     }

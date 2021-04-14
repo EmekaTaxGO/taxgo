@@ -5,8 +5,9 @@ import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
 import ImagePickerView from '../ImagePickerView';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { isEmpty } from 'lodash';
-import { showError } from '../../helpers/Utils';
+import { isEmpty, times } from 'lodash';
+import { showError, uploadFile } from '../../helpers/Utils';
+import ProgressDialog from '../ProgressDialog';
 
 class GeneralTab extends Component {
 
@@ -14,7 +15,8 @@ class GeneralTab extends Component {
         super(props);
         this.state = {
             showDobDialog: false,
-            profile: props.profile
+            profile: props.profile,
+            uploading: false
         }
     }
 
@@ -27,13 +29,33 @@ class GeneralTab extends Component {
 
     }
 
-    onChangeProfile = uri => {
+    onChangeProfile = async (uri) => {
+        var newUrl;
+        try {
+            this.setState({ uploading: true });
+            const millisec = new Date().getTime();
+            const file = {
+                uri,
+                name: `TaxGO_ LOGO_${millisec}.jpg`,
+                type: 'image/png'
+            };
+            const data = await uploadFile(file);
+            console.log('Data Received: ', JSON.stringify(data, null, 2));
+            newUrl = uri;
+        } catch (error) {
+            console.log('Error uploading Image', error);
+            setTimeout(() => showError('Error Uploading Image!'), 300);
+        }
         const { profile } = this.state;
         const newProfile = {
             ...profile,
-            localUri: uri
+            localUri: newUrl
         };
-        this.setState({ profile: newProfile });
+        console.log('Everything Happened');
+        this.setState({
+            profile: newProfile,
+            uploading: false
+        });
     }
 
     onChangeText = (key, value) => {
@@ -68,7 +90,6 @@ class GeneralTab extends Component {
         }
     }
     render() {
-        const { onSubmit } = this.props;
         const { profile } = this.state;
         return <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
             <KeyboardAwareScrollView
@@ -119,6 +140,7 @@ class GeneralTab extends Component {
                     containerStyle={styles.btnStyle}
                     title='Update' />
             </KeyboardAwareScrollView>
+            <ProgressDialog visible={this.state.uploading} />
         </SafeAreaView>
     }
 }

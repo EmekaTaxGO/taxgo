@@ -62,6 +62,9 @@ const handleDeepLink = (navigation, deeplink) => {
         case Deeplink.RATE_US:
             navigateToRateUS();
             break;
+        case Deeplink.INVOICE_SETTINGS:
+            navigation.push('EditProfileV2', { tab: 'Customize' });
+            break;
         default:
             console.log('Unhandled Deeplink!');
             break;

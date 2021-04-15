@@ -8,6 +8,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { isEmpty, times } from 'lodash';
 import { showError, uploadFile } from '../../helpers/Utils';
 import ProgressDialog from '../ProgressDialog';
+import { getFieldValue } from '../../helpers/TextFieldHelpers';
 
 class GeneralTab extends Component {
 
@@ -20,7 +21,11 @@ class GeneralTab extends Component {
         }
     }
 
+    firstNameRef = React.createRef();
+    lastNameRef = React.createRef();
+    emailRef = React.createRef();
     dobRef = React.createRef();
+    phoneRef = React.createRef();
     scrollRef = React.createRef();
 
 
@@ -49,22 +54,12 @@ class GeneralTab extends Component {
         const { profile } = this.state;
         const newProfile = {
             ...profile,
-            localUri: newUrl
+            bimage: newUrl
         };
-        console.log('Everything Happened');
         this.setState({
             profile: newProfile,
             uploading: false
         });
-    }
-
-    onChangeText = (key, value) => {
-        const { profile } = this.state;
-        const newProfile = {
-            ...profile,
-            [key]: value
-        };
-        this.setState({ profile: newProfile });
     }
 
     onChangeDob = (show, date) => {
@@ -77,16 +72,21 @@ class GeneralTab extends Component {
     }
 
     validateForm = () => {
-        const { profile } = this.state;
-        const { onSubmit } = this.props;
-        if (isEmpty(profile.firstname)) {
+        const newProfile = {
+            ...this.state.profile,
+            firstname: getFieldValue(this.firstNameRef),
+            lastname: getFieldValue(this.lastNameRef),
+            email: getFieldValue(this.emailRef),
+            phonenumber: getFieldValue(this.phoneRef)
+        }
+        if (isEmpty(newProfile.firstname)) {
             showError('Enter first name.')
         }
-        else if (isEmpty(profile.lastname)) {
+        else if (isEmpty(newProfile.lastname)) {
             showError('Enter last name.')
         }
         else {
-            onSubmit(profile);
+            this.props.onSubmit(newProfile);
         }
     }
     render() {
@@ -97,27 +97,27 @@ class GeneralTab extends Component {
                 ref={this.scrollRef}>
 
                 <ImagePickerView
-                    url={profile.localUri}
+                    url={profile.bimage}
                     onChange={this.onChangeProfile}
                 />
                 <AppTextField
                     label='First Name'
+                    fieldRef={this.firstNameRef}
                     containerStyle={styles.textField}
                     value={profile.firstname}
-                    onChangeText={text => this.onChangeText('firstname', text)}
                 />
                 <AppTextField
                     label='Last Name'
+                    fieldRef={this.lastNameRef}
                     containerStyle={styles.textField}
                     value={profile.lastname}
-                    onChangeText={text => this.onChangeText('lastname', text)}
                 />
                 <AppTextField
                     label='Email Address'
+                    fieldRef={this.emailRef}
                     containerStyle={styles.textField}
                     value={profile.email}
                     disabled={true}
-                    onChangeText={text => this.onChangeText('email', text)}
                 />
                 <AppDatePicker
                     showDialog={this.state.showDobDialog}
@@ -131,9 +131,10 @@ class GeneralTab extends Component {
                 />
                 <AppTextField
                     label='Phone number'
+                    keyboardType='phone-pad'
+                    fieldRef={this.phoneRef}
                     containerStyle={styles.textField}
                     value={profile.phonenumber}
-                    onChangeText={text => this.onChangeText('phonenumber', text)}
                 />
                 <AppButton
                     onPress={this.validateForm}

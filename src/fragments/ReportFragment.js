@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 15,
         marginTop: 15,
-        paddingHorizontal: 8
+        paddingHorizontal: 8,
+        backgroundColor: 'white'
     }
 })
 export default ReportFragment;

@@ -126,12 +126,13 @@ class HomeScreen extends Component {
                     title: 'Report', drawerIcon: ({ color }) =>
                         <MaterialCommunityIcon name='file-document-edit-outline' size={DRAWER_ICON_SIZE} color={color} />
                 }} />
-            <Drawer.Screen name='UserFragment'
+
+            {/* <Drawer.Screen name='UserFragment'
                 component={UserStack}
                 options={{
                     title: 'Users/Employees', drawerIcon: ({ color }) =>
                         <EntypoIcon name='users' size={DRAWER_ICON_SIZE} color={color} />
-                }} />
+                }} /> */}
 
         </Drawer.Navigator>
     }

@@ -58,14 +58,8 @@ class LoginScreen extends Component {
         })
     }
 
-    onSignUpSuccess = () => {
-        this.props.navigation.replace('HomeScreen');
-    }
-
     onRegisterClick = () => {
-        this.props.navigation.push('SignUpScreen', {
-            onSignUpSuccess: this.onSignUpSuccess.bind(this)
-        });
+        this.props.navigation.push('SignUpScreen');
     }
 
     renderCreateAccountRow = () => {

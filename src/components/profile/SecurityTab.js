@@ -51,7 +51,7 @@ class SecurityTab extends Component {
             }}>
                 <AppText style={styles.reqTitle}>Passwork Requirements</AppText>
                 <AppText style={styles.reqDesc}>to create a new password, you have to meet all of the following requirements.</AppText>
-                {this.state.points.map(value => <AppText style={styles.point}>{value}</AppText>)}
+                {this.state.points.map(value => <AppText style={styles.point} key={value}>{value}</AppText>)}
 
             </View>
         )

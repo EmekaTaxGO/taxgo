@@ -8,6 +8,7 @@ import { colorAccent, colorDark } from '../theme/Color';
 import CustomerTabItem from '../components/tabs/CustomerTabItem';
 import SupplierTabItem from '../components/tabs/SupplierTabItem';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
+import BottomTabLayout from '../components/materialTabs/BottomTabLayout';
 
 const ContactFragment = props => {
 
@@ -47,28 +48,28 @@ const ContactFragment = props => {
 
     const Tab = createBottomTabNavigator();
 
-    return <Tab.Navigator
-        screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-                const iconName = route.name === 'Customer' ? 'user' : 'addusergroup';
-                return <AntIcon name={iconName} size={30} color={focused ? colorAccent : 'gray'} />
-            }
-        })
-        }
-        tabBarOptions={{
-            activeTintColor: colorAccent,
-            inactiveTintColor: 'gray',
-            allowFontScaling: true,
-            showLabel: true,
-            labelPosition: 'below-icon',
-            labelStyle: { fontSize: 13, fontWeight: 'bold' },
-            style: { height: 60, justifyContent: 'center', alignItems: 'center' },
-            tabStyle: { alignItems: 'center', justifyContent: 'center', paddingVertical: 6 }
-        }}
-    >
-        <Tab.Screen name='Customer' component={CustomerTabItem} />
-        <Tab.Screen name='Supplier' component={SupplierTabItem} />
-    </Tab.Navigator>
+    return (
+        <BottomTabLayout tab={Tab}>
+            <Tab.Screen
+                name='Customer'
+                component={CustomerTabItem}
+                options={{
+                    title: 'Customer',
+                    tabBarIcon: ({ focused, color, size }) =>
+                        <Icon name='people-outline' color={color} size={size} />
+                }} />
+            <Tab.Screen
+                name='Supplier'
+                component={SupplierTabItem}
+                options={{
+                    title: 'Supplier',
+                    tabBarIcon: ({ focused, color, size }) =>
+                        <Icon name='storefront' color={color} size={size} />
+                }} />
+        </BottomTabLayout>
+
+
+    )
 }
 const styles = StyleSheet.create({
     menu: {

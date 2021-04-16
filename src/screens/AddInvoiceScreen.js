@@ -30,6 +30,8 @@ import timeHelper from '../helpers/TimeHelper';
 import AppDatePicker from '../components/AppDatePicker';
 import AppButton from '../components/AppButton';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
+import InvoiceBottomCard from '../components/invoices/InvoiceBottomCard';
+import InvoiceBreakdown from '../components/invoices/InvoiceBreakdown';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -49,6 +51,7 @@ class AddInvoiceScreen extends Component {
             deliveryAddress: '',
             termsCondition: '',
             notes: '',
+            showBreakdown: false,
             products: [{
                 product_name: '',
                 ledger_account: '',
@@ -1114,10 +1117,13 @@ class AddInvoiceScreen extends Component {
     }
     renderBottomCard = () => {
         return (
-            <AppButton
-                onPress={this.onSaveClick}
-                containerStyle={styles.appBtn}
-                title='Save' />
+            // <AppButton
+            //     onPress={this.onSaveClick}
+            //     containerStyle={styles.appBtn}
+            //     title='Save' />
+            <InvoiceBottomCard
+                onSavePress={() => { console.log('On Save Pressed!') }}
+                onBreakdownPress={() => this.setState({ showBreakdown: true })} />
         )
     }
     render() {
@@ -1131,19 +1137,20 @@ class AddInvoiceScreen extends Component {
 
         const selected = this.state.selectedTab;
         const invoiceAmount = this.invoiceAmount();
-        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            <KeyboardAvoidingView style={{ flex: 1 }}>
-                <View style={{ flex: 1 }}>
+        return <KeyboardAvoidingView style={{ flex: 1, backgroundColor: 'white' }}>
+            <View style={{ flex: 1 }}>
 
-                    {this.renderTabs(invoiceAmount)}
-                    {selected === 'supplier' ? this.renderSupplierContainer() : null}
-                    {selected === 'product' ? this.renderProductContainer() : null}
-                    {selected === 'payment' ? this.renderPaymentContainer() : null}
-                    {selected === 'refund' ? this.renderRefundContainer() : null}
-                    {this.renderBottomCard()}
-                </View>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+                {this.renderTabs(invoiceAmount)}
+                {selected === 'supplier' ? this.renderSupplierContainer() : null}
+                {selected === 'product' ? this.renderProductContainer() : null}
+                {selected === 'payment' ? this.renderPaymentContainer() : null}
+                {selected === 'refund' ? this.renderRefundContainer() : null}
+                {this.renderBottomCard()}
+            </View>
+            <InvoiceBreakdown
+                visible={this.state.showBreakdown}
+                onPressOutside={() => this.setState({ showBreakdown: false })} />
+        </KeyboardAvoidingView>
     }
 };
 const styles = StyleSheet.create({

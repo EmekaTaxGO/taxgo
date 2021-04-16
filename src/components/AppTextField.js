@@ -13,7 +13,6 @@ class AppTextField extends Component {
                 tintColor='black'
                 baseColor='gray'
                 titleTextStyle={styles.text}
-                labelTextStyle={styles.label}
                 fontSize={18}
                 fontFamily={appFont}
                 autoCorrect={false}
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     label: {
-        color: 'black'
+        color: 'red'
     }
 })
 export default AppTextField;

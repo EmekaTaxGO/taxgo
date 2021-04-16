@@ -9,6 +9,8 @@ import { isEmpty, times } from 'lodash';
 import { showError, uploadFile } from '../../helpers/Utils';
 import ProgressDialog from '../ProgressDialog';
 import { getFieldValue } from '../../helpers/TextFieldHelpers';
+import { OutlinedTextField } from 'react-native-material-textfield';
+import { appFont, appFontBold } from '../../helpers/ViewHelper';
 
 class GeneralTab extends Component {
 
@@ -106,6 +108,7 @@ class GeneralTab extends Component {
                     containerStyle={styles.textField}
                     value={profile.firstname}
                 />
+
                 <AppTextField
                     label='Last Name'
                     fieldRef={this.lastNameRef}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { appFontBold } from '../../helpers/ViewHelper';
+import { appFont, appFontBold } from '../../helpers/ViewHelper';
 import { tabBackgroundColor, tabColor, tabSelectedColor } from '../../theme/Color';
 class BottomTabLayout extends Component {
 
@@ -15,7 +15,7 @@ class BottomTabLayout extends Component {
                     inactiveTintColor: tabColor,
                     labelStyle: {
                         fontSize: 17,
-                        fontFamily: appFontBold
+                        fontFamily: appFont
                     },
                     labelPosition: 'below-icon',
                     style: { backgroundColor: tabBackgroundColor, paddingVertical: 6 }

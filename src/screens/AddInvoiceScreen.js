@@ -7,7 +7,7 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { tabSelectedColor, colorPrimary, colorAccent, colorWhite, snackbarActionColor } from '../theme/Color'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import { DATE_FORMAT } from '../constants/appConstant';
+import { DATE_FORMAT, H_DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
 import { isFloat, isInteger, toInteger, toFloat } from '../helpers/Utils';
 
@@ -26,6 +26,10 @@ import Store from '../redux/Store';
 import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
 import { Picker } from '@react-native-community/picker';
+import timeHelper from '../helpers/TimeHelper';
+import AppDatePicker from '../components/AppDatePicker';
+import AppButton from '../components/AppButton';
+import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -33,10 +37,10 @@ class AddInvoiceScreen extends Component {
         this.state = {
             selectedTab: 'supplier',
             showInvDatePicker: false,
-            invDate: undefined,
+            invDate: this.getInvoiceDate(),
 
             showDueDatePicker: false,
-            dueDate: undefined,
+            dueDate: this.getDueDate(),
 
             issuedcats: ['Issued', 'Yes', 'No'],
             selectedIssuedCatIndex: 1,
@@ -97,13 +101,15 @@ class AddInvoiceScreen extends Component {
         const { taxActions } = this.props;
         // taxActions.getTaxList();
     }
-    componentWillMount() {
-        const invDate = moment();
+
+
+    getInvoiceDate = () => {
+        return timeHelper.format(moment(), H_DATE_FORMAT);
+    }
+
+    getDueDate = () => {
         const dueDate = moment().add(1, 'M').subtract(1, 'd');
-        this.setState({
-            invDate: invDate.toDate(),
-            dueDate: dueDate.toDate()
-        });
+        return timeHelper.format(dueDate, H_DATE_FORMAT);
     }
 
     isEditMode = () => {
@@ -177,13 +183,10 @@ class AddInvoiceScreen extends Component {
     }
 
 
-    onInvDateChanged = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.invDate;
+    onInvDateChanged = (show, date) => {
         this.setState({
-            invDate: currentDate,
-            showInvDatePicker: false
-        }, () => {
-            setFieldValue(this.invoiceDateRef, this.formattedDate(currentDate));
+            showInvDatePicker: show,
+            invDate: date
         });
     }
     onPayDateChange = (event, selectedDate) => {
@@ -196,13 +199,10 @@ class AddInvoiceScreen extends Component {
         });
     }
 
-    onDueDateChanged = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.dueDate;
+    onDueDateChanged = (show, date) => {
         this.setState({
-            dueDate: currentDate,
-            showDueDatePicker: false
-        }, () => {
-            setFieldValue(this.dueDateRef, this.formattedDate(currentDate));
+            showDueDatePicker: show,
+            dueDate: date
         });
     }
 
@@ -251,46 +251,29 @@ class AddInvoiceScreen extends Component {
                         onSubmitEditing={() => { }} />
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.setState({ showInvDatePicker: true })}>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Invoice Date'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        editable={false}
-                        lineWidth={1}
-                        fieldRef={this.invoiceDateRef}
-                        value={this.formattedDate(this.state.invDate)}
-                        onSubmitEditing={() => { }} />
-                </TouchableOpacity>
-                {this.state.showInvDatePicker ? <DateTimePicker
-                    value={this.state.invDate ? this.state.invDate : new Date()}
-                    mode={'datetime'}
-                    display='default'
-                    maximumDate={new Date()}
+                <AppDatePicker
+                    showDialog={this.state.showInvDatePicker}
+                    date={this.state.invDate}
+                    containerStyle={styles.textField}
+                    textFieldProps={{
+                        label: 'Invoice Date',
+                        fieldRef: this.invoiceDateRef
+                    }}
+                    displayFormat={DATE_FORMAT}
                     onChange={this.onInvDateChanged}
-                /> : null}
+                />
 
-                {/* Due Date */}
-                <TouchableOpacity onPress={() => this.setState({ showDueDatePicker: true })}>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Due Date'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        editable={false}
-                        lineWidth={1}
-                        fieldRef={this.dueDateRef}
-                        value={this.formattedDate(this.state.dueDate)}
-                        onSubmitEditing={() => { }} />
-                </TouchableOpacity>
-                {this.state.showDueDatePicker ? <DateTimePicker
-                    value={this.state.dueDate ? this.state.dueDate : new Date()}
-                    mode={'datetime'}
-                    display='default'
-                    maximumDate={new Date()}
+                <AppDatePicker
+                    showDialog={this.state.showDueDatePicker}
+                    date={this.state.dueDate}
+                    containerStyle={styles.textField}
+                    textFieldProps={{
+                        label: 'Due Date',
+                        fieldRef: this.dueDateRef
+                    }}
+                    displayFormat={DATE_FORMAT}
                     onChange={this.onDueDateChanged}
-                /> : null}
+                />
             </View>
             {isSaleInvoice ? <View style={{ flexDirection: 'column' }}>
                 <Text style={{
@@ -1122,44 +1105,20 @@ class AddInvoiceScreen extends Component {
         }
         return total;
     }
-    renderBottomCard = (invoiceTotal) => {
-        const { authData } = Store.getState().auth;
-        return <CardView
-            cardElevation={4}
-            cardRadius={6}
-            style={{ backgroundColor: colorPrimary }}>
-            <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingVertical: 6,
-                paddingStart: 16
-            }}>
-                <MaterialCommunityIcons name='wallet' size={40} color='black' />
-                <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'center', paddingHorizontal: 12 }}>
-                    <Text style={{ fontSize: 16, flex: 1 }}>Total {authData.currency} {invoiceTotal}</Text>
-                    <Text style={{ fontSize: 16, flex: 1 }}>Items {this.state.products.length}</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TouchableOpacity
-                        onPress={() => { }}
-                        style={{
-                            backgroundColor: 'blue',
-                            paddingHorizontal: 12,
-                            paddingVertical: 8,
-                            borderRadius: 4,
-                            marginEnd: 16
-                        }}>
-                        <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { }}
-                        style={{ paddingHorizontal: 16 }}>
-                        <FontAwesomeIcon name='angle-double-up' size={24} color='black' />
-                    </TouchableOpacity>
 
-                </View>
+    onSaveClick = () => {
+        const items = ['Save', 'Save & New', 'Save & Email', 'Save & Print'];
+        showSingleSelectAlert('Save Options', items, index => {
 
-            </View>
-        </CardView>
+        })
+    }
+    renderBottomCard = () => {
+        return (
+            <AppButton
+                onPress={this.onSaveClick}
+                containerStyle={styles.appBtn}
+                title='Save' />
+        )
     }
     render() {
         const { tax } = this.props;
@@ -1181,7 +1140,7 @@ class AddInvoiceScreen extends Component {
                     {selected === 'product' ? this.renderProductContainer() : null}
                     {selected === 'payment' ? this.renderPaymentContainer() : null}
                     {selected === 'refund' ? this.renderRefundContainer() : null}
-                    {this.renderBottomCard(invoiceAmount)}
+                    {this.renderBottomCard()}
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -1234,6 +1193,9 @@ const styles = StyleSheet.create({
     },
     picker: {
         marginHorizontal: 12
+    },
+    appBtn: {
+        borderRadius: 0
     }
 });
 export default connect(

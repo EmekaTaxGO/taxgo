@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { focusField, getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
 import { colorAccent, colorPrimary } from '../theme/Color';
-import { isEmpty, BUSINESS_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE } from '../helpers/Utils';
+import { isEmpty, BUSINESS_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, showError, getApiErrorMsg } from '../helpers/Utils';
 
 import * as contactActions from '../redux/actions/contactActions';
 import { connect } from 'react-redux';
@@ -12,6 +12,8 @@ import ProgressDialog from '../components/ProgressDialog';
 import Store from '../redux/Store';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
+import Api from '../services/api';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 class AddCustomerScreen extends Component {
 
@@ -23,7 +25,8 @@ class AddCustomerScreen extends Component {
             businessNameError: undefined,
             emailError: undefined,
             mobileError: undefined,
-            telephoneError: undefined
+            telephoneError: undefined,
+            updating: false
         }
     }
 
@@ -115,28 +118,47 @@ class AddCustomerScreen extends Component {
             this.setState({ emailError: EMAIL_ERROR_MESSAGE });
 
         } else {
-            if (this.isSupplier()) {
-                this.updateSupplier();
-            } else {
-                this.updateCustomer();
-            }
+            this.updateCustomer();
         }
     }
-    updateSupplier = () => {
-        const body = {
-            ...this.props.route.params.contact,
-            ...this.getFilledInfo()
-        }
-        const { contactActions } = this.props;
-        contactActions.updateSupplier(this.props.navigation, body, this.isEditMode() ? 2 : 1);
-    }
+
     updateCustomer = () => {
+        this.setState({ updating: true });
         const body = {
             ...this.props.route.params.contact,
-            ...this.getFilledInfo()
+            ...this.getFilledInfo(),
+            type: this.isEditMode() ? 2 : 1
         };
-        const { contactActions } = this.props;
-        contactActions.updateCustomer(this.props.navigation, body, this.isEditMode() ? 2 : 1);
+        const url = this.isSupplier() ? 'contact/addUpdateSupplier'
+            : 'contact/addUpdateCustomer';
+        Api.post(url, body)
+            .then(response => {
+                this.setState({ updating: false });
+                setTimeout(() => this.showSuccessDialog(response.data), 300);
+            })
+            .catch(err => {
+                console.log('Error Updating/Deleting Contact: ', err);
+                this.setState({ updating: false });
+                setTimeout(() => showError('Unabe to update!'), 300);
+            })
+    }
+
+    showSuccessDialog = data => {
+        Alert.alert('Alert', data.message, [
+            {
+                style: 'default',
+                text: 'OK',
+                onPress: () => {
+                    const { contactActions } = this.props;
+                    if (this.isSupplier()) {
+                        contactActions.getSupplierList();
+                    } else {
+                        contactActions.getCustomerList();
+                    }
+                    this.props.navigation.goBack();
+                }
+            }
+        ], { cancelable: false });
     }
 
     getFilledInfo = () => {
@@ -157,11 +179,6 @@ class AddCustomerScreen extends Component {
         }
     }
 
-    isUpdating = () => {
-        const { contact } = this.props;
-        return this.isSupplier() ? contact.updatingSupplier : contact.updatingCustomer;
-    }
-
     hasApiError = () => {
 
         const { contact } = this.props;
@@ -173,7 +190,7 @@ class AddCustomerScreen extends Component {
         const isFormEditabled = !this.isDisabled();
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
-                <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
+                <KeyboardAwareScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
                     <AppTextField
                         containerStyle={styles.fieldStyle}
                         label='Name'
@@ -290,8 +307,8 @@ class AddCustomerScreen extends Component {
                         title={this.isEditMode() ? 'Update' : 'Create'}
                         onPress={this.validateAndProcess} /> : null}
 
-                    <ProgressDialog visible={this.isUpdating()} />
-                </ScrollView>
+                    <ProgressDialog visible={this.state.updating} />
+                </KeyboardAwareScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
     }

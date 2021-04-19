@@ -1,7 +1,8 @@
-const { replace, isString } = require("lodash");
-const moment = require("moment");
+import { replace, isString } from 'lodash';
+import moment from 'moment';
+import { H_DATE_FORMAT } from '../constants/appConstant';
 
-format = (time, timeFormat) => {
+format = (time, timeFormat = H_DATE_FORMAT) => {
     let momentTime;
     if (isString(time)) {
         if (time.indexOf('T') > -1) {

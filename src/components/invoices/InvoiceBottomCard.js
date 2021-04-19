@@ -16,7 +16,7 @@ class InvoiceBottomCard extends Component {
                 cardElevation={4}
                 cornerRadius={6}>
                 <View style={{ flexDirection: 'column', flex: 1 }}>
-                    <AppText style={styles.payableTxt}>Payable Amount: $555.56</AppText>
+                    <AppText style={styles.payableTxt}>Payable Amount: {payable}</AppText>
 
                     <TouchableOpacity
                         style={{
@@ -39,7 +39,7 @@ class InvoiceBottomCard extends Component {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        borderTopColor: dividerColor,
+        borderTopColor: 'gray',
         borderTopWidth: 0,
         paddingHorizontal: 12,
         backgroundColor: 'white',

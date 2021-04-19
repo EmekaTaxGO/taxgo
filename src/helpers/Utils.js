@@ -1,11 +1,12 @@
 import { Linking } from "react-native"
-import { colorAccent, colorWhite } from "../theme/Color";
+import { colorAccent, colorWhite, errorColor } from "../theme/Color";
 import { exp } from "react-native-reanimated";
 import _default from "react-native-image-picker";
 import Snackbar from "react-native-snackbar";
 import { NO_INTERNET_ERROR, API_ERROR_MESSAGE } from "../constants/appConstant";
 import { RNS3 } from "react-native-aws3";
 import Api from '../services/api';
+import { isNaN } from "lodash";
 
 export const openLink = (navigation, title, url) => {
     navigation.push('WebViewScreen', {
@@ -54,6 +55,18 @@ export const toFloat = (text, _default = 0.0) => {
         return _default;
     }
 }
+
+export const toNum = (text, _default = 0.0) => {
+
+    const value = Number(text);
+    if (isNaN(value)) {
+        return _default;
+    } else {
+        return value;
+    }
+
+}
+
 
 
 export const EMAIL_ERROR_MESSAGE = 'Please enter valid email.';
@@ -116,7 +129,7 @@ export const showError = (message, duration = Snackbar.LENGTH_LONG) => {
     Snackbar.show({
         text: message,
         duration: duration,
-        backgroundColor: 'red',
+        backgroundColor: errorColor,
         action: {
             text: 'OK',
             textColor: colorWhite,

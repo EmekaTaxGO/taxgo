@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { appFont } from '../../helpers/ViewHelper';
 import Store from '../../redux/Store';
+import { errorColor } from '../../theme/Color';
 class InvoiceProductItem extends Component {
 
     symbol = ' ' + get(Store.getState().auth, 'profile.countryInfo.symbol');
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: 'red',
+        borderColor: errorColor,
         flexDirection: 'column',
         marginHorizontal: 16,
         marginTop: 16

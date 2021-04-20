@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import CardView from 'react-native-cardview';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import Store from '../../redux/Store';
-import { rColor } from '../../theme/Color';
+import { errorColor, rColor, successColor } from '../../theme/Color';
 import Title from '../../components/item/Title';
 import SubTitle from '../../components/item/SubTitle';
 import { appFont, appFontBold } from '../../helpers/ViewHelper';
@@ -38,11 +38,11 @@ class SalesInvoiceListItem extends Component {
         switch (status) {
             case 0:
             default:
-                return 'red';
+                return errorColor;
             case 1:
                 return 'orange';
             case 2:
-                return '#099903';
+                return successColor;
         }
     }
 
@@ -53,7 +53,7 @@ class SalesInvoiceListItem extends Component {
         const customerName = get(item, 'customer_detail.bname');
         const title = item.invoiceno + (customerName ? '-' + customerName : '');
         const isPast = moment(item.ldate).isBefore(moment().format(this.DATE_FORMAT));
-        const dueColor = (isPast && item.status !== 2) ? 'red' : '#099903';
+        const dueColor = (isPast && item.status !== 2) ? errorColor : successColor;
         const statusColor = this.getStatusColor(item.status);
         return (
             <CardView

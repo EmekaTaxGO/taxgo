@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, ScrollView, Switch, Alert } from 'react-native';
-import { colorAccent, colorWhite } from '../theme/Color';
+import { colorAccent, colorWhite, errorColor } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
@@ -322,7 +322,7 @@ class AddProductScreen extends Component {
         Snackbar.show({
             text: message,
             duration: Snackbar.LENGTH_LONG,
-            backgroundColor: 'red',
+            backgroundColor: errorColor,
             action: {
                 text: 'OK',
                 textColor: colorWhite,

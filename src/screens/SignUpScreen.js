@@ -11,7 +11,7 @@ import {
     Image,
     Alert
 } from 'react-native';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, errorColor } from '../theme/Color';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import { connect } from 'react-redux';
@@ -362,7 +362,7 @@ class SignUpScreen extends Component {
                     {this.hasAnyError()
                         ? <Text
                             style={{
-                                color: 'red',
+                                color: errorColor,
                                 fontSize: 11,
                                 alignSelf: 'center'
                             }}>Resolve All Error First!</Text> : null}

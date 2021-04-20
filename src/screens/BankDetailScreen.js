@@ -297,7 +297,7 @@ class BankDetailScreen extends Component {
             </View>
             <View style={{ flexDirection: 'column', paddingEnd: 16 }}>
                 <Text style={{ fontSize: 14, color: 'green' }}>0.00</Text>
-                <Text style={{ fontSize: 14, color: 'red', marginTop: 6 }}>36.00</Text>
+                <Text style={{ fontSize: 14, color: errorColor, marginTop: 6 }}>36.00</Text>
             </View>
         </View>
     }

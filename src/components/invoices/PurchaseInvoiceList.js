@@ -5,7 +5,7 @@ import SearchView from '../SearchView';
 import { connect } from 'react-redux';
 import * as invoiceActions from '../../redux/actions/invoiceActions';
 import { bindActionCreators } from 'redux';
-import { colorAccent } from '../../theme/Color';
+import { colorAccent, errorColor } from '../../theme/Color';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -96,7 +96,7 @@ class PurchaseInvoiceList extends Component {
                     {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
                 </View>
                 {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
-                {this.hiddenElement('Delete', 'delete', 'red', () => this.onDeleteClick(data))}
+                {this.hiddenElement('Delete', 'delete', errorColor, () => this.onDeleteClick(data))}
             </View>
         </CardView>
     }

@@ -7,7 +7,7 @@ import { DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers'
 import CardView from 'react-native-cardview';
 import CheckBox from '@react-native-community/checkbox';
-import { colorAccent, colorWhite, colorPrimary } from '../theme/Color';
+import { colorAccent, colorWhite, colorPrimary, errorColor } from '../theme/Color';
 import { connect } from 'react-redux';
 import * as taxActions from '../redux/actions/taxActions';
 import { bindActionCreators } from 'redux';
@@ -409,7 +409,7 @@ class OtherReceiptScreen extends Component {
                         {/* Delete Button */}
                         {index > 0 ? <TouchableOpacity onPress={() => this.deleteLedger(index)}
                             style={{ padding: 4 }}>
-                            <MaterialCommunityIcons size={34} name='delete-circle' color='red' />
+                            <MaterialCommunityIcons size={34} name='delete-circle' color={errorColor} />
                         </TouchableOpacity> : null}
                     </View> : null}
                 </View>
@@ -424,7 +424,7 @@ class OtherReceiptScreen extends Component {
             Snackbar.show({
                 text: 'Ledger Deleted.',
                 duration: Snackbar.LENGTH_LONG,
-                backgroundColor: 'red',
+                backgroundColor: errorColor,
                 action: {
                     text: 'OK',
                     textColor: colorWhite,

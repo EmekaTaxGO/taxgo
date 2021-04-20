@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, FlatList, Switch } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { colorAccent, colorWhite, snackbarActionColor } from '../theme/Color'
+import { colorAccent, colorWhite, errorColor, snackbarActionColor, successColor } from '../theme/Color'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { DATE_FORMAT, H_DATE_FORMAT } from '../constants/appConstant';
@@ -30,6 +30,9 @@ import InvoiceBottomCard from '../components/invoices/InvoiceBottomCard';
 import InvoiceBreakdown from '../components/invoices/InvoiceBreakdown';
 import { get, isEmpty, isNaN } from 'lodash';
 import Api from '../services/api';
+import ProgressDialog from '../components/ProgressDialog';
+import AppText from '../components/AppText';
+import { appFontBold } from '../helpers/ViewHelper';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -38,6 +41,7 @@ class AddInvoiceScreen extends Component {
             selectedTab: 'supplier',
             showInvDatePicker: false,
             fetching: true,
+            updating: false,
             fetchError: undefined,
             taxList: [],
             invDate: this.getInvoiceDate(),
@@ -57,7 +61,6 @@ class AddInvoiceScreen extends Component {
             deliveryAddress: '',
             termsCondition: '',
             notes: '',
-            quotes: '',
             total: 0,
             columns: [this.getPlaceholderColumn()],
             paymentIndex: 2,
@@ -66,7 +69,10 @@ class AddInvoiceScreen extends Component {
             showPayDateDialog: false,
             payMethod: ['Select Method', 'Cash', 'Current', 'Electronic', 'Credit/Debit Card', 'Paypal'],
             payMethodIndex: 0,
-            currency: get(Store.getState().auth, 'profile.countryInfo.symbol')
+            currency: get(Store.getState().auth, 'profile.countryInfo.symbol'),
+            isSale: this.isSalesInvoice(props),
+            creditNote: this.isCreditNote(props),
+            editMode: this.isEditMode(props)
         }
     }
     _reference = ''
@@ -95,7 +101,12 @@ class AddInvoiceScreen extends Component {
 
     componentDidMount() {
         const { info } = this.props.route.params;
+        console.log('Info: ', JSON.stringify(info, null, 2));
         this.fetchInfo();
+    }
+
+    getInvoiceTag = () => {
+
     }
 
     getPlaceholderColumn = () => {
@@ -129,6 +140,19 @@ class AddInvoiceScreen extends Component {
         }
     }
 
+    getInvoiceNoURL = () => {
+        const { id } = Store.getState().auth.authData;
+        const creditNote = this.state.creditNote;
+        if (this.state.isSale) {
+            return creditNote
+                ? `sales/getInvoiceNo/${id}/scredit`
+                : `sales/getInvoiceNo/${id}/sales`;
+        } else {
+            return creditNote ? `sales/getInvoiceNo/${id}/pcredit`
+                : `/sales/getInvoiceNo/${id}/purchase`;
+        }
+    }
+
     fetchInfo = () => {
         this.setState({
             fetching: true,
@@ -138,7 +162,7 @@ class AddInvoiceScreen extends Component {
 
         Promise.all([
             Api.get(`/default/taxList/${authData.country}`),
-            Api.get(`sales/getInvoiceNo/${authData.id}/sales`)
+            Api.get(this.getInvoiceNoURL())
         ])
             .then(results => {
                 this.setState({
@@ -167,15 +191,17 @@ class AddInvoiceScreen extends Component {
         return timeHelper.format(dueDate, H_DATE_FORMAT);
     }
 
-    isEditMode = () => {
-        return this.props.route.params.info.mode === 'update';
+    isEditMode = (props) => {
+        return props.route.params.info.mode === 'update';
     }
-    isCreditNote = () => {
-        return this.props.route.params.info.credit_note === true;
+    isCreditNote = (props) => {
+        const type = props.route.params.info.invoice_type;
+        return type === 'scredit' || type === 'pcredit';
     }
-    isSalesInvoice = () => {
-        const type = this.props.route.params.info.invoice_type;
-        return type === 'sales';
+
+    isSalesInvoice = (props) => {
+        const type = props.route.params.info.invoice_type;
+        return type === 'sales' || type === 'scredit';
     }
 
     selectTab = (tabName) => {
@@ -234,7 +260,7 @@ class AddInvoiceScreen extends Component {
     }
 
     onCustomerPress = () => {
-        const screen = this.isSalesInvoice() ? 'SelectCustomerScreen' : 'SelectSupplierScreen';
+        const screen = this.state.isSale ? 'SelectCustomerScreen' : 'SelectSupplierScreen';
         let address = null;
         this.props.navigation.push(screen, {
             onCustomerSelected: item => {
@@ -248,7 +274,10 @@ class AddInvoiceScreen extends Component {
                 })
             },
             onSupplierSelected: item => {
+                address = `${item.address}\n${item.town}\n${item.post_code}`;
                 this.setState({
+                    invoiceAddress: address,
+                    deliveryAddress: address,
                     notes: item.notes,
                     customer: item
                 }, () => {
@@ -259,7 +288,7 @@ class AddInvoiceScreen extends Component {
     }
 
     renderSupplierContainer = () => {
-        const isSaleInvoice = this.isSalesInvoice();
+        const isSaleInvoice = this.state.isSale;
         return <ScrollView style={{
             flex: 1,
             flexDirection: 'column'
@@ -369,7 +398,23 @@ class AddInvoiceScreen extends Component {
                     onChangeText={text => this.setState({ notes: text })}
                 />
             </View> : null}
+            {!this.state.isSale ? this.renderReceiptFile() : null}
         </ScrollView>
+    }
+
+    renderReceiptFile = () => {
+        return (
+            <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
+                <Text style={[styles.textAreaLabel, { marginTop: 20 }]}>{'Invoice Notes'}</Text>
+                <TextInput
+                    style={[styles.textAreaStyle, { marginTop: 12 }]}
+                    multiline={true}
+                    numberOfLines={3}
+                    value={this.state.notes}
+                    onChangeText={text => this.setState({ notes: text })}
+                />
+            </View>
+        )
     }
 
     onProductNamePress = (index) => {
@@ -382,7 +427,7 @@ class AddInvoiceScreen extends Component {
                 const costprice = Number(item.itemtype === 'Stock' ? item.sp_price : rate);
                 const vat = Number(item.vat);
                 const quantity = 1;
-                const includevat = item.includevat === 1;
+                const includevat = false;
 
                 const column = {
                     product,
@@ -403,14 +448,14 @@ class AddInvoiceScreen extends Component {
         })
     }
 
-    onLedgerPress = (index) => {
-        this.props.navigation.push('SaleLedgerScreen', {
+    onLedgerPress = (index, isSale) => {
+        const componentId = isSale ? 'SaleLedgerScreen' : 'PurchaseLedgerScreen';
+        this.props.navigation.push(componentId, {
             onLedgerSelected: item => {
                 const newColumn = {
                     ...this.state.columns[index],
                     ledger: item
                 }
-
                 const newColumns = [...this.state.columns];
                 newColumns.splice(index, 1, newColumn);
                 this.setState({ columns: newColumns });
@@ -418,7 +463,7 @@ class AddInvoiceScreen extends Component {
         })
     }
 
-    getLedgerLabel = index => {
+    getLedgerLabel = (index) => {
         const ledger = get(this.state.columns[index], 'ledger');
         if (ledger) {
             return `${ledger.nominalcode}-${ledger.laccount}`;
@@ -433,7 +478,7 @@ class AddInvoiceScreen extends Component {
         this.setState({
             columns
         });
-        console.log('New Columns: ', JSON.stringify(columns, null, 2));
+
         setTimeout(() => {
             this.onItemChange(idx);
         }, 100);
@@ -460,9 +505,8 @@ class AddInvoiceScreen extends Component {
         this.setState({ columns: newColumns });
     }
     renderProductItem = ({ item, index }) => {
-        const isLast = index + 1 === this.state.columns.length;
         const { taxList } = this.state;
-        const isStock = item.itemtype === 'Stock';
+        const isSale = this.state.isSale;
         return <View style={{ flexDirection: 'column' }}>
 
             <View style={{
@@ -492,9 +536,9 @@ class AddInvoiceScreen extends Component {
 
                 {/* Ledger Account */}
                 <View style={{ flexDirection: 'column', flex: 1 }}>
-                    <Text style={styles.title}>Ledger Account</Text>
+                    <Text style={styles.title}>{isSale ? 'Ledger Account' : 'Purchase Ledger'}</Text>
                     <TouchableOpacity style={{ marginTop: 6, marginLeft: 12, marginRight: 12 }}
-                        onPress={() => this.onLedgerPress(index)}>
+                        onPress={() => this.onLedgerPress(index, isSale)}>
                         <TextInput
                             pointerEvents='none'
                             style={styles.textInput}
@@ -624,88 +668,115 @@ class AddInvoiceScreen extends Component {
 
                 </View>
             </View>
+            {isSale ? this.renderDiscount(item, index) : null}
             <View style={{
                 borderBottomColor: 'lightgray',
-                borderBottomWidth: 1,
-                marginVertical: 12
-            }} />
-            <Text style={styles.title}>{'Discount & Total'}</Text>
-            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                {/* % */}
-                <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1
-                }}>
-                    <Text style={styles.subtitle}>%</Text>
-                    <TextInput
-                        style={[styles.textInput, { marginTop: 6 }]}
-                        value={item.percentage}
-                        onChangeText={text => this.handleColumnChange(text, 'percentage', index)}
-                    />
-                </View>
-
-                {/* Discount Amt */}
-                <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1,
-                    marginLeft: 12
-                }}>
-                    <Text style={styles.subtitle}>(Amt)</Text>
-                    <TextInput
-                        value={item.discount}
-                        style={[styles.textInput, { marginTop: 6 }]}
-                        editable={false}
-                        onChangeText={text => this.onQuantityChange(text, index)}
-                    />
-                </View>
-
-                {/* Total */}
-                <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1,
-                    marginLeft: 12
-                }}>
-                    <Text style={styles.subtitle}>Total</Text>
-                    <TextInput
-                        value={item.total}
-                        style={[styles.textInput, { marginTop: 6 }]}
-                        editable={false}
-                    />
-                </View>
-                {isLast ? <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1,
-                    justifyContent: 'center',
-                    marginLeft: 12,
-                    alignItems: 'center'
-                }}>
-                    <Text style={styles.subtitle}>More</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        {
-                            isLast ? <TouchableOpacity onPress={this.addInvoiceItem} style={{ padding: 6 }}>
-                                <Ionicons size={34} name='add-circle' color='green' />
-                            </TouchableOpacity> : null
-                        }
-                        {
-                            index > 0 ? <TouchableOpacity onPress={() => this.deleteInvoiceItem(index)}
-                                style={{ marginLeft: 2, padding: 6 }}>
-                                <MaterialCommunityIcons size={34} name='delete-circle' color='red' />
-                            </TouchableOpacity> : null
-                        }
-                    </View>
-                </View> : null}
-
-            </View>
-            <View style={{
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 5,
+                borderBottomWidth: 3,
                 marginTop: 16
             }} />
+            {this.renderActionView(item, index)}
         </View>
+    }
+
+    renderActionView = (item, index) => {
+        const isLast = index + 1 === this.state.columns.length;
+        return (
+            isLast ? <View style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                paddingHorizontal: 12,
+                flex: 1,
+                paddingVertical: 20
+            }}>
+                <TouchableOpacity style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                    backgroundColor: successColor,
+                    borderRadius: 12,
+                    marginRight: 6
+                }}
+                    onPress={this.addInvoiceItem}>
+                    <Ionicons size={34} name='add-circle' color='white' />
+                    <AppText style={{ fontSize: 14, color: 'white', paddingStart: 4, fontFamily: appFontBold }}>Add More</AppText>
+                </TouchableOpacity>
+
+                {index > 0 ? <TouchableOpacity style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                    backgroundColor: errorColor,
+                    borderRadius: 12,
+                    marginLeft: 6
+                }}
+                    onPress={() => this.deleteInvoiceItem(index)}>
+                    <MaterialCommunityIcons size={34} name='delete-circle' color='white' />
+                    <AppText style={{ fontSize: 14, color: 'white', paddingStart: 4, fontFamily: appFontBold }}>Delete</AppText>
+                </TouchableOpacity> : null}
+            </View> : null
+        )
+    }
+    renderDiscount = (item, index) => {
+        return (
+            <View style={{ flexDirection: 'column' }}>
+                <View style={{
+                    borderBottomColor: 'lightgray',
+                    borderBottomWidth: 1,
+                    marginVertical: 12
+                }} />
+                <Text style={styles.title}>{'Discount & Total'}</Text>
+                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                    {/* % */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 4,
+                        flex: 1
+                    }}>
+                        <Text style={styles.subtitle}>%</Text>
+                        <TextInput
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            value={item.percentage}
+                            onChangeText={text => this.handleColumnChange(text, 'percentage', index)}
+                        />
+                    </View>
+
+                    {/* Discount Amt */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 4,
+                        flex: 1,
+                        marginLeft: 12
+                    }}>
+                        <Text style={styles.subtitle}>(Amt)</Text>
+                        <TextInput
+                            value={item.discount}
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            editable={false}
+                            onChangeText={text => this.onQuantityChange(text, index)}
+                        />
+                    </View>
+
+                    {/* Total */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 4,
+                        flex: 1,
+                        marginLeft: 12
+                    }}>
+                        <Text style={styles.subtitle}>Total</Text>
+                        <TextInput
+                            value={item.total}
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            editable={false}
+                        />
+                    </View>
+                </View>
+            </View>
+        )
     }
     addInvoiceItem = () => {
         const newColumns = [...this.state.columns];
@@ -730,7 +801,7 @@ class AddInvoiceScreen extends Component {
             Snackbar.show({
                 text: 'Product Deleted.',
                 duration: Snackbar.LENGTH_LONG,
-                backgroundColor: 'red',
+                backgroundColor: errorColor,
                 action: {
                     text: 'OK',
                     textColor: colorWhite,
@@ -795,6 +866,7 @@ class AddInvoiceScreen extends Component {
             vatamt: vatamt.toFixed(2),
             incomeTaxAmount: vatamt.toFixed(2),
             total: total.toFixed(2),
+            totalamount: total.toFixed(2),
             discount: discount.toFixed(2)
         };
         const newColumns = [...this.state.columns];
@@ -856,6 +928,7 @@ class AddInvoiceScreen extends Component {
             renderItem={this.renderProductItem}
         />
     }
+
     renderRefundContainer = () => {
         return <ScrollView style={{ flex: 1 }}>
             {this.renderRecordPayment()}
@@ -985,7 +1058,7 @@ class AddInvoiceScreen extends Component {
     renderRecordPayment = () => {
         const { bank } = this.state;
         const { payMethod, payMethodIndex } = this.state;
-        const isCreditNote = this.isCreditNote();
+        const isCreditNote = this.state.creditNote;
         return <View style={{
             flexDirection: 'column',
             paddingBottom: 12
@@ -1116,7 +1189,7 @@ class AddInvoiceScreen extends Component {
 
     renderTabs = () => {
         const selected = this.state.selectedTab;
-        const customerLabel = this.isSalesInvoice() ? 'Customer' : 'Supplier';
+        const customerLabel = this.state.isSale ? 'Customer' : 'Supplier';
         return <View style={{ width: '100%', flexDirection: 'row' }}>
 
             <AppTab title={customerLabel}
@@ -1130,12 +1203,12 @@ class AddInvoiceScreen extends Component {
                 selected={selected === 'product'}
                 onTabPress={() => this.selectTab('product')} />
 
-            {this.isCreditNote() ? <AppTab title='Refund'
+            {/* {this.isCreditNote() ? <AppTab title='Refund'
                 icon='cash-refund'
                 iconType='MaterialCommunityIcons'
                 selected={selected === 'refund'}
                 onTabPress={() => this.selectTab('refund')} />
-                : null}
+                : null} */}
             {/* {(invoiceAmount > 0 && !this.isCreditNote()) ?
                 <AppTab
                     title='Payment'
@@ -1147,38 +1220,92 @@ class AddInvoiceScreen extends Component {
         </View>
     }
 
-    showSaveOptions = () => {
+    showSaveOptions = body => {
         const items = ['Save', 'Save & New', 'Save & Email', 'Save & Print'];
         showSingleSelectAlert('Save Options', items, index => {
-            console.log('Index: ', index);
+            this.addInvoice(body);
         })
+    }
+
+    addInvoice = body => {
+        this.setState({ updating: true });
+        const url = this.state.isSale ? '/sales/addSales' : '/purchase/addUpdatePurchase';
+        Api.post(url, body)
+            .then(response => {
+                this.setState({ updating: false });
+                this.onInvoiceUpdated(response.data.message);
+            })
+            .catch(err => {
+                console.log('Error adding/updating invoice', err);
+                this.setState({ updating: false });
+                const action = this.state.editMode ? 'updating' : 'adding';
+                setTimeout(() => showError(`Error ${action} invoice.`), 300);
+            })
+    }
+
+    onInvoiceUpdated = message => {
+        const { invoiceActions } = this.props;
+        if (this.state.isSale) {
+            if (this.state.creditNote) {
+                invoiceActions.getSalesCNInvoiceList();
+            } else {
+                invoiceActions.getSalesInvoiceList();
+            }
+        } else {
+            if (this.state.creditNote) {
+                invoiceActions.getPurchaseCNInvoiceList();
+            } else {
+                invoiceActions.getPurchaseInvoiceList();
+            }
+        }
+        setTimeout(() => {
+            this.props.navigation.goBack();
+            showSuccess(message);
+        }, 300);
     }
 
     validateAndSave = () => {
         const { authData } = Store.getState().auth;
+        const isSale = this.state.isSale;
         const body = {
-            customer: this.state.customer,
-            columns: this.state.columns,
             invoiceno: this.state.invoiceno,
             sdate: this.state.invDate,
             ldate: this.state.dueDate,
             inaddress: this.state.invoiceAddress,
             deladdress: this.state.deliveryAddress,
             terms: this.state.terms,
-            quotes: this.state.quotes,
+            quotes: this.state.notes,
             userid: authData.id,
-            status: "0",
+            status: '0',
             issued: this.state.issued.toLowerCase(),
             type: this.props.route.params.info.invoice_type,
             pagetype: "1",
-            total: `${this.state.total}`,
-            userdate: timeHelper.format(moment())
+            total: `${this.state.payable}`,
+            userdate: moment().utc().format()
         }
-        console.log('Body: ', JSON.stringify(body, null, 2));
-        if (!body.customer) {
-            showError('Please choose a customer.')
+        if (isSale) {
+            body.columns = this.state.columns;
+            body.customer = this.state.customer;
         } else {
-            this.showSaveOptions();
+            body.pList = this.state.columns;
+            body.supplier = this.state.customer;
+            body.purchase = {
+                sdate: body.sdate,
+                ldate: body.ldate,
+                invoiceno: body.invoiceno,
+                inaddress: body.inaddress,
+                deladdress: body.deladdress,
+                total: body.total,
+                quotes: body.quotes,
+                status: body.status
+            }
+        }
+
+        const customerTag = isSale ? 'customer' : 'supplier';
+        if (!this.state.customer) {
+            showError(`Please choose a ${customerTag}.`);
+        } else {
+            this.showSaveOptions(body);
         }
     }
 
@@ -1210,11 +1337,11 @@ class AddInvoiceScreen extends Component {
         }
 
         const selected = this.state.selectedTab;
-        const invoiceAmount = this.state.subtotal;
+        const discount = this.state.isSale ? `${totalDiscount} ${currency}-` : undefined;
         return <KeyboardAvoidingView style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
 
-                {this.renderTabs(invoiceAmount)}
+                {this.renderTabs()}
                 {selected === 'supplier' ? this.renderSupplierContainer() : null}
                 {selected === 'product' ? this.renderProductContainer() : null}
                 {/* {selected === 'payment' ? this.renderPaymentContainer() : null}
@@ -1224,10 +1351,11 @@ class AddInvoiceScreen extends Component {
             <InvoiceBreakdown
                 total={`${subTotal} ${currency}`}
                 vat={`${totalVat} ${currency}`}
-                discount={`${totalDiscount} ${currency}-`}
+                discount={discount}
                 payable={`${payable} ${currency}`}
                 visible={this.state.showBreakdown}
                 onPressOutside={() => this.setState({ showBreakdown: false })} />
+            <ProgressDialog visible={this.state.updating} />
         </KeyboardAvoidingView>
     }
 };

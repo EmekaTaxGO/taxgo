@@ -146,7 +146,7 @@ class AddLedgerScreen extends Component {
                         lineWidth={1}
                         errorColor='green'
                         title='*Required'
-                        titleTextStyle={{ color: 'red', textDecorationColor: 'black', textShadowColor: 'black' }}
+                        titleTextStyle={{ color: errorColor, textDecorationColor: 'black', textShadowColor: 'black' }}
                         fieldRef={this.ledgerAccRef}
                         onSubmitEditing={() => this.codeRef.current.focus()} />
                     <AppTextField

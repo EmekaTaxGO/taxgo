@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, Modal, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { colorAccent } from '../../theme/Color';
+import { colorAccent, errorColor } from '../../theme/Color';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { isEmpty } from '../../helpers/Utils';
 
@@ -36,7 +36,7 @@ class PaymentDetailCard extends React.PureComponent {
                     <View style={{ marginTop: 30 }} />
                     {this.renderRow('Date:', payment.date)}
                     {this.renderRow('Total:', payment.total, 'blue')}
-                    {this.renderRow('Outstanding:', payment.outstanding, 'red')}
+                    {this.renderRow('Outstanding:', payment.outstanding, errorColor)}
                     {this.renderRow('Amount Paid:', payment.amountpaid)}
                     {this.renderRow('Reference:', payment.reference,)}
 

@@ -30,7 +30,7 @@ class InvoiceBreakdown extends Component {
                 <View style={styles.bottomSheet}>
                     {this.renderRow('sub total', total)}
                     {this.renderRow('total vat', vat)}
-                    {this.renderRow('total discount', discount)}
+                    {discount ? this.renderRow('total discount', discount) : null}
                     {this.renderRow('total payable amount', payable)}
                 </View>
             </BottomSheet>

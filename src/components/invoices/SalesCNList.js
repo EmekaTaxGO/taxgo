@@ -95,7 +95,7 @@ class SalesCNList extends Component {
                     {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
                 </View>
                 {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
-                {this.hiddenElement('Delete', 'delete', 'red', () => this.onDeleteClick(data))}
+                {this.hiddenElement('Delete', 'delete', errorColor, () => this.onDeleteClick(data))}
             </View>
         </CardView>
     }

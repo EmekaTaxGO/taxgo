@@ -46,7 +46,7 @@ class CustomerReceiptItem extends React.PureComponent {
                         marginLeft: 12,
                     }}>
                         <Text style={{ color: 'blue', fontSize: 14 }}>Total: {this.formatVal(item.total)}</Text>
-                        <Text style={{ color: 'red', fontSize: 14, marginTop: 2 }}>Outstanding: {this.formatVal(item.outstanding)}</Text>
+                        <Text style={{ color: errorColor, fontSize: 14, marginTop: 2 }}>Outstanding: {this.formatVal(item.outstanding)}</Text>
                         <Text style={{ color: 'black', fontSize: 14, marginTop: 2 }}>Amount Paid: {this.formatVal(item.amountpaid)}</Text>
                     </View>
                     <TouchableOpacity onPress={() => this.props.onPressVisibility(item)}

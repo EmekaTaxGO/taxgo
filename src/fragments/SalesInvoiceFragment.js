@@ -24,11 +24,10 @@ class SalesInvoiceFragment extends Component {
         this.showDialogToAddSales();
     }
 
-    launchAddInvoice = (mode = 'add', creditNote = false, invoiceType = 'sales') => {
+    launchAddInvoice = (mode = 'add', invoiceType = 'sales') => {
         this.props.navigation.navigate('AddInvoiceScreen', {
             info: {
                 mode: mode,
-                credit_note: creditNote,
                 invoice_type: invoiceType
             }
         });
@@ -38,7 +37,7 @@ class SalesInvoiceFragment extends Component {
         showSingleSelectAlert('New Sale', items,
             index => {
                 console.log('Sales Added!');
-                this.launchAddInvoice('add', index === 1);
+                this.launchAddInvoice('add', index === 0 ? 'sales' : 'scredit');
             })
     }
 

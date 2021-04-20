@@ -27,11 +27,10 @@ class PurchaseInvoiceFragment extends Component {
         this.showDialogToAddPurchase();
     }
 
-    launchAddInvoice = (mode = 'add', creditNote = false, invoiceType = 'purchase') => {
+    launchAddInvoice = (mode = 'add', invoiceType = 'purchase') => {
         this.props.navigation.navigate('AddInvoiceScreen', {
             info: {
                 mode: mode,
-                credit_note: creditNote,
                 invoice_type: invoiceType
             }
         });
@@ -40,7 +39,7 @@ class PurchaseInvoiceFragment extends Component {
         const items = ['Purchase Invoice', 'Purchase Credit Notes'];
         showSingleSelectAlert('New Purchase', items,
             index => {
-                this.launchAddInvoice('add', index === 1);
+                this.launchAddInvoice('add', index === 0 ? 'purchase' : 'pcredit');
             })
     }
 

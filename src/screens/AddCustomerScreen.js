@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, SafeAreaView, KeyboardAvoidingView, ScrollView, Alert } from 'react-native';
 import { focusField, getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
 import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent, colorPrimary } from '../theme/Color';
+import { colorAccent, colorPrimary, errorColor } from '../theme/Color';
 import { isEmpty, BUSINESS_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, showError, getApiErrorMsg } from '../helpers/Utils';
 
 import * as contactActions from '../redux/actions/contactActions';
@@ -299,7 +299,7 @@ class AddCustomerScreen extends Component {
                         editable={isFormEditabled}
                         onChange={event => this.resetAllError()} />
                     {this.hasAnyError() ? <Text style={{
-                        color: 'red',
+                        color: errorColor,
                         paddingVertical: 6
                     }}>Resolve All Error.</Text> : null}
 

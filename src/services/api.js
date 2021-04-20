@@ -28,7 +28,6 @@ AxiosInstance.interceptors.request.use(config => {
     }
     return newConfig;
 });
-
 AxiosInstance.interceptors.response.use(res => {
     if (PRINT_RESPONSE && __DEV__) {
         console.log('Api Response:', JSON.stringify(res.data, null, 2));

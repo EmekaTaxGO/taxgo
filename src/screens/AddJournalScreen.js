@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT, H_DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent, snackbarActionColor, colorWhite } from '../theme/Color';
+import { colorAccent, snackbarActionColor, colorWhite, errorColor } from '../theme/Color';
 import CardView from 'react-native-cardview';
 import Snackbar from 'react-native-snackbar';
 import AppTextField from '../components/AppTextField';
@@ -91,7 +91,7 @@ class AddJournalScreen extends Component {
             Snackbar.show({
                 text: 'Ledger Deleted.',
                 duration: Snackbar.LENGTH_LONG,
-                backgroundColor: 'red',
+                backgroundColor: errorColor,
                 action: {
                     text: 'OK',
                     textColor: colorWhite,
@@ -190,7 +190,7 @@ class AddJournalScreen extends Component {
                     }
                     {
                         showDeleteBtn ? <TouchableOpacity onPress={() => this.deleteLedger(index)} style={{ marginLeft: 6, padding: 6 }}>
-                            <MaterialCommunityIcons size={34} name='delete-circle' color='red' />
+                            <MaterialCommunityIcons size={34} name='delete-circle' color={errorColor} />
                         </TouchableOpacity> : null
                     }
 

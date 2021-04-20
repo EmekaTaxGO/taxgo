@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, TouchableOpacity, StyleSheet, FlatList, Text } from 'react-native';
 import SearchView from '../components/SearchView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { errorColor } from '../theme/Color';
 
 class UserFragment extends Component {
     constructor(props) {
@@ -98,7 +99,7 @@ class UserFragment extends Component {
     getStateColor = (item) => {
         switch (item.state) {
             case 'suspended':
-                return 'red';
+                return errorColor;
             case 'active':
                 return 'green';
             default:

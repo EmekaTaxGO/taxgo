@@ -5,7 +5,7 @@ import SearchView from '../SearchView';
 import { connect } from 'react-redux';
 import * as invoiceActions from '../../redux/actions/invoiceActions';
 import { bindActionCreators } from 'redux';
-import { colorAccent } from '../../theme/Color';
+import { colorAccent, deleteColor, editColor, errorColor, viewColor } from '../../theme/Color';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -14,6 +14,8 @@ import FullScreenError from '../FullScreenError';
 import EmptyView from '../EmptyView';
 import { isEmpty } from '../../helpers/Utils';
 import SalesInvoiceListItem from './SalesInvoiceListItem';
+import AppText from '../AppText';
+import { appFontBold } from '../../helpers/ViewHelper';
 
 class SalesCNList extends Component {
     constructor(props) {
@@ -61,8 +63,8 @@ class SalesCNList extends Component {
                 borderRadius: 12
             }}>
 
-                <Icon name={icon} color='white' size={24} />
-                <Text style={{ color: 'white' }}>{label}</Text>
+                <Icon name={icon} color='white' size={30} />
+                <AppText style={{ color: 'white', fontFamily: appFontBold }}>{label}</AppText>
             </View>
         </TouchableHighlight>
     }
@@ -92,10 +94,10 @@ class SalesCNList extends Component {
             style={styles.hiddenCard}>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ flex: 1 }}>
-                    {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
+                    {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
                 </View>
-                {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
-                {this.hiddenElement('Delete', 'delete', errorColor, () => this.onDeleteClick(data))}
+                {this.hiddenElement('Edit', 'edit', editColor, () => this.onEditClick(data))}
+                {this.hiddenElement('Delete', 'delete', deleteColor, () => this.onDeleteClick(data))}
             </View>
         </CardView>
     }

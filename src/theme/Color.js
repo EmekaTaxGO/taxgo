@@ -14,8 +14,10 @@ export const bottomTabBackgroundColor = '#edebed';
 export const dividerColor = '#f1f1f1';
 export const transparentColor = 'rgba(0,0,0,0.5)';
 export const errorColor = '#ed3b5a';
-// export const successColor = '#5dc953';
 export const successColor = '#099903';
+export const editColor = '#896bca';
+export const viewColor = '#429e57';
+export const deleteColor = '#d77b4e';
 
 export const rColor = [
     '#551be4', '#bf1f76', '#367b2f', '#3a9bc7', '#a5221b', '#c2470e', '#bf1f76', '#db940e'

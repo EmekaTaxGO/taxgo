@@ -11,8 +11,10 @@ import FullScreenError from '../../components/FullScreenError';
 import EmptyView from '../../components/EmptyView';
 import OnScreenSpinner from '../../components/OnScreenSpinner';
 import { isEmpty, size } from 'lodash';
-import { rColor } from '../../theme/Color';
+import { rColor, viewColor } from '../../theme/Color';
 import SalesInvoiceListItem from './SalesInvoiceListItem';
+import AppText from '../AppText';
+import { appFontBold } from '../../helpers/ViewHelper';
 
 class SalesInvoiceList extends Component {
     constructor(props) {
@@ -62,8 +64,8 @@ class SalesInvoiceList extends Component {
                 borderRadius: 12
             }}>
 
-                <Icon name={icon} color='white' size={24} />
-                <Text style={{ color: 'white' }}>{label}</Text>
+                <Icon name={icon} color='white' size={30} />
+                <AppText style={{ color: 'white', fontFamily: appFontBold }}>{label}</AppText>
             </View>
         </TouchableHighlight>
     }
@@ -91,7 +93,7 @@ class SalesInvoiceList extends Component {
             cornerRadius={6}
             style={styles.hiddenCard}>
             <View style={{ flexDirection: 'row' }}>
-                {this.hiddenElement('View', 'visibility', 'blue', () => this.onViewClick(data))}
+                {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
             </View>
         </CardView>
     }

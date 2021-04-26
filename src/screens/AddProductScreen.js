@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, ScrollView, Switch, Alert } from 'react-native';
-import { colorAccent, colorWhite } from '../theme/Color';
+import { colorAccent, colorWhite, errorColor } from '../theme/Color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
@@ -217,13 +217,15 @@ class AddProductScreen extends Component {
     }
 
     onUpdateError = message => {
-        Alert.alert('Alert', message, [
-            {
-                style: 'default',
-                text: 'OK',
-                onPress: () => { }
-            }
-        ], { cancelable: false });
+        setTimeout(() => {
+            Alert.alert('Alert', message, [
+                {
+                    style: 'default',
+                    text: 'OK',
+                    onPress: () => { }
+                }
+            ], { cancelable: false });
+        }, 200);
     }
 
     isStock = () => {
@@ -320,7 +322,7 @@ class AddProductScreen extends Component {
         Snackbar.show({
             text: message,
             duration: Snackbar.LENGTH_LONG,
-            backgroundColor: 'red',
+            backgroundColor: errorColor,
             action: {
                 text: 'OK',
                 textColor: colorWhite,
@@ -483,7 +485,7 @@ class AddProductScreen extends Component {
             title,
             headerRight: () => {
                 return !this.isEditMode() ?
-                    <TouchableOpacity onPress={this.onBarcodePress} style={{ padding: 12 }}>
+                    <TouchableOpacity onPress={this.onBarcodePress} style={{ paddingRight: 12 }}>
                         <MaterialIcon name='qr-code-scanner' size={30} color='white' />
                     </TouchableOpacity> : null
             }

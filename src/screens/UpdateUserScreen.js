@@ -14,8 +14,7 @@ import { getFieldValue, focusField, setFieldValue } from '../helpers/TextFieldHe
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
-import { colorAccent } from '../theme/Color';
-import { RaisedTextButton } from 'react-native-material-buttons';
+import { colorAccent, errorColor } from '../theme/Color';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
 
@@ -250,7 +249,7 @@ class UpdateUserScreen extends Component {
                     {this.createSwitch('Retail Xpress', this.state.retailXpress, enabled => this.setState({ retailXpress: enabled }))}
 
                     {this.hasAnyError() ? <Text style={{
-                        color: 'red',
+                        color: errorColor,
                         paddingHorizontal: 16,
                         paddingTop: 4,
                         fontSize: 14

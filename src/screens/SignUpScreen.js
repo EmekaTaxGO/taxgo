@@ -8,9 +8,10 @@ import {
     SafeAreaView,
     TouchableOpacity,
     Linking,
-    Image
+    Image,
+    Alert
 } from 'react-native';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, errorColor } from '../theme/Color';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import { connect } from 'react-redux';
@@ -27,11 +28,13 @@ import { TERMS_AND_CONDITION_URL, PRIVACY_POLICY_URL } from '../constants/appCon
 import ImagePicker from 'react-native-image-picker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { call } from 'react-native-reanimated';
-import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateBusinessName, BUSINESS_NAME_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, validatePass, PASSWORD_ERROR_MESSAGE } from '../helpers/Utils';
+import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateBusinessName, BUSINESS_NAME_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, validatePass, PASSWORD_ERROR_MESSAGE, getApiErrorMsg, showError } from '../helpers/Utils';
 import { log } from '../components/Logger';
 import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Api from '../services/api';
 
 class SignUpScreen extends Component {
 
@@ -48,7 +51,8 @@ class SignUpScreen extends Component {
             passwordError: undefined,
             businessNameError: undefined,
             phoneError: undefined,
-            businessType: ['Limited Company', 'Partnership', 'Trader']
+            businessType: ['Limited Company', 'Partnership', 'Trader'],
+            creating: false
         }
     }
 
@@ -192,10 +196,39 @@ class SignUpScreen extends Component {
     }
 
     signUpUser = () => {
+        this.setState({ creating: true });
+        const body = this.getRequestBody();
+        return Api.post('/user/register', body)
+            .then(response => {
+                this.setState({ creating: false });
+                setTimeout(() => this.showSignUpSuccessDialog(), 300);
+            })
+            .catch(err => {
+                console.log('Error: ', err.response.data);
+                this.setState({ creating: false });
+                const message = getApiErrorMsg(err);
+                setTimeout(() => {
+                    Alert.alert('Alert', message);
+                }, 300);
+
+            })
+    }
+
+    showSignUpSuccessDialog = () => {
+        Alert.alert('Alert', 'Registration is successful, Please Login to use Taxgo Services.', [{
+            onPress: () => {
+                this.props.navigation.navigate('LoginScreen');
+            },
+            style: 'default',
+            text: 'OK'
+        }], { cancelable: false })
+    }
+
+    getRequestBody = () => {
         const { businesses, countries } = this.props.auth;
         const country = countries[this.state.countryIndex];
         const business = businesses[this.state.categoryIndex];
-        const body = {
+        return {
             firstname: getFieldValue(this.firstNameRef),
             lastname: getFieldValue(this.lastNameRef),
             email: getFieldValue(this.emailRef),
@@ -209,9 +242,6 @@ class SignUpScreen extends Component {
             rtype: business.btitle,
             tax: country.taxtype
         };
-        log('Sign Up Body: ', body);
-        const { authActions } = this.props;
-        authActions.signUp(this.props, body);
     }
 
     render() {
@@ -225,7 +255,7 @@ class SignUpScreen extends Component {
         }
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
-                <ScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
+                <KeyboardAwareScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
                     {/* <TouchableOpacity onPress={this.onImageClick}>
                         <Image style={{
                             borderColor: 'gray',
@@ -332,7 +362,7 @@ class SignUpScreen extends Component {
                     {this.hasAnyError()
                         ? <Text
                             style={{
-                                color: 'red',
+                                color: errorColor,
                                 fontSize: 11,
                                 alignSelf: 'center'
                             }}>Resolve All Error First!</Text> : null}
@@ -388,8 +418,8 @@ class SignUpScreen extends Component {
                             }}>here.</Text>
                         </TouchableOpacity>
                     </View>
-                    <ProgressDialog visible={auth.loading} />
-                </ScrollView>
+                    <ProgressDialog visible={this.state.creating} />
+                </KeyboardAwareScrollView>
             </KeyboardAvoidingView>
 
         </SafeAreaView>

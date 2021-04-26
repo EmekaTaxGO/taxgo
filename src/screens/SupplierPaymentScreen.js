@@ -113,7 +113,7 @@ class SupplierPaymentScreen extends Component {
                 return <Menu
                     ref={this._menuRef}
                     button={
-                        <TouchableOpacity style={{ padding: 12 }} onPress={this.showMenu}>
+                        <TouchableOpacity style={{ paddingRight: 12 }} onPress={this.showMenu}>
                             <Icon name='more-vert' size={30} color='white' />
                         </TouchableOpacity>
                     }>

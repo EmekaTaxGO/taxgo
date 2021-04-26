@@ -28,7 +28,6 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import WebViewScreen from './src/screens/WebViewScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import UpdateUserScreen from './src/screens/UpdateUserScreen';
-import AddInvoice from './src/screens/AddInvoiceScreen';
 import AddInvoiceScreen from './src/screens/AddInvoiceScreen';
 import ViewProductInfoScreen from './src/screens/ViewProductInfoScreen';
 import SelectSupplierScreen from './src/screens/SelectSupplierScreen';
@@ -62,6 +61,7 @@ import ProfitLossReportScreen from './src/screens/ProfitLossReportScreen';
 import ViewInvoiceScreen from './src/screens/ViewInvoiceScreen';
 import { appFont, appFontBold } from './src/helpers/ViewHelper';
 import PaymentScreen from './src/screens/PaymentScreen';
+import EditProfileV2 from './src/screens/EditProfileV2';
 
 const App = () => {
 
@@ -75,7 +75,9 @@ const App = () => {
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
-        headerTitleStyle: { fontWeight: '400', fontFamily: appFontBold }
+        headerTitleStyle: { fontFamily: appFont, fontSize: 20 },
+        headerBackTitleVisible: false,
+
       }}>
 
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />
@@ -127,6 +129,7 @@ const App = () => {
       <Stack.Screen name='ProfitLossReportScreen' component={ProfitLossReportScreen} options={{ title: 'Profit & Loss Report' }} />
       <Stack.Screen name='ViewInvoiceScreen' component={ViewInvoiceScreen} options={{ title: 'Sales' }} />
       <Stack.Screen name='PaymentScreen' component={PaymentScreen} options={{ title: 'Payment' }} />
+      <Stack.Screen name='EditProfileV2' component={EditProfileV2} options={{ title: 'Edit Profile' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

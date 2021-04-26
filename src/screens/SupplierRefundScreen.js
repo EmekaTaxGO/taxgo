@@ -23,7 +23,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner'
 import FullScreenError from '../components/FullScreenError'
 import EmptyView from '../components/EmptyView';
 import CheckBox from '@react-native-community/checkbox';
-import { colorAccent, colorWhite } from '../theme/Color';
+import { colorAccent, colorWhite, errorColor } from '../theme/Color';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { isFloat, toFloat, showError } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
@@ -109,7 +109,7 @@ class SupplierRefundScreen extends Component {
                 return <Menu
                     ref={this._menuRef}
                     button={
-                        <TouchableOpacity style={{ padding: 12 }} onPress={this.showMenu}>
+                        <TouchableOpacity style={{ paddingRight: 12 }} onPress={this.showMenu}>
                             <Icon name='more-vert' size={30} color='white' />
                         </TouchableOpacity>
                     }>
@@ -305,7 +305,7 @@ class SupplierRefundScreen extends Component {
         Snackbar.show({
             text: message,
             duration: Snackbar.LENGTH_LONG,
-            backgroundColor: 'red',
+            backgroundColor: errorColor,
             action: {
                 text: 'OK',
                 textColor: colorWhite,

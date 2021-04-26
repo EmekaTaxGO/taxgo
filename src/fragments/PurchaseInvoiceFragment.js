@@ -9,6 +9,7 @@ import SalesCNList from '../components/invoices/SalesCNList';
 import SalesInvoiceList from '../components/invoices/SalesInvoiceList';
 import PurchaseInvoiceList from '../components/invoices/PurchaseInvoiceList';
 import PurchaseCNList from '../components/invoices/PurchaseCNList';
+import BottomTabLayout from '../components/materialTabs/BottomTabLayout';
 
 class PurchaseInvoiceFragment extends Component {
 
@@ -26,11 +27,10 @@ class PurchaseInvoiceFragment extends Component {
         this.showDialogToAddPurchase();
     }
 
-    launchAddInvoice = (mode = 'add', creditNote = false, invoiceType = 'purchase') => {
+    launchAddInvoice = (mode = 'add', invoiceType = 'purchase') => {
         this.props.navigation.navigate('AddInvoiceScreen', {
             info: {
                 mode: mode,
-                credit_note: creditNote,
                 invoice_type: invoiceType
             }
         });
@@ -39,7 +39,7 @@ class PurchaseInvoiceFragment extends Component {
         const items = ['Purchase Invoice', 'Purchase Credit Notes'];
         showSingleSelectAlert('New Purchase', items,
             index => {
-                this.launchAddInvoice('add', index === 1);
+                this.launchAddInvoice('add', index === 0 ? 'purchase' : 'pcredit');
             })
     }
 
@@ -55,7 +55,7 @@ class PurchaseInvoiceFragment extends Component {
                 </TouchableOpacity>
             },
             headerRight: () => {
-                return <TouchableOpacity onPress={this.onAddClick} style={{ padding: 12 }}>
+                return <TouchableOpacity onPress={this.onAddClick} style={{ paddingRight: 12 }}>
                     <Icon name='add' size={30} color='white' />
                 </TouchableOpacity>
             }
@@ -63,50 +63,27 @@ class PurchaseInvoiceFragment extends Component {
     }
 
 
-    // Tab = createBottomTabNavigator();
     render() {
         const Tab = createBottomTabNavigator();
-        return <Tab.Navigator
-            screenOptions={({ route }) => ({
-
-                tabBarIcon: ({ focused, color, size }) => {
-                    let iconName;
-                    if (route.name === 'sales') {
-                        iconName = 'shopping-cart';
-                    } else {
-                        iconName = 'description';
-                    }
-                    return <Icon name={iconName}
-                        color={focused ? bottomTabActiveColor : bottomTabInactiveColor} size={30} />
-                }
-            })}
-            tabBarOptions={{
-                activeTintColor: colorAccent,
-                inactiveTintColor: bottomTabInactiveColor,
-                activeBackgroundColor: bottomTabBackgroundColor,
-                inactiveBackgroundColor: bottomTabBackgroundColor,
-                labelStyle: {
-                    fontSize: 14
-                },
-                style: {
-                    backgroundColor: bottomTabBackgroundColor,
-                    padding: 12,
-                    height: 60
-                },
-                tabStyle: {
-                    padding: 2
-                }
-            }}>
+        return <BottomTabLayout tab={Tab}>
             <Tab.Screen name='purchase'
                 component={PurchaseInvoiceList}
-                options={{ title: 'Purchase' }}
+                options={{
+                    title: 'Purchase',
+                    tabBarIcon: ({ color, size }) =>
+                        <Icon name='shopping-cart' size={26} color={color} />
+                }}
                 listeners={{ tabPress: e => this._tab = 'purchase' }} />
 
             <Tab.Screen name='c_note'
                 component={PurchaseCNList}
-                options={{ title: 'C.Note' }}
+                options={{
+                    title: 'C.Note',
+                    tabBarIcon: ({ color, size }) =>
+                        <Icon name='description' size={26} color={color} />
+                }}
                 listeners={{ tabPress: e => this._tab = 'c_note' }} />
-        </Tab.Navigator>
+        </BottomTabLayout>
     }
 }
 const styles = StyleSheet.create({

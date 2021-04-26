@@ -1,6 +1,6 @@
 
 
-pushPaymentScreen = (nav, payload, onSuccess) => {
+const pushPaymentScreen = (nav, payload, onSuccess) => {
     nav.push('PaymentScreen', {
         payload,
         onSuccess

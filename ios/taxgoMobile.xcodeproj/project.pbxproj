@@ -15,25 +15,14 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* taxgoMobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* taxgoMobileTests.m */; };
+		72A52CEC4B79442AD787178F /* libPods-taxgoMobile-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72FD1C4960D16BF8B7E3CC86 /* libPods-taxgoMobile-tvOSTests.a */; };
+		781A620AC34D5AB15116B097 /* libPods-taxgoMobile-taxgoMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BE08555047565B0D742A10D /* libPods-taxgoMobile-taxgoMobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		6B0C93A0A15540E6A6127D30 /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5B2E945EEF88403180EF2BA3 /* Nunito-Bold.ttf */; };
-		B005076736AB4D96813ABC60 /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1BEBF992F5964F1C818AE16C /* Nunito-Regular.ttf */; };
-		13F71954148C42F796375FBE /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 657279A396194399A9A5482E /* AntDesign.ttf */; };
-		ED3F804349554EA384DB41A9 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BB84ED8E1D0C4140B451F25A /* Entypo.ttf */; };
-		B483CB66AC0641DFA16780E5 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 602AE13019BF42EA8257DA4F /* EvilIcons.ttf */; };
-		83947A0D4899490E8BC78B0F /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7CCA37EBD0BB4E9D862813D2 /* Feather.ttf */; };
-		F925DB3238E8450B8E322661 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E6468D622AF6441ABAD698FB /* FontAwesome.ttf */; };
-		497ED6EA2E1B42BEA9B0E38D /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23FCD8CE893842E295942859 /* FontAwesome5_Brands.ttf */; };
-		664928019580487198E9FDF2 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF01A06A71D2485483EFF72F /* FontAwesome5_Regular.ttf */; };
-		85E651E1182B4F5FB69C080E /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E0A22284D6434C5ABC5E6290 /* FontAwesome5_Solid.ttf */; };
-		E7914340E9424B7A9A4DE227 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1EE1AE91E4E48B6A963236A /* Fontisto.ttf */; };
-		D29385C0E0E14C67869C4F76 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F1B454CDF8094BEB88AC2B0F /* Foundation.ttf */; };
-		E69314C9C7F24C68B55C23B4 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8AC05CEE83164A74AE705428 /* Ionicons.ttf */; };
-		D5D4742A4BE4486F823B0EF4 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ADD210A77C6144DFB76F4B84 /* MaterialCommunityIcons.ttf */; };
-		23195FA23A764845BE10AE32 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 376E13CBB9B748B58A86BC28 /* MaterialIcons.ttf */; };
-		5EFECB523C6C4BF380C22244 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 833C1FE2E9BD441BA0F3CD05 /* Octicons.ttf */; };
-		9998C231ECBE405286655741 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C6E13C58F50457AA988FEE7 /* SimpleLineIcons.ttf */; };
-		4FFBB03B919542B8872AC93D /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 87D1BB3DCB044A0FA74C7AD5 /* Zocial.ttf */; };
+		9DEDE01B637046B61D146AD7 /* libPods-taxgoMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17122B81A3EC863C07462F42 /* libPods-taxgoMobile.a */; };
+		E6D9BCD856D1703E4ECD99CF /* libPods-taxgoMobile-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 789FB398CB769B1DE10619AE /* libPods-taxgoMobile-tvOS.a */; };
+		EF3D991B261C639F003C1213 /* Void.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D991A261C639F003C1213 /* Void.swift */; };
+		EF3D9922261C6D5F003C1213 /* Nunito-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EF3D9920261C6D5F003C1213 /* Nunito-Regular.ttf */; };
+		EF3D9923261C6D5F003C1213 /* Nunito-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EF3D9921261C6D5F003C1213 /* Nunito-Bold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,29 +53,28 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = taxgoMobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = taxgoMobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = taxgoMobile/main.m; sourceTree = "<group>"; };
+		17122B81A3EC863C07462F42 /* libPods-taxgoMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-taxgoMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		28144A6DAB2C7AC3C804DC7D /* Pods-taxgoMobile-taxgoMobileTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile-taxgoMobileTests.debug.xcconfig"; path = "Target Support Files/Pods-taxgoMobile-taxgoMobileTests/Pods-taxgoMobile-taxgoMobileTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* taxgoMobile-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "taxgoMobile-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* taxgoMobile-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "taxgoMobile-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F26B5ECDB7D5E5BD7909A01 /* Pods-taxgoMobile-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-taxgoMobile-tvOS/Pods-taxgoMobile-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		533D63A0D06DFC43AEA68A52 /* Pods-taxgoMobile-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-taxgoMobile-tvOSTests/Pods-taxgoMobile-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		6AD1E87FA7A629F7D716A450 /* Pods-taxgoMobile-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile-tvOS.release.xcconfig"; path = "Target Support Files/Pods-taxgoMobile-tvOS/Pods-taxgoMobile-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		72FD1C4960D16BF8B7E3CC86 /* libPods-taxgoMobile-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-taxgoMobile-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		789FB398CB769B1DE10619AE /* libPods-taxgoMobile-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-taxgoMobile-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BE08555047565B0D742A10D /* libPods-taxgoMobile-taxgoMobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-taxgoMobile-taxgoMobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BF777CC33D4E0BBDFD8CD41 /* Pods-taxgoMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile.release.xcconfig"; path = "Target Support Files/Pods-taxgoMobile/Pods-taxgoMobile.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = taxgoMobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9AAAB04ECAA5654D5109EE7C /* Pods-taxgoMobile-taxgoMobileTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile-taxgoMobileTests.release.xcconfig"; path = "Target Support Files/Pods-taxgoMobile-taxgoMobileTests/Pods-taxgoMobile-taxgoMobileTests.release.xcconfig"; sourceTree = "<group>"; };
+		AF3FB476024F940D88344FB0 /* Pods-taxgoMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile.debug.xcconfig"; path = "Target Support Files/Pods-taxgoMobile/Pods-taxgoMobile.debug.xcconfig"; sourceTree = "<group>"; };
+		E826305C3727E77EFF643103 /* Pods-taxgoMobile-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-taxgoMobile-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-taxgoMobile-tvOSTests/Pods-taxgoMobile-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		5B2E945EEF88403180EF2BA3 /* Nunito-Bold.ttf */ = {isa = PBXFileReference; name = "Nunito-Bold.ttf"; path = "../src/assets/fonts/Nunito/Nunito-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1BEBF992F5964F1C818AE16C /* Nunito-Regular.ttf */ = {isa = PBXFileReference; name = "Nunito-Regular.ttf"; path = "../src/assets/fonts/Nunito/Nunito-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		657279A396194399A9A5482E /* AntDesign.ttf */ = {isa = PBXFileReference; name = "AntDesign.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BB84ED8E1D0C4140B451F25A /* Entypo.ttf */ = {isa = PBXFileReference; name = "Entypo.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		602AE13019BF42EA8257DA4F /* EvilIcons.ttf */ = {isa = PBXFileReference; name = "EvilIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7CCA37EBD0BB4E9D862813D2 /* Feather.ttf */ = {isa = PBXFileReference; name = "Feather.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E6468D622AF6441ABAD698FB /* FontAwesome.ttf */ = {isa = PBXFileReference; name = "FontAwesome.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		23FCD8CE893842E295942859 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; name = "FontAwesome5_Brands.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		CF01A06A71D2485483EFF72F /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; name = "FontAwesome5_Regular.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E0A22284D6434C5ABC5E6290 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; name = "FontAwesome5_Solid.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C1EE1AE91E4E48B6A963236A /* Fontisto.ttf */ = {isa = PBXFileReference; name = "Fontisto.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F1B454CDF8094BEB88AC2B0F /* Foundation.ttf */ = {isa = PBXFileReference; name = "Foundation.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		8AC05CEE83164A74AE705428 /* Ionicons.ttf */ = {isa = PBXFileReference; name = "Ionicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		ADD210A77C6144DFB76F4B84 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; name = "MaterialCommunityIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		376E13CBB9B748B58A86BC28 /* MaterialIcons.ttf */ = {isa = PBXFileReference; name = "MaterialIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		833C1FE2E9BD441BA0F3CD05 /* Octicons.ttf */ = {isa = PBXFileReference; name = "Octicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		3C6E13C58F50457AA988FEE7 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		87D1BB3DCB044A0FA74C7AD5 /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		EF20C3DE261E3A7400F1B233 /* taxgoMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = taxgoMobile.entitlements; path = taxgoMobile/taxgoMobile.entitlements; sourceTree = "<group>"; };
+		EF3D98C6261C60F1003C1213 /* taxgoMobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "taxgoMobile-Bridging-Header.h"; sourceTree = "<group>"; };
+		EF3D991A261C639F003C1213 /* Void.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Void.swift; sourceTree = "<group>"; };
+		EF3D9920261C6D5F003C1213 /* Nunito-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Nunito-Regular.ttf"; path = "../src/assets/fonts/Nunito/Nunito-Regular.ttf"; sourceTree = "<group>"; };
+		EF3D9921261C6D5F003C1213 /* Nunito-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Nunito-Bold.ttf"; path = "../src/assets/fonts/Nunito/Nunito-Bold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +82,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				781A620AC34D5AB15116B097 /* libPods-taxgoMobile-taxgoMobileTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DEDE01B637046B61D146AD7 /* libPods-taxgoMobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6D9BCD856D1703E4ECD99CF /* libPods-taxgoMobile-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72A52CEC4B79442AD787178F /* libPods-taxgoMobile-tvOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +133,7 @@
 		13B07FAE1A68108700A75B9A /* taxgoMobile */ = {
 			isa = PBXGroup;
 			children = (
+				EF20C3DE261E3A7400F1B233 /* taxgoMobile.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -148,6 +141,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				EF3D98C6261C60F1003C1213 /* taxgoMobile-Bridging-Header.h */,
+				EF3D991A261C639F003C1213 /* Void.swift */,
 			);
 			name = taxgoMobile;
 			sourceTree = "<group>";
@@ -157,8 +152,27 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
+				17122B81A3EC863C07462F42 /* libPods-taxgoMobile.a */,
+				7BE08555047565B0D742A10D /* libPods-taxgoMobile-taxgoMobileTests.a */,
+				789FB398CB769B1DE10619AE /* libPods-taxgoMobile-tvOS.a */,
+				72FD1C4960D16BF8B7E3CC86 /* libPods-taxgoMobile-tvOSTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5E573718F3792C4429C30B25 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				AF3FB476024F940D88344FB0 /* Pods-taxgoMobile.debug.xcconfig */,
+				7BF777CC33D4E0BBDFD8CD41 /* Pods-taxgoMobile.release.xcconfig */,
+				28144A6DAB2C7AC3C804DC7D /* Pods-taxgoMobile-taxgoMobileTests.debug.xcconfig */,
+				9AAAB04ECAA5654D5109EE7C /* Pods-taxgoMobile-taxgoMobileTests.release.xcconfig */,
+				2F26B5ECDB7D5E5BD7909A01 /* Pods-taxgoMobile-tvOS.debug.xcconfig */,
+				6AD1E87FA7A629F7D716A450 /* Pods-taxgoMobile-tvOS.release.xcconfig */,
+				533D63A0D06DFC43AEA68A52 /* Pods-taxgoMobile-tvOSTests.debug.xcconfig */,
+				E826305C3727E77EFF643103 /* Pods-taxgoMobile-tvOSTests.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -171,12 +185,15 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				EF3D9921261C6D5F003C1213 /* Nunito-Bold.ttf */,
+				EF3D9920261C6D5F003C1213 /* Nunito-Regular.ttf */,
 				13B07FAE1A68108700A75B9A /* taxgoMobile */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* taxgoMobileTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				CF6FE5E2B51D4CD0AC3412DE /* Resources */,
+				5E573718F3792C4429C30B25 /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -195,30 +212,11 @@
 			sourceTree = "<group>";
 		};
 		CF6FE5E2B51D4CD0AC3412DE /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
-				5B2E945EEF88403180EF2BA3 /* Nunito-Bold.ttf */,
-				1BEBF992F5964F1C818AE16C /* Nunito-Regular.ttf */,
-				657279A396194399A9A5482E /* AntDesign.ttf */,
-				BB84ED8E1D0C4140B451F25A /* Entypo.ttf */,
-				602AE13019BF42EA8257DA4F /* EvilIcons.ttf */,
-				7CCA37EBD0BB4E9D862813D2 /* Feather.ttf */,
-				E6468D622AF6441ABAD698FB /* FontAwesome.ttf */,
-				23FCD8CE893842E295942859 /* FontAwesome5_Brands.ttf */,
-				CF01A06A71D2485483EFF72F /* FontAwesome5_Regular.ttf */,
-				E0A22284D6434C5ABC5E6290 /* FontAwesome5_Solid.ttf */,
-				C1EE1AE91E4E48B6A963236A /* Fontisto.ttf */,
-				F1B454CDF8094BEB88AC2B0F /* Foundation.ttf */,
-				8AC05CEE83164A74AE705428 /* Ionicons.ttf */,
-				ADD210A77C6144DFB76F4B84 /* MaterialCommunityIcons.ttf */,
-				376E13CBB9B748B58A86BC28 /* MaterialIcons.ttf */,
-				833C1FE2E9BD441BA0F3CD05 /* Octicons.ttf */,
-				3C6E13C58F50457AA988FEE7 /* SimpleLineIcons.ttf */,
-				87D1BB3DCB044A0FA74C7AD5 /* Zocial.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -227,9 +225,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "taxgoMobileTests" */;
 			buildPhases = (
+				593725ED265A6A0E50445DFB /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
+				67CC25747550E2246ED9D954 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -245,11 +245,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "taxgoMobile" */;
 			buildPhases = (
+				962B3399C548B7796E26E29C /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				3EB77DD435B54616E277F72B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -264,6 +266,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "taxgoMobile-tvOS" */;
 			buildPhases = (
+				91D698E9ADDACD8BB79AAC86 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F122414F3F0027D42C /* Start Packager */,
 				2D02E4771E0B4A5D006451C7 /* Sources */,
 				2D02E4781E0B4A5D006451C7 /* Frameworks */,
@@ -283,6 +286,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "taxgoMobile-tvOSTests" */;
 			buildPhases = (
+				25B7C255026DDC2351369C91 /* [CP] Check Pods Manifest.lock */,
 				2D02E48C1E0B4A5D006451C7 /* Sources */,
 				2D02E48D1E0B4A5D006451C7 /* Frameworks */,
 				2D02E48E1E0B4A5D006451C7 /* Resources */,
@@ -310,7 +314,9 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						DevelopmentTeam = 9XNS4Z7H7W;
+						LastSwiftMigration = 1240;
+						ProvisioningStyle = Automatic;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -356,26 +362,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF3D9922261C6D5F003C1213 /* Nunito-Regular.ttf in Resources */,
+				EF3D9923261C6D5F003C1213 /* Nunito-Bold.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				6B0C93A0A15540E6A6127D30 /* Nunito-Bold.ttf in Resources */,
-				B005076736AB4D96813ABC60 /* Nunito-Regular.ttf in Resources */,
-				13F71954148C42F796375FBE /* AntDesign.ttf in Resources */,
-				ED3F804349554EA384DB41A9 /* Entypo.ttf in Resources */,
-				B483CB66AC0641DFA16780E5 /* EvilIcons.ttf in Resources */,
-				83947A0D4899490E8BC78B0F /* Feather.ttf in Resources */,
-				F925DB3238E8450B8E322661 /* FontAwesome.ttf in Resources */,
-				497ED6EA2E1B42BEA9B0E38D /* FontAwesome5_Brands.ttf in Resources */,
-				664928019580487198E9FDF2 /* FontAwesome5_Regular.ttf in Resources */,
-				85E651E1182B4F5FB69C080E /* FontAwesome5_Solid.ttf in Resources */,
-				E7914340E9424B7A9A4DE227 /* Fontisto.ttf in Resources */,
-				D29385C0E0E14C67869C4F76 /* Foundation.ttf in Resources */,
-				E69314C9C7F24C68B55C23B4 /* Ionicons.ttf in Resources */,
-				D5D4742A4BE4486F823B0EF4 /* MaterialCommunityIcons.ttf in Resources */,
-				23195FA23A764845BE10AE32 /* MaterialIcons.ttf in Resources */,
-				5EFECB523C6C4BF380C22244 /* Octicons.ttf in Resources */,
-				9998C231ECBE405286655741 /* SimpleLineIcons.ttf in Resources */,
-				4FFBB03B919542B8872AC93D /* Zocial.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,6 +401,28 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
+		25B7C255026DDC2351369C91 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-taxgoMobile-tvOSTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -424,6 +436,176 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+		};
+		3EB77DD435B54616E277F72B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-taxgoMobile/Pods-taxgoMobile-resources.sh",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-taxgoMobile/Pods-taxgoMobile-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		593725ED265A6A0E50445DFB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-taxgoMobile-taxgoMobileTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		67CC25747550E2246ED9D954 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-taxgoMobile-taxgoMobileTests/Pods-taxgoMobile-taxgoMobileTests-resources.sh",
+				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Feather.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Octicons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf",
+				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Zocial.ttf",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AntDesign.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Entypo.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EvilIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Feather.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Brands.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Regular.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FontAwesome5_Solid.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Fontisto.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Foundation.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Ionicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialCommunityIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MaterialIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Octicons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SimpleLineIcons.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Zocial.ttf",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-taxgoMobile-taxgoMobileTests/Pods-taxgoMobile-taxgoMobileTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		91D698E9ADDACD8BB79AAC86 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-taxgoMobile-tvOS-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		962B3399C548B7796E26E29C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-taxgoMobile-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -480,6 +662,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				EF3D991B261C639F003C1213 /* Void.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,7 +701,9 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28144A6DAB2C7AC3C804DC7D /* Pods-taxgoMobile-taxgoMobileTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -540,7 +725,9 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9AAAB04ECAA5654D5109EE7C /* Pods-taxgoMobile-taxgoMobileTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = taxgoMobileTests/Info.plist;
@@ -559,10 +746,15 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AF3FB476024F940D88344FB0 /* Pods-taxgoMobile.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = taxgoMobile/taxgoMobile.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9XNS4Z7H7W;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = taxgoMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -573,6 +765,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = taxgoMobile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "taxgoMobile-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -581,10 +775,15 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7BF777CC33D4E0BBDFD8CD41 /* Pods-taxgoMobile.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = taxgoMobile/taxgoMobile.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9XNS4Z7H7W;
 				INFOPLIST_FILE = taxgoMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -594,6 +793,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = taxgoMobile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "taxgoMobile-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -601,6 +802,7 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2F26B5ECDB7D5E5BD7909A01 /* Pods-taxgoMobile-tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -628,6 +830,7 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6AD1E87FA7A629F7D716A450 /* Pods-taxgoMobile-tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -655,6 +858,7 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 533D63A0D06DFC43AEA68A52 /* Pods-taxgoMobile-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -681,6 +885,7 @@
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E826305C3727E77EFF643103 /* Pods-taxgoMobile-tvOSTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;

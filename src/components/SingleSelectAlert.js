@@ -6,7 +6,7 @@ export const showSingleSelectAlert = async (title, items, onSelect) => {
     if (Platform.OS === 'ios') {
         ActionSheetIOS.showActionSheetWithOptions({
             title: title,
-            options: items,
+            options: ['Cancel', ...items],
             cancelButtonIndex: 0,
             tintColor: colorAccent
         }, index => {

@@ -67,19 +67,20 @@ export const login = (navigation, body) => {
                 navigation.replace('HomeScreen');
             })
             .catch(err => {
-                if (err.response) {
-                    if (isClientError(err)) {
-                        Alert.alert('Alert', 'Incorrect Email or Password.');
-                    } else {
+                setTimeout(() => {
+                    if (err.response) {
+                        if (isClientError(err)) {
+                            Alert.alert('Alert', 'Incorrect Email or Password.');
+                        } else {
 
-                        Alert.alert('Alert', API_ERROR_MESSAGE);
+                            Alert.alert('Alert', API_ERROR_MESSAGE);
+                        }
+                    } else {
+                        Alert.alert('Alert', NO_INTERNET_ERROR);
                     }
-                } else {
-                    Alert.alert('Alert', NO_INTERNET_ERROR);
-                }
+                }, 300);
                 log('login Error', err);
                 dispatch({ type: LOGIN_FAIL });
-
             })
     }
 }
@@ -97,31 +98,7 @@ export const fetchAuthdata = () => {
 export const signUp = (props, body) => {
     return (dispatch) => {
         dispatch({ type: SIGN_UP_REQUEST });
-        return Api.post('/user/register', body)
-            .then(async (response) => {
-                Alert.alert('Alert', 'Registration is successful, Please Login to use Taxgo Services.', [{
-                    onPress: () => {
-                        props.navigation.navigate('LoginScreen');
-                    },
-                    style: 'default',
-                    text: 'OK'
-                }], { cancelable: false })
-                dispatch({ type: SIGN_UP_SUCCESS, payload: response.data });
-            })
-            .catch(err => {
-                log('Error in Signup', err);
-                dispatch({ type: SIGN_UP_FAIL });
-                if (err.response) {
-                    if (isClientError(err)) {
-                        Alert.alert('Alert', err.response.data.message);
-                    } else {
-                        Alert.alert('Alert', API_ERROR_MESSAGE);
-                    }
-                } else {
-                    Alert.alert('Alert', NO_INTERNET_ERROR);
-                }
 
-            })
     }
 }
 

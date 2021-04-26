@@ -1,5 +1,5 @@
 import React, { useEffect, Component } from 'react';
-import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Picker, Alert } from 'react-native';
+import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ImageView from '../components/ImageView';
 import AppButton from '../components/AppButton';
@@ -12,9 +12,13 @@ import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers'
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
-import { isInteger, isEmpty } from '../helpers/Utils';
+import { isInteger, isEmpty, bufferToBase64 } from '../helpers/Utils';
 import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import AppTextField from '../components/AppTextField';
+import { Picker } from '@react-native-community/picker';
+import AppPicker from '../components/AppPicker';
+import Store from '../redux/Store';
+import { Buffer } from 'buffer';
 
 class EditProfileScreen extends Component {
 
@@ -130,16 +134,14 @@ class EditProfileScreen extends Component {
         const selectedCategory = businesses[this.state.categoryIndex].btitle;
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
             <Text style={{ fontSize: 15 }}>Business Category</Text>
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
-                <Picker
-                    selectedValue={selectedCategory}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ categoryIndex: itemIndex })}>
+            <AppPicker
+                selectedValue={selectedCategory}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ categoryIndex: itemIndex })}>
 
-                    {businesses.map((value, index) => <Picker.Item
-                        label={value.btitle} value={value.btitle} key={`${index}`} />)}
-                </Picker>
-            </View>
+                {businesses.map((value, index) => <Picker.Item
+                    label={value.btitle} value={value.btitle} key={`${index}`} />)}
+            </AppPicker>
         </View>
     }
     countryPickerLabel = value => {
@@ -152,16 +154,14 @@ class EditProfileScreen extends Component {
         const selectedCountry = countries[this.state.countryIndex].currency;
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
             <Text style={{ fontSize: 15 }}>Currency</Text>
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
-                <Picker
-                    selectedValue={selectedCountry}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ countryIndex: itemIndex })}>
+            <AppPicker
+                selectedValue={selectedCountry}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ countryIndex: itemIndex })}>
 
-                    {countries.map((value, index) => <Picker.Item
-                        label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
-                </Picker>
-            </View>
+                {countries.map((value, index) => <Picker.Item
+                    label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
+            </AppPicker>
 
         </View>
     }
@@ -170,26 +170,26 @@ class EditProfileScreen extends Component {
         const selectedBType = this.state.businessType[this.state.businessTypeIndex];
         return <View style={{ flexDirection: 'column', marginTop: 20 }}>
             <Text style={{ fontSize: 15 }}>Business Type</Text>
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 6 }}>
-                <Picker
-                    selectedValue={selectedBType}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
+            <AppPicker
+                selectedValue={selectedBType}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
 
-                    {this.state.businessType.map((value, index) => <Picker.Item
-                        label={value} value={value} key={value} />)}
-                </Picker>
-            </View>
-
+                {this.state.businessType.map((value, index) => <Picker.Item
+                    label={value} value={value} key={value} />)}
+            </AppPicker>
         </View>
     }
 
     onUpdatePress = () => {
         const { profileActions } = this.props;
         const { profile } = this.props;
+        const { company, address1, address2, defaultmail, defaultTerms } = profile.profile;
         const { businessTypeIndex, businessType } = this.state;
+        const { authData } = Store.getState().auth;
         const body = {
-            ...this.props.profile.profile,
+            ...profile.profile,
+            userid: authData.id,
             firstname: getFieldValue(this.firstNameRef),
             lastname: getFieldValue(this.lastNameRef),
             email: getFieldValue(this.emailRef),
@@ -198,8 +198,14 @@ class EditProfileScreen extends Component {
             bcategory: `${profile.businesses[this.state.categoryIndex].id}`,
             country: `${profile.countries[this.state.countryIndex].id}`,
             btype: businessTypeIndex === 0 ? '' : businessType[businessTypeIndex],
-            registerno: getFieldValue(this.regNumRef)
+            registerno: getFieldValue(this.regNumRef),
+            company: Buffer.from(company).toString(),
+            address1: Buffer.from(address1).toString(),
+            address2: Buffer.from(address2).toString(),
+            defaultmail: Buffer.from(defaultmail).toString(),
+            defaultTerms: Buffer.from(defaultTerms).toString()
         };
+        console.log('Body: ', body);
         profileActions.updateProfile(body, this.onErrorEditProfile,
             this.onSuccessEditProfile);
     }

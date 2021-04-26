@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Modal, Text, ActivityIndicator } from 'react-native';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, transparentColor } from '../theme/Color';
 
 const ProgressDialog = ({ visible }) => {
     return <Modal
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)'
+        backgroundColor: transparentColor
     },
     card: {
         backgroundColor: "white",

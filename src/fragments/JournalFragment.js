@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, Component } from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform, ActionSheetIOS, FlatList, Text, Image } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Platform, ActionSheetIOS, FlatList, Text, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SearchView from '../components/SearchView';
 
@@ -92,7 +92,7 @@ class JournalFragment extends Component {
             return <EmptyView message='No Journal Available.'
                 iconName='description' />
         }
-        return <View style={{ flex: 1, backgroundColor: 'white' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
                 onChangeQuery={q => this.setState({ query: q })}
@@ -104,7 +104,7 @@ class JournalFragment extends Component {
                 renderItem={this.listItem}
                 keyExtractor={(item, index) => `${index}`}
             />
-        </View >
+        </SafeAreaView >
     }
 
 }
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
         paddingLeft: 12
     },
     rightBtn: {
-        padding: 12
+        paddingRight: 12
     },
     textStyle: {
         fontSize: 16,

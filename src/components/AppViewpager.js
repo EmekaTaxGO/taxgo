@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import ViewPager from '@react-native-community/viewpager';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { errorColor } from '../theme/Color';
 const AppViewPager = ({
     defaultTab = 0,
     pageCount,
@@ -18,7 +19,7 @@ const AppViewPager = ({
     console.log('Indexes: ', indexes);
     const viewPager = React.createRef();
     return <View style={{ flexDirection: 'column', flex: 1 }}>
-        <View style={{ height: 40, backgroundColor: 'red' }}>
+        <View style={{ height: 40, backgroundColor: errorColor }}>
             <ScrollView
                 horizontal={true}>
                 {indexes.map((value, index) => renderTab(index, selectedTab))}

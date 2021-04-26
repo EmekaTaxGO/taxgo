@@ -1,23 +1,24 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, FlatList, Text, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, FlatList, Text, Platform, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { DATE_FORMAT } from '../constants/appConstant';
+import { DATE_FORMAT, H_DATE_FORMAT } from '../constants/appConstant';
 import moment from 'moment';
 import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent, snackbarActionColor, colorWhite } from '../theme/Color';
+import { colorAccent, snackbarActionColor, colorWhite, errorColor } from '../theme/Color';
 import CardView from 'react-native-cardview';
 import Snackbar from 'react-native-snackbar';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
+import AppDatePicker from '../components/AppDatePicker';
 class AddJournalScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            date: new Date(),
+            date: moment().format(H_DATE_FORMAT),
             showDate: false,
             ledgers: this.createLedgers()
         }
@@ -50,14 +51,11 @@ class AddJournalScreen extends Component {
         })
     }
 
-    onJournalDateChanged = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.date;
+    onJournalDateChanged = (show, date) => {
         this.setState({
-            date: currentDate,
-            showDate: false
-        }, () => {
-            this.setText(this.dateRef, moment(currentDate).format(DATE_FORMAT));
-        })
+            showDate: show,
+            date: date
+        });
     }
 
     setText = (ref, value) => {
@@ -93,7 +91,7 @@ class AddJournalScreen extends Component {
             Snackbar.show({
                 text: 'Ledger Deleted.',
                 duration: Snackbar.LENGTH_LONG,
-                backgroundColor: 'red',
+                backgroundColor: errorColor,
                 action: {
                     text: 'OK',
                     textColor: colorWhite,
@@ -192,7 +190,7 @@ class AddJournalScreen extends Component {
                     }
                     {
                         showDeleteBtn ? <TouchableOpacity onPress={() => this.deleteLedger(index)} style={{ marginLeft: 6, padding: 6 }}>
-                            <MaterialCommunityIcons size={34} name='delete-circle' color='red' />
+                            <MaterialCommunityIcons size={34} name='delete-circle' color={errorColor} />
                         </TouchableOpacity> : null
                     }
 
@@ -209,24 +207,18 @@ class AddJournalScreen extends Component {
     renderHeader = () => {
         return (
             <View>
-                <TouchableOpacity onPress={() => this.setState({ showDate: true })}>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Journal Date'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        editable={false}
-                        title='*required'
-                        fieldRef={this.dateRef} />
-                </TouchableOpacity>
-                {this.state.showDate ? <DateTimePicker
-                    value={this.state.date}
-                    mode={'datetime'}
-                    display='default'
-                    minimumDate={new Date()}
+                <AppDatePicker
+                    showDialog={this.state.showDate}
+                    date={this.state.date}
+                    readFormat={H_DATE_FORMAT}
+                    displayFormat={DATE_FORMAT}
+                    containerStyle={styles.textField}
+                    textFieldProps={{
+                        label: 'Journal Date',
+                        fieldRef: this.dateRef
+                    }}
                     onChange={this.onJournalDateChanged}
-                /> : null}
+                />
                 <AppTextField
                     containerStyle={styles.textField}
                     label='Journal Number'
@@ -250,7 +242,7 @@ class AddJournalScreen extends Component {
     }
 
     render() {
-        return <View style={{ flex: 1, backgroundColor: 'white' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <FlatList
                 style={{ flex: 1 }}
                 data={this.state.ledgers}
@@ -262,12 +254,12 @@ class AddJournalScreen extends Component {
                 containerStyle={{ marginHorizontal: 16 }}
                 title='Save'
                 onPress={() => console.log('Pressed!')} />
-        </View>
+        </SafeAreaView>
     }
 }
 const styles = StyleSheet.create({
     rightBtn: {
-        padding: 12
+        paddingRight: 12
     },
     materialBtn: {
         padding: 26,
@@ -276,7 +268,8 @@ const styles = StyleSheet.create({
     card: {
         marginHorizontal: 16,
         marginVertical: 12,
-        paddingVertical: 24
+        paddingVertical: 24,
+        backgroundColor: 'white'
     },
     textField: {
         marginTop: 18,

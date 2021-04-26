@@ -8,7 +8,7 @@ import SubTitle from '../components/item/SubTitle';
 import Title from '../components/item/Title';
 import { appFont, appFontBold } from '../helpers/ViewHelper';
 import Store from '../redux/Store';
-import { rColor } from '../theme/Color';
+import { errorColor, rColor, successColor } from '../theme/Color';
 class ProductListItem extends Component {
 
     DATE_FORMAT = 'YYYY-MM-DD';
@@ -38,7 +38,7 @@ class ProductListItem extends Component {
         const indexColor = rColor[index % rColor.length];
         const costPrice = toNumber(item.costprice).toFixed(2);
         const hasStock = toNumber(item.stock) > 0;
-        const stockColor = hasStock ? '#099903' : 'red';
+        const stockColor = hasStock ? successColor : errorColor;
         const stockText = item.itemtype.toUpperCase() === 'STOCK' ?
             `Stock: ${toNumber(item.stock)}` : '';
         return (
@@ -75,7 +75,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginVertical: 12,
         paddingHorizontal: 12,
-        paddingVertical: 8
+        paddingVertical: 8,
+        backgroundColor: 'white'
     },
     itemContainer: {
         flexDirection: 'row'

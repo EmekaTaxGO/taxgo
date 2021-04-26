@@ -103,7 +103,7 @@ class MyLedgerTabItem extends Component {
     renderHiddenItem = (item) => {
         return <View style={{ flexDirection: 'row' }}>
             <View style={{ flex: 1 }}>
-                {this.hiddenElement('View', 'visibility', 'red', () => this.onViewClick(item))}
+                {this.hiddenElement('View', 'visibility', color.errorColor, () => this.onViewClick(item))}
             </View>
             {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(item))}
         </View>

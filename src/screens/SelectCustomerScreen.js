@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Text, SafeAreaView } from 'react-native';
 import { connect } from 'react-redux';
 
 import * as contactActions from '../redux/actions/contactActions';
@@ -9,9 +9,11 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 import { FlatList } from 'react-native-gesture-handler';
-import { isEmpty } from '../helpers/Utils';
 import ImageView from '../components/ImageView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { rColor } from '../theme/Color';
+import { get, isEmpty } from 'lodash';
+import ContactAvatarItem from '../components/ContactAvatarItem';
 
 class SelectCustomerScreen extends Component {
 
@@ -37,7 +39,7 @@ class SelectCustomerScreen extends Component {
     configHeader = () => {
         this.props.navigation.setOptions({
             headerRight: () => {
-                return <TouchableOpacity onPress={this.onAddClick} style={{ padding: 12 }}>
+                return <TouchableOpacity onPress={this.onAddClick} style={{ paddingRight: 12 }}>
                     <Icon name='add' size={30} color='white' />
                 </TouchableOpacity>
             }
@@ -68,32 +70,24 @@ class SelectCustomerScreen extends Component {
         return filteredCustomers;
     }
 
-    renderList = (item) => {
-        return <TouchableOpacity
-            onPress={() => {
-                this.props.route.params.onCustomerSelected(item);
-                this.props.navigation.goBack();
-            }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <ImageView
-                    placeholder={require('../assets/product.png')}
-                    url={''}
-                    style={styles.image}
-                />
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    marginLeft: 12,
-                    borderBottomColor: 'lightgray',
-                    borderBottomWidth: 1,
-                    paddingVertical: 18
-                }}>
-                    <Text style={{ color: 'black', fontSize: 16 }}>{item.name}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>{item.email}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
+    renderList = ({ item, index }) => {
+        const cIdx = index % rColor.length;
+        const color = rColor[cIdx];
+        let nameChar = get(item, 'name', '-');
+        nameChar = isEmpty(nameChar) ? '-' : nameChar.charAt(0);
+        return (
+            <ContactAvatarItem
+                title={item.name}
+                subtitle={item.email}
+                color={color}
+                text={nameChar}
+                clickable={true}
+                onPress={() => {
+                    this.props.route.params.onCustomerSelected(item);
+                    this.props.navigation.goBack();
+                }}
+            />
+        )
     }
 
     render() {
@@ -107,7 +101,7 @@ class SelectCustomerScreen extends Component {
         if (contact.customerList.length === 0) {
             return <EmptyView message='No Customer found' iconName='location-city' />
         }
-        return <View style={{ flex: 1, backgroundColor: 'white' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <SearchView
                 value={this.state.query}
                 onChangeQuery={this.onSearchQueryChange}
@@ -116,9 +110,9 @@ class SelectCustomerScreen extends Component {
             <FlatList
                 data={this.listData()}
                 keyExtractor={item => `${item.id}`}
-                renderItem={({ item }) => this.renderList(item)}
+                renderItem={this.renderList}
             />
-        </View>
+        </SafeAreaView>
     }
 }
 const styles = StyleSheet.create({

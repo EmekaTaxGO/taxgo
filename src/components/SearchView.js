@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import CardView from 'react-native-cardview';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
@@ -28,6 +28,7 @@ const SearchView = ({
             <AntIcon name='search1' size={24} />
             <TextInput
                 value={value}
+                autoCorrect={false}
                 keyboardType='default'
                 placeholder={placeholder}
                 onChangeText={text => onChangeQuery(text)}
@@ -45,7 +46,9 @@ const styles = StyleSheet.create({
     card: {
         marginHorizontal: 8,
         marginVertical: 12,
-        paddingHorizontal: 12
+        paddingHorizontal: 12,
+        backgroundColor: 'white',
+        paddingVertical: Platform.select({ ios: 12, android: 0 })
     }
 });
 export default SearchView;

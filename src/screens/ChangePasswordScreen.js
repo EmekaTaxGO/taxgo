@@ -34,7 +34,7 @@ class ChangePasswordScreen extends Component {
         LogBox.ignoreAllLogs(true);
         setTimeout(() => {
             this.oldPassRef.current.focus();
-        }, 200);
+        }, 500);
     }
 
     hasAnyError = () => {
@@ -150,7 +150,8 @@ class ChangePasswordScreen extends Component {
 }
 const styles = StyleSheet.create({
     card: {
-        margin: 12
+        margin: 12,
+        backgroundColor: 'white'
     },
     updateBtn: {
         padding: 24,

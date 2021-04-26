@@ -39,18 +39,22 @@ class SelectLedgerScreen extends Component {
     listItem = (item) => {
         const label = `${item.category}-${item.categorygroup}`;
         return <TouchableOpacity onPress={() => { this.onItemClicked(item) }}>
-            <Text style={{
-                flex: 1,
+            <View style={{
                 borderBottomWidth: 1,
-                borderColor: 'lightgray',
+                borderBottomColor: 'lightgray',
                 marginLeft: 16,
                 paddingRight: 16,
                 paddingVertical: 18,
                 fontSize: 16,
-                color: 'gray'
             }}>
-                {label}
-            </Text>
+                <Text style={{
+                    flex: 1,
+                    color: 'gray'
+                }}>
+                    {label}
+                </Text>
+            </View>
+
         </TouchableOpacity>
     }
 

@@ -24,7 +24,7 @@ import * as authActions from '../redux/actions/authActions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReportStack from '../components/drawerStack/ReportStack';
-import { appFont } from '../helpers/ViewHelper';
+import { appFont, appFontBold } from '../helpers/ViewHelper';
 
 class HomeScreen extends Component {
 
@@ -45,7 +45,6 @@ class HomeScreen extends Component {
         return <Drawer.Navigator
             initialRouteName='HomeFragment'
             drawerType={this.dimension.width > 760 ? 'permanent' : 'front'}
-            overlayColor='transparent'
             drawerPosition='left'
             drawerStyle={{ backgroundColor: 'white', width: InitialRender ? 0 : this.drawerWidth }}
             drawerContent={DrawerContent}
@@ -61,10 +60,6 @@ class HomeScreen extends Component {
                 }
             }}
             screenOptions={{
-                // headerStyle: { backgroundColor: colorPrimary },
-                // headerTintColor: colorWhite,
-                // headerTitleStyle: { fontWeight: '400' }
-
             }}>
 
             <Drawer.Screen name='Dashboard'
@@ -131,12 +126,13 @@ class HomeScreen extends Component {
                     title: 'Report', drawerIcon: ({ color }) =>
                         <MaterialCommunityIcon name='file-document-edit-outline' size={DRAWER_ICON_SIZE} color={color} />
                 }} />
-            <Drawer.Screen name='UserFragment'
+
+            {/* <Drawer.Screen name='UserFragment'
                 component={UserStack}
                 options={{
                     title: 'Users/Employees', drawerIcon: ({ color }) =>
                         <EntypoIcon name='users' size={DRAWER_ICON_SIZE} color={color} />
-                }} />
+                }} /> */}
 
         </Drawer.Navigator>
     }

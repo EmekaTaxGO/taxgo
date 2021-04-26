@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, StyleSheet, FlatList, Text, TouchableHighlight } from 'react-native';
-import SearchView from '../components/SearchView';
+import { View, TouchableOpacity, StyleSheet, FlatList, Text, TouchableHighlight, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CardView from 'react-native-cardview';
@@ -63,7 +62,7 @@ class BankFragment extends Component {
         return <Menu
             ref={this._menuRef}
             button={
-                <TouchableOpacity style={{ padding: 12 }} onPress={this.showMenu}>
+                <TouchableOpacity style={{ paddingRight: 12 }} onPress={this.showMenu}>
                     <Icon name='more-vert' size={30} color='white' />
                 </TouchableOpacity>
             }>
@@ -248,7 +247,7 @@ class BankFragment extends Component {
         if (bank.bankList.length === 0) {
             return <EmptyView message='No Bank Account Found' iconName='house' />
         }
-        return <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column' }}>
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white', flexDirection: 'column' }}>
             <SwipeListView
                 style={{
                     flex: 1,
@@ -261,7 +260,7 @@ class BankFragment extends Component {
                 leftOpenValue={70}
                 rightOpenValue={-70}
             />
-        </View>
+        </SafeAreaView>
     }
 }
 const styles = StyleSheet.create({
@@ -269,7 +268,7 @@ const styles = StyleSheet.create({
         paddingLeft: 12
     },
     rightBtn: {
-        padding: 12
+        paddingRight: 12
     },
     bankCard: {
         marginHorizontal: 16,

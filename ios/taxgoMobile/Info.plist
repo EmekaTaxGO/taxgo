@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>taxgoMobile</string>
+	<string>Tax Go</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -55,6 +55,8 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera Permission is required for this action</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone Permission is required for this action</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Nunito-Bold.ttf</string>
@@ -76,5 +78,25 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
 	</array>
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+  <key>CFBundleURLSchemes</key>
+  <array>
+    <string>fb2209420276004281</string>
+  </array>
+  </dict>
+</array>
+<key>FacebookAppID</key>
+<string>2209420276004281</string>
+<key>FacebookDisplayName</key>
+<string>Tax go</string>
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>itms-apps</string>
+</array>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Permission required to access Photo Library</string>
+
 </dict>
 </plist>

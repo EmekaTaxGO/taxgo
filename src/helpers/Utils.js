@@ -1,9 +1,12 @@
 import { Linking } from "react-native"
-import { colorAccent, colorWhite } from "../theme/Color";
+import { colorAccent, colorWhite, errorColor } from "../theme/Color";
 import { exp } from "react-native-reanimated";
 import _default from "react-native-image-picker";
 import Snackbar from "react-native-snackbar";
 import { NO_INTERNET_ERROR, API_ERROR_MESSAGE } from "../constants/appConstant";
+import { RNS3 } from "react-native-aws3";
+import Api from '../services/api';
+import { isNaN } from "lodash";
 
 export const openLink = (navigation, title, url) => {
     navigation.push('WebViewScreen', {
@@ -52,6 +55,19 @@ export const toFloat = (text, _default = 0.0) => {
         return _default;
     }
 }
+
+export const toNum = (text, _default = 0.0) => {
+
+    const value = Number(text);
+    if (isNaN(value)) {
+        return _default;
+    } else {
+        return value;
+    }
+
+}
+
+
 
 export const EMAIL_ERROR_MESSAGE = 'Please enter valid email.';
 export const validateEmail = email => {
@@ -109,11 +125,11 @@ export const getApiErrorMsg = err => {
     }
 }
 
-export const showError = (message) => {
+export const showError = (message, duration = Snackbar.LENGTH_LONG) => {
     Snackbar.show({
         text: message,
-        duration: Snackbar.LENGTH_LONG,
-        backgroundColor: 'red',
+        duration: duration,
+        backgroundColor: errorColor,
         action: {
             text: 'OK',
             textColor: colorWhite,
@@ -134,6 +150,32 @@ export const showSuccess = (message) => {
         }
     });
 }
+export const uploadFile = async (file) => {
+
+    // const file = {
+    //     uri: "assets-library://asset/asset.PNG?id=655DBE66-8008-459C-9358-914E1FB532DD&ext=PNG",
+    //     name: "image.png",
+    //     type: "image/png"
+    //   }
+
+    const options = {
+        keyPrefix: 'taxgo/',
+        bucket: 'taxgo',
+        region: 'eu-west-1',
+        accessKey: 'AKIAJQ4WHCJWNXIVKRTQ',
+        secretKey: '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',
+        successActionStatus: 201,
+        awsUrl: 's3-eu-west-1.amazonaws.com'
+    }
+    return RNS3.put(file, options).then(response => {
+        console.log('S# Response: ', response);
+        if (response.status !== 201)
+            throw new Error("Failed to upload image to S3");
+        console.log('Response from S3: ', JSON.stringify(response.body, null, 2));
+        return response.body;
+    });
+}
+
 
 export const DEFAULT_PICKER_OPTIONS = {
     mediaType: 'photo',

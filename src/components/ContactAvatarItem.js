@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import React, { Component } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { appFontBold } from '../helpers/ViewHelper';
 import AppText from './AppText';
 import ContactAvatar from './ContactAvatar';
@@ -17,9 +17,14 @@ class ContactAvatarItem extends Component {
     render() {
         const color = get(this.props, 'color', '#000000');
         const text = get(this.props, 'text', '');
-        const { title, subtitle, description } = this.props;
+        const clickable = get(this.props, 'clickable', false);
+        const { title, subtitle, description, onPress } = this.props;
         return (
-            <View style={styles.container}>
+            <TouchableOpacity
+                style={styles.container}
+                onPress={onPress}
+                disabled={!clickable}
+            >
                 <ContactAvatar
                     color={color}
                     text={text}
@@ -29,7 +34,7 @@ class ContactAvatarItem extends Component {
                     {subtitle ? <SubTitle style={styles.subtitle}>{subtitle}</SubTitle> : null}
                     {description ? <AppText style={styles.description}>{description}</AppText> : null}
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 }

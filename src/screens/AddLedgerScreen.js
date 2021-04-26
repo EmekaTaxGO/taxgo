@@ -15,6 +15,7 @@ import * as ledgerActions from '../redux/actions/ledgerActions';
 import { bindActionCreators } from 'redux';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
+import { get } from 'lodash';
 
 
 class AddLedgerScreen extends Component {
@@ -42,8 +43,8 @@ class AddLedgerScreen extends Component {
     }
 
     setFieldsValue = () => {
-        const { ledger } = this.props.route.params;
-        if (ledger !== null) {
+        const ledger = get(this.props.route.params, 'ledger');
+        if (ledger) {
             setFieldValue(this.ledgerAccRef, ledger.laccount);
             setFieldValue(this.categoryRef, ledger.category);
             setFieldValue(this.catGroupRef, ledger.categorygroup);
@@ -82,8 +83,8 @@ class AddLedgerScreen extends Component {
     }
 
     isEditMode = () => {
-        const { ledger } = this.props.route.params;
-        return ledger !== null;
+        const ledger = get(this.props.route.params, 'ledger');
+        return ledger !== undefined;
     }
 
     updateLedger = () => {
@@ -145,7 +146,7 @@ class AddLedgerScreen extends Component {
                         lineWidth={1}
                         errorColor='green'
                         title='*Required'
-                        titleTextStyle={{ color: 'red', textDecorationColor: 'black', textShadowColor: 'black' }}
+                        titleTextStyle={{ color: errorColor, textDecorationColor: 'black', textShadowColor: 'black' }}
                         fieldRef={this.ledgerAccRef}
                         onSubmitEditing={() => this.codeRef.current.focus()} />
                     <AppTextField

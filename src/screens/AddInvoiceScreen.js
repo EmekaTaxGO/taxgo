@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, FlatList, Switch } from 'react-native';
+import { StyleSheet, View, Text, KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, FlatList, Switch } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import { tabSelectedColor, colorPrimary, colorAccent, colorWhite, snackbarActionColor } from '../theme/Color'
+import { colorAccent, colorWhite, errorColor, snackbarActionColor, successColor } from '../theme/Color'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import { DATE_FORMAT } from '../constants/appConstant';
+import { DATE_FORMAT, H_DATE_FORMAT } from '../constants/appConstant';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
-import { isFloat, isInteger, toInteger, toFloat } from '../helpers/Utils';
+import { isFloat, isInteger, toInteger, toFloat, getApiErrorMsg, toNum, showError, showSuccess } from '../helpers/Utils';
 
 import * as invoiceActions from '../redux/actions/invoiceActions';
 import * as taxActions from '../redux/actions/taxActions';
@@ -21,11 +19,20 @@ import AppTab from '../components/AppTab';
 import { log } from '../components/Logger'
 import Snackbar from 'react-native-snackbar';
 import { CreditCardInput } from 'react-native-credit-card-input';
-import CardView from 'react-native-cardview';
 import Store from '../redux/Store';
 import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
 import { Picker } from '@react-native-community/picker';
+import timeHelper from '../helpers/TimeHelper';
+import AppDatePicker from '../components/AppDatePicker';
+import { showSingleSelectAlert } from '../components/SingleSelectAlert';
+import InvoiceBottomCard from '../components/invoices/InvoiceBottomCard';
+import InvoiceBreakdown from '../components/invoices/InvoiceBreakdown';
+import { get, isEmpty, isNaN } from 'lodash';
+import Api from '../services/api';
+import ProgressDialog from '../components/ProgressDialog';
+import AppText from '../components/AppText';
+import { appFontBold } from '../helpers/ViewHelper';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -33,44 +40,44 @@ class AddInvoiceScreen extends Component {
         this.state = {
             selectedTab: 'supplier',
             showInvDatePicker: false,
-            invDate: undefined,
-
+            fetching: true,
+            updating: false,
+            fetchError: undefined,
+            taxList: [],
+            invDate: this.getInvoiceDate(),
             showDueDatePicker: false,
-            dueDate: undefined,
-
-            issuedcats: ['Issued', 'Yes', 'No'],
-            selectedIssuedCatIndex: 1,
-
+            dueDate: this.getDueDate(),
+            showBreakdown: false,
+            issuedcats: ['Yes', 'No'],
+            issued: 'Yes',
+            customer: undefined,
+            bank: undefined,
+            subTotal: 0.0,
+            totalVat: 0.0,
+            totalDiscount: 0.0,
+            payable: 0.0,
+            invoiceno: '',
             invoiceAddress: '',
             deliveryAddress: '',
             termsCondition: '',
             notes: '',
-            products: [{
-                product_name: '',
-                ledger_account: '',
-                rate: '',
-                quantity: '',
-                vat: '0',
-                includevat: 0,
-                taxIndex: 0,
-                price: '',
-                itemtype: '',
-                priceIndex: 0,
-                discount_per: 0
-            }],
+            total: 0,
+            columns: [this.getPlaceholderColumn()],
             paymentIndex: 2,
             paymentMode: ['Select Payment', 'Live Payment', 'Record payment'],
             payDate: new Date(),
             showPayDateDialog: false,
             payMethod: ['Select Method', 'Cash', 'Current', 'Electronic', 'Credit/Debit Card', 'Paypal'],
-            payMethodIndex: 0
+            payMethodIndex: 0,
+            currency: get(Store.getState().auth, 'profile.countryInfo.symbol'),
+            isSale: this.isSalesInvoice(props),
+            creditNote: this.isCreditNote(props),
+            editMode: this.isEditMode(props)
         }
     }
-    _customer = '';
-    _invoiceAddress = '';
-    _bank = null;
     _reference = ''
 
+    invoiceNumRef = React.createRef();
     customerRef = React.createRef();
     invoiceDateRef = React.createRef();
     dueDateRef = React.createRef();
@@ -94,36 +101,113 @@ class AddInvoiceScreen extends Component {
 
     componentDidMount() {
         const { info } = this.props.route.params;
-        const { taxActions } = this.props;
-        // taxActions.getTaxList();
-    }
-    componentWillMount() {
-        const invDate = moment();
-        const dueDate = moment().add(1, 'M').subtract(1, 'd');
-        this.setState({
-            invDate: invDate.toDate(),
-            dueDate: dueDate.toDate()
-        });
+        console.log('Info: ', JSON.stringify(info, null, 2));
+        this.fetchInfo();
     }
 
-    isEditMode = () => {
-        return this.props.route.params.info.mode === 'update';
+    getInvoiceTag = () => {
+
     }
-    isCreditNote = () => {
-        return this.props.route.params.info.credit_note === true;
+
+    getPlaceholderColumn = () => {
+        return {
+            id: "",
+            description: "",
+            quantity: '',
+            saccount: "",
+            includevat: false,
+            vatrate: 0,
+            vatamt: 0.0,
+            vatrate: 0,
+            discount: 0.0,
+            incomeTax: 0,
+            costprice: 0.0,
+            incomeTaxAmount: 0.0,
+            total: 0.0,
+            itemtype: "Stock",
+            ledger: undefined,
+            product: {
+                idescription: "",
+                vat: 0.0,
+                vatamt: 0.0,
+                total: 0,
+                itemtype: "Stock",
+                includevat: false,
+                quantity: 1,
+                saccount: "",
+            },
+            options: false
+        }
     }
-    isSalesInvoice = () => {
-        const type = this.props.route.params.info.invoice_type;
-        return type === 'sales';
+
+    getInvoiceNoURL = () => {
+        const { id } = Store.getState().auth.authData;
+        const creditNote = this.state.creditNote;
+        if (this.state.isSale) {
+            return creditNote
+                ? `sales/getInvoiceNo/${id}/scredit`
+                : `sales/getInvoiceNo/${id}/sales`;
+        } else {
+            return creditNote ? `sales/getInvoiceNo/${id}/pcredit`
+                : `/sales/getInvoiceNo/${id}/purchase`;
+        }
+    }
+
+    fetchInfo = () => {
+        this.setState({
+            fetching: true,
+            fetchError: undefined
+        });
+        const { authData } = Store.getState().auth;
+
+        Promise.all([
+            Api.get(`/default/taxList/${authData.country}`),
+            Api.get(this.getInvoiceNoURL())
+        ])
+            .then(results => {
+                this.setState({
+                    fetching: false,
+                    taxList: results[0].data.data,
+                    invoiceno: results[1].data.data
+                });
+            })
+            .catch(err => {
+                console.log('Error fetching TaxList: ', err);
+                this.setState({
+                    fetching: false,
+                    fetchError: getApiErrorMsg(err)
+                });
+            })
+    }
+
+
+
+    getInvoiceDate = () => {
+        return timeHelper.format(moment(), H_DATE_FORMAT);
+    }
+
+    getDueDate = () => {
+        const dueDate = moment().add(1, 'M').subtract(1, 'd');
+        return timeHelper.format(dueDate, H_DATE_FORMAT);
+    }
+
+    isEditMode = (props) => {
+        return props.route.params.info.mode === 'update';
+    }
+    isCreditNote = (props) => {
+        const type = props.route.params.info.invoice_type;
+        return type === 'scredit' || type === 'pcredit';
+    }
+
+    isSalesInvoice = (props) => {
+        const type = props.route.params.info.invoice_type;
+        return type === 'sales' || type === 'scredit';
     }
 
     selectTab = (tabName) => {
         this.setState({ selectedTab: tabName });
     }
 
-    formattedDate = date => {
-        return date ? moment(date).format(DATE_FORMAT) : '';
-    }
 
     productPrice = (listIndex) => {
         const item = this.state.products[listIndex];
@@ -152,38 +236,10 @@ class AddInvoiceScreen extends Component {
         }
     }
 
-    getTaxAmount = listIndex => {
-        const item = this.state.products[listIndex];
-        const includeVat = item.includevat === 1;
-        const price = this.productPrice(listIndex);
-        const taxPercentage = this.vatPercentage(listIndex);
-        let taxAmt = 0.0;
-        if (includeVat) {
-            const principal = (price * 100) / (100 + taxPercentage);
-            taxAmt = price - principal;
-        } else {
-            taxAmt = (taxPercentage * price) / 100;
-        }
-        taxAmt = toFloat(taxAmt.toFixed(2));
-        return taxAmt;
-    }
-
-    getTaxList = () => {
-        const taxes = ['Select Tax Rates'];
-        this.props.tax.taxList.forEach((value) => {
-            taxes.push(`${value.taxtype}-${value.percentage}%`);
-        })
-        return taxes;
-    }
-
-
-    onInvDateChanged = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.invDate;
+    onInvDateChanged = (show, date) => {
         this.setState({
-            invDate: currentDate,
-            showInvDatePicker: false
-        }, () => {
-            setFieldValue(this.invoiceDateRef, this.formattedDate(currentDate));
+            showInvDatePicker: show,
+            invDate: date
         });
     }
     onPayDateChange = (event, selectedDate) => {
@@ -192,47 +248,47 @@ class AddInvoiceScreen extends Component {
             payDate: currentDate,
             showPayDateDialog: false
         }, () => {
-            setFieldValue(this.payDateRef, this.formattedDate(currentDate));
+            setFieldValue(this.payDateRef, timeHelper.format(currentDate));
         });
     }
 
-    onDueDateChanged = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.dueDate;
+    onDueDateChanged = (show, date) => {
         this.setState({
-            dueDate: currentDate,
-            showDueDatePicker: false
-        }, () => {
-            setFieldValue(this.dueDateRef, this.formattedDate(currentDate));
+            showDueDatePicker: show,
+            dueDate: date
         });
     }
 
     onCustomerPress = () => {
-        const screen = this.isSalesInvoice() ? 'SelectCustomerScreen' : 'SelectSupplierScreen';
+        const screen = this.state.isSale ? 'SelectCustomerScreen' : 'SelectSupplierScreen';
         let address = null;
         this.props.navigation.push(screen, {
             onCustomerSelected: item => {
                 address = `${item.address}\n${item.town}\n${item.post_code}`;
                 this.setState({
                     invoiceAddress: address,
-                    deliveryAddress: address
+                    deliveryAddress: address,
+                    customer: item
                 }, () => {
                     setFieldValue(this.customerRef, item.name);
-                    this._customer = item.name;
                 })
             },
             onSupplierSelected: item => {
-                this.setState({ notes: item.notes }, () => {
+                address = `${item.address}\n${item.town}\n${item.post_code}`;
+                this.setState({
+                    invoiceAddress: address,
+                    deliveryAddress: address,
+                    notes: item.notes,
+                    customer: item
+                }, () => {
                     setFieldValue(this.customerRef, item.name);
-                    this._customer = item.name;
                 })
             }
         });
     }
 
     renderSupplierContainer = () => {
-
-        const issuedCat = this.state.issuedcats[this.state.selectedIssuedCatIndex];
-        const isSaleInvoice = this.isSalesInvoice();
+        const isSaleInvoice = this.state.isSale;
         return <ScrollView style={{
             flex: 1,
             flexDirection: 'column'
@@ -241,70 +297,61 @@ class AddInvoiceScreen extends Component {
                 <TouchableOpacity onPress={this.onCustomerPress}>
                     <AppTextField
                         containerStyle={styles.textField}
+                        label='Invoice No.'
+                        keyboardType='default'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        fieldRef={this.invoiceNumRef}
+                        value={this.state.invoiceno} />
+                    <AppTextField
+                        containerStyle={styles.textField}
                         label={isSaleInvoice ? 'Customer' : 'Supplier'}
                         keyboardType='default'
                         returnKeyType='done'
                         lineWidth={1}
                         fieldRef={this.customerRef}
-                        value={this._customer}
+                        value={get(this.state.customer, 'name', '')}
                         editable={false}
                         onSubmitEditing={() => { }} />
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.setState({ showInvDatePicker: true })}>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Invoice Date'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        editable={false}
-                        lineWidth={1}
-                        fieldRef={this.invoiceDateRef}
-                        value={this.formattedDate(this.state.invDate)}
-                        onSubmitEditing={() => { }} />
-                </TouchableOpacity>
-                {this.state.showInvDatePicker ? <DateTimePicker
-                    value={this.state.invDate ? this.state.invDate : new Date()}
-                    mode={'datetime'}
-                    display='default'
-                    maximumDate={new Date()}
+                <AppDatePicker
+                    showDialog={this.state.showInvDatePicker}
+                    date={this.state.invDate}
+                    containerStyle={styles.textField}
+                    textFieldProps={{
+                        label: 'Invoice Date',
+                        fieldRef: this.invoiceDateRef
+                    }}
+                    displayFormat={DATE_FORMAT}
                     onChange={this.onInvDateChanged}
-                /> : null}
+                />
 
-                {/* Due Date */}
-                <TouchableOpacity onPress={() => this.setState({ showDueDatePicker: true })}>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Due Date'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        editable={false}
-                        lineWidth={1}
-                        fieldRef={this.dueDateRef}
-                        value={this.formattedDate(this.state.dueDate)}
-                        onSubmitEditing={() => { }} />
-                </TouchableOpacity>
-                {this.state.showDueDatePicker ? <DateTimePicker
-                    value={this.state.dueDate ? this.state.dueDate : new Date()}
-                    mode={'datetime'}
-                    display='default'
-                    maximumDate={new Date()}
+                <AppDatePicker
+                    showDialog={this.state.showDueDatePicker}
+                    date={this.state.dueDate}
+                    containerStyle={styles.textField}
+                    textFieldProps={{
+                        label: 'Due Date',
+                        fieldRef: this.dueDateRef
+                    }}
+                    displayFormat={DATE_FORMAT}
                     onChange={this.onDueDateChanged}
-                /> : null}
+                />
             </View>
             {isSaleInvoice ? <View style={{ flexDirection: 'column' }}>
                 <Text style={{
                     color: 'gray',
-                    fontSize: 16,
+                    fontSize: 18,
                     paddingLeft: 16,
                     paddingTop: 20
-                }}>Status</Text>
+                }}>Issued</Text>
 
                 <AppPicker
                     style={styles.picker}
-                    selectedValue={issuedCat}
+                    selectedValue={this.state.issued}
                     mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedIssuedCatIndex: itemIndex })}>
+                    onValueChange={(itemValue, itemIndex) => this.setState({ issued: itemValue })}>
                     {this.state.issuedcats.map((value, index) => <Picker.Item
                         label={value} value={value} key={`${index}`} />)}
                 </AppPicker>
@@ -342,169 +389,124 @@ class AddInvoiceScreen extends Component {
                     value={this.state.termsCondition}
                     onChangeText={text => this.setState({ termsCondition: text })}
                 />
+                <Text style={[styles.textAreaLabel, { marginTop: 40 }]}>{'Invoice Notes'}</Text>
+                <TextInput
+                    style={[styles.textAreaStyle, { marginTop: 12 }]}
+                    multiline={true}
+                    numberOfLines={3}
+                    value={this.state.notes}
+                    onChangeText={text => this.setState({ notes: text })}
+                />
             </View> : null}
+            {!this.state.isSale ? this.renderReceiptFile() : null}
         </ScrollView>
+    }
+
+    renderReceiptFile = () => {
+        return (
+            <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
+                <Text style={[styles.textAreaLabel, { marginTop: 20 }]}>{'Invoice Notes'}</Text>
+                <TextInput
+                    style={[styles.textAreaStyle, { marginTop: 12 }]}
+                    multiline={true}
+                    numberOfLines={3}
+                    value={this.state.notes}
+                    onChangeText={text => this.setState({ notes: text })}
+                />
+            </View>
+        )
     }
 
     onProductNamePress = (index) => {
         this.props.navigation.push('SelectProductScreen', {
             onProductSelected: item => {
-                let taxIndex = 0;
-                const { taxList } = this.props.tax;
-                taxList.forEach((value, index) => {
-                    if (toFloat(item.vat) === value.percentage) {
-                        taxIndex = 1 + index;
-                    }
-                });
-
-                const newProduct = {
-                    ...this.state.products[index],
-                    ...item,
-                    label: `${item.icode}-${item.idescription}`,
-                    taxIndex: taxIndex,
-                    price: item.itemtype === 'Stock' ? item.sp_price : item.rate,
-                    priceIndex: 0
+                const { columns } = this.state;
+                const product = {
+                    ...item
                 };
+                const costprice = Number(item.itemtype === 'Stock' ? item.sp_price : rate);
+                const vat = Number(item.vat);
+                const quantity = 1;
+                const includevat = false;
 
-                const newProducts = [...this.state.products];
-                newProducts.splice(index, 1, newProduct);
-                this.setState({ products: newProducts });
+                const column = {
+                    product,
+                    costprice: costprice.toString(),
+                    quantity: quantity.toString(),
+                    vatrate: vat.toFixed(2),
+                    incomeTax: vat.toFixed(2),
+                    description: item.idescription,
+                    itemtype: item.itemtype,
+                    includevat
+                };
+                const newColumns = [...columns];
+                newColumns.splice(index, 1, column);
+                this.setState({ columns: newColumns });
+
+                setTimeout(() => this.onItemChange(index), 200);
             }
         })
     }
 
-    onLedgerPress = (index) => {
-        this.props.navigation.push('SaleLedgerScreen', {
+    onLedgerPress = (index, isSale) => {
+        const componentId = isSale ? 'SaleLedgerScreen' : 'PurchaseLedgerScreen';
+        this.props.navigation.push(componentId, {
             onLedgerSelected: item => {
-                const newProduct = {
-                    ...this.state.products[index],
-                    ...item,
-                    ledger: `${item.nominalcode}-${item.laccount}`
-                };
-
-                const newProducts = [...this.state.products];
-                newProducts.splice(index, 1, newProduct);
-                this.setState({ products: newProducts });
+                const newColumn = {
+                    ...this.state.columns[index],
+                    ledger: item
+                }
+                const newColumns = [...this.state.columns];
+                newColumns.splice(index, 1, newColumn);
+                this.setState({ columns: newColumns });
             }
         })
     }
 
-    refreshPrice = () => {
-        const newProduct = {
-            ...this.state.products[index],
-            sp_price: text
-        };
-
-        const newProducts = [...this.state.products];
-        newProducts.splice(index, 1, newProduct);
-        this.setState({ products: newProducts });
-    }
-
-    onPriceChange = (text, index) => {
-        const newProduct = {
-            ...this.state.products[index],
-            price: text
-        };
-
-        const newProducts = [...this.state.products];
-        newProducts.splice(index, 1, newProduct);
-        this.setState({ products: newProducts });
-    }
-
-    onDiscountChange = (text, index) => {
-        const newProduct = {
-            ...this.state.products[index],
-            discount_per: text
-        };
-
-        const newProducts = [...this.state.products];
-        newProducts.splice(index, 1, newProduct);
-        this.setState({ products: newProducts });
-    }
-    discountPercentage = (listIndex) => {
-        const item = this.state.products[listIndex];
-        if (isFloat(item.discount_per)) {
-            return toFloat(toFloat(item.discount_per).toFixed(2));
+    getLedgerLabel = (index) => {
+        const ledger = get(this.state.columns[index], 'ledger');
+        if (ledger) {
+            return `${ledger.nominalcode}-${ledger.laccount}`;
         } else {
-            return 0;
+            return '';
         }
     }
 
-    // Total Discount Amount for a Specific Invoice
-    discountAmount = (listIndex) => {
-        const item = this.state.products[listIndex];
-        const includeVat = item.includevat === 1;
-        let price = this.productPrice(listIndex);
-        const discountPer = this.discountPercentage(listIndex);
-        const quantity = this.productQuantity(listIndex);
-        let discount;
-        if (!includeVat) {
-            price = price + this.getTaxAmount(listIndex);
+    handleColumnChange = (text, prop, idx) => {
+        let columns = this.state.columns;
+        columns[idx][prop] = text
+        this.setState({
+            columns
+        });
+
+        setTimeout(() => {
+            this.onItemChange(idx);
+        }, 100);
+    };
+
+
+    getProductName = (column) => {
+        const product = get(column, 'product', {});
+        if (isEmpty(product.icode)) {
+            return '';
         }
-        discount = (discountPer * price) / 100;
-        return toFloat((discount * quantity).toFixed(2));
+        else {
+            return `${product.icode}-${product.idescription}`;
+        }
     }
 
-    // Total Amount for Invoice Item 
-    totalAmount = (listIndex) => {
-        const item = this.state.products[listIndex];
-        const includeVat = item.includevat === 1;
-        let price = this.productPrice(listIndex);
-        const quantity = this.productQuantity(listIndex);
-        if (!includeVat) {
-            price = price + this.getTaxAmount(listIndex);
-        }
-        let totalAmt = (price * quantity) + this.discountAmount(listIndex);
-        return toFloat(totalAmt.toFixed(2));
-    }
-
-    onQuantityChange = (text, index) => {
-        const newProduct = {
-            ...this.state.products[index],
-            quantity: text
+    onChangeDescription = (index, text) => {
+        const newColumn = {
+            ...this.state.columns[index],
+            description: text
         };
-
-        const newProducts = [...this.state.products];
-        newProducts.splice(index, 1, newProduct);
-        this.setState({ products: newProducts });
+        const newColumns = [...this.state.columns];
+        newColumns.splice(index, 1, newColumn);
+        this.setState({ columns: newColumns });
     }
-
-    renderPriceDropdown = (item, index) => {
-        const priceList = [
-            `Sale Price(${item.sp_price})`,
-            `Trade Price(${item.trade_price})`,
-            `Whole Sale(${item.wholesale})`
-        ];
-        return item.itemtype === 'Stock' ? <View style={{ flexDirection: 'column' }}>
-            <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 16
-            }}>
-                <Text style={[styles.subtitle, { flex: 1 }]}>Select Price</Text>
-                <Picker
-                    style={{ flex: 2 }}
-                    selectedValue={priceList[item.priceIndex]}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemPosition) => this.onPriceIndexChange(index, itemPosition)}>
-                    {priceList.map((value, index) => <Picker.Item
-                        label={value} value={value} key={`${index}`} />)}
-                </Picker>
-
-
-            </View>
-            <View style={{
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 1,
-                marginVertical: 6
-            }} />
-        </View> : null
-    }
-
     renderProductItem = ({ item, index }) => {
-        const isLast = index + 1 === this.state.products.length;
-        const taxList = this.getTaxList();
-        const isStock = item.itemtype === 'Stock';
+        const { taxList } = this.state;
+        const isSale = this.state.isSale;
         return <View style={{ flexDirection: 'column' }}>
 
             <View style={{
@@ -517,11 +519,13 @@ class AddInvoiceScreen extends Component {
                     flex: 1
                 }}>
                     <Text style={styles.title}>Product({index + 1})</Text>
-                    <TouchableOpacity style={{ marginTop: 6, marginLeft: 12, marginRight: 6 }}
-                        onPress={() => this.onProductNamePress(index)}>
+                    <TouchableOpacity
+                        onPress={() => this.onProductNamePress(index)}
+                        style={{ marginTop: 6, marginLeft: 12, marginRight: 6 }}>
                         <TextInput
+                            pointerEvents='none'
                             style={styles.textInput}
-                            value={item.label}
+                            value={this.getProductName(item)}
                             placeholder='Name'
                             placeholderTextColor='gray'
                             editable={false}
@@ -532,12 +536,13 @@ class AddInvoiceScreen extends Component {
 
                 {/* Ledger Account */}
                 <View style={{ flexDirection: 'column', flex: 1 }}>
-                    <Text style={styles.title}>Ledger Account</Text>
+                    <Text style={styles.title}>{isSale ? 'Ledger Account' : 'Purchase Ledger'}</Text>
                     <TouchableOpacity style={{ marginTop: 6, marginLeft: 12, marginRight: 12 }}
-                        onPress={() => this.onLedgerPress(index)}>
+                        onPress={() => this.onLedgerPress(index, isSale)}>
                         <TextInput
+                            pointerEvents='none'
                             style={styles.textInput}
-                            value={item.ledger}
+                            value={this.getLedgerLabel(index)}
                             placeholder='Ledger Account'
                             editable={false}
                             placeholderTextColor='gray'
@@ -548,17 +553,31 @@ class AddInvoiceScreen extends Component {
 
             </View>
             <View style={{
+                flexDirection: 'row',
+                paddingTop: 12
+            }}>
+                <View style={{
+                    flexDirection: 'column',
+                    flex: 1
+                }}>
+                    {/* <Text style={styles.title}>Description</Text> */}
+                    <TextInput
+                        style={[styles.textInput, { marginLeft: 16, marginEnd: 4, marginTop: 4 }]}
+                        value={item.description}
+                        placeholder='Description'
+                        placeholderTextColor='gray'
+                        onChangeText={text => this.onChangeDescription(index, text)}
+                    />
+                </View>
+                <View style={{ flex: 1 }} />
+
+            </View>
+            <View style={{
                 borderBottomColor: 'lightgray',
                 borderBottomWidth: 1,
                 marginVertical: 12
             }} />
             <View style={{ flexDirection: 'column' }}>
-
-                <Text style={styles.title}>Price And Tax</Text>
-                {/* Prices */}
-                {this.renderPriceDropdown(item, index)}
-
-
                 <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
                     {/* Price/Rate */}
                     <View style={{
@@ -569,8 +588,8 @@ class AddInvoiceScreen extends Component {
                         <Text style={styles.subtitle}>Price/Rate</Text>
                         <TextInput
                             style={[styles.textInput, { marginTop: 6 }]}
-                            value={item.price}
-                            onChangeText={text => this.onPriceChange(text, index)}
+                            value={item.costprice}
+                            onChangeText={text => this.handleColumnChange(text, 'costprice', index)}
                         />
                     </View>
 
@@ -585,7 +604,7 @@ class AddInvoiceScreen extends Component {
                         <TextInput
                             value={item.quantity}
                             style={[styles.textInput, { marginTop: 6 }]}
-                            onChangeText={text => this.onQuantityChange(text, index)}
+                            onChangeText={text => this.handleColumnChange(text, 'quantity', index)}
                         />
                     </View>
 
@@ -598,7 +617,7 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>Vat (Amt)</Text>
                         <TextInput
-                            value={`${this.getTaxAmount(index)}`}
+                            value={item.vatamt}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                         />
@@ -627,122 +646,142 @@ class AddInvoiceScreen extends Component {
                 }}>
                     <Picker
                         style={{ flex: 2 }}
-                        selectedValue={taxList[item.taxIndex]}
+                        selectedValue={Number(item.vatrate)}
                         mode='dropdown'
-                        onValueChange={(itemValue, itemPosition) => this.onVatChange(index, itemPosition)}>
-                        {taxList.map((value, index) => <Picker.Item
-                            label={value} value={value} key={`${index}`} />)}
+                        onValueChange={(itemValue, itemPosition) => this.onVatChange(index, itemValue)}>
+                        {taxList.map((value, index) => {
+                            const displayLabel = `${value.taxtype}-${value.percentage}`;
+                            return (
+                                <Picker.Item
+                                    label={displayLabel} value={value.percentage} key={`${index}`} />
+                            )
+                        })}
                     </Picker>
-                    <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <Text>Include Vat</Text>
                         <Switch
                             style={{}}
-                            thumbColor={item.includevat === 1 ? colorAccent : 'gray'}
-                            value={item.includevat === 1}
-                            onValueChange={enabled => this.onIncludeVatChange(index, enabled)} />
+                            thumbColor={item.includevat ? colorAccent : 'gray'}
+                            value={item.includevat}
+                            onValueChange={enabled => this.handleColumnChange(enabled, 'includevat', index)} />
                     </View>
 
                 </View>
             </View>
+            {isSale ? this.renderDiscount(item, index) : null}
             <View style={{
                 borderBottomColor: 'lightgray',
-                borderBottomWidth: 1,
-                marginVertical: 12
-            }} />
-            <Text style={styles.title}>{'Discount & Total'}</Text>
-            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                {/* % */}
-                <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1
-                }}>
-                    <Text style={styles.subtitle}>%</Text>
-                    <TextInput
-                        style={[styles.textInput, { marginTop: 6 }]}
-                        value={item.discount_per}
-                        onChangeText={text => this.onDiscountChange(text, index)}
-                    />
-                </View>
-
-                {/* Discount Amt */}
-                <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1,
-                    marginLeft: 12
-                }}>
-                    <Text style={styles.subtitle}>(Amt)</Text>
-                    <TextInput
-                        value={`${this.discountAmount(index)}`}
-                        style={[styles.textInput, { marginTop: 6 }]}
-                        editable={false}
-                        onChangeText={text => this.onQuantityChange(text, index)}
-                    />
-                </View>
-
-                {/* Total */}
-                <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1,
-                    marginLeft: 12
-                }}>
-                    <Text style={styles.subtitle}>Total</Text>
-                    <TextInput
-                        value={`${this.totalAmount(index)}`}
-                        style={[styles.textInput, { marginTop: 6 }]}
-                        editable={false}
-                    />
-                </View>
-                {isLast ? <View style={{
-                    flexDirection: 'column',
-                    marginTop: 4,
-                    flex: 1,
-                    justifyContent: 'center',
-                    marginLeft: 12,
-                    alignItems: 'center'
-                }}>
-                    <Text style={styles.subtitle}>More</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        {
-                            isLast ? <TouchableOpacity onPress={this.addInvoiceItem} style={{ padding: 6 }}>
-                                <Ionicons size={34} name='add-circle' color='green' />
-                            </TouchableOpacity> : null
-                        }
-                        {
-                            index > 0 ? <TouchableOpacity onPress={() => this.deleteInvoiceItem(index)}
-                                style={{ marginLeft: 2, padding: 6 }}>
-                                <MaterialCommunityIcons size={34} name='delete-circle' color='red' />
-                            </TouchableOpacity> : null
-                        }
-                    </View>
-                </View> : null}
-
-            </View>
-            <View style={{
-                borderBottomColor: 'lightgray',
-                borderBottomWidth: 5,
+                borderBottomWidth: 3,
                 marginTop: 16
             }} />
+            {this.renderActionView(item, index)}
         </View>
     }
+
+    renderActionView = (item, index) => {
+        const isLast = index + 1 === this.state.columns.length;
+        return (
+            isLast ? <View style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                paddingHorizontal: 12,
+                flex: 1,
+                paddingVertical: 20
+            }}>
+                <TouchableOpacity style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                    backgroundColor: successColor,
+                    borderRadius: 12,
+                    marginRight: 6
+                }}
+                    onPress={this.addInvoiceItem}>
+                    <Ionicons size={34} name='add-circle' color='white' />
+                    <AppText style={{ fontSize: 14, color: 'white', paddingStart: 4, fontFamily: appFontBold }}>Add More</AppText>
+                </TouchableOpacity>
+
+                {index > 0 ? <TouchableOpacity style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                    backgroundColor: errorColor,
+                    borderRadius: 12,
+                    marginLeft: 6
+                }}
+                    onPress={() => this.deleteInvoiceItem(index)}>
+                    <MaterialCommunityIcons size={34} name='delete-circle' color='white' />
+                    <AppText style={{ fontSize: 14, color: 'white', paddingStart: 4, fontFamily: appFontBold }}>Delete</AppText>
+                </TouchableOpacity> : null}
+            </View> : null
+        )
+    }
+    renderDiscount = (item, index) => {
+        return (
+            <View style={{ flexDirection: 'column' }}>
+                <View style={{
+                    borderBottomColor: 'lightgray',
+                    borderBottomWidth: 1,
+                    marginVertical: 12
+                }} />
+                <Text style={styles.title}>{'Discount & Total'}</Text>
+                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                    {/* % */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 4,
+                        flex: 1
+                    }}>
+                        <Text style={styles.subtitle}>%</Text>
+                        <TextInput
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            value={item.percentage}
+                            onChangeText={text => this.handleColumnChange(text, 'percentage', index)}
+                        />
+                    </View>
+
+                    {/* Discount Amt */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 4,
+                        flex: 1,
+                        marginLeft: 12
+                    }}>
+                        <Text style={styles.subtitle}>(Amt)</Text>
+                        <TextInput
+                            value={item.discount}
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            editable={false}
+                            onChangeText={text => this.onQuantityChange(text, index)}
+                        />
+                    </View>
+
+                    {/* Total */}
+                    <View style={{
+                        flexDirection: 'column',
+                        marginTop: 4,
+                        flex: 1,
+                        marginLeft: 12
+                    }}>
+                        <Text style={styles.subtitle}>Total</Text>
+                        <TextInput
+                            value={item.total}
+                            style={[styles.textInput, { marginTop: 6 }]}
+                            editable={false}
+                        />
+                    </View>
+                </View>
+            </View>
+        )
+    }
     addInvoiceItem = () => {
-        const newProducts = [...this.state.products];
-        newProducts.push({
-            product_name: '',
-            ledger_account: '',
-            rate: '',
-            quantity: '',
-            vat: '0',
-            includevat: 0,
-            taxIndex: 0,
-            price: '',
-            itemtype: '',
-            priceIndex: 0,
-            discount_per: 0
-        });
-        this.setState({ products: newProducts }, () => {
+        const newColumns = [...this.state.columns];
+        newColumns.push(this.getPlaceholderColumn());
+        this.setState({ columns: newColumns }, () => {
             Snackbar.show({
                 text: 'New Product added.',
                 duration: Snackbar.LENGTH_LONG,
@@ -756,13 +795,13 @@ class AddInvoiceScreen extends Component {
     }
 
     deleteInvoiceItem = index => {
-        let newProducts = [...this.state.products];
-        newProducts.splice(index, 1)
-        this.setState({ products: newProducts }, () => {
+        let newColumns = [...this.state.columns];
+        newColumns.splice(index, 1);
+        this.setState({ columns: newColumns }, () => {
             Snackbar.show({
                 text: 'Product Deleted.',
                 duration: Snackbar.LENGTH_LONG,
-                backgroundColor: 'red',
+                backgroundColor: errorColor,
                 action: {
                     text: 'OK',
                     textColor: colorWhite,
@@ -782,18 +821,82 @@ class AddInvoiceScreen extends Component {
         this.setState({ products: newProducts });
     }
 
-    onVatChange = (listIndex, taxIndex) => {
-        const taxList = this.props.tax.taxList;
-        const newProduct = {
-            ...this.state.products[listIndex],
-            taxIndex: taxIndex,
-            vat: taxIndex === 0 ? '0' : taxList[taxIndex - 1].percentage
+    onVatChange = (idx, taxValue) => {
+        const newColumn = {
+            ...this.state.columns[idx],
+            vatrate: taxValue
         };
-
-        const newProducts = [...this.state.products];
-        newProducts.splice(listIndex, 1, newProduct);
-        this.setState({ products: newProducts });
+        const newColumns = [...this.state.columns];
+        newColumns.splice(idx, 1, newColumn);
+        this.setState({
+            columns: newColumns
+        });
+        setTimeout(() => this.onItemChange(idx), 200)
     }
+
+    //When anything is changed
+    onItemChange = (index) => {
+        const column = this.state.columns[index];
+        const price = toNum(column.costprice);
+        const quantity = toNum(column.quantity);
+        const vatrate = toNum(column.vatrate);
+        const includevat = column.includevat;
+        const disPer = toNum(column.percentage);
+        let vatamt;
+        let total;
+        let discount;
+        if (includevat) {
+            vatamt = (vatrate * price) / (vatrate + 100);
+        } else {
+            vatamt = (vatrate * price) / 100;
+        }
+        vatamt *= quantity;
+        total = price * quantity;
+        if (!includevat) {
+            total += vatamt;
+        }
+        discount = (disPer * total) / 100;
+        total -= discount;
+
+
+        const newColumn = {
+            ...column,
+            vatrate: vatrate.toFixed(2),
+            incomeTax: vatrate.toFixed(2),
+            vatamt: vatamt.toFixed(2),
+            incomeTaxAmount: vatamt.toFixed(2),
+            total: total.toFixed(2),
+            totalamount: total.toFixed(2),
+            discount: discount.toFixed(2)
+        };
+        const newColumns = [...this.state.columns];
+        newColumns.splice(index, 1, newColumn);
+        this.setState({ columns: newColumns });
+
+        setTimeout(() => {
+            this.evaluateTotal();
+        }, 200);
+    }
+
+    evaluateTotal = () => {
+        let subTotal = 0, totalVat = 0, totalDiscount = 0, payable = 0;
+
+        for (let i = 0; i < this.state.columns.length; i++) {
+            const element = this.state.columns[i];
+            subTotal += toNum(element.costprice);
+            totalVat += toNum(element.incomeTaxAmount);
+            totalDiscount += toNum(element.discount);
+            payable += toNum(element.total);
+        }
+
+        this.setState({
+            subTotal: subTotal.toFixed(2),
+            totalVat: totalVat.toFixed(2),
+            totalDiscount: totalDiscount.toFixed(2),
+            payable: payable.toFixed(2)
+        });
+    }
+
     onPriceIndexChange = (listIndex, priceIndex) => {
         const item = this.state.products[listIndex];
         let price;
@@ -820,11 +923,12 @@ class AddInvoiceScreen extends Component {
 
     renderProductContainer = () => {
         return <FlatList
-            data={this.state.products}
+            data={this.state.columns}
             keyExtractor={(item, index) => `${index}`}
             renderItem={this.renderProductItem}
         />
     }
+
     renderRefundContainer = () => {
         return <ScrollView style={{ flex: 1 }}>
             {this.renderRecordPayment()}
@@ -902,22 +1006,23 @@ class AddInvoiceScreen extends Component {
     }
 
     setAllBankFields = () => {
-        const bank = this._bank;
-        setFieldValue(this.bankRef, this.bankName(bank));
-        setFieldValue(this.accNameRef, bank.laccount);
-        setFieldValue(this.accNumRef, bank.accnum);
+        setTimeout(() => {
+            const { bank } = this.state;
+            setFieldValue(this.bankRef, this.bankName(bank));
+            setFieldValue(this.accNameRef, bank.laccount);
+            setFieldValue(this.accNumRef, bank.accnum);
 
-        setFieldValue(this.accTypeRef, bank.acctype);
-        setFieldValue(this.swiftCodeRef, bank.bicnum);
-        setFieldValue(this.ibanNumRef, bank.ibannum);
+            setFieldValue(this.accTypeRef, bank.acctype);
+            setFieldValue(this.swiftCodeRef, bank.bicnum);
+            setFieldValue(this.ibanNumRef, bank.ibannum);
+        }, 300);
     }
 
     onBankPress = () => {
         this.props.navigation.push('SelectBankScreen', {
             onBankSelected: bank => {
-                this._bank = { ...bank };
                 const payMethodIndex = this.getPayMethodIndex(bank.paidmethod);
-                this.setState({ payMethodIndex: payMethodIndex }, () => {
+                this.setState({ payMethodIndex: payMethodIndex, bank: bank }, () => {
                     this.setAllBankFields();
                 })
 
@@ -942,17 +1047,18 @@ class AddInvoiceScreen extends Component {
     }
 
     bankName = bank => {
-        if (bank === null) {
-            return '';
+        if (bank) {
+            const bankTitle = `${bank.nominalcode}-${bank.laccount}`;
+            return bankTitle;
         }
-        const bankTitle = `${bank.nominalcode}-${bank.laccount}`;
-        return bankTitle;
+        return '';
+
     }
 
     renderRecordPayment = () => {
-        const bank = this._bank;
+        const { bank } = this.state;
         const { payMethod, payMethodIndex } = this.state;
-        const isCreditNote = this.isCreditNote();
+        const isCreditNote = this.state.creditNote;
         return <View style={{
             flexDirection: 'column',
             paddingBottom: 12
@@ -1068,7 +1174,7 @@ class AddInvoiceScreen extends Component {
                     lineWidth={1}
                     title='*required'
                     editable={false}
-                    value={this.formattedDate(this.state.payDate)}
+                    value={timeHelper.format(this.state.payDate)}
                     fieldRef={this.payDateRef} />
             </TouchableOpacity>
             {this.state.showPayDateDialog ? <DateTimePicker
@@ -1081,9 +1187,9 @@ class AddInvoiceScreen extends Component {
         </View>
     }
 
-    renderTabs = (invoiceAmount) => {
+    renderTabs = () => {
         const selected = this.state.selectedTab;
-        const customerLabel = this.isSalesInvoice() ? 'Customer' : 'Supplier';
+        const customerLabel = this.state.isSale ? 'Customer' : 'Supplier';
         return <View style={{ width: '100%', flexDirection: 'row' }}>
 
             <AppTab title={customerLabel}
@@ -1097,94 +1203,160 @@ class AddInvoiceScreen extends Component {
                 selected={selected === 'product'}
                 onTabPress={() => this.selectTab('product')} />
 
-            {this.isCreditNote() ? <AppTab title='Refund'
+            {/* {this.isCreditNote() ? <AppTab title='Refund'
                 icon='cash-refund'
                 iconType='MaterialCommunityIcons'
                 selected={selected === 'refund'}
                 onTabPress={() => this.selectTab('refund')} />
-                : null}
-            {(invoiceAmount > 0 && !this.isCreditNote()) ?
+                : null} */}
+            {/* {(invoiceAmount > 0 && !this.isCreditNote()) ?
                 <AppTab
                     title='Payment'
                     icon='payment'
                     selected={selected === 'payment'}
                     onTabPress={() => this.selectTab('payment')} />
-                : null}
-
+                : null} */}
 
         </View>
     }
 
-    invoiceAmount = () => {
-        let total = 0;
-        for (let i = 0; i < this.state.products.length; i++) {
-            total += this.totalAmount(i);
-        }
-        return total;
+    showSaveOptions = body => {
+        const items = ['Save', 'Save & New', 'Save & Email', 'Save & Print'];
+        showSingleSelectAlert('Save Options', items, index => {
+            this.addInvoice(body);
+        })
     }
-    renderBottomCard = (invoiceTotal) => {
+
+    addInvoice = body => {
+        this.setState({ updating: true });
+        const url = this.state.isSale ? '/sales/addSales' : '/purchase/addUpdatePurchase';
+        Api.post(url, body)
+            .then(response => {
+                this.setState({ updating: false });
+                this.onInvoiceUpdated(response.data.message);
+            })
+            .catch(err => {
+                console.log('Error adding/updating invoice', err);
+                this.setState({ updating: false });
+                const action = this.state.editMode ? 'updating' : 'adding';
+                setTimeout(() => showError(`Error ${action} invoice.`), 300);
+            })
+    }
+
+    onInvoiceUpdated = message => {
+        const { invoiceActions } = this.props;
+        if (this.state.isSale) {
+            if (this.state.creditNote) {
+                invoiceActions.getSalesCNInvoiceList();
+            } else {
+                invoiceActions.getSalesInvoiceList();
+            }
+        } else {
+            if (this.state.creditNote) {
+                invoiceActions.getPurchaseCNInvoiceList();
+            } else {
+                invoiceActions.getPurchaseInvoiceList();
+            }
+        }
+        setTimeout(() => {
+            this.props.navigation.goBack();
+            showSuccess(message);
+        }, 300);
+    }
+
+    validateAndSave = () => {
         const { authData } = Store.getState().auth;
-        return <CardView
-            cardElevation={4}
-            cardRadius={6}
-            style={{ backgroundColor: colorPrimary }}>
-            <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingVertical: 6,
-                paddingStart: 16
-            }}>
-                <MaterialCommunityIcons name='wallet' size={40} color='black' />
-                <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'center', paddingHorizontal: 12 }}>
-                    <Text style={{ fontSize: 16, flex: 1 }}>Total {authData.currency} {invoiceTotal}</Text>
-                    <Text style={{ fontSize: 16, flex: 1 }}>Items {this.state.products.length}</Text>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TouchableOpacity
-                        onPress={() => { }}
-                        style={{
-                            backgroundColor: 'blue',
-                            paddingHorizontal: 12,
-                            paddingVertical: 8,
-                            borderRadius: 4,
-                            marginEnd: 16
-                        }}>
-                        <Text style={{ fontSize: 16, color: 'white' }}>Save</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => { }}
-                        style={{ paddingHorizontal: 16 }}>
-                        <FontAwesomeIcon name='angle-double-up' size={24} color='black' />
-                    </TouchableOpacity>
+        const isSale = this.state.isSale;
+        const body = {
+            invoiceno: this.state.invoiceno,
+            sdate: this.state.invDate,
+            ldate: this.state.dueDate,
+            inaddress: this.state.invoiceAddress,
+            deladdress: this.state.deliveryAddress,
+            terms: this.state.terms,
+            quotes: this.state.notes,
+            userid: authData.id,
+            status: '0',
+            issued: this.state.issued.toLowerCase(),
+            type: this.props.route.params.info.invoice_type,
+            pagetype: "1",
+            total: `${this.state.payable}`,
+            userdate: moment().utc().format()
+        }
+        if (isSale) {
+            body.columns = this.state.columns;
+            body.customer = this.state.customer;
+        } else {
+            body.pList = this.state.columns;
+            body.supplier = this.state.customer;
+            body.purchase = {
+                sdate: body.sdate,
+                ldate: body.ldate,
+                invoiceno: body.invoiceno,
+                inaddress: body.inaddress,
+                deladdress: body.deladdress,
+                total: body.total,
+                quotes: body.quotes,
+                status: body.status
+            }
+        }
 
-                </View>
+        const customerTag = isSale ? 'customer' : 'supplier';
+        if (!this.state.customer) {
+            showError(`Please choose a ${customerTag}.`);
+        } else {
+            this.showSaveOptions(body);
+        }
+    }
 
-            </View>
-        </CardView>
+
+    renderBottomCard = () => {
+        const { payable, currency } = this.state;
+        const payableAmt = `${currency} ${payable}`;
+        return (
+            payable > 0 ? <InvoiceBottomCard
+                payable={payableAmt}
+                onSavePress={this.validateAndSave}
+                onBreakdownPress={() => this.setState({ showBreakdown: true })}
+            /> : null
+        )
     }
     render() {
-        const { tax } = this.props;
-        if (tax.fetchingTaxList) {
+        const { fetching,
+            fetchError,
+            currency,
+            subTotal,
+            totalVat,
+            totalDiscount,
+            payable } = this.state;
+        if (fetching) {
             return <OnScreenSpinner />
         }
-        if (tax.fetchTaxListError) {
-            return <FullScreenError tryAgainClick={this.fetchTaxList} />
+        if (fetchError) {
+            return <FullScreenError tryAgainClick={this.fetchInfo} />
         }
 
         const selected = this.state.selectedTab;
-        const invoiceAmount = this.invoiceAmount();
-        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            <KeyboardAvoidingView style={{ flex: 1 }}>
-                <View style={{ flex: 1 }}>
+        const discount = this.state.isSale ? `${totalDiscount} ${currency}-` : undefined;
+        return <KeyboardAvoidingView style={{ flex: 1, backgroundColor: 'white' }}>
+            <View style={{ flex: 1 }}>
 
-                    {this.renderTabs(invoiceAmount)}
-                    {selected === 'supplier' ? this.renderSupplierContainer() : null}
-                    {selected === 'product' ? this.renderProductContainer() : null}
-                    {selected === 'payment' ? this.renderPaymentContainer() : null}
-                    {selected === 'refund' ? this.renderRefundContainer() : null}
-                    {this.renderBottomCard(invoiceAmount)}
-                </View>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+                {this.renderTabs()}
+                {selected === 'supplier' ? this.renderSupplierContainer() : null}
+                {selected === 'product' ? this.renderProductContainer() : null}
+                {/* {selected === 'payment' ? this.renderPaymentContainer() : null}
+                {selected === 'refund' ? this.renderRefundContainer() : null} */}
+                {this.renderBottomCard()}
+            </View>
+            <InvoiceBreakdown
+                total={`${subTotal} ${currency}`}
+                vat={`${totalVat} ${currency}`}
+                discount={discount}
+                payable={`${payable} ${currency}`}
+                visible={this.state.showBreakdown}
+                onPressOutside={() => this.setState({ showBreakdown: false })} />
+            <ProgressDialog visible={this.state.updating} />
+        </KeyboardAvoidingView>
     }
 };
 const styles = StyleSheet.create({
@@ -1234,6 +1406,9 @@ const styles = StyleSheet.create({
     },
     picker: {
         marginHorizontal: 12
+    },
+    appBtn: {
+        borderRadius: 0
     }
 });
 export default connect(

@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import InvoiceProductItem from '../components/invoices/InvoiceProductItem';
 import { appFont, appFontBold } from '../helpers/ViewHelper';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, errorColor } from '../theme/Color';
 import * as invoiceActions from '../redux/actions/invoiceActions';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     invNumValue: {
         fontFamily: appFontBold,
         fontSize: 20,
-        borderBottomColor: 'red',
+        borderBottomColor: errorColor,
         borderBottomWidth: 2,
         marginHorizontal: 16
     },
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     },
     dueDateTxt: {
         borderWidth: 1,
-        borderColor: 'red',
+        borderColor: errorColor,
         borderRadius: 4,
         fontFamily: appFont,
         fontSize: 16,

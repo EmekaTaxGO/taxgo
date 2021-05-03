@@ -4,11 +4,13 @@ import SearchView from '../components/SearchView';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { colorWhite, colorAccent } from '../theme/Color';
 import MyLedgerTabItem from '../components/tabs/MyLedgerTabItem';
 import FA5Icon from 'react-native-vector-icons/FontAwesome5';
 import DefaultLedgerTabItem from '../components/tabs/DefaultLedgerTabItem';
 import BottomTabLayout from '../components/materialTabs/BottomTabLayout';
+import { connect } from 'react-redux';
+import * as ledgerActions from '../redux/actions/ledgerActions';
+import { bindActionCreators } from 'redux';
 
 class LedgerFragment extends Component {
     constructor(props) {
@@ -18,8 +20,7 @@ class LedgerFragment extends Component {
             query: '',
             ledgers: ledgers,
             filteredLedgers: ledgers,
-            ledgerTypes: ['Default', 'Custom'],
-            selectedLedgerType: ''
+            tab: 'custom'
         }
     }
 
@@ -64,7 +65,14 @@ class LedgerFragment extends Component {
     onAddClick = () => {
         this.props.navigation.push('AddLedgerScreen', {
             ledger: null,
-            onLedgerUpdated: () => { }
+            onLedgerUpdated: () => {
+                const { ledgerActions } = this.props;
+                if (this.state.tab === 'custom') {
+                    ledgerActions.getMyLedger();
+                } else {
+                    ledgerActions.getDefaultLedger();
+                }
+            }
         });
     }
 
@@ -135,7 +143,8 @@ class LedgerFragment extends Component {
     render() {
         const Tab = createBottomTabNavigator();
         return (
-            <BottomTabLayout tab={Tab}>
+            <BottomTabLayout
+                tab={Tab}>
                 <Tab.Screen name='myledger'
                     component={MyLedgerTabItem}
                     options={{
@@ -143,7 +152,12 @@ class LedgerFragment extends Component {
                         tabBarIcon: ({ color, size }) =>
                             <FA5Icon name='user' size={22} color={color} />
                     }}
-                    listeners={{ tabPress: e => this.setTitle('My Ledger') }}
+                    listeners={{
+                        tabPress: e => {
+                            this.setTitle('My Ledger')
+                            this.setState({ tab: 'custom' })
+                        }
+                    }}
                 />
 
                 <Tab.Screen name='defaultledger'
@@ -153,7 +167,12 @@ class LedgerFragment extends Component {
                         tabBarIcon: ({ color, size }) =>
                             <FA5Icon name='user-tag' size={22} color={color} />
                     }}
-                    listeners={{ tabPress: e => this.setTitle('Default Ledger') }}
+                    listeners={{
+                        tabPress: e => {
+                            this.setTitle('Default Ledger')
+                            this.setState({ tab: 'default' })
+                        }
+                    }}
                 />
             </BottomTabLayout>
         )
@@ -167,4 +186,11 @@ const styles = StyleSheet.create({
         paddingRight: 12
     }
 })
-export default LedgerFragment;
+export default connect(
+    state => ({
+        ledger: state.ledger
+    }),
+    dispatch => ({
+        ledgerActions: bindActionCreators(ledgerActions, dispatch)
+    })
+)(LedgerFragment);

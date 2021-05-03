@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 
 import * as productActions from '../redux/actions/productActions';
@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
-import { colorAccent, colorPrimary } from '../theme/Color';
+import { colorPrimary } from '../theme/Color';
 import ImageView from '../components/ImageView';
 import AppTab from '../components/AppTab';
 import moment from 'moment';

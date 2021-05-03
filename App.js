@@ -105,7 +105,6 @@ const App = () => {
       <Stack.Screen name='ScanBarcodeScreen' component={ScanBarcodeScreen} options={{ title: 'Scan QR' }} />
       <Stack.Screen name='PurchaseLedgerScreen' component={PurchaseLedgerScreen} options={{ title: 'Purchase Ledger' }} />
       <Stack.Screen name='SaleLedgerScreen' component={SaleLedgerScreen} options={{ title: 'Sale Ledger' }} />
-      <Stack.Screen name='MyLedgerScreen' component={MyLedgerScreen} options={{ title: 'My Ledger' }} />
       <Stack.Screen name='BankAccountScreen' component={BankAccountScreen} options={{ title: 'Bank Account' }} />
       <Stack.Screen name='SelectProductScreen' component={SelectProductScreen} options={{ title: 'Select Product' }} />
       <Stack.Screen name='SelectBankScreen' component={SelectBankScreen} options={{ title: 'Select Bank' }} />

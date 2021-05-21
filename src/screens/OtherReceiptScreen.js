@@ -18,6 +18,7 @@ import Snackbar from 'react-native-snackbar';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AppTextField from '../components/AppTextField';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 class OtherReceiptScreen extends Component {
 
@@ -382,7 +383,7 @@ class OtherReceiptScreen extends Component {
                     }}>
                         <Text style={{ fontSize: 15 }}>Include Vat</Text>
                         <CheckBox
-                            style={{ color: colorAccent }}
+                            style={{ color: colorAccent, marginTop: 6 }}
                             value={item.includevat === '1'}
                             tintColors={{ true: colorAccent, false: 'gray' }}
                             label='Include Tax'
@@ -506,7 +507,7 @@ class OtherReceiptScreen extends Component {
     }
 
     renderLedger = () => {
-        return <FlatList
+        return <KeyboardAwareFlatList
             style={{ flex: 1 }}
             data={this.state.data}
             keyExtractor={(item, index) => `${index}`}
@@ -560,7 +561,8 @@ const styles = StyleSheet.create({
     card: {
         marginHorizontal: 16,
         marginTop: 16,
-        flex: 1
+        flex: 1,
+        backgroundColor: 'white'
     },
     priceLabel: {
         flex: 1,

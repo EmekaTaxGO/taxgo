@@ -37,6 +37,7 @@ import bankHelper from '../helpers/BankHelper';
 import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 class CustomerReceiptScreen extends Component {
 
@@ -226,7 +227,7 @@ class CustomerReceiptScreen extends Component {
         const { payment } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
-                <FlatList
+                <KeyboardAwareFlatList
                     data={this.state.receipts}
                     keyExtractor={(item, index) => item.id}
                     ListHeaderComponent={this.renderHeader}
@@ -365,7 +366,7 @@ class CustomerReceiptScreen extends Component {
             </TouchableOpacity>
             {this.state.showReceivedDate ? <DateTimePicker
                 value={this.state.receivedDate ? this.state.receivedDate : new Date()}
-                mode={'datetime'}
+                mode={'date'}
                 display='default'
                 maximumDate={new Date()}
                 onChange={this.onReceiveDateChange}
@@ -377,7 +378,6 @@ class CustomerReceiptScreen extends Component {
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                editable={false}
                 value={`${this._amount}`}
                 fieldRef={this.amountReceivedRef} />
             <AppTextField

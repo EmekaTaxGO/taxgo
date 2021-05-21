@@ -145,46 +145,52 @@ class BankFragment extends Component {
         const { list: account } = item
         const isLast = this.props.bank.bankList.length === index + 1
         const bgColor = rColor[index % rColor.length];
-        return <CardView
-            cardElevation={4}
-            cornerRadius={12}
-            style={[styles.bankCard, {
-                backgroundColor: bgColor,
-                marginBottom: isLast ? 16 : 0
-            }]}>
-            <View style={{
-                flexDirection: 'column'
-            }}>
-
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    {this.accountIcon(account.acctype)}
+        return (
+            <View style={{ backgroundColor: 'white' }}>
+                <CardView
+                    cardElevation={4}
+                    cornerRadius={12}
+                    style={[styles.bankCard, {
+                        backgroundColor: bgColor + 'a1',
+                        marginBottom: isLast ? 16 : 0
+                    }]}>
                     <View style={{
-                        flex: 1,
-                        justifyContent: 'flex-end',
-                        flexDirection: 'row'
+                        flexDirection: 'column'
                     }}>
-                        <Text style={{
-                            opacity: 1,
-                            borderRadius: 20,
-                            paddingHorizontal: 12,
-                            paddingVertical: 8,
-                            fontSize: 16,
-                            textAlign: 'center',
-                            backgroundColor: '#f2f2f2'
-                        }}>{account.acctype}</Text>
-                    </View>
 
-                </View>
-                <Text style={{
-                    textAlign: 'center',
-                    color: 'white',
-                    fontSize: 20
-                }}>{account.accnum ? account.accnum : '****  ***  ****'}</Text>
-                {this.rowItem('Current Balance', account.total)}
-                {this.rowItem('Opening Balance', account.opening)}
-                {this.rowItem(account.userdate, account.acctype)}
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                            {this.accountIcon(account.acctype)}
+                            <View style={{
+                                flex: 1,
+                                justifyContent: 'flex-end',
+                                flexDirection: 'row',
+                            }}>
+                                <CardView
+                                    cornerRadius={6}
+                                    cardElevation={0}
+                                    style={{ backgroundColor: 'white' }}>
+                                    <Text style={{
+                                        paddingHorizontal: 12,
+                                        paddingVertical: 6,
+                                        fontSize: 16,
+                                        textAlign: 'center',
+                                    }}>{account.acctype}</Text>
+                                </CardView>
+                            </View>
+
+                        </View>
+                        <Text style={{
+                            textAlign: 'center',
+                            color: 'white',
+                            fontSize: 20
+                        }}>{account.accnum ? account.accnum : '****  ***  ****'}</Text>
+                        {this.rowItem('Current Balance', account.total)}
+                        {this.rowItem('Opening Balance', account.opening)}
+                        {this.rowItem(account.userdate, account.acctype)}
+                    </View>
+                </CardView>
             </View>
-        </CardView>
+        )
     }
 
     hiddenElement = (label, icon, color, onPress) => {

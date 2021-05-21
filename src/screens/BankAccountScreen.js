@@ -16,6 +16,7 @@ import bankHelper from '../helpers/BankHelper';
 import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 class BankAccountScreen extends Component {
@@ -243,131 +244,129 @@ class BankAccountScreen extends Component {
         const showAccNum = this.showAccNum()
         const editMode = this.isEditMode()
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            <KeyboardAvoidingView style={{ flex: 1 }}>
-                <ScrollView style={{ flex: 1 }}>
-                    <Text style={{
-                        paddingLeft: 15,
-                        paddingTop: 14,
-                        fontSize: 14
-                    }}>A/C Type*</Text>
+            <KeyboardAwareScrollView style={{ flex: 1 }}>
+                <Text style={{
+                    paddingLeft: 15,
+                    paddingTop: 14,
+                    fontSize: 14
+                }}>A/C Type*</Text>
 
-                    <AppPicker
-                        style={styles.picker}
-                        selectedValue={accTypes[accTypeIndex].label}
-                        mode='dropdown'
-                        onValueChange={(itemValue, itemIndex) => this.setState({ accTypeIndex: itemIndex })}>
+                <AppPicker
+                    style={styles.picker}
+                    selectedValue={accTypes[accTypeIndex].label}
+                    mode='dropdown'
+                    onValueChange={(itemValue, itemIndex) => this.setState({ accTypeIndex: itemIndex })}>
 
-                        {accTypes.map((value, index) => <Picker.Item
-                            label={value.label} value={value.label} key={`${value.id}`} />)}
-                    </AppPicker>
-                    <View style={{ paddingHorizontal: 16 }}>
-                        <AppTextField
-                            containerStyle={{ marginTop: 20 }}
-                            label='A/c Name'
-                            keyboardType='default'
-                            returnKeyType='done'
-                            lineWidth={1}
-                            title='*required'
-                            value={account ? account.laccount : ''}
-                            fieldRef={this.accNameRef} />
-                        {showAccNum ? <AppTextField
-                            containerStyle={styles.fieldStyle}
-                            label='A/c Number'
-                            keyboardType='number-pad'
-                            returnKeyType='done'
-                            lineWidth={1}
-                            title='*required'
-                            fieldRef={this.accNumRef}
-                            value={account ? account.accnum : ''} /> : null}
-                        <AppTextField
-                            containerStyle={styles.fieldStyle}
-                            label='Opening Bal'
-                            keyboardType='numeric'
-                            returnKeyType='done'
-                            lineWidth={1}
-                            title='*required'
-                            fieldRef={this.openingBalRef}
-                            value={account ? `${account.opening}` : ''} />
-                        <AppTextField
-                            containerStyle={styles.fieldStyle}
-                            label='Nominal Code'
-                            keyboardType='numeric'
-                            returnKeyType='done'
-                            lineWidth={1}
-                            title='*required'
-                            fieldRef={this.nominalCodeRef}
-                            disabled={editMode}
-                            value={account ? account.nominalcode : ''} />
-                        {this.showCreditCard() ? <AppTextField
-                            containerStyle={styles.fieldStyle}
-                            label='Credit Card Last 4 digit No.'
-                            keyboardType='numeric'
-                            returnKeyType='done'
-                            lineWidth={1}
-                            title='*required'
-                            fieldRef={this.ccRef}
-                            value={account ? account.cardnum : ''} /> : null}
+                    {accTypes.map((value, index) => <Picker.Item
+                        label={value.label} value={value.label} key={`${value.id}`} />)}
+                </AppPicker>
+                <View style={{ paddingHorizontal: 16 }}>
+                    <AppTextField
+                        containerStyle={{ marginTop: 20 }}
+                        label='A/c Name'
+                        keyboardType='default'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        title='*required'
+                        value={account ? account.laccount : ''}
+                        fieldRef={this.accNameRef} />
+                    {showAccNum ? <AppTextField
+                        containerStyle={styles.fieldStyle}
+                        label='A/c Number'
+                        keyboardType='number-pad'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        title='*required'
+                        fieldRef={this.accNumRef}
+                        value={account ? account.accnum : ''} /> : null}
+                    <AppTextField
+                        containerStyle={styles.fieldStyle}
+                        label='Opening Bal'
+                        keyboardType='numeric'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        title='*required'
+                        fieldRef={this.openingBalRef}
+                        value={account ? `${account.opening}` : ''} />
+                    <AppTextField
+                        containerStyle={styles.fieldStyle}
+                        label='Nominal Code'
+                        keyboardType='numeric'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        title='*required'
+                        fieldRef={this.nominalCodeRef}
+                        disabled={editMode}
+                        value={account ? account.nominalcode : ''} />
+                    {this.showCreditCard() ? <AppTextField
+                        containerStyle={styles.fieldStyle}
+                        label='Credit Card Last 4 digit No.'
+                        keyboardType='numeric'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        title='*required'
+                        fieldRef={this.ccRef}
+                        value={account ? account.cardnum : ''} /> : null}
 
-                        {showAccNum ? <AppTextField
-                            containerStyle={styles.fieldStyle}
-                            keyboardType='default'
-                            label='IBAN No.'
+                    {showAccNum ? <AppTextField
+                        containerStyle={styles.fieldStyle}
+                        keyboardType='default'
+                        label='IBAN No.'
+                        returnKeyType='done'
+                        lineWidth={1}
+                        title='*required'
+                        fieldRef={this.ibanNumRef}
+                        value={account ? account.ibannum : ''} /> : null}
+                    {showAccNum ? <AppTextField
+                        containerStyle={styles.fieldStyle}
+                        label='Bic/Swift'
+                        returnKeyType='done'
+                        keyboardType='default'
+                        lineWidth={1}
+                        title='*required'
+                        value={account ? account.bicnum : ''}
+                        fieldRef={this.swiftCodeRef}
+                    /> : null}
+                    {showAccNum ? <View style={{ flexDirection: 'row', marginTop: 12 }}>
+                        <AppTextField
+                            containerStyle={{ flex: 1, marginRight: 8 }}
+                            label='Sort Code 1'
                             returnKeyType='done'
                             lineWidth={1}
-                            title='*required'
-                            fieldRef={this.ibanNumRef}
-                            value={account ? account.ibannum : ''} /> : null}
-                        {showAccNum ? <AppTextField
-                            containerStyle={styles.fieldStyle}
-                            label='Bic/Swift'
+                            value={account ? account.sortcode1 : ''}
+                            fieldRef={this.sortCode1Ref}
+                        />
+                        <AppTextField
+                            containerStyle={{ flex: 1, marginRight: 8 }}
+                            label='Sort Code 2'
                             returnKeyType='done'
-                            keyboardType='default'
                             lineWidth={1}
-                            title='*required'
-                            value={account ? account.bicnum : ''}
-                            fieldRef={this.swiftCodeRef}
-                        /> : null}
-                        {showAccNum ? <View style={{ flexDirection: 'row', marginTop: 12 }}>
-                            <AppTextField
-                                containerStyle={{ flex: 1, marginRight: 8 }}
-                                label='Sort Code 1'
-                                returnKeyType='done'
-                                lineWidth={1}
-                                value={account ? account.sortcode1 : ''}
-                                fieldRef={this.sortCode1Ref}
-                            />
-                            <AppTextField
-                                containerStyle={{ flex: 1, marginRight: 8 }}
-                                label='Sort Code 2'
-                                returnKeyType='done'
-                                lineWidth={1}
-                                value={account ? account.sortcode2 : ''}
-                                fieldRef={this.sortCode2Ref}
-                            />
-                            <AppTextField
-                                containerStyle={{ flex: 1 }}
-                                label='Sort Code 3'
-                                returnKeyType='done'
-                                lineWidth={1}
-                                value={account ? account.sortcode3 : ''}
-                                fieldRef={this.sortCode3Ref}
-                            />
-                        </View> : null}
-                        {/* <RaisedTextButton
+                            value={account ? account.sortcode2 : ''}
+                            fieldRef={this.sortCode2Ref}
+                        />
+                        <AppTextField
+                            containerStyle={{ flex: 1 }}
+                            label='Sort Code 3'
+                            returnKeyType='done'
+                            lineWidth={1}
+                            value={account ? account.sortcode3 : ''}
+                            fieldRef={this.sortCode3Ref}
+                        />
+                    </View> : null}
+                    {/* <RaisedTextButton
                             containerStyle={styles.fieldStyle}
                             title={editMode ? 'Update' : 'Save'}
                             color={colorAccent}
                             titleColor='white'
                             style={styles.materialBtn}
                             onPress={this.validateAndUpdate} /> */}
-                        <AppButton
-                            title={editMode ? 'Update' : 'Save'}
-                            onPress={this.validateAndUpdate}
-                        />
-                    </View>
-                    <ProgressDialog visible={updatingBankDetail} />
-                </ScrollView>
-            </KeyboardAvoidingView>
+                    <AppButton
+                        title={editMode ? 'Update' : 'Save'}
+                        onPress={this.validateAndUpdate}
+                    />
+                </View>
+                <ProgressDialog visible={updatingBankDetail} />
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     }
 };

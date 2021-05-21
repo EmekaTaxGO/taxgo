@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, FlatList, Switch } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, FlatList, Switch } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colorAccent, colorWhite, errorColor, snackbarActionColor, successColor } from '../theme/Color'
@@ -33,6 +33,7 @@ import Api from '../services/api';
 import ProgressDialog from '../components/ProgressDialog';
 import AppText from '../components/AppText';
 import { appFontBold } from '../helpers/ViewHelper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -289,7 +290,7 @@ class AddInvoiceScreen extends Component {
 
     renderSupplierContainer = () => {
         const isSaleInvoice = this.state.isSale;
-        return <ScrollView style={{
+        return <KeyboardAwareScrollView style={{
             flex: 1,
             flexDirection: 'column'
         }}>
@@ -399,7 +400,7 @@ class AddInvoiceScreen extends Component {
                 />
             </View> : null}
             {!this.state.isSale ? this.renderReceiptFile() : null}
-        </ScrollView>
+        </KeyboardAwareScrollView>
     }
 
     renderReceiptFile = () => {
@@ -930,14 +931,14 @@ class AddInvoiceScreen extends Component {
     }
 
     renderRefundContainer = () => {
-        return <ScrollView style={{ flex: 1 }}>
+        return <KeyboardAwareScrollView style={{ flex: 1 }}>
             {this.renderRecordPayment()}
-        </ScrollView>
+        </KeyboardAwareScrollView>
     }
 
     renderPaymentContainer = () => {
 
-        return <ScrollView style={{
+        return <KeyboardAwareScrollView style={{
             flexDirection: 'column',
             flex: 1
         }}>
@@ -956,7 +957,7 @@ class AddInvoiceScreen extends Component {
             {this.state.paymentIndex === 2 ? this.renderRecordPayment() : null}
             {this.state.paymentIndex === 1 ? this.renderCardInfo() : null}
 
-        </ScrollView>
+        </KeyboardAwareScrollView>
     }
 
     onCreditCardInfoChange = form => {
@@ -1338,7 +1339,7 @@ class AddInvoiceScreen extends Component {
 
         const selected = this.state.selectedTab;
         const discount = this.state.isSale ? `${totalDiscount} ${currency}-` : undefined;
-        return <KeyboardAvoidingView style={{ flex: 1, backgroundColor: 'white' }}>
+        return <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
 
                 {this.renderTabs()}
@@ -1356,7 +1357,7 @@ class AddInvoiceScreen extends Component {
                 visible={this.state.showBreakdown}
                 onPressOutside={() => this.setState({ showBreakdown: false })} />
             <ProgressDialog visible={this.state.updating} />
-        </KeyboardAvoidingView>
+        </View>
     }
 };
 const styles = StyleSheet.create({

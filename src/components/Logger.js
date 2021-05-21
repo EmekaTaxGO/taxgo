@@ -1,3 +1,4 @@
+import SimpleToast from 'react-native-simple-toast';
 import Toast from 'react-native-simple-toast';
 import { UI_ALERT_CONTROLLER } from '../constants/appConstant';
 
@@ -6,6 +7,6 @@ export const log = (message, optionalParams) => {
         console.log(message, optionalParams);
     }
 }
-export const showToast = (message, duration = Toast.SHORT) => {
-    Toast.show(message, duration, [UI_ALERT_CONTROLLER])
+export const showToast = (message, duration = Toast.SHORT, gravity = SimpleToast.BOTTOM) => {
+    Toast.showWithGravity(message, duration, gravity, [UI_ALERT_CONTROLLER])
 }

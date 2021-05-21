@@ -9,7 +9,9 @@ import {
     TouchableOpacity,
     Linking,
     Image,
-    Alert
+    Alert,
+    Dimensions,
+    Platform
 } from 'react-native';
 import { colorAccent, errorColor } from '../theme/Color';
 import OnScreenSpinner from '../components/OnScreenSpinner';
@@ -33,8 +35,8 @@ import { log } from '../components/Logger';
 import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Api from '../services/api';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 class SignUpScreen extends Component {
 
@@ -254,9 +256,11 @@ class SignUpScreen extends Component {
             return <FullScreenError tryAgainClick={this.fetchRenderInfo} />
         }
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            <KeyboardAvoidingView style={{ flex: 1 }}>
-                <KeyboardAwareScrollView style={{ paddingHorizontal: 16, flex: 1 }}>
-                    {/* <TouchableOpacity onPress={this.onImageClick}>
+            <KeyboardAwareScrollView style={{
+                paddingHorizontal: 16,
+                flex: 1
+            }}>
+                {/* <TouchableOpacity onPress={this.onImageClick}>
                         <Image style={{
                             borderColor: 'gray',
                             borderWidth: 1,
@@ -279,149 +283,146 @@ class SignUpScreen extends Component {
                             color='gray'
                             size={40} /> : null}
                     </TouchableOpacity> */}
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='First Name'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        title='*required'
-                        fieldRef={this.firstNameRef}
-                        error={this.state.firstNameError}
-                        onChange={event => this.resetAllError()}
-                        onSubmitEditing={() => focusField(this.lastNameRef)} />
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Last Name'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        title='*required'
-                        fieldRef={this.lastNameRef}
-                        error={this.state.lastNameError}
-                        onChange={event => this.resetAllError()}
-                        onSubmitEditing={() => focusField(this.emailRef)} />
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Email'
-                        keyboardType='email-address'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        title='*required'
-                        fieldRef={this.emailRef}
-                        error={this.state.emailError}
-                        onChange={event => this.resetAllError()}
-                        onSubmitEditing={() => focusField(this.passwordRef)} />
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Password'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        secureTextEntry={true}
-                        title='*required'
-                        fieldRef={this.passwordRef}
-                        error={this.state.passwordError}
-                        onChange={event => this.resetAllError()}
-                        onSubmitEditing={() => focusField(this.businessNameRef)} />
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Business Name'
-                        keyboardType='name-phone-pad'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        secureTextEntry={true}
-                        title='*required'
-                        error={this.state.businessNameError}
-                        onChange={event => this.resetAllError()}
-                        fieldRef={this.businessNameRef}
-                    />
-                    {this.renderBusinessCategory()}
-                    {this.renderCountry()}
-                    {this.renderBusinessType()}
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Phone'
-                        keyboardType='number-pad'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        error={this.state.phoneError}
-                        fieldRef={this.phoneNumberRef}
-                        onChange={event => this.resetAllError()}
-                    />
-                    <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', marginTop: 12 }}>
-                        <Text style={{ fontSize: 10 }}>By Signing up you are agreeing with Tax Go</Text>
-                        <TouchableOpacity onPress={this.onTermsConditionClick}
-                            style={{
-                                marginLeft: 4,
-                                paddingVertical: 8, paddingHorizontal: 4
-                            }}>
-                            <Text style={{ color: colorAccent, fontSize: 10 }}>Terms {`&`} Conditions.</Text>
-                        </TouchableOpacity>
-                    </View>
-                    {this.hasAnyError()
-                        ? <Text
-                            style={{
-                                color: errorColor,
-                                fontSize: 11,
-                                alignSelf: 'center'
-                            }}>Resolve All Error First!</Text> : null}
-                    <AppButton
-                        title='Sign Up'
-                        onPress={this.validateAndSignUp} />
-                    <View style={{ flexDirection: 'row', marginVertical: 18, alignItems: 'center' }}>
-                        <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
-                        <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
-                        <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
-                    </View>
-                    <FBLoginButton
-                        onSuccess={accessToken => { }}
-                        onError={() => { }} />
-                    <View style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginTop: 12
-                    }}>
-                        <Text style={{ fontWeight: 'bold' }}>Already have an Account?</Text>
-                        <TouchableOpacity onPress={this.loginClick} style={{ padding: 12 }}>
-                            <Text style={{
-                                textDecorationLine: 'underline',
-                                color: colorAccent,
-                                fontWeight: 'bold'
-                            }}>
-                                LOGIN
-                            </Text>
-                        </TouchableOpacity>
-
-                    </View>
-                    <View style={{
-                        flexDirection: 'row',
-                        flex: 1,
-                        alignItems: 'center',
-                        marginBottom: 12
-                    }}>
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='First Name'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    title='*required'
+                    fieldRef={this.firstNameRef}
+                    error={this.state.firstNameError}
+                    onChange={event => this.resetAllError()}
+                    onSubmitEditing={() => focusField(this.lastNameRef)} />
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Last Name'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    title='*required'
+                    fieldRef={this.lastNameRef}
+                    error={this.state.lastNameError}
+                    onChange={event => this.resetAllError()}
+                    onSubmitEditing={() => focusField(this.emailRef)} />
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Email'
+                    keyboardType='email-address'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    title='*required'
+                    fieldRef={this.emailRef}
+                    error={this.state.emailError}
+                    onChange={event => this.resetAllError()}
+                    onSubmitEditing={() => focusField(this.passwordRef)} />
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Password'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    secureTextEntry={true}
+                    title='*required'
+                    fieldRef={this.passwordRef}
+                    error={this.state.passwordError}
+                    onChange={event => this.resetAllError()}
+                    onSubmitEditing={() => focusField(this.businessNameRef)} />
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Business Name'
+                    keyboardType='name-phone-pad'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    title='*required'
+                    error={this.state.businessNameError}
+                    onChange={event => this.resetAllError()}
+                    fieldRef={this.businessNameRef}
+                />
+                {this.renderBusinessCategory()}
+                {this.renderCountry()}
+                {this.renderBusinessType()}
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Phone'
+                    keyboardType='number-pad'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    error={this.state.phoneError}
+                    fieldRef={this.phoneNumberRef}
+                    onChange={event => this.resetAllError()}
+                />
+                <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', marginTop: 12 }}>
+                    <Text style={{ fontSize: 10 }}>By Signing up you are agreeing with Tax Go</Text>
+                    <TouchableOpacity onPress={this.onTermsConditionClick}
+                        style={{
+                            marginLeft: 4,
+                            paddingVertical: 8, paddingHorizontal: 4
+                        }}>
+                        <Text style={{ color: colorAccent, fontSize: 10 }}>Terms {`&`} Conditions.</Text>
+                    </TouchableOpacity>
+                </View>
+                {this.hasAnyError()
+                    ? <Text
+                        style={{
+                            color: errorColor,
+                            fontSize: 11,
+                            alignSelf: 'center'
+                        }}>Resolve All Error First!</Text> : null}
+                <AppButton
+                    title='Sign Up'
+                    onPress={this.validateAndSignUp} />
+                <View style={{ flexDirection: 'row', marginVertical: 18, alignItems: 'center' }}>
+                    <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
+                    <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
+                    <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
+                </View>
+                <FBLoginButton
+                    onSuccess={accessToken => { }}
+                    onError={() => { }} />
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: 12
+                }}>
+                    <Text style={{ fontWeight: 'bold' }}>Already have an Account?</Text>
+                    <TouchableOpacity onPress={this.loginClick} style={{ padding: 12 }}>
                         <Text style={{
-                            fontSize: 10,
-                            textTransform: 'capitalize'
-                        }}>**Read our privacy policy</Text>
-                        <TouchableOpacity onPress={this.onPrivacyPolicyClick}
-                            style={{
-                                marginLeft: 4,
-                                paddingVertical: 8, paddingHorizontal: 4
-                            }}>
-                            <Text style={{
-                                color: colorAccent,
-                                fontSize: 10,
-                                textTransform: 'capitalize',
-                                textDecorationLine: 'underline'
-                            }}>here.</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <ProgressDialog visible={this.state.creating} />
-                </KeyboardAwareScrollView>
-            </KeyboardAvoidingView>
+                            textDecorationLine: 'underline',
+                            color: colorAccent,
+                            fontWeight: 'bold'
+                        }}>
+                            LOGIN
+                            </Text>
+                    </TouchableOpacity>
 
+                </View>
+                <View style={{
+                    flexDirection: 'row',
+                    flex: 1,
+                    alignItems: 'center',
+                    marginBottom: 12
+                }}>
+                    <Text style={{
+                        fontSize: 10,
+                        textTransform: 'capitalize'
+                    }}>**Read our privacy policy</Text>
+                    <TouchableOpacity onPress={this.onPrivacyPolicyClick}
+                        style={{
+                            marginLeft: 4,
+                            paddingVertical: 8, paddingHorizontal: 4
+                        }}>
+                        <Text style={{
+                            color: colorAccent,
+                            fontSize: 10,
+                            textTransform: 'capitalize',
+                            textDecorationLine: 'underline'
+                        }}>here.</Text>
+                    </TouchableOpacity>
+                </View>
+                <ProgressDialog visible={this.state.creating} />
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     }
 }

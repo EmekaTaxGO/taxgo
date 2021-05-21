@@ -24,6 +24,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 class AddProductScreen extends Component {
@@ -585,7 +586,7 @@ class AddProductScreen extends Component {
 
                 {this.state.showStockDateDialog ? <DateTimePicker
                     value={this.state.stockDate}
-                    mode={'datetime'}
+                    mode={'date'}
                     display='default'
                     onChange={this.onStockDateChange}
                 /> : null}
@@ -657,7 +658,7 @@ class AddProductScreen extends Component {
             <AppTextField
                 containerStyle={styles.textField}
                 label='Whole Sale Price'
-                keyboardType='default'
+                keyboardType='number-pad'
                 returnKeyType='done'
                 fieldRef={this.wholesalePriceRef}
                 lineWidth={1}
@@ -700,226 +701,221 @@ class AddProductScreen extends Component {
         const taxList = this.getTaxList();
         const editMode = this.isEditMode();
 
-        return <KeyboardAvoidingView style={{ flex: 1 }}>
-            <ScrollView style={{ flex: 1 }}
-                keyboardDismissMode='on-drag'
-                keyboardShouldPersistTaps='always'>
+        return <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: 'white' }}>
 
-                {this.renderStrip('Item')}
-                {this.renderLabel('Type')}
+            {this.renderStrip('Item')}
+            {this.renderLabel('Type')}
 
-                <AppPicker
-                    style={styles.typeBox}
-                    selectedValue={types[selectedTypeIndex].value}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ selectedTypeIndex: itemIndex })}>
+            <AppPicker
+                style={styles.typeBox}
+                selectedValue={types[selectedTypeIndex].value}
+                mode='dropdown'
+                onValueChange={(itemValue, itemIndex) => this.setState({ selectedTypeIndex: itemIndex })}>
 
-                    {types.map((value, index) => <Picker.Item
-                        label={value.value} value={value.value} key={`${index}`} />)}
-                </AppPicker>
+                {types.map((value, index) => <Picker.Item
+                    label={value.value} value={value.value} key={`${index}`} />)}
+            </AppPicker>
 
-                <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
+            <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Code/Name'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    fieldRef={this.codeRef}
+                    lineWidth={1}
+                    editable={!editMode}
+                    onSubmitEditing={() => { this.descriptionRef.current.focus() }} />
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Description'
+                    keyboardType='default'
+                    returnKeyType={isStock ? 'next' : 'done'}
+                    fieldRef={this.descriptionRef}
+                    lineWidth={1}
+                    onSubmitEditing={() => {
+                        if (isStock) {
+                            this.salePriceRef.current.focus()
+                        }
+                    }} />
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Bar Code'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    fieldRef={this.barcodeRef}
+                    editable={!editMode}
+                    lineWidth={1}
+                />
+            </View>
+            <View style={{ marginTop: 12 }}>
+                {this.renderStrip('Sale')}
+            </View>
+
+            <View style={{ paddingHorizontal: 16 }}>
+                <TouchableOpacity onPress={this.onSalesAccountClick}>
                     <AppTextField
                         containerStyle={styles.textField}
-                        label='Code/Name'
+                        label='Sales Acc.'
                         keyboardType='default'
                         returnKeyType='next'
-                        fieldRef={this.codeRef}
-                        lineWidth={1}
-                        editable={!editMode}
-                        onSubmitEditing={() => { this.descriptionRef.current.focus() }} />
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Description'
-                        keyboardType='default'
-                        returnKeyType={isStock ? 'next' : 'done'}
-                        fieldRef={this.descriptionRef}
-                        lineWidth={1}
-                        onSubmitEditing={() => {
-                            if (isStock) {
-                                this.salePriceRef.current.focus()
-                            }
-                        }} />
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Bar Code'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        fieldRef={this.barcodeRef}
-                        editable={!editMode}
-                        lineWidth={1}
-                    />
-                </View>
-                <View style={{ marginTop: 12 }}>
-                    {this.renderStrip('Sale')}
-                </View>
-
-                <View style={{ paddingHorizontal: 16 }}>
-                    <TouchableOpacity onPress={this.onSalesAccountClick}>
-                        <AppTextField
-                            containerStyle={styles.textField}
-                            label='Sales Acc.'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            fieldRef={this.saleAccountRef}
-                            lineWidth={1}
-                            editable={false}
-                            onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
-                    </TouchableOpacity>
-                    {!isStock ?
-                        <AppTextField
-                            containerStyle={styles.textField}
-                            label='Rate'
-                            keyboardType='number-pad'
-                            returnKeyType='done'
-                            fieldRef={this.rateRef}
-                            lineWidth={1}
-                            onChangeText={text => setTimeout(this.onPriceChange, 200)}
-                        /> : null}
-                    {isStock ? this.renderPriceField() : null}
-                </View>
-
-                {this.renderLabel('VAT/GST')}
-                <AppPicker
-                    style={styles.typeBox}
-                    selectedValue={taxList[selectedTaxIndex]}
-                    mode='dropdown'
-                    onValueChange={this.onVatChange}>
-
-                    {taxList.map((value, index) => <Picker.Item
-                        label={value} value={value} key={`${index}`} />)}
-                </AppPicker>
-                <View style={{ paddingHorizontal: 16 }}>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Vat Amount'
-                        keyboardType='default'
-                        returnKeyType='done'
+                        fieldRef={this.saleAccountRef}
                         lineWidth={1}
                         editable={false}
-                        fieldRef={this.vatAmountRef}
-                        onSubmitEditing={() => { }} />
-                </View>
-                <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginTop: 12 }}>
-                    <Text style={{ fontSize: 16, color: 'gray' }}>Include Vat.</Text>
-                    <Switch
-                        style={{ marginLeft: 40 }}
-                        thumbColor={this.state.includeVat ? colorAccent : 'gray'}
-                        value={this.state.includeVat}
-                        onValueChange={this.onIncludeVatChange}
-                    />
-                </View>
-
-                <View style={{ paddingHorizontal: 16 }}>
+                        onSubmitEditing={() => { this.salePriceRef.current.focus() }} />
+                </TouchableOpacity>
+                {!isStock ?
                     <AppTextField
                         containerStyle={styles.textField}
-                        label='Total'
-                        keyboardType='default'
+                        label='Rate'
+                        keyboardType='number-pad'
                         returnKeyType='done'
+                        fieldRef={this.rateRef}
                         lineWidth={1}
-                        editable={false}
-                        fieldRef={this.totalAmountRef}
-                        onSubmitEditing={() => { }} />
-                </View>
-                <View style={{ marginTop: 24 }}>
-                    {this.renderStrip('Purchase')}
-                </View>
-
-                <View style={{ paddingHorizontal: 16 }}>
-                    <TouchableOpacity onPress={this.onSupplierPress}>
-                        <AppTextField
-                            containerStyle={styles.textField}
-                            label='Supplier'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            lineWidth={1}
-                            editable={false}
-                            fieldRef={this.supplierRef}
-                            onSubmitEditing={() => this.SICodeRef.current.focus()} />
-
-                    </TouchableOpacity>
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='SI Code'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        fieldRef={this.SICodeRef}
-                        onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
-
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Purchase Desc.'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        fieldRef={this.purchaseDescRef}
-                        onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
-
-                    <AppTextField
-                        containerStyle={styles.textField}
-                        label='Cost Price'
-                        keyboardType='default'
-                        returnKeyType='next'
-                        lineWidth={1}
-                        fieldRef={this.purchasePriceRef}
-                        onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
-                    <TouchableOpacity onPress={this.onPurchaseAccPress}>
-                        <AppTextField
-                            containerStyle={styles.textField}
-                            label='Purchase Acc.'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            lineWidth={1}
-                            editable={false}
-                            fieldRef={this.purchaseAccRef}
-                            onSubmitEditing={() => { }} />
-
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => this.setState({ showExpiryDateDialog: true })}>
-                        <AppTextField
-                            containerStyle={styles.textField}
-                            label='Expiry Date'
-                            keyboardType='default'
-                            returnKeyType='next'
-                            lineWidth={1}
-                            editable={false}
-                            fieldRef={this.expiryDateRef} />
-                    </TouchableOpacity>
-                    {this.state.showExpiryDateDialog ? <DateTimePicker
-                        value={this.state.purchaseExpiryDate}
-                        mode={'datetime'}
-                        display='default'
-                        onChange={this.onPurchaseExpiryChange}
+                        onChangeText={text => setTimeout(this.onPriceChange, 200)}
                     /> : null}
+                {isStock ? this.renderPriceField() : null}
+            </View>
 
+            {this.renderLabel('VAT/GST')}
+            <AppPicker
+                style={styles.typeBox}
+                selectedValue={taxList[selectedTaxIndex]}
+                mode='dropdown'
+                onValueChange={this.onVatChange}>
+
+                {taxList.map((value, index) => <Picker.Item
+                    label={value} value={value} key={`${index}`} />)}
+            </AppPicker>
+            <View style={{ paddingHorizontal: 16 }}>
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Vat Amount'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    editable={false}
+                    fieldRef={this.vatAmountRef}
+                    onSubmitEditing={() => { }} />
+            </View>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginTop: 12 }}>
+                <Text style={{ fontSize: 16, color: 'gray' }}>Include Vat.</Text>
+                <Switch
+                    style={{ marginLeft: 40 }}
+                    thumbColor={this.state.includeVat ? colorAccent : 'gray'}
+                    value={this.state.includeVat}
+                    onValueChange={this.onIncludeVatChange}
+                />
+            </View>
+
+            <View style={{ paddingHorizontal: 16 }}>
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Total'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    editable={false}
+                    fieldRef={this.totalAmountRef}
+                    onSubmitEditing={() => { }} />
+            </View>
+            <View style={{ marginTop: 24 }}>
+                {this.renderStrip('Purchase')}
+            </View>
+
+            <View style={{ paddingHorizontal: 16 }}>
+                <TouchableOpacity onPress={this.onSupplierPress}>
                     <AppTextField
                         containerStyle={styles.textField}
-                        label='Reorder Level.'
+                        label='Supplier'
                         keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        fieldRef={this.reorderLevelRef}
-                        onSubmitEditing={() => this.focus(this.reorderQtyRef)} />
+                        editable={false}
+                        fieldRef={this.supplierRef}
+                        onSubmitEditing={() => this.SICodeRef.current.focus()} />
 
+                </TouchableOpacity>
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='SI Code'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    fieldRef={this.SICodeRef}
+                    onSubmitEditing={() => this.purchaseDescRef.current.focus()} />
+
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Purchase Desc.'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    fieldRef={this.purchaseDescRef}
+                    onSubmitEditing={() => this.purchasePriceRef.current.focus()} />
+
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Cost Price'
+                    keyboardType='default'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    fieldRef={this.purchasePriceRef}
+                    onSubmitEditing={() => this.purchaseAccRef.current.focus()} />
+                <TouchableOpacity onPress={this.onPurchaseAccPress}>
                     <AppTextField
                         containerStyle={styles.textField}
-                        label='Reorder Quantity'
-                        keyboardType='numeric'
+                        label='Purchase Acc.'
+                        keyboardType='default'
                         returnKeyType='next'
                         lineWidth={1}
-                        fieldRef={this.reorderQtyRef} />
-                </View>
-                {isStock ? this.renderStock() : null}
-                {isStock ? this.renderOther() : null}
-                <AppButton
-                    containerStyle={{ marginHorizontal: 16 }}
-                    title={this.isEditMode() ? 'Update' : 'Add'}
-                    onPress={this.validateAndSubmitForm} />
-                <ProgressDialog visible={this.props.product.updatingProduct} />
-            </ScrollView>
+                        editable={false}
+                        fieldRef={this.purchaseAccRef}
+                        onSubmitEditing={() => { }} />
 
-        </KeyboardAvoidingView>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => this.setState({ showExpiryDateDialog: true })}>
+                    <AppTextField
+                        containerStyle={styles.textField}
+                        label='Expiry Date'
+                        keyboardType='default'
+                        returnKeyType='next'
+                        lineWidth={1}
+                        editable={false}
+                        fieldRef={this.expiryDateRef} />
+                </TouchableOpacity>
+                {this.state.showExpiryDateDialog ? <DateTimePicker
+                    value={this.state.purchaseExpiryDate}
+                    mode={'date'}
+                    display='default'
+                    onChange={this.onPurchaseExpiryChange}
+                /> : null}
+
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Reorder Level.'
+                    keyboardType='number-pad'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    fieldRef={this.reorderLevelRef}
+                    onSubmitEditing={() => this.focus(this.reorderQtyRef)} />
+
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Reorder Quantity'
+                    keyboardType='numeric'
+                    returnKeyType='next'
+                    lineWidth={1}
+                    fieldRef={this.reorderQtyRef} />
+            </View>
+            {isStock ? this.renderStock() : null}
+            {isStock ? this.renderOther() : null}
+            <AppButton
+                containerStyle={{ marginHorizontal: 16 }}
+                title={this.isEditMode() ? 'Update' : 'Add'}
+                onPress={this.validateAndSubmitForm} />
+            <ProgressDialog visible={this.props.product.updatingProduct} />
+        </KeyboardAwareScrollView>
     }
 }
 const styles = StyleSheet.create({

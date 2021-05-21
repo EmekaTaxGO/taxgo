@@ -213,6 +213,7 @@ export const saveSupplierPayment = body => {
     }
 }
 
+// TO-DO (not used yet)
 export const saveOtherPayment = body => {
     return (dispatch) => {
         dispatch({ type: SAVE_OTHER_PAYMENT_REQUEST });

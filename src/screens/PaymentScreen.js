@@ -15,6 +15,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import Api from '../services/api';
 import { getApiErrorMsg, showSuccess, toFloat } from '../helpers/Utils';
 import Store from '../redux/Store';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 class PaymentScreen extends Component {
 
@@ -248,7 +249,7 @@ class PaymentScreen extends Component {
             </TouchableOpacity>
             {this.state.showPayDateDialog ? <DateTimePicker
                 value={this.state.payDate}
-                mode={'datetime'}
+                mode={'date'}
                 display='default'
                 minimumDate={new Date()}
                 onChange={this.onPayDateChange}
@@ -346,16 +347,16 @@ class PaymentScreen extends Component {
         const { payload } = this.props.route.params;
 
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
                 <View style={{ flex: 1, flexDirection: 'column' }}>
-                    <ScrollView style={{ flex: 1 }}>
+                    <KeyboardAwareScrollView style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'column' }}>
                             {payload.showPaymentChooser ? this.renderPaymentChooser() : null}
                             {this.state.paymentIndex === 2 ? this.renderRecordPayment() : null}
                             {this.state.paymentIndex === 1 ? this.renderCardInfo() : null}
                         </View>
 
-                    </ScrollView>
+                    </KeyboardAwareScrollView>
                 </View>
                 <AppButton
                     disabled={!this.state.enableBtn}

@@ -5,7 +5,7 @@ import moment from 'moment';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, errorColor } from '../theme/Color';
 import { connect } from 'react-redux';
 import * as bankActions from '../redux/actions/bankActions';
 import { bindActionCreators } from 'redux';

@@ -506,7 +506,7 @@ class OtherPaymentScreen extends Component {
     }
 
     renderLedger = () => {
-        return <FlatList
+        return <KeyboardAwareFlatList
             style={{ flex: 1 }}
             data={this.state.data}
             keyExtractor={(item, index) => `${index}`}
@@ -560,7 +560,8 @@ const styles = StyleSheet.create({
     card: {
         marginHorizontal: 16,
         marginTop: 16,
-        flex: 1
+        flex: 1,
+        backgroundColor: 'white'
     },
     priceLabel: {
         flex: 1,

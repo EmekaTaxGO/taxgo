@@ -33,9 +33,5 @@ AxiosInstance.interceptors.response.use(res => {
         console.log('Api Response:', JSON.stringify(res.data, null, 2));
     }
     return res;
-}, error => {
-    if (PRINT_RESPONSE && __DEV__ && error.response) {
-        console.log('Api Err:', JSON.stringify(error.response, null, 2));
-    }
 })
 export default AxiosInstance;

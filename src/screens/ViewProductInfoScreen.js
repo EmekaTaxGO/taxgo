@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, SafeAreaView, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 
 import * as productActions from '../redux/actions/productActions';
@@ -7,19 +7,20 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
-import { colorAccent, colorPrimary } from '../theme/Color';
+import { colorPrimary } from '../theme/Color';
 import ImageView from '../components/ImageView';
 import AppTab from '../components/AppTab';
 import moment from 'moment';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AppText from '../components/AppText';
 
 class ViewProductInfoScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            tab: 'activity',
+            tab: 'info',
             startDate: new Date(),
             showStartDateDialog: false,
             endDate: new Date(),
@@ -65,12 +66,12 @@ class ViewProductInfoScreen extends Component {
         const { productActions } = this.props;
         const startDate = moment(this.state.startDate).format(this.DATE_FORMAT);
         const endDate = moment(this.state.endDate).format(this.DATE_FORMAT);
-        
+
         productActions.getProductDetails(this.getProductId(), startDate, endDate);
     }
 
     header = (title) => {
-        return <Text style={{
+        return <AppText style={{
             fontSize: 18,
             fontWeight: 'bold',
             width: '100%',
@@ -79,7 +80,7 @@ class ViewProductInfoScreen extends Component {
             paddingHorizontal: 12,
             paddingVertical: 6,
             color: 'white'
-        }}>{title}</Text>
+        }}>{title}</AppText>
     }
 
     row = (label, value) => {
@@ -89,14 +90,14 @@ class ViewProductInfoScreen extends Component {
             alignItems: 'center',
             marginTop: 4
         }}>
-            <Text style={{ flex: 5, color: 'black', fontSize: 14 }}>{label}</Text>
-            {value ? <Text style={{
+            <AppText style={{ flex: 5, color: 'black', fontSize: 14 }}>{label}</AppText>
+            {value ? <AppText style={{
                 flex: 4,
                 color: 'gray',
                 fontSize: 14,
                 textAlign: 'right'
             }}
-                numberOfLines={1}>{value}</Text> : null}
+                numberOfLines={1}>{value}</AppText> : null}
         </View>
     }
 
@@ -165,10 +166,10 @@ class ViewProductInfoScreen extends Component {
             alignItems: 'flex-end'
         }}>
             <View style={{ flex: 1, flexDirection: 'column' }}>
-                <Text style={{ fontSize: 20, fontWeight: '400' }}>{product.name}</Text>
-                <Text style={{ fontSize: 15 }}>{product.pdescription}</Text>
+                <AppText style={{ fontSize: 20, fontWeight: '400' }}>{product.name}</AppText>
+                <AppText style={{ fontSize: 15 }}>{product.pdescription}</AppText>
             </View>
-            <Text style={{ color: 'black', fontSize: 16 }}>{product.itemtype}</Text>
+            <AppText style={{ color: 'black', fontSize: 16 }}>{product.itemtype}</AppText>
         </View>
     }
 
@@ -246,7 +247,7 @@ class ViewProductInfoScreen extends Component {
                     paddingTop: 6,
                     marginRight: 8
                 }}>
-                    <Text>Start Date</Text>
+                    <AppText>Start Date</AppText>
                     <TouchableOpacity onPress={() => this.setState({ showStartDateDialog: true })}>
                         <View style={{
                             flexDirection: 'row',
@@ -257,16 +258,16 @@ class ViewProductInfoScreen extends Component {
                             borderRadius: 6,
                             marginTop: 6
                         }}>
-                            <Text style={{
+                            <AppText style={{
                                 flex: 1,
                                 fontSize: 14
-                            }}>{moment(this.state.startDate).format(this.DATE_FORMAT)}</Text>
+                            }}>{moment(this.state.startDate).format(this.DATE_FORMAT)}</AppText>
                             <AntDesignIcon name='calendar' color='white' size={30} />
                         </View>
                     </TouchableOpacity>
                     {this.state.showStartDateDialog ? <DateTimePicker
                         value={this.state.startDate}
-                        mode={'datetime'}
+                        mode={'date'}
                         display='default'
                         onChange={this.onStartDateChange}
                     /> : null}
@@ -278,7 +279,7 @@ class ViewProductInfoScreen extends Component {
                     paddingTop: 6,
                     marginLeft: 8
                 }}>
-                    <Text>End Date</Text>
+                    <AppText>End Date</AppText>
                     <TouchableOpacity onPress={() => this.setState({ showEndDateDialog: true })}>
                         <View style={{
                             flexDirection: 'row',
@@ -289,16 +290,16 @@ class ViewProductInfoScreen extends Component {
                             borderRadius: 6,
                             marginTop: 6
                         }}>
-                            <Text style={{
+                            <AppText style={{
                                 flex: 1,
                                 fontSize: 14
-                            }}>{moment(this.state.endDate).format(this.DATE_FORMAT)}</Text>
+                            }}>{moment(this.state.endDate).format(this.DATE_FORMAT)}</AppText>
                             <AntDesignIcon name='calendar' color='white' size={30} />
                         </View>
                     </TouchableOpacity>
                     {this.state.showEndDateDialog ? <DateTimePicker
                         value={this.state.endDate}
-                        mode={'datetime'}
+                        mode={'date'}
                         display='default'
                         onChange={this.onEndDateChange}
                     /> : null}
@@ -327,7 +328,8 @@ class ViewProductInfoScreen extends Component {
 const styles = StyleSheet.create({
     card: {
         marginHorizontal: 12,
-        marginTop: 16
+        marginTop: 16,
+        backgroundColor: 'white'
     },
     cardContainer: {
         width: '100%',

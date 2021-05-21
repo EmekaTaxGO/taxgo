@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, TouchableHighlight, Text, StyleSheet } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import CardView from 'react-native-cardview';
-import { errorColor } from '../theme/Color';
+import { editColor, errorColor, viewColor } from '../theme/Color';
 
 class SwipeHiddenView extends Component {
 
@@ -38,9 +38,9 @@ class SwipeHiddenView extends Component {
                 flexDirection: 'row'
             }}>
                 <View style={{ flex: 1 }}>
-                    {this.hiddenElement('View', 'visibility', errorColor, () => this.props.onViewClick(item))}
+                    {this.hiddenElement('View', 'visibility', viewColor, () => this.props.onViewClick(item))}
                 </View>
-                {this.hiddenElement('Edit', 'edit', 'blue', () => this.props.onEditClick(item))}
+                {this.hiddenElement('Edit', 'edit', editColor, () => this.props.onEditClick(item))}
             </View>
         </CardView>
     }

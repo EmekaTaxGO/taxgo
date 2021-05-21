@@ -62,6 +62,7 @@ import ViewInvoiceScreen from './src/screens/ViewInvoiceScreen';
 import { appFont, appFontBold } from './src/helpers/ViewHelper';
 import PaymentScreen from './src/screens/PaymentScreen';
 import EditProfileV2 from './src/screens/EditProfileV2';
+import InvoicePageV2 from './src/screens/InvoicePageV2';
 
 const App = () => {
 
@@ -104,7 +105,6 @@ const App = () => {
       <Stack.Screen name='ScanBarcodeScreen' component={ScanBarcodeScreen} options={{ title: 'Scan QR' }} />
       <Stack.Screen name='PurchaseLedgerScreen' component={PurchaseLedgerScreen} options={{ title: 'Purchase Ledger' }} />
       <Stack.Screen name='SaleLedgerScreen' component={SaleLedgerScreen} options={{ title: 'Sale Ledger' }} />
-      <Stack.Screen name='MyLedgerScreen' component={MyLedgerScreen} options={{ title: 'My Ledger' }} />
       <Stack.Screen name='BankAccountScreen' component={BankAccountScreen} options={{ title: 'Bank Account' }} />
       <Stack.Screen name='SelectProductScreen' component={SelectProductScreen} options={{ title: 'Select Product' }} />
       <Stack.Screen name='SelectBankScreen' component={SelectBankScreen} options={{ title: 'Select Bank' }} />
@@ -130,6 +130,7 @@ const App = () => {
       <Stack.Screen name='ViewInvoiceScreen' component={ViewInvoiceScreen} options={{ title: 'Sales' }} />
       <Stack.Screen name='PaymentScreen' component={PaymentScreen} options={{ title: 'Payment' }} />
       <Stack.Screen name='EditProfileV2' component={EditProfileV2} options={{ title: 'Edit Profile' }} />
+      <Stack.Screen name='InvoicePageV2' component={InvoicePageV2} options={{ title: 'Invoice Summary' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

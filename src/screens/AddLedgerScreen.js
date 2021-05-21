@@ -4,7 +4,7 @@ import { log } from '../components/Logger';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { color } from 'react-native-reanimated';
 import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent } from '../theme/Color';
+import { colorAccent, errorColor } from '../theme/Color';
 import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers';
 import { isEmpty, showError } from '../helpers/Utils';
 import Store from '../redux/Store';
@@ -15,7 +15,7 @@ import * as ledgerActions from '../redux/actions/ledgerActions';
 import { bindActionCreators } from 'redux';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
-import { get } from 'lodash';
+import { get, isNull, isUndefined } from 'lodash';
 
 
 class AddLedgerScreen extends Component {
@@ -84,7 +84,7 @@ class AddLedgerScreen extends Component {
 
     isEditMode = () => {
         const ledger = get(this.props.route.params, 'ledger');
-        return ledger !== undefined;
+        return !isUndefined(ledger) && !isNull(ledger);
     }
 
     updateLedger = () => {
@@ -110,22 +110,24 @@ class AddLedgerScreen extends Component {
     onLedgerUpdateError = () => {
         setTimeout(() => {
             showError(API_ERROR_MESSAGE);
-        }, 200);
+        }, 400);
     }
 
     onLedgerUpdated = (data) => {
-        Alert.alert('Alert', data.message, [
-            {
-                style: 'default',
-                text: 'OK',
-                onPress: () => {
-                    if (data.status) {
-                        this.props.navigation.goBack();
-                        this.props.route.params.onLedgerUpdated();
+        setTimeout(() => {
+            Alert.alert('Alert', data.message, [
+                {
+                    style: 'default',
+                    text: 'OK',
+                    onPress: () => {
+                        if (data.status) {
+                            this.props.navigation.goBack();
+                            this.props.route.params.onLedgerUpdated();
+                        }
                     }
                 }
-            }
-        ], { cancelable: false });
+            ], { cancelable: false });
+        }, 400);
     }
 
 

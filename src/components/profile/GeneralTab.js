@@ -5,7 +5,7 @@ import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
 import ImagePickerView from '../ImagePickerView';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { get, isEmpty } from 'lodash';
+import { get, isEmpty, method } from 'lodash';
 import { showError, showSuccess } from '../../helpers/Utils';
 import ProgressDialog from '../ProgressDialog';
 import { getFieldValue } from '../../helpers/TextFieldHelpers';
@@ -47,16 +47,29 @@ class GeneralTab extends Component {
 
         const userid = get(Store.getState().auth, 'authData.id');
         const form = new FormData();
-        form.append('userid', userid);
-        form.append('file', {
+        form.append('userid', `${userid}`);
+        const file = {
             uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
-            type: 'image/jpeg',
+            type: 'image/jpg',
             name: fileName
-        });
+        }
+        form.append('file', file);
+
+        // return fetch(BASE_URL + '/user/updateProfilePicture', {
+        //     body: form,
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'multipart/form-data'
+        //     }
+        // })
+        //     .then(response => {
+        //         console.log('Uploaded: ', response);
+        //         return response.json().data.location
+        //     });
         return Api.post('/user/updateProfilePicture', form, {
             headers: {
                 Accept: 'application/json',
-                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+                'Content-Type': 'multipart/form-data'
             }
         })
             .then(response => response.data.data.location);

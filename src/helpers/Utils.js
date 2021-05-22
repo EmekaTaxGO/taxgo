@@ -6,7 +6,7 @@ import Snackbar from "react-native-snackbar";
 import { NO_INTERNET_ERROR, API_ERROR_MESSAGE } from "../constants/appConstant";
 import { RNS3 } from "react-native-aws3";
 import Api from '../services/api';
-import { isNaN } from "lodash";
+import { get, isNaN } from "lodash";
 
 export const openLink = (navigation, title, url) => {
     navigation.push('WebViewScreen', {
@@ -184,4 +184,9 @@ export const DEFAULT_PICKER_OPTIONS = {
     tintColor: colorAccent,
     storageOptions: { privateDirectory: true }
 };
+
+export const isBuffer = (value) => {
+    const type = get(value, 'type', '');
+    return type === 'Buffer';
+}
 

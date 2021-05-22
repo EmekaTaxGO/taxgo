@@ -11,7 +11,7 @@ import SubscriptionTab from '../components/profile/SubscriptionTab';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as authActions from '../redux/actions/authActions';
-import { get, isNull } from 'lodash';
+import { get, isArray, isArrayBuffer, isArrayLikeObject, isNull, isString, isUndefined } from 'lodash';
 import { Buffer } from 'buffer';
 import Api from '../services/api';
 import { getApiErrorMsg, showError, showSuccess } from '../helpers/Utils';
@@ -19,6 +19,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
 import { View } from 'react-native';
+import { isBuffer } from '../helpers/Utils';
 
 class EditProfileV2 extends Component {
 
@@ -68,14 +69,15 @@ class EditProfileV2 extends Component {
         var profile = get(this.props.auth, 'profile', {});
         var profile = isNull(profile) ? {} : profile;
         const userid = get(this.props, 'auth.authData.id', -1);
+        Object.keys(profile).filter(value => isBuffer(profile[value]))
+            .forEach(key => {
+                profile[key] = Buffer.from(profile[key]).toString()
+            })
+
+        console.log('Profile Info: ', JSON.stringify(profile, null, 2));
         return {
             ...profile,
-            userid,
-            company: Buffer.from(profile.company).toString(),
-            address1: Buffer.from(profile.address1).toString(),
-            address2: Buffer.from(profile.address2).toString(),
-            defaultmail: Buffer.from(profile.defaultmail).toString(),
-            defaultTerms: Buffer.from(profile.defaultTerms).toString(),
+            userid
         }
     }
 

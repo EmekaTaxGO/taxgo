@@ -5,11 +5,15 @@ import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
 import ImagePickerView from '../ImagePickerView';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { isEmpty, times } from 'lodash';
-import { showError, uploadFile } from '../../helpers/Utils';
+import { get, isEmpty } from 'lodash';
+import { showError, showSuccess } from '../../helpers/Utils';
 import ProgressDialog from '../ProgressDialog';
 import { getFieldValue } from '../../helpers/TextFieldHelpers';
-import { OutlinedTextField } from 'react-native-material-textfield';
+import Store from '../../redux/Store';
+import { showToast } from '../Logger';
+import FormData from 'form-data';
+import Api from '../../services/api';
+import { BASE_URL } from '../../constants/appConstant';
 
 class GeneralTab extends Component {
 
@@ -35,32 +39,47 @@ class GeneralTab extends Component {
 
     }
 
-    onChangeProfile = async (uri) => {
-        var newUrl;
-        try {
-            this.setState({ uploading: true });
-            const millisec = new Date().getTime();
-            const file = {
-                uri,
-                name: `TaxGO_ LOGO_${millisec}.jpg`,
-                type: 'image/png'
-            };
-            const data = await uploadFile(file);
-            console.log('Data Received: ', JSON.stringify(data, null, 2));
-            newUrl = uri;
-        } catch (error) {
-            console.log('Error uploading Image', error);
-            setTimeout(() => showError('Error Uploading Image!'), 300);
-        }
-        const { profile } = this.state;
-        const newProfile = {
-            ...profile,
-            bimage: newUrl
-        };
-        this.setState({
-            profile: newProfile,
-            uploading: false
+    updateProfileImage = async (uri) => {
+
+        console.log('URI: ', uri);
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+        const fileType = uri.substring(uri.lastIndexOf('.') + 1);
+
+        const userid = get(Store.getState().auth, 'authData.id');
+        const form = new FormData();
+        form.append('userid', userid);
+        form.append('file', {
+            uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+            type: 'image/jpeg',
+            name: fileName
         });
+        return Api.post('/user/updateProfilePicture', form, {
+            headers: {
+                Accept: 'application/json',
+                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+            }
+        })
+            .then(response => response.data.data.location);
+    }
+
+    onChangeProfile = async (uri) => {
+        this.setState({ uploading: true });
+        try {
+            const remoteUrl = await this.updateProfileImage(uri);
+            console.log('Remote Url: ', remoteUrl);
+            const profile = {
+                ...this.state.profile,
+                bimage: remoteUrl
+            };
+            this.setState({ profile: profile, uploading: false });
+            setTimeout(() => {
+                showSuccess('Profile picture updated successfully.')
+            }, 300);
+        } catch (error) {
+            showToast('Error updating profile picture!');
+            console.log('Error updating profile picture', error);
+            this.setState({ uploading: false });
+        }
     }
 
     onChangeDob = (show, date) => {

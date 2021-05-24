@@ -32,10 +32,10 @@ import {
     FETCH_PROFIT_LOSS_REPORT_FAIL
 } from '../../constants';
 import { log } from '../../components/Logger';
-import { getApiErrorMsg, toFloat, isEmpty } from '../../helpers/Utils';
+import { getApiErrorMsg, toFloat } from '../../helpers/Utils';
 import Store from '../Store';
 import BalanceSheetHelper from '../../helpers/BalanceSheetHelper';
-import { get } from 'lodash';
+import { get, isEmpty, isUndefined } from 'lodash';
 import {
     BALANCE_SHEET,
     saveToLocal,
@@ -81,7 +81,7 @@ export const fetchTaxNominalList = (id, startDate, endDate) => {
             .then(response => {
                 dispatch({
                     type: FETCH_NOMINAL_TAX_LIST_SUCCESS,
-                    payload: response.data.data.vatlist
+                    payload: response.data.data
                 })
             })
             .catch(err => {
@@ -334,21 +334,40 @@ const sanetizeBreakdown = async (data) => {
 
 const sanetizeVatReport = reports => {
     return new Promise((resolve) => {
-        const newReports = reports.map(report => {
-            let totalTax = 0.0;
-            report.vatSales.label = 'Vat on Sales'
-            report.vatPurchase.label = 'Vat on Purchase'
-            report.vatSales.total = '2.34';
-            report.vatPurchase.total = '102.3';
-            totalTax = parseFloat(report.vatSales.total) + parseFloat(report.vatPurchase.total);
-            // report.vatRate.forEach(value => {
-            //     totalTax += value.total;
-            // });
-            return {
-                ...report,
-                totalTax
+        const vatSales = []
+        const vatPurchase = []
+        var saleTotal = 0.0
+        var purchaseTotal = 0.0
+        reports.forEach(element => {
+            if (element.vatSales !== undefined) {
+                vatSales.push({
+                    ...element.vatSales
+                })
+                saleTotal += parseFloat(element.vatSales.total)
+            }
+            if (element.vatPurchase !== undefined) {
+                vatPurchase.push({
+                    ...element.vatPurchase
+                })
+                purchaseTotal += parseFloat(element.vatPurchase.total)
             }
         })
-        resolve(newReports);
+        console.log('Sale Total: ', saleTotal);
+        const modifiedReport = [];
+        if (!isEmpty(vatSales)) {
+            modifiedReport.push({
+                vatList: vatSales,
+                total: saleTotal,
+                label: 'Sales'
+            });
+        }
+        if (!isEmpty(vatPurchase)) {
+            modifiedReport.push({
+                vatList: vatPurchase,
+                total: purchaseTotal,
+                label: 'Purchase'
+            })
+        }
+        resolve(modifiedReport);
     })
 }

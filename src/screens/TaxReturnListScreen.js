@@ -13,8 +13,9 @@ import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
 import { getSavedData, TAX_RETURN_REPORT } from '../services/UserStorage';
-import { showHeaderProgress } from '../helpers/ViewHelper';
+import { appFont, appFontBold, showHeaderProgress } from '../helpers/ViewHelper';
 import AppTextField from '../components/AppTextField';
+import AppText from '../components/AppText';
 
 class TaxReturnListScreen extends Component {
 
@@ -155,10 +156,10 @@ class TaxReturnListScreen extends Component {
         </View>
     }
 
-    renderItemRow = (ledger, item) => {
+    renderItemRow = item => {
         return <View style={{ flexDirection: 'row', padding: 12 }}>
-            <Text style={{ flex: 1, fontSize: 14 }}>{ledger} ({item.percentage})</Text>
-            <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>{item.percentage}</Text>
+            <Text style={{ flex: 1, fontSize: 14 }}>{item.taxtype}</Text>
+            <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>{item.percentage}%</Text>
             <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>{item.total}</Text>
         </View>
     }
@@ -184,31 +185,36 @@ class TaxReturnListScreen extends Component {
                 backgroundColor: '#f5f5f5',
                 padding: 12
             }}>
-                <Text style={{ flex: 1, fontSize: 14, fontFamily: '' }}>Ledger</Text>
-                <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>Rate</Text>
-                <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>Amount</Text>
+                <Text style={{
+                    flex: 1,
+                    fontSize: 15,
+                    fontFamily: appFontBold
+                }}>Vat on {item.label}</Text>
+                {/* <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>Rate</Text>
+                <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>Amount</Text> */}
             </View>
-            {Object.keys(item).filter(value => value.startsWith('vat'))
-                .map(key => this.renderItemRow(item[key].label, item[key]))}
+            {item.vatList.map(value => this.renderItemRow(value))}
             <View style={{
                 flexDirection: 'row',
                 borderTopColor: 'lightgray',
                 borderTopWidth: 1
             }}>
-                <Text style={{
+                <AppText style={{
                     flex: 1,
                     textAlign: 'left',
-                    fontSize: 14,
-                    fontWeight: 'bold',
+                    fontSize: 16,
+                    fontFamily:appFontBold,
                     padding: 12
-                }}>Total {item.ledger}</Text>
-                <TouchableOpacity onPress={() => this.onPricePress(item)} style={{ padding: 12 }}>
-                    <Text style={{
+                }}>Total</AppText>
+                <TouchableOpacity
+                    onPress={() => this.onPricePress(item)} style={{ padding: 12 }}
+                    disabled={item.total <= 0}>
+                    <AppText style={{
                         flex: 1,
                         textAlign: 'right',
-                        fontSize: 14,
+                        fontSize: 18,
                         color: colorAccent
-                    }}>{item.totalTax}</Text>
+                    }}>{item.total}</AppText>
                 </TouchableOpacity>
             </View>
         </CardView>
@@ -226,11 +232,22 @@ class TaxReturnListScreen extends Component {
         if (!taxReports) {
             return null;
         }
-        return <FlatList
-            keyExtractor={(item, index) => `${index}`}
-            data={taxReports}
-            renderItem={({ item, index }) => this.renderReportItem(item, index)}
-        />
+        return <View style={{ flexDirection: 'column', flex: 1 }}>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginTop: 24 }}>
+                <AppText style={{
+                    flex: 1,
+                    fontSize: 16,
+                    fontFamily: appFont
+                }}>Tax Type</AppText>
+                <AppText style={{ flex: 1, textAlign: 'center', fontSize: 16 }}>Rate (%)</AppText>
+                <AppText style={{ flex: 1, textAlign: 'right', fontSize: 16 }}>Amount</AppText>
+            </View>
+            <FlatList
+                keyExtractor={(item, index) => `${index}`}
+                data={taxReports}
+                renderItem={({ item, index }) => this.renderReportItem(item, index)}
+            />
+        </View>
     }
 
     onPeriodChange = (itemValue, itemIndex) => {

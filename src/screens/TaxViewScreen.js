@@ -56,7 +56,7 @@ class TaxViewScreen extends Component {
     }
 
     configHeader = () => {
-        const title = `${this.taxItem().ledger}-View`;
+        const title = `${this.taxItem().label}-View`;
         this.props.navigation.setOptions({ title })
     }
 

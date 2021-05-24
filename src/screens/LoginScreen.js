@@ -99,7 +99,6 @@ class LoginScreen extends Component {
                 onChange={event => this.resetState()}
                 fieldRef={this.emailRef}
                 onSubmitEditing={() => {
-                    console.log('On Submitted!')
                     this.passRef.current.focus()
                 }} />
             <AppTextField

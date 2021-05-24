@@ -33,7 +33,7 @@ class ProductFragment extends Component {
     onAddClick = () => {
         this.props.navigation.push('AddProductScreen', {
             onProductUpdated: () => {
-                console.log('Fetching Pro List...');
+                
                 this.fetchProductList();
             }
         });

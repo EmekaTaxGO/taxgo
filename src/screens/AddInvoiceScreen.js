@@ -102,7 +102,6 @@ class AddInvoiceScreen extends Component {
 
     componentDidMount() {
         const { info } = this.props.route.params;
-        console.log('Info: ', JSON.stringify(info, null, 2));
         this.fetchInfo();
     }
 

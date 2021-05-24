@@ -352,7 +352,6 @@ const sanetizeVatReport = reports => {
                 purchaseTotal += parseFloat(element.vatPurchase.total)
             }
         })
-        console.log('Sale Total: ', saleTotal);
         const modifiedReport = [];
         if (!isEmpty(vatSales)) {
             modifiedReport.push({

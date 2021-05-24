@@ -73,8 +73,6 @@ class EditProfileV2 extends Component {
             .forEach(key => {
                 profile[key] = Buffer.from(profile[key]).toString()
             })
-
-        console.log('Profile Info: ', JSON.stringify(profile, null, 2));
         return {
             ...profile,
             userid

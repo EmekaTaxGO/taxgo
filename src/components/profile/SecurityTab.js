@@ -97,7 +97,7 @@ class SecurityTab extends Component {
                         this.props.navigation.goBack();
                         showSuccess(response.data.message);
                     }, 300);
-                    console.log('Response: ', JSON.stringify(response.data, null, 2));
+                    
                 });
 
             })

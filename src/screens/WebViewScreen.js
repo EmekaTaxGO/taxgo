@@ -15,7 +15,6 @@ class WebViewScreen extends Component {
         this.props.navigation.setOptions({
             title: title
         })
-        console.log('url: ', this.props.route.params.url);
     }
 
     render() {

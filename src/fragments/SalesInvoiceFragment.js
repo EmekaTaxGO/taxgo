@@ -36,7 +36,6 @@ class SalesInvoiceFragment extends Component {
         const items = ['Sales Invoice', 'Sales Credit Notes'];
         showSingleSelectAlert('New Sale', items,
             index => {
-                console.log('Sales Added!');
                 this.launchAddInvoice('add', index === 0 ? 'sales' : 'scredit');
             })
     }

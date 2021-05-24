@@ -41,7 +41,7 @@ class ForgotPasswordScreen extends Component {
     }
 
     resetPass = () => {
-        console.log('Reset Pass!');
+        
     }
     render() {
         return <View style={{

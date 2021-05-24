@@ -206,7 +206,6 @@ class BankAccountScreen extends Component {
             sdate: date,
             userdate: date
         }
-        // console.log('Prepared Data', JSON.stringify(body));
         bankActions.updateBankDetails(body);
     }
 

@@ -66,7 +66,6 @@ class TaxViewScreen extends Component {
 
     fetchNominalTaxList = () => {
         const taxId = this.taxItem().id;
-        // console.log('TaxItem', this.taxItem());
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)

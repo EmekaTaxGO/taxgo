@@ -41,7 +41,6 @@ class GeneralTab extends Component {
 
     updateProfileImage = async (uri) => {
 
-        console.log('URI: ', uri);
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const fileType = uri.substring(uri.lastIndexOf('.') + 1);
 
@@ -79,7 +78,6 @@ class GeneralTab extends Component {
         this.setState({ uploading: true });
         try {
             const remoteUrl = await this.updateProfileImage(uri);
-            console.log('Remote Url: ', remoteUrl);
             const profile = {
                 ...this.state.profile,
                 bimage: remoteUrl

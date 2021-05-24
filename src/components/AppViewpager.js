@@ -16,7 +16,6 @@ const AppViewPager = ({
         indexes.push(index);
     }
 
-    console.log('Indexes: ', indexes);
     const viewPager = React.createRef();
     return <View style={{ flexDirection: 'column', flex: 1 }}>
         <View style={{ height: 40, backgroundColor: errorColor }}>

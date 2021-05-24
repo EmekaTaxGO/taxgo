@@ -302,7 +302,6 @@ class CustomerRefundScreen extends Component {
             adminid: '0',
             logintype: "user"
         };
-        console.log('Post Body', data);
         const { paymentActions } = this.props;
         // paymentActions.saveCustomerRefund(data)
 

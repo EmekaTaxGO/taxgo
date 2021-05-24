@@ -129,6 +129,8 @@ class DefaultLedgerTabItem extends Component {
             <SwipeListView
                 style={{ flex: 1 }}
                 data={this.listData()}
+                disableLeftSwipe={true}
+                disableRightSwipe={true}
                 renderItem={(data, rowMap) => this.listItem(data)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data.item)}
                 leftOpenValue={70}

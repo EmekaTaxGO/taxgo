@@ -203,7 +203,7 @@ class TaxReturnListScreen extends Component {
                     flex: 1,
                     textAlign: 'left',
                     fontSize: 16,
-                    fontFamily:appFontBold,
+                    fontFamily: appFontBold,
                     padding: 12
                 }}>Total</AppText>
                 <TouchableOpacity
@@ -308,7 +308,8 @@ class TaxReturnListScreen extends Component {
 const styles = StyleSheet.create({
     listCard: {
         marginHorizontal: 16,
-        marginTop: 16
+        marginTop: 16,
+        backgroundColor: 'white'
     }
 })
 export default connect(

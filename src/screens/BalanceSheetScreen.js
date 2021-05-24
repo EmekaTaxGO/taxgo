@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Platform } from 'react-native';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -44,9 +44,9 @@ class BalanceSheetScreen extends Component {
         }
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {
-        const { report: newReport } = newProps;
-        const { report: oldReport } = this.props;
+    componentDidUpdate(oldProps, oldState) {
+        const { report: newReport } = this.props;
+        const { report: oldReport } = oldProps;
 
         if (!newReport.fetchingBalanceSheet && oldReport.fetchingBalanceSheet) {
             //Balance Sheet is Fetched
@@ -57,6 +57,19 @@ class BalanceSheetScreen extends Component {
         }
     }
 
+    UNSAFE_componentWillReceiveProps(newProps) {
+        // const { report: newReport } = newProps;
+        // const { report: oldReport } = this.props;
+
+        // if (!newReport.fetchingBalanceSheet && oldReport.fetchingBalanceSheet) {
+        //     //Balance Sheet is Fetched
+        //     showHeaderProgress(this.props.navigation, false);
+        //     if (newReport.fetchBalanceSheetError === undefined) {
+        //         this.setState({ balanceSheet: newReport.balanceSheet });
+        //     }
+        // }
+    }
+
     fetchBalanceSheet = () => {
         const { reportActions } = this.props;
         const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
@@ -65,10 +78,11 @@ class BalanceSheetScreen extends Component {
     }
 
     onUntilDateChange = (event, selectedDate) => {
-        if (event.type !== 'set') {
+        if (Platform.OS === 'android' && event.type !== 'set') {
             this.setState({ showUntilDateDialog: false });
             return;
         }
+        console.log('Event: ', event);
         const currentDate = selectedDate || this.state.untilDate;
         this.setState({
             untilDate: currentDate,
@@ -104,7 +118,7 @@ class BalanceSheetScreen extends Component {
         const disableDate = this.props.report.fetchingBalanceSheet;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
             <TouchableOpacity
-                style={{ width: '100%', marginEnd: 6, marginBottom: 12 }}
+                style={{ width: '100%', marginEnd: 6, marginBottom: 6 }}
                 onPress={() => this.setState({ showUntilDateDialog: true })}
                 disabled={disableDate}>
                 <AppTextField
@@ -120,7 +134,7 @@ class BalanceSheetScreen extends Component {
             </TouchableOpacity>
             {this.state.showUntilDateDialog ? <DateTimePicker
                 value={this.state.untilDate}
-                mode={'datetime'}
+                mode={'date'}
                 display='default'
                 onChange={this.onUntilDateChange}
             /> : null}

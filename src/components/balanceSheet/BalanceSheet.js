@@ -48,7 +48,8 @@ class BalanceSheet extends Component {
 }
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginTop: 12
     },
     headerTxt: {
         fontSize: 16,
@@ -59,7 +60,8 @@ const styles = StyleSheet.create({
     },
     card: {
         marginHorizontal: 16,
-        marginVertical: 12
+        marginVertical: 12,
+        backgroundColor: 'white'
     },
     totalTxt: {
         paddingHorizontal: 16,

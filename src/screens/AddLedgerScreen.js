@@ -27,7 +27,7 @@ class AddLedgerScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            ledger: undefined
         }
     }
 
@@ -45,10 +45,12 @@ class AddLedgerScreen extends Component {
     setFieldsValue = () => {
         const ledger = get(this.props.route.params, 'ledger');
         if (ledger) {
-            setFieldValue(this.ledgerAccRef, ledger.laccount);
-            setFieldValue(this.categoryRef, ledger.category);
-            setFieldValue(this.catGroupRef, ledger.categorygroup);
-            setFieldValue(this.codeRef, ledger.nominalcode);
+            this.setState({ ledger }, () => {
+                setFieldValue(this.ledgerAccRef, ledger.laccount);
+                setFieldValue(this.categoryRef, ledger.category);
+                setFieldValue(this.catGroupRef, ledger.categorygroup);
+                setFieldValue(this.codeRef, ledger.nominalcode);
+            })
         }
     }
 
@@ -60,8 +62,11 @@ class AddLedgerScreen extends Component {
     onCategoryClick = () => {
         this.props.navigation.push('SelectLedgerScreen', {
             onLedgerCategorySelected: item => {
-                setFieldValue(this.categoryRef, item.category);
-                setFieldValue(this.catGroupRef, item.categorygroup);
+                this.setState({ ledger: item }, () => {
+                    setFieldValue(this.categoryRef, item.category);
+                    setFieldValue(this.catGroupRef, item.categorygroup);
+                })
+
             }
         });
     }
@@ -98,7 +103,7 @@ class AddLedgerScreen extends Component {
             nominalcode: getFieldValue(this.codeRef),
             userid: `${authData.id}`,
             type: `${this.isEditMode() ? 2 : 1}`,
-            adminid: `${authData.id}`,
+            adminid: 0,
             logintype: 'user'
         };
 
@@ -107,9 +112,9 @@ class AddLedgerScreen extends Component {
             this.onLedgerUpdateError);
     }
 
-    onLedgerUpdateError = () => {
+    onLedgerUpdateError = (message) => {
         setTimeout(() => {
-            showError(API_ERROR_MESSAGE);
+            showError(message);
         }, 400);
     }
 

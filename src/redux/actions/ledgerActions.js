@@ -21,6 +21,8 @@ import {
 } from '../../constants';
 import { log } from '../../components/Logger';
 import Store from '../Store';
+import { API_ERROR_MESSAGE } from '../../constants/appConstant';
+import { get } from 'lodash';
 
 export const getLedgerCategory = () => {
     return (dispatch) => {
@@ -125,7 +127,8 @@ export const updateLedger = (body, onLedgerUpdated, onError) => {
             .catch(err => {
                 log('Error updating Ledger', err);
                 dispatch({ type: UPDATE_LEDGER_FAIL });
-                onError();
+                var message = get(err, 'response.data.message', API_ERROR_MESSAGE)
+                onError(message);
             })
     }
 }

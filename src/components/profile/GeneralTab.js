@@ -53,18 +53,6 @@ class GeneralTab extends Component {
             name: fileName
         }
         form.append('file', file);
-
-        // return fetch(BASE_URL + '/user/updateProfilePicture', {
-        //     body: form,
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     }
-        // })
-        //     .then(response => {
-        //         console.log('Uploaded: ', response);
-        //         return response.json().data.location
-        //     });
         return Api.post('/user/updateProfilePicture', form, {
             headers: {
                 Accept: 'application/json',

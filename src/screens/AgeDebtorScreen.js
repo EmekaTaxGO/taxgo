@@ -79,12 +79,10 @@ class AgeDebtorScreen extends Component {
     }
 
     onOutstandingClick = item => {
-        if (get(item, 'age.outstanding', 0) !== 0) {
-            this.props.navigation.push('DebtorBreakdownScreen', {
-                untilDate: this.state.untilDate,
-                debtor: item
-            });
-        }
+        this.props.navigation.push('DebtorBreakdownScreen', {
+            untilDate: this.state.untilDate,
+            debtor: item
+        });
 
     }
 
@@ -99,7 +97,7 @@ class AgeDebtorScreen extends Component {
             <View style={{ flexDirection: 'column' }}>
                 {this.renderItemRow('Customer', item.cname, '#efefef')}
 
-                {this.renderClickableItemRow('O/S Amt', Number(age.outstanding).toFixed(2),
+                {this.renderClickableItemRow('O/S Amt', age.outstanding,
                     () => this.onOutstandingClick(item))}
 
                 {this.renderItemRow('30days', Number(age.total30).toFixed(2), '#efefef')}
@@ -111,6 +109,7 @@ class AgeDebtorScreen extends Component {
         </CardView>
     }
     renderClickableItemRow = (label, value, onClick, background = '#ffffff') => {
+        const total = Number(value)
         return <View style={{ flexDirection: 'row', backgroundColor: background }}>
             <Text style={{
                 flex: 1,
@@ -118,13 +117,15 @@ class AgeDebtorScreen extends Component {
                 textTransform: 'uppercase',
                 padding: 12
             }}>{label}</Text>
-            <TouchableOpacity onPress={onClick} style={{ padding: 12 }}>
+            <TouchableOpacity onPress={onClick}
+                style={{ padding: 12 }}
+                disabled={total <= -1}>
                 <Text style={{
                     flex: 1,
                     textAlign: 'right',
                     fontSize: 15,
                     color: colorAccent
-                }}>{value}</Text>
+                }}>{total.toFixed(2)}</Text>
             </TouchableOpacity>
         </View>
     }
@@ -135,7 +136,7 @@ class AgeDebtorScreen extends Component {
         </View>
     }
 
-    renderReturnList = () => {
+    renderAgeDebtorList = () => {
         const { report } = this.props;
         const { ageDebtors } = this.state;
         if (report.fetchingAgeDebtors && !ageDebtors) {
@@ -187,7 +188,7 @@ class AgeDebtorScreen extends Component {
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
                 {this.renderDate()}
-                {this.renderReturnList()}
+                {this.renderAgeDebtorList()}
             </KeyboardAvoidingView>
         </SafeAreaView>
     }

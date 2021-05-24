@@ -11,6 +11,8 @@ import { showError, validateEmail } from '../../helpers/Utils';
 import { isEmpty } from 'lodash';
 import { getFieldValue } from '../../helpers/TextFieldHelpers';
 import MultiLineTextField from '../MultiLineTextField';
+import AppPicker2 from '../AppPicker2';
+import { showSingleSelectAlert } from '../SingleSelectAlert';
 
 class BusinessTab extends Component {
 
@@ -121,6 +123,22 @@ class BusinessTab extends Component {
         }, 300);
     }
 
+    onPressBusinessCategory = () => {
+        const { businesses } = this.props;
+        const items = businesses.map(value => value.btitle);
+        showSingleSelectAlert('Business Category', items, index => {
+            this.setState({ categoryIdx: index })
+        })
+    }
+
+    onPressBusinessType = () => {
+        const businessTypes = businessHelper.getBusinessTypes()
+        const items = businessTypes.map(element => element.label);
+        showSingleSelectAlert('Business Type', items, index => {
+            this.setState({ bTypeIdx: index })
+        })
+    }
+
     render() {
         const { businesses } = this.props;
         const { categoryIdx, bTypeIdx, profile } = this.state;
@@ -145,24 +163,23 @@ class BusinessTab extends Component {
                     value={profile.registerno}
                 />
                 <AppText style={styles.pickerLabel}>Business Category</AppText>
-                <AppPicker
+                {/* <AppPicker
                     style={styles.picker}
                     selectedValue={businesses[categoryIdx].btitle}
                     mode='dropdown'
                     onValueChange={(itemValue, itemIndex) => this.setState({ categoryIdx: itemIndex })}>
                     {businesses.map((value, index) => <Picker.Item
                         label={value.btitle} value={value.btitle} key={`${index}`} />)}
-                </AppPicker>
+                </AppPicker> */}
+                <AppPicker2
+                    onPress={this.onPressBusinessCategory}
+                    title={businesses[categoryIdx].btitle}
+                    containerStyle={styles.picker} />
                 <AppText style={styles.pickerLabel}>Business Type</AppText>
-                <AppPicker
-                    style={styles.picker}
-                    selectedValue={businessTypes[bTypeIdx].value}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ bTypeIdx: itemIndex })}>
-                    {businessTypes.map((value, index) => <Picker.Item
-                        label={value.label} value={value.value} key={`${index}`} />)}
-                </AppPicker>
-
+                <AppPicker2
+                    onPress={this.onPressBusinessType}
+                    title={businessTypes[bTypeIdx].label}
+                    containerStyle={styles.picker} />
                 <AppTextField
                     label='Website'
                     fieldRef={this.websiteRef}
@@ -228,7 +245,7 @@ class BusinessTab extends Component {
 const styles = StyleSheet.create({
     textField: {
         marginHorizontal: 16,
-        marginTop: 20
+        marginTop: 30
     },
     addressField: {
         marginHorizontal: 16,
@@ -239,7 +256,8 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     picker: {
-        marginHorizontal: 16
+        marginHorizontal: 16,
+        marginTop: 6
     },
     pickerLabel: {
         paddingHorizontal: 16,

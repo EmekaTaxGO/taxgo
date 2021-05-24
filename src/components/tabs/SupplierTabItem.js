@@ -83,7 +83,7 @@ class SupplierTabItem extends Component {
     }
 
     renderHiddenItem = (data, rowMap) => {
-        return <View style={{ flexDirection: 'row' }}>
+        return <View style={{ flexDirection: 'row'  }}>
             <View style={{ flex: 1 }}>
                 {this.hiddenElement('View', 'visibility', errorColor, () => this.onViewClick(data))}
             </View>

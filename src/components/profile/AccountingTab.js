@@ -9,6 +9,10 @@ import AppDatePicker from '../AppDatePicker';
 import AppPicker from '../AppPicker';
 import AppTextField from '../AppTextField';
 import MultiLineTextField from '../MultiLineTextField';
+import AppPicker2 from '../AppPicker2';
+import { showSingleSelectAlert } from '../SingleSelectAlert';
+import AppText from '../AppText';
+
 class AccountingTab extends Component {
 
     constructor(props) {
@@ -88,6 +92,14 @@ class AccountingTab extends Component {
             })
         }, 300);
     }
+
+    onReportTypePress = () => {
+        const { reportTypes } = this.state;
+        const items = reportTypes.map(element => element.title)
+        showSingleSelectAlert('Report Types', items, index => {
+            this.setState({ reportIdx: index })
+        })
+    }
     render() {
         const { profile, reportTypes, reportIdx } = this.state;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -106,14 +118,11 @@ class AccountingTab extends Component {
                     }}
                     onChange={this.onChangeYrEnd}
                 />
-                <AppPicker
-                    style={styles.picker}
-                    selectedValue={reportTypes[reportIdx].title}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ reportIdx: itemIndex })}>
-                    {reportTypes.map((value, index) => <Picker.Item
-                        label={value.title} value={value.title} key={`${index}`} />)}
-                </AppPicker>
+                <AppText style={styles.dropDownLabel}>Report Type</AppText>
+                <AppPicker2
+                    title={reportTypes[reportIdx].title}
+                    onPress={this.onReportTypePress}
+                    containerStyle={styles.picker} />
                 <MultiLineTextField
                     label='Default Email Content'
                     containerStyle={styles.multiLineField}
@@ -160,7 +169,8 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     picker: {
-        marginHorizontal: 16
+        marginHorizontal: 16,
+        marginTop: 4
     },
     pickerLabel: {
         paddingHorizontal: 16,
@@ -175,6 +185,13 @@ const styles = StyleSheet.create({
     },
     multilineLabel: {
         color: 'gray'
+    },
+    dropDownLabel: {
+        fontFamily: appFont,
+        fontSize: 15,
+        color: 'gray',
+        marginTop: 18,
+        marginStart: 16
     }
 })
 export default AccountingTab;

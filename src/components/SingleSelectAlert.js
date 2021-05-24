@@ -1,5 +1,5 @@
 import { Platform, ActionSheetIOS, Alert } from "react-native"
-import { colorAccent, colorPrimary } from "../theme/Color"
+import { colorAccent } from "../theme/Color"
 import DialogAndroid from 'react-native-dialogs';
 
 export const showSingleSelectAlert = async (title, items, onSelect) => {

@@ -1,10 +1,11 @@
 const { isEmpty } = require("lodash");
-import { Alert, Linking, Platform } from 'react-native';
+import { ActionSheetIOS, Alert, Linking, Platform } from 'react-native';
 // const { default: Deeplink } = require("./Deeplink");
 import Deeplink from '../deeplink/Deeplink';
 import { clearAll } from '../services/UserStorage';
 import DeviceInfo from 'react-native-device-info';
 import { showError } from '../helpers/Utils';
+import { colorAccent } from '../theme/Color';
 
 const canHandle = deeplink => {
     const values = Object.values(Deeplink);

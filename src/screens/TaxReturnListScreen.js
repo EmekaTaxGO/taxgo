@@ -20,12 +20,16 @@ class TaxReturnListScreen extends Component {
 
     constructor(props) {
         super(props);
+
+        const fromDate = moment().set('month', 0).set('date', 1).toDate();
+        const toDate = moment().set('month', 2).set('date', 31).toDate();
+
         this.state = {
             periods: this.buildPeriods(),
-            periodIndex: 0,
-            fromDate: new Date(),
+            periodIndex: 1,
+            fromDate,
+            toDate,
             showFromDateDialog: false,
-            toDate: new Date(),
             showToDateDialog: false,
             taxReports: undefined
         }
@@ -74,11 +78,8 @@ class TaxReturnListScreen extends Component {
 
     presetState = async () => {
         const taxReports = await getSavedData(TAX_RETURN_REPORT);
-        const fromDate = moment().set('month', 0).set('date', 1).toDate();
-        const toDate = moment().set('month', 2).set('date', 31).toDate();
+
         this.setState({
-            fromDate,
-            toDate,
             taxReports: taxReports !== undefined ? taxReports : undefined
         })
     }
@@ -187,7 +188,8 @@ class TaxReturnListScreen extends Component {
                 <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>Rate</Text>
                 <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>Amount</Text>
             </View>
-            {item.vatRate.map(value => this.renderItemRow(item.ledger, value))}
+            {Object.keys(item).filter(value => value.startsWith('vat'))
+                .map(key => this.renderItemRow(item[key].label, item[key]))}
             <View style={{
                 flexDirection: 'row',
                 borderTopColor: 'lightgray',

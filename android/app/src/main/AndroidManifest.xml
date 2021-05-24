@@ -8,6 +8,7 @@
 
     <uses-permission android:name="android.permission.VIBRATE"/>
 
+        <!-- android:networkSecurityConfig="@xml/network_security" -->
 
     <application
         android:name="com.app.ieaccounts.taxgo.MainApplication"

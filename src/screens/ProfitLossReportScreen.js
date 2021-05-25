@@ -16,6 +16,7 @@ import { getSavedData, PROFIT_LOSS_REPORT } from '../services/UserStorage';
 import { DATE_FORMAT } from '../constants/appConstant';
 import { showHeaderProgress } from '../helpers/ViewHelper';
 import AppTextField from '../components/AppTextField';
+import AppPicker2 from '../components/AppPicker2';
 
 class ProfitLossReportScreen extends Component {
 
@@ -196,7 +197,7 @@ class ProfitLossReportScreen extends Component {
         )
     }
 
-    onPeriodChange = (itemValue, itemIndex) => {
+    onPeriodChange = itemIndex => {
         let fromDate, toDate;
         switch (itemIndex) {
             case 0:
@@ -253,21 +254,13 @@ class ProfitLossReportScreen extends Component {
 
                 <View style={{ flexDirection: 'column', marginTop: 12, paddingHorizontal: 16 }}>
                     {/* Select Method Picker */}
-                    <View style={{
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        borderColor: report.fetchingProfitLossReport ? 'lightgray' : colorAccent,
-                        marginTop: 10
-                    }}>
-                        <Picker
-                            enabled={!report.fetchingProfitLossReport}
-                            selectedValue={periods[periodIndex]}
-                            mode='dropdown'
-                            onValueChange={this.onPeriodChange}>
-                            {periods.map((value, index) => <Picker.Item
-                                label={value} value={value} key={value} />)}
-                        </Picker>
-                    </View>
+                    <AppPicker2
+                        containerStyle={{ marginTop: 12 }}
+                        title={periods[periodIndex]}
+                        text='Select Period'
+                        items={periods}
+                        onChange={this.onPeriodChange}
+                    />
                     <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify Profit & Loss between dates</Text>
                     {periodIndex === 6 && this.renderDateRange()}
                 </View>

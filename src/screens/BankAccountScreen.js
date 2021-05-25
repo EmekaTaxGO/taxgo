@@ -17,6 +17,8 @@ import AppTextField from '../components/AppTextField';
 import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AppPicker2 from '../components/AppPicker2';
+import { appFont } from '../helpers/ViewHelper';
 
 
 class BankAccountScreen extends Component {
@@ -236,6 +238,10 @@ class BankAccountScreen extends Component {
         return accTypeIndex === 2
     }
 
+    onItemChange = (key, idx) => {
+        this.setState({ [key]: idx })
+    }
+
     render() {
         const { accTypes, accTypeIndex } = this.state;
         const { updatingBankDetail } = this.props.bank
@@ -247,18 +253,18 @@ class BankAccountScreen extends Component {
                 <Text style={{
                     paddingLeft: 15,
                     paddingTop: 14,
-                    fontSize: 14
+                    fontSize: 17,
+                    color: 'gray',
+                    fontFamily: appFont,
+                    marginTop: 12
                 }}>A/C Type*</Text>
-
-                <AppPicker
-                    style={styles.picker}
-                    selectedValue={accTypes[accTypeIndex].label}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ accTypeIndex: itemIndex })}>
-
-                    {accTypes.map((value, index) => <Picker.Item
-                        label={value.label} value={value.label} key={`${value.id}`} />)}
-                </AppPicker>
+                <AppPicker2
+                    containerStyle={styles.picker}
+                    title={accTypes[accTypeIndex].label}
+                    items={accTypes.map(item => item.label)}
+                    text='Select A/c Type'
+                    onChange={idx => this.onItemChange('accTypeIndex', idx)}
+                />
                 <View style={{ paddingHorizontal: 16 }}>
                     <AppTextField
                         containerStyle={{ marginTop: 20 }}

@@ -16,6 +16,7 @@ import { getSavedData, TAX_RETURN_REPORT } from '../services/UserStorage';
 import { appFont, appFontBold, showHeaderProgress } from '../helpers/ViewHelper';
 import AppTextField from '../components/AppTextField';
 import AppText from '../components/AppText';
+import AppPicker2 from '../components/AppPicker2';
 
 class TaxReturnListScreen extends Component {
 
@@ -250,7 +251,7 @@ class TaxReturnListScreen extends Component {
         </View>
     }
 
-    onPeriodChange = (itemValue, itemIndex) => {
+    onPeriodChange = itemIndex => {
         let startMonth;
         switch (itemIndex) {
             case 2:
@@ -266,7 +267,7 @@ class TaxReturnListScreen extends Component {
                 startMonth = 0;
         }
         const fromDate = moment().set('month', startMonth).set('date', 1).toDate();
-        const toDate = moment(fromDate).add('month', 3).subtract('day', 1).toDate();
+        const toDate = moment(fromDate).add(3, 'month').subtract(1, 'day').toDate();
         this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
 
             setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
@@ -276,6 +277,7 @@ class TaxReturnListScreen extends Component {
             }
         })
     }
+
     render() {
         const { periods, periodIndex } = this.state;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -283,20 +285,13 @@ class TaxReturnListScreen extends Component {
 
                 <View style={{ flexDirection: 'column', marginTop: 12, paddingHorizontal: 16 }}>
                     {/* Select Method Picker */}
-                    <View style={{
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        borderColor: 'lightgray',
-                        marginTop: 10
-                    }}>
-                        <Picker
-                            selectedValue={periods[periodIndex]}
-                            mode='dropdown'
-                            onValueChange={this.onPeriodChange}>
-                            {periods.map((value, index) => <Picker.Item
-                                label={value} value={value} key={value} />)}
-                        </Picker>
-                    </View>
+                    <AppPicker2
+                        containerStyle={{ marginTop: 16 }}
+                        title={periods[periodIndex]}
+                        items={periods}
+                        text='Select Period'
+                        onChange={idx => this.onPeriodChange(idx)}
+                    />
                     <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify Tax return between dates</Text>
                     {this.renderDateRange()}
                 </View>

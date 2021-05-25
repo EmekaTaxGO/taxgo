@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -12,11 +12,11 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent, colorPrimary } from '../theme/Color';
-import { isEmpty, get, isUndefined, isNumber, set } from 'lodash';
-import EmptyView from '../components/EmptyView';
+import { isNumber } from 'lodash';
 import { getSavedData, TRIAL_BALANCE_REPORT } from '../services/UserStorage';
 import { showHeaderProgress } from '../helpers/ViewHelper';
 import AppTextField from '../components/AppTextField';
+import AppPicker2 from '../components/AppPicker2';
 
 class TrialBalanceScreen extends Component {
 
@@ -237,7 +237,7 @@ class TrialBalanceScreen extends Component {
         )
     }
 
-    onPeriodChange = (itemValue, itemIndex) => {
+    onPeriodChange = (itemIndex) => {
         let fromDate, toDate;
         switch (itemIndex) {
             case 0:
@@ -294,21 +294,14 @@ class TrialBalanceScreen extends Component {
 
                 <View style={{ flexDirection: 'column', marginTop: 12, paddingHorizontal: 16 }}>
                     {/* Select Method Picker */}
-                    <View style={{
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        borderColor: 'lightgray',
-                        marginTop: 10
-                    }}>
-                        <Picker
-                            enabled={!report.fetchingTrialBalance}
-                            selectedValue={periods[periodIndex]}
-                            mode='dropdown'
-                            onValueChange={this.onPeriodChange}>
-                            {periods.map((value, index) => <Picker.Item
-                                label={value} value={value} key={value} />)}
-                        </Picker>
-                    </View>
+                    
+                    <AppPicker2
+                        containerStyle={{ marginTop: 12 }}
+                        title={periods[periodIndex]}
+                        text='Select Period'
+                        items={periods}
+                        onChange={this.onPeriodChange}
+                    />
                     <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify trial balance between dates</Text>
                     {periodIndex === 6 && this.renderDateRange()}
                 </View>
@@ -332,7 +325,8 @@ const styles = StyleSheet.create({
     card: {
         marginHorizontal: 16,
         marginVertical: 12,
-        flex: 1
+        flex: 1,
+        backgroundColor: 'white'
     },
     itemContainer: {
         flexDirection: 'row'

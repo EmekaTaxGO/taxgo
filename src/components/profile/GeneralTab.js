@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Platform, SafeAreaView, StyleSheet } from 'react-native';
 import AppButton from '../AppButton';
 import AppDatePicker from '../AppDatePicker';
 import AppTextField from '../AppTextField';
@@ -13,7 +13,6 @@ import Store from '../../redux/Store';
 import { showToast } from '../Logger';
 import FormData from 'form-data';
 import Api from '../../services/api';
-import { BASE_URL } from '../../constants/appConstant';
 
 class GeneralTab extends Component {
 

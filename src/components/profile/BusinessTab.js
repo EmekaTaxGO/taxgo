@@ -1,9 +1,7 @@
-import { Picker } from '@react-native-community/picker';
 import React, { Component } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppButton from '../AppButton';
-import AppPicker from '../AppPicker';
 import AppText from '../AppText';
 import AppTextField from '../AppTextField';
 import businessHelper from '../../helpers/BusinessHelper';
@@ -123,20 +121,8 @@ class BusinessTab extends Component {
         }, 300);
     }
 
-    onPressBusinessCategory = () => {
-        const { businesses } = this.props;
-        const items = businesses.map(value => value.btitle);
-        showSingleSelectAlert('Business Category', items, index => {
-            this.setState({ categoryIdx: index })
-        })
-    }
-
-    onPressBusinessType = () => {
-        const businessTypes = businessHelper.getBusinessTypes()
-        const items = businessTypes.map(element => element.label);
-        showSingleSelectAlert('Business Type', items, index => {
-            this.setState({ bTypeIdx: index })
-        })
+    onItemChange = (key, idx) => {
+        this.setState({ [key]: idx })
     }
 
     render() {
@@ -172,14 +158,18 @@ class BusinessTab extends Component {
                         label={value.btitle} value={value.btitle} key={`${index}`} />)}
                 </AppPicker> */}
                 <AppPicker2
-                    onPress={this.onPressBusinessCategory}
                     title={businesses[categoryIdx].btitle}
-                    containerStyle={styles.picker} />
+                    text='Business Category'
+                    items={businesses.map(item => item.btitle)}
+                    containerStyle={styles.picker}
+                    onChange={idx => this.onItemChange('categoryIdx', idx)} />
                 <AppText style={styles.pickerLabel}>Business Type</AppText>
                 <AppPicker2
-                    onPress={this.onPressBusinessType}
                     title={businessTypes[bTypeIdx].label}
-                    containerStyle={styles.picker} />
+                    text='Business Type'
+                    items={businessTypes.map(item => item.label)}
+                    containerStyle={styles.picker}
+                    onChange={idx => this.onItemChange('bTypeIdx', idx)} />
                 <AppTextField
                     label='Website'
                     fieldRef={this.websiteRef}

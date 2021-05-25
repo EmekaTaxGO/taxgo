@@ -24,19 +24,32 @@ import { Picker } from '@react-native-community/picker';
 
 import * as authActions from '../redux/actions/authActions';
 import { focusField, getFieldValue } from '../helpers/TextFieldHelpers';
-import { RaisedTextButton } from 'react-native-material-buttons';
 import FBLoginButton from '../components/FBLoginButton';
 import { TERMS_AND_CONDITION_URL, PRIVACY_POLICY_URL } from '../constants/appConstant';
 import ImagePicker from 'react-native-image-picker';
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import { call } from 'react-native-reanimated';
-import { DEFAULT_PICKER_OPTIONS, validateFirstName, FIRST_NAME_ERROR_MESSAGE, validateLastName, LAST_NAME_ERROR_MESSAGE, validateEmail, EMAIL_ERROR_MESSAGE, validateBusinessName, BUSINESS_NAME_ERROR_MESSAGE, validateMobile, MOBILE_ERROR_MESSAGE, validatePass, PASSWORD_ERROR_MESSAGE, getApiErrorMsg, showError } from '../helpers/Utils';
-import { log } from '../components/Logger';
+import {
+    DEFAULT_PICKER_OPTIONS,
+    validateFirstName,
+    FIRST_NAME_ERROR_MESSAGE,
+    validateLastName,
+    LAST_NAME_ERROR_MESSAGE,
+    validateEmail,
+    EMAIL_ERROR_MESSAGE,
+    validateBusinessName,
+    BUSINESS_NAME_ERROR_MESSAGE,
+    validateMobile,
+    MOBILE_ERROR_MESSAGE,
+    validatePass,
+    PASSWORD_ERROR_MESSAGE,
+    getApiErrorMsg
+} from '../helpers/Utils';
 import AppTextField from '../components/AppTextField';
-import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
 import Api from '../services/api';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AppPicker2 from '../components/AppPicker2';
+import { showSingleSelectAlert } from '../components/SingleSelectAlert';
+import { appFont } from '../helpers/ViewHelper';
 
 class SignUpScreen extends Component {
 
@@ -79,19 +92,30 @@ class SignUpScreen extends Component {
 
     }
 
+    onPressBusinessCategory = () => {
+        const { businesses } = this.props.auth
+        const items = businesses.map(element => element.btitle)
+        showSingleSelectAlert('Business Category', items, categoryIndex => {
+            this.setState({ categoryIndex })
+        })
+    }
+
+    onItemChange = (key, index) => {
+        this.setState({ [key]: index })
+    }
+
     renderBusinessCategory = () => {
         const { businesses } = this.props.auth;
         const selectedCategory = businesses[this.state.categoryIndex].btitle;
-        return <View style={{ flexDirection: 'column', marginTop: 12 }}>
-            <Text>Business Category</Text>
-            <AppPicker
-                selectedValue={selectedCategory}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ categoryIndex: itemIndex })}>
-
-                {businesses.map((value, index) => <Picker.Item
-                    label={value.btitle} value={value.btitle} key={`${index}`} />)}
-            </AppPicker>
+        return <View style={{ flexDirection: 'column', marginTop: 18 }}>
+            <Text style={styles.dropDownLabel}>Business Category</Text>
+            <AppPicker2
+                title={selectedCategory}
+                text='Business Category'
+                items={businesses.map(element => element.btitle)}
+                containerStyle={styles.dropDown}
+                onChange={idx => this.onItemChange('categoryIndex', idx)}
+            />
         </View>
     }
 
@@ -101,32 +125,32 @@ class SignUpScreen extends Component {
     }
     renderCountry = () => {
         const { countries } = this.props.auth;
-        const selectedCountry = countries[this.state.countryIndex].currency;
-        return <View style={{ flexDirection: 'column', marginTop: 12 }}>
-            <Text>Currency</Text>
-            <AppPicker
-                selectedValue={selectedCountry}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ countryIndex: itemIndex })}>
+        const selectedCountry = countries[this.state.countryIndex];
+        return <View style={{ flexDirection: 'column', marginTop: 18 }}>
+            <Text style={styles.dropDownLabel}>Currency</Text>
 
-                {countries.map((value, index) => <Picker.Item
-                    label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
-            </AppPicker>
+            <AppPicker2
+                title={this.countryPickerLabel(selectedCountry)}
+                text='Select Currency'
+                items={countries.map(item => this.countryPickerLabel(item))}
+                containerStyle={styles.dropDown}
+                onChange={idx => this.onItemChange('countryIndex', idx)}
+            />
 
         </View>
     }
     renderBusinessType = () => {
         const selectedBType = this.state.businessType[this.state.businessTypeIndex];
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
-            <Text>Business Type</Text>
-            <AppPicker
-                selectedValue={selectedBType}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
+            <Text style={styles.dropDownLabel}>Business Type</Text>
 
-                {this.state.businessType.map((value, index) => <Picker.Item
-                    label={value} value={value} key={value} />)}
-            </AppPicker>
+            <AppPicker2
+                title={selectedBType}
+                text='Select Business Type'
+                items={this.state.businessType}
+                containerStyle={styles.dropDown}
+                onChange={idx => this.onItemChange('businessTypeIndex', idx)}
+            />
 
         </View>
     }
@@ -343,7 +367,7 @@ class SignUpScreen extends Component {
                 {this.renderCountry()}
                 {this.renderBusinessType()}
                 <AppTextField
-                    containerStyle={styles.textField}
+                    containerStyle={[styles.textField, { marginTop: 30 }]}
                     label='Phone'
                     keyboardType='number-pad'
                     returnKeyType='done'
@@ -430,6 +454,15 @@ const styles = StyleSheet.create({
 
     textField: {
         marginTop: 16
+    },
+    dropDown: {
+        marginTop: 8
+    },
+    dropDownLabel: {
+        marginTop: 4,
+        fontFamily: appFont,
+        fontSize: 17,
+        color: 'gray'
     }
 });
 export default connect(

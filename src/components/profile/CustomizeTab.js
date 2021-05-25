@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AppImage from '../AppImage';
 import AppText from '../AppText'
 import { colorPrimary } from '../../theme/Color';
 import AppButton from '../AppButton';

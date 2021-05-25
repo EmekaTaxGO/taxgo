@@ -1,13 +1,9 @@
-import { Picker } from '@react-native-community/picker';
 import React, { Component } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { getFieldValue } from '../../helpers/TextFieldHelpers';
-import { appFont, appFontBold } from '../../helpers/ViewHelper';
+import { appFont } from '../../helpers/ViewHelper';
 import AppButton from '../AppButton';
 import AppDatePicker from '../AppDatePicker';
-import AppPicker from '../AppPicker';
-import AppTextField from '../AppTextField';
 import MultiLineTextField from '../MultiLineTextField';
 import AppPicker2 from '../AppPicker2';
 import { showSingleSelectAlert } from '../SingleSelectAlert';
@@ -93,13 +89,10 @@ class AccountingTab extends Component {
         }, 300);
     }
 
-    onReportTypePress = () => {
-        const { reportTypes } = this.state;
-        const items = reportTypes.map(element => element.title)
-        showSingleSelectAlert('Report Types', items, index => {
-            this.setState({ reportIdx: index })
-        })
+    onItemChange = (key, idx) => {
+        this.setState({ [key]: idx })
     }
+
     render() {
         const { profile, reportTypes, reportIdx } = this.state;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -121,8 +114,10 @@ class AccountingTab extends Component {
                 <AppText style={styles.dropDownLabel}>Report Type</AppText>
                 <AppPicker2
                     title={reportTypes[reportIdx].title}
-                    onPress={this.onReportTypePress}
-                    containerStyle={styles.picker} />
+                    text='Report Type'
+                    items={reportTypes.map(item => item.title)}
+                    containerStyle={styles.picker}
+                    onChange={idx => this.onItemChange('reportIdx', idx)} />
                 <MultiLineTextField
                     label='Default Email Content'
                     containerStyle={styles.multiLineField}

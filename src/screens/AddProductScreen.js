@@ -17,14 +17,13 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { bindActionCreators } from 'redux';
 import Store from '../redux/Store';
 import Snackbar from 'react-native-snackbar';
-import { Picker } from '@react-native-community/picker';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
-import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AppPicker2 from '../components/AppPicker2';
 
 
 class AddProductScreen extends Component {
@@ -121,7 +120,7 @@ class AddProductScreen extends Component {
         </Text>
     }
 
-    onVatChange = (itemValue, itemIndex) => {
+    onVatChange = (itemIndex) => {
         this.setState({
             selectedTaxIndex: itemIndex
         }, () => {
@@ -686,7 +685,9 @@ class AddProductScreen extends Component {
         });
     }
 
-
+    onItemChange = (key, idx) => {
+        this.setState({ [key]: idx })
+    }
     render() {
         const { tax } = this.props;
         if (tax.fetchingTaxList) {
@@ -706,15 +707,12 @@ class AddProductScreen extends Component {
             {this.renderStrip('Item')}
             {this.renderLabel('Type')}
 
-            <AppPicker
-                style={styles.typeBox}
-                selectedValue={types[selectedTypeIndex].value}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ selectedTypeIndex: itemIndex })}>
-
-                {types.map((value, index) => <Picker.Item
-                    label={value.value} value={value.value} key={`${index}`} />)}
-            </AppPicker>
+            <AppPicker2
+                containerStyle={styles.typeBox}
+                title={types[selectedTypeIndex].value}
+                items={types.map(item => item.value)}
+                onChange={idx => this.onItemChange('selectedTypeIndex', idx)}
+                text='Select Product Type' />
 
             <View style={{ flexDirection: 'column', paddingHorizontal: 16 }}>
                 <AppTextField
@@ -778,15 +776,14 @@ class AddProductScreen extends Component {
             </View>
 
             {this.renderLabel('VAT/GST')}
-            <AppPicker
-                style={styles.typeBox}
-                selectedValue={taxList[selectedTaxIndex]}
-                mode='dropdown'
-                onValueChange={this.onVatChange}>
 
-                {taxList.map((value, index) => <Picker.Item
-                    label={value} value={value} key={`${index}`} />)}
-            </AppPicker>
+            <AppPicker2
+                containerStyle={styles.typeBox}
+                title={taxList[selectedTaxIndex]}
+                items={taxList}
+                onChange={this.onVatChange}
+                text='Select Tax Rate' />
+
             <View style={{ paddingHorizontal: 16 }}>
                 <AppTextField
                     containerStyle={styles.textField}

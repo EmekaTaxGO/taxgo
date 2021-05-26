@@ -368,8 +368,6 @@ PODS:
     - React-Core
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPicker (1.8.1):
-    - React-Core
   - RNDateTimePicker (3.0.4):
     - React-Core
   - RNDeviceInfo (8.0.8):
@@ -455,7 +453,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
-  - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -567,8 +564,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/checkbox"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
-  RNCPicker:
-    :path: "../node_modules/@react-native-community/picker"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
   RNDeviceInfo:
@@ -645,7 +640,6 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: fe58eec522885718d6b297b7b658bf87d7ca557b
   RNCCheckbox: 80ee60cd2e67b46986e8e244db520655372deab4
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
   RNDateTimePicker: 3d1931e387248cb8f1d1d33740d4a1a82dfe622a
   RNDeviceInfo: 41a8c8a41ae0e70d85cbe652cd5318150cb2cc40
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
@@ -659,6 +653,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: f661839f62270e5c4fd231db5deff85539016039
+PODFILE CHECKSUM: b2eff91f7897c2358964640943cc04a96caab2f3
 
 COCOAPODS: 1.10.1

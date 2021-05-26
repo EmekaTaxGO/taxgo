@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import AppPicker from '../components/AppPicker';
+import { SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import AppTextField from '../components/AppTextField';
 import bankHelper from '../helpers/BankHelper';
 import timeHelper from '../helpers/TimeHelper';
@@ -9,13 +8,13 @@ import { CUSTOMER_PURCHASE_PAYMENT, CUSTOMER_SALES_PAYMENT, DATE_FORMAT, H_DATE_
 import { getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
 import { CreditCardInput } from 'react-native-credit-card-input';
 import AppButton from '../components/AppButton';
-import { Picker } from '@react-native-community/picker';
-import { isNaN, isNumber, max, toNumber } from 'lodash';
+import { isNaN, toNumber } from 'lodash';
 import ProgressDialog from '../components/ProgressDialog';
 import Api from '../services/api';
-import { getApiErrorMsg, showSuccess, toFloat } from '../helpers/Utils';
+import { getApiErrorMsg, toFloat } from '../helpers/Utils';
 import Store from '../redux/Store';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AppPicker2 from '../components/AppPicker2';
 
 class PaymentScreen extends Component {
 
@@ -225,17 +224,17 @@ class PaymentScreen extends Component {
                 fieldRef={this.outAmtRef} />
             {/* Select Method Picker */}
             <View style={styles.pickerBox}>
-                <AppPicker
-                    style={{ marginHorizontal: 16 }}
-                    selectedValue={payMethod[payMethodIndex]}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ payMethodIndex: itemIndex })}>
-                    {payMethod.map((value, index) => <Picker.Item
-                        label={value} value={value} key={`${index}`} />)}
-                </AppPicker>
+                <AppPicker2
+                    containerStyle={{ marginHorizontal: 16, marginTop: 12 }}
+                    title={payMethod[payMethodIndex]}
+                    items={payMethod}
+                    onChange={idx => this.setState({ payMethodIndex: idx })}
+                    text='Select Pay Method' />
             </View>
 
-            <TouchableOpacity onPress={() => this.setState({ showPayDateDialog: true })}>
+            <TouchableOpacity
+                style={{ marginTop: 12 }}
+                onPress={() => this.setState({ showPayDateDialog: true })}>
                 <AppTextField
                     containerStyle={styles.textField}
                     label='Pay Date'
@@ -332,14 +331,12 @@ class PaymentScreen extends Component {
 
     renderPaymentChooser = () => {
         return (
-            <AppPicker
-                style={{ marginHorizontal: 16, marginTop: 16 }}
-                selectedValue={this.state.paymentMode[this.state.paymentIndex]}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ paymentIndex: itemIndex })}>
-                {this.state.paymentMode.map((value, index) => <Picker.Item
-                    label={value} value={value} key={`${index}`} />)}
-            </AppPicker>
+            <AppPicker2
+                containerStyle={{ marginHorizontal: 16, marginTop: 16 }}
+                title={this.state.paymentMode[this.state.paymentIndex]}
+                items={this.state.paymentMode}
+                onChange={idx => this.setState({ paymentIndex: idx })}
+                text='Select Payment Mode' />
         )
     }
 

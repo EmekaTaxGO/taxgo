@@ -14,8 +14,6 @@ target 'taxgoMobile' do
 
   pod 'react-native-viewpager', :path => '../node_modules/@react-native-community/viewpager'
 
-  pod 'RNCPicker', :path => '../node_modules/@react-native-community/picker'
-
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
   pod 'RNPermissions', :path => '../node_modules/react-native-permissions'

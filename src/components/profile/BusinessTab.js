@@ -149,14 +149,7 @@ class BusinessTab extends Component {
                     value={profile.registerno}
                 />
                 <AppText style={styles.pickerLabel}>Business Category</AppText>
-                {/* <AppPicker
-                    style={styles.picker}
-                    selectedValue={businesses[categoryIdx].btitle}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ categoryIdx: itemIndex })}>
-                    {businesses.map((value, index) => <Picker.Item
-                        label={value.btitle} value={value.btitle} key={`${index}`} />)}
-                </AppPicker> */}
+                
                 <AppPicker2
                     title={businesses[categoryIdx].btitle}
                     text='Business Category'

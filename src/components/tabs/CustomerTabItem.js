@@ -10,7 +10,7 @@ import { bindActionCreators } from 'redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ContactAvatarItem from '../ContactAvatarItem';
-import { errorColor, rColor } from '../../theme/Color';
+import { editColor, errorColor, rColor, viewColor } from '../../theme/Color';
 import { get, isEmpty } from 'lodash';
 
 class CustomerTabItem extends Component {
@@ -85,9 +85,9 @@ class CustomerTabItem extends Component {
     renderHiddenItem = (data, rowMap) => {
         return <View style={{ flexDirection: 'row' }}>
             <View style={{ flex: 1 }}>
-                {this.hiddenElement('View', 'visibility', errorColor, () => this.onViewClick(data))}
+                {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
             </View>
-            {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(data))}
+            {this.hiddenElement('Edit', 'edit', editColor, () => this.onEditClick(data))}
         </View>
     }
 

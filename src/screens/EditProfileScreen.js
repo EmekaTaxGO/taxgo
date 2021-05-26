@@ -1,10 +1,7 @@
-import React, { useEffect, Component } from 'react';
-import { View, StyleSheet, Text, AppState, KeyboardAvoidingView, Image, Alert } from 'react-native';
+import React, { Component } from 'react';
+import { View, StyleSheet, Text, KeyboardAvoidingView, Image, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import ImageView from '../components/ImageView';
 import AppButton from '../components/AppButton';
-import { RaisedButton, RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent } from '../theme/Color';
 import { connect } from 'react-redux';
 import * as profileActions from '../redux/actions/profileActions';
 import { bindActionCreators } from 'redux';
@@ -12,11 +9,9 @@ import { setFieldValue, getFieldValue } from '../helpers/TextFieldHelpers'
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import ProgressDialog from '../components/ProgressDialog';
-import { isInteger, isEmpty, bufferToBase64 } from '../helpers/Utils';
+import { isInteger, isEmpty } from '../helpers/Utils';
 import { API_ERROR_MESSAGE } from '../constants/appConstant';
 import AppTextField from '../components/AppTextField';
-import { Picker } from '@react-native-community/picker';
-import AppPicker from '../components/AppPicker';
 import Store from '../redux/Store';
 import { Buffer } from 'buffer';
 
@@ -134,14 +129,11 @@ class EditProfileScreen extends Component {
         const selectedCategory = businesses[this.state.categoryIndex].btitle;
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
             <Text style={{ fontSize: 15 }}>Business Category</Text>
-            <AppPicker
-                selectedValue={selectedCategory}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ categoryIndex: itemIndex })}>
-
-                {businesses.map((value, index) => <Picker.Item
-                    label={value.btitle} value={value.btitle} key={`${index}`} />)}
-            </AppPicker>
+            <AppPicker2
+                title={selectedCategory}
+                items={businesses.map(item => item.btitle)}
+                onChange={idx => this.setState({ categoryIndex, idx })}
+                text='Select Business Category' />
         </View>
     }
     countryPickerLabel = value => {
@@ -154,14 +146,12 @@ class EditProfileScreen extends Component {
         const selectedCountry = countries[this.state.countryIndex].currency;
         return <View style={{ flexDirection: 'column', marginTop: 12 }}>
             <Text style={{ fontSize: 15 }}>Currency</Text>
-            <AppPicker
-                selectedValue={selectedCountry}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ countryIndex: itemIndex })}>
 
-                {countries.map((value, index) => <Picker.Item
-                    label={this.countryPickerLabel(value)} value={value.currency} key={`${value.id}`} />)}
-            </AppPicker>
+            <AppPicker2
+                title={selectedCountry}
+                items={countries.map(item => this.countryPickerLabel(item))}
+                onChange={idx => this.setState({ countryIndex, idx })}
+                text='Select Country' />
 
         </View>
     }
@@ -170,14 +160,11 @@ class EditProfileScreen extends Component {
         const selectedBType = this.state.businessType[this.state.businessTypeIndex];
         return <View style={{ flexDirection: 'column', marginTop: 20 }}>
             <Text style={{ fontSize: 15 }}>Business Type</Text>
-            <AppPicker
-                selectedValue={selectedBType}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ businessTypeIndex: itemIndex })}>
-
-                {this.state.businessType.map((value, index) => <Picker.Item
-                    label={value} value={value} key={value} />)}
-            </AppPicker>
+            <AppPicker2
+                title={selectedBType}
+                items={this.state.businessType}
+                onChange={idx => this.setState({ businessTypeIndex: idx })}
+                text='Select Business Type' />
         </View>
     }
 

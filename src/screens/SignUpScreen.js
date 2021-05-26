@@ -3,15 +3,10 @@ import {
     View,
     StyleSheet,
     Text,
-    ScrollView,
-    KeyboardAvoidingView,
     SafeAreaView,
     TouchableOpacity,
     Linking,
-    Image,
     Alert,
-    Dimensions,
-    Platform
 } from 'react-native';
 import { colorAccent, errorColor } from '../theme/Color';
 import OnScreenSpinner from '../components/OnScreenSpinner';
@@ -19,7 +14,6 @@ import FullScreenError from '../components/FullScreenError';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ProgressDialog from '../components/ProgressDialog';
-import { Picker } from '@react-native-community/picker';
 
 
 import * as authActions from '../redux/actions/authActions';

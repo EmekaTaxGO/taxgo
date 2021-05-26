@@ -51,6 +51,7 @@ class SelectBankScreen extends Component {
 
     renderListItem = (item) => {
         const { list } = item
+        
         return <TouchableOpacity
             onPress={() => {
                 this.props.route.params.onBankSelected(list);

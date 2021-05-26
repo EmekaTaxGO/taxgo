@@ -1,20 +1,16 @@
 import React, { Component } from 'react';
-import { StyleSheet, SafeAreaView, KeyboardAvoidingView, ScrollView, Text, Picker, View, Keyboard, Alert } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View, Keyboard, Alert } from 'react-native';
 import { connect } from 'react-redux';
 
 import * as bankActions from '../redux/actions/bankActions';
 import { bindActionCreators } from 'redux';
-import { focusField, getFieldValue, setFieldValue } from '../helpers/TextFieldHelpers';
-import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent } from '../theme/Color';
+import { getFieldValue } from '../helpers/TextFieldHelpers';
 import ProgressDialog from '../components/ProgressDialog';
-import { isEmpty, showError, isInteger, isFloat, getApiErrorMsg } from '../helpers/Utils';
-import { API_ERROR_MESSAGE } from '../constants/appConstant';
+import { isEmpty, showError, getApiErrorMsg } from '../helpers/Utils';
 import Store from '../redux/Store';
 import moment from 'moment';
 import bankHelper from '../helpers/BankHelper';
 import AppTextField from '../components/AppTextField';
-import AppPicker from '../components/AppPicker';
 import AppButton from '../components/AppButton';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppPicker2 from '../components/AppPicker2';

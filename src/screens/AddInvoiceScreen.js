@@ -21,8 +21,6 @@ import Snackbar from 'react-native-snackbar';
 import { CreditCardInput } from 'react-native-credit-card-input';
 import Store from '../redux/Store';
 import AppTextField from '../components/AppTextField';
-import AppPicker from '../components/AppPicker';
-import { Picker } from '@react-native-community/picker';
 import timeHelper from '../helpers/TimeHelper';
 import AppDatePicker from '../components/AppDatePicker';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
@@ -34,6 +32,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import AppText from '../components/AppText';
 import { appFontBold } from '../helpers/ViewHelper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AppPicker2 from '../components/AppPicker2';
 
 class AddInvoiceScreen extends Component {
     constructor(props) {
@@ -287,6 +286,11 @@ class AddInvoiceScreen extends Component {
         });
     }
 
+    onIssueChange = idx => {
+        const cats = this.state.issuedcats
+        this.setState({ issued: cats[idx] })
+    }
+
     renderSupplierContainer = () => {
         const isSaleInvoice = this.state.isSale;
         return <KeyboardAwareScrollView style={{
@@ -346,15 +350,13 @@ class AddInvoiceScreen extends Component {
                     paddingLeft: 16,
                     paddingTop: 20
                 }}>Issued</Text>
-
-                <AppPicker
-                    style={styles.picker}
-                    selectedValue={this.state.issued}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ issued: itemValue })}>
-                    {this.state.issuedcats.map((value, index) => <Picker.Item
-                        label={value} value={value} key={`${index}`} />)}
-                </AppPicker>
+                <AppPicker2
+                    containerStyle={styles.picker}
+                    title={this.state.issued}
+                    text='Select Issued state'
+                    items={this.state.issuedcats}
+                    onChange={this.onIssueChange}
+                />
 
             </View> : null}
 
@@ -644,19 +646,18 @@ class AddInvoiceScreen extends Component {
                     paddingTop: 2,
                     paddingHorizontal: 16
                 }}>
-                    <Picker
-                        style={{ flex: 2 }}
-                        selectedValue={Number(item.vatrate)}
-                        mode='dropdown'
-                        onValueChange={(itemValue, itemPosition) => this.onVatChange(index, itemValue)}>
-                        {taxList.map((value, index) => {
-                            const displayLabel = `${value.taxtype}-${value.percentage}`;
-                            return (
-                                <Picker.Item
-                                    label={displayLabel} value={value.percentage} key={`${index}`} />
-                            )
+                    <AppPicker2
+                        containerStyle={{ flex: 2, marginTop: 4 }}
+                        title={taxList.filter(element => element.percentage === Number(item.vatrate))
+                            .map(item => {
+                                return `${item.taxtype}-${item.percentage}`
+                            })[0]}
+                        text='Select Tax Rate'
+                        items={taxList.map(item => {
+                            return `${item.taxtype}-${item.percentage}`
                         })}
-                    </Picker>
+                        onChange={idx => this.onVatChange(index, idx)}
+                    />
                     <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <Text>Include Vat</Text>
                         <Switch
@@ -821,10 +822,11 @@ class AddInvoiceScreen extends Component {
         this.setState({ products: newProducts });
     }
 
-    onVatChange = (idx, taxValue) => {
+    onVatChange = (idx, taxIdx) => {
+        const { taxList } = this.state;
         const newColumn = {
             ...this.state.columns[idx],
-            vatrate: taxValue
+            vatrate: taxList[taxIdx].percentage
         };
         const newColumns = [...this.state.columns];
         newColumns.splice(idx, 1, newColumn);
@@ -935,20 +937,23 @@ class AddInvoiceScreen extends Component {
         </KeyboardAwareScrollView>
     }
 
+
+    onDropDownChange = (key, idx) => {
+        this.setState({ [key]: idx })
+    }
+
     renderPaymentContainer = () => {
 
         return <KeyboardAwareScrollView style={{
             flexDirection: 'column',
             flex: 1
         }}>
-            <AppPicker
-                style={{ marginHorizontal: 16 }}
-                selectedValue={this.state.paymentMode[this.state.paymentIndex]}
-                mode='dropdown'
-                onValueChange={(itemValue, itemIndex) => this.setState({ paymentIndex: itemIndex })}>
-                {this.state.paymentMode.map((value, index) => <Picker.Item
-                    label={value} value={value} key={`${index}`} />)}
-            </AppPicker>
+            <AppPicker2
+                title={this.state.paymentMode[this.state.paymentIndex]}
+                text='Select Payment Mode'
+                onChange={idx => this.onDropDownChange('paymentIndex', idx)}
+                items={this.state.paymentMode}
+            />
             {/* <View style={{
                 borderBottomColor: 'lightgray',
                 borderBottomWidth: 1
@@ -1156,13 +1161,14 @@ class AddInvoiceScreen extends Component {
                 fieldRef={this.outAmtRef} />
             {/* Select Method Picker */}
             <View style={styles.pickerBox}>
-                <Picker
-                    selectedValue={payMethod[payMethodIndex]}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ payMethodIndex: itemIndex })}>
-                    {payMethod.map((value, index) => <Picker.Item
-                        label={value} value={value} key={`${index}`} />)}
-                </Picker>
+                
+                <AppPicker2
+                    title={payMethod[payMethodIndex]}
+                    items={payMethod}
+                    onChange={idx=>this.onDropDownChange('payMethodIndex',idx)}
+                    text='Select Payment Method'
+                />
+
             </View>
 
             <TouchableOpacity onPress={() => this.setState({ showPayDateDialog: true })}>
@@ -1405,7 +1411,8 @@ const styles = StyleSheet.create({
         marginTop: 8
     },
     picker: {
-        marginHorizontal: 12
+        marginHorizontal: 12,
+        marginTop: 4
     },
     appBtn: {
         borderRadius: 0

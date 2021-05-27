@@ -7,7 +7,7 @@ export const API_ERROR_MESSAGE = 'Something went wrong!';
 export const NO_INTERNET_ERROR = 'No Internet!';
 export const APP_LOGO = 'https://taxgoglobal.com/images/logo-hd-main.webp';
 
-export const BASE_URL = 'https://api.parcel-king.com/taxgo';
+export const BASE_URL = 'https://newtaxgo.parcel-king.com/taxgo';
 
 export const TERMS_AND_CONDITION_URL = 'https://taxgoglobal.com/termsandconditions';
 export const PRIVACY_POLICY_URL = 'https://taxgoglobal.com/privacy';

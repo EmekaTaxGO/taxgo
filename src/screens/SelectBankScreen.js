@@ -8,9 +8,9 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 import SearchView from '../components/SearchView';
-import { isEmpty } from '../helpers/Utils';
-import ImageView from '../components/ImageView';
-import { log } from 'react-native-reanimated';
+import { rColor } from '../theme/Color';
+import ContactAvatarItem from '../components/ContactAvatarItem';
+import { get, isEmpty } from 'lodash';
 
 class SelectBankScreen extends Component {
 
@@ -49,35 +49,46 @@ class SelectBankScreen extends Component {
         return filteredBanks;
     }
 
-    renderListItem = (item) => {
-        const { list } = item
-        
-        return <TouchableOpacity
-            onPress={() => {
-                this.props.route.params.onBankSelected(list);
-                this.props.navigation.goBack();
-            }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                {/* <ImageView
-                    placeholder={require('../assets/product.png')}
-                    url={''}
-                    style={styles.image}
-                /> */}
-                <View style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    marginLeft: 12,
-                    borderBottomColor: 'lightgray',
-                    borderBottomWidth: 1,
-                    paddingVertical: 12
-                }}>
-                    <Text style={{ color: 'black', fontSize: 16 }}>{list.nominalcode} {list.laccount}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Category: {list.categorygroup}</Text>
-                    <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Mathod: {list.paidmethod}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
+    renderListItem = ({ item, index }) => {
+        const list = get(item, 'list', {})
+        const color = rColor[index % rColor.length];
+        var firstChar = get(item, 'list.laccount', '-')
+        firstChar = isEmpty(firstChar) ? '-' : firstChar.charAt(0)
+        const title = `${list.nominalcode}-${list.laccount}`
+        return (
+            <ContactAvatarItem
+                color={color}
+                text={firstChar}
+                title={title}
+                clickable='true'
+                subtitle={`Category: ${list.categorygroup}`}
+                description={`Mathod: ${list.paidmethod}`}
+                onPress={() => {
+                    this.props.route.params.onBankSelected(list);
+                    this.props.navigation.goBack();
+                }}
+            />
+        )
+
+        // return <TouchableOpacity
+        //     onPress={ }>
+        //     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+        //         <View style={{
+        //             flex: 1,
+        //             flexDirection: 'column',
+        //             justifyContent: 'center',
+        //             marginLeft: 12,
+        //             borderBottomColor: 'lightgray',
+        //             borderBottomWidth: 1,
+        //             paddingVertical: 12
+        //         }}>
+        //             <Text style={{ color: 'black', fontSize: 16 }}>{list.nominalcode} {list.laccount}</Text>
+        //             <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Category: {list.categorygroup}</Text>
+        //             <Text style={{ color: 'gray', fontSize: 14, marginTop: 3 }}>Mathod: {list.paidmethod}</Text>
+        //         </View>
+        //     </View>
+        // </TouchableOpacity>
     }
 
     render() {
@@ -100,7 +111,7 @@ class SelectBankScreen extends Component {
             <FlatList
                 data={this.listData()}
                 keyExtractor={(item, index) => `${index}`}
-                renderItem={({ item }) => this.renderListItem(item)}
+                renderItem={this.renderListItem}
             />
         </View>
     }

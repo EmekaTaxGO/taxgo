@@ -45,12 +45,14 @@ class AppDatePicker extends Component {
 
     render() {
         const { textFieldProps, pickerProps, showDialog, containerStyle } = this.props;
+        const disable = get(this.props, 'disable', false);
         const date = this.getDate();
         const displayText = timeHelper.format(date, this.getDisplayFormat());
         return (
             <View style={containerStyle}>
                 <TouchableOpacity
-                    onPress={this.onPress}>
+                    onPress={this.onPress}
+                    disabled={disable}>
                     <AppTextField
                         keyboardType='default'
                         editable={false}
@@ -60,7 +62,6 @@ class AppDatePicker extends Component {
                 {showDialog ? <DateTimePicker
                     value={date.toDate()}
                     mode={'date'}
-                    display='default'
                     onChange={this.onDateChange}
                     {...pickerProps}
                 /> : null}

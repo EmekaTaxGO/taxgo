@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import timeHelper from '../helpers/TimeHelper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
@@ -12,9 +12,11 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
-import { log } from 'react-native-reanimated';
 import EmptyView from '../components/EmptyView';
 import AppTextField from '../components/AppTextField';
+import AppPicker2 from '../components/AppPicker2';
+import { get } from 'lodash';
+import AppDatePicker from '../components/AppDatePicker';
 
 class TaxViewScreen extends Component {
 
@@ -22,10 +24,10 @@ class TaxViewScreen extends Component {
         super(props);
         this.state = {
             periods: this.buildPeriods(),
-            periodIndex: 0,
-            fromDate: new Date(),
+            periodIndex: this.props.route.params.periodIndex,
+            fromDate: timeHelper.format(moment(this.props.route.params.fromDate)),
             showFromDateDialog: false,
-            toDate: new Date(),
+            toDate: timeHelper.format(moment(this.props.route.params.toDate)),
             showToDateDialog: false
         }
     }
@@ -46,10 +48,6 @@ class TaxViewScreen extends Component {
         ]
     }
 
-    UNSAFE_componentWillMount() {
-        this.presetState()
-    }
-
     componentDidMount() {
         this.configHeader();
         this.fetchNominalTaxList();
@@ -65,36 +63,35 @@ class TaxViewScreen extends Component {
     }
 
     fetchNominalTaxList = () => {
-        const taxId = this.taxItem().id;
+        const taxId = get(this.taxItem(), 'vatList[0].id');
         const { reportActions } = this.props;
         const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
         const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
         reportActions.fetchTaxNominalList(taxId, startDate, endDate);
     }
 
-    presetState = async () => {
-        const { periodIndex, fromDate, toDate } = this.props.route.params;
-        this.setState({ periodIndex, fromDate, toDate });
-    }
-
-    onFromDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.fromDate;
+    onFromDateChange = (show, date) => {
+        if (show === true || date === this.state.fromDate) {
+            this.setState({ showFromDateDialog: true })
+            return
+        }
         this.setState({
-            fromDate: currentDate,
-            showFromDateDialog: false
+            fromDate: date,
+            showFromDateDialog: show
         }, () => {
-            setFieldValue(this._fromDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
             this.fetchNominalTaxList();
         })
     }
 
-    onToDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.toDate;
+    onToDateChange = (show, date) => {
+        if (show === true || date === this.state.toDate) {
+            this.setState({ showToDateDialog: true })
+            return
+        }
         this.setState({
-            toDate: currentDate,
+            toDate: date,
             showToDateDialog: false
         }, () => {
-            setFieldValue(this._toDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
             this.fetchNominalTaxList();
         })
     }
@@ -102,59 +99,39 @@ class TaxViewScreen extends Component {
     renderDateRange = () => {
         const disableDate = this.state.periodIndex !== 5;
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
-            <TouchableOpacity
-                style={{ flex: 1, marginEnd: 6 }}
-                onPress={() => this.setState({ showFromDateDialog: true })}
-                disabled={disableDate}>
-                <AppTextField
-                    containerStyle={{ color: colorAccent }}
-                    label='From'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
-                    value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    fieldRef={this._fromDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showFromDateDialog ? <DateTimePicker
-                value={this.state.fromDate}
-                mode={'datetime'}
-                display='default'
-                maximumDate={this.state.toDate}
+            <AppDatePicker
+                showDialog={this.state.showFromDateDialog}
+                date={this.state.fromDate}
+                disable={disableDate}
+                containerStyle={{ flex: 1, marginStart: 6 }}
+                textFieldProps={{
+                    label: 'From',
+                    fieldRef: this._fromDateRef
+                }}
                 onChange={this.onFromDateChange}
-            /> : null}
-            <TouchableOpacity
-                style={{ flex: 1, marginStart: 6 }}
-                onPress={() => this.setState({ showToDateDialog: true })}
-                disabled={disableDate}>
-                <AppTextField
-                    label='To'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
-                    value={timeHelper.format(this.state.toDate, this.DATE_FORMAT)}
-                    fieldRef={this._toDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showToDateDialog ? <DateTimePicker
-                value={this.state.toDate}
-                mode={'datetime'}
-                display='default'
-                minimumDate={this.state.fromDate}
+            />
+            <AppDatePicker
+                showDialog={this.state.showToDateDialog}
+                date={this.state.toDate}
+                disable={disableDate}
+                containerStyle={{ flex: 1, marginStart: 6 }}
+                textFieldProps={{
+                    label: 'To',
+                    fieldRef: this._toDateRef
+                }}
                 onChange={this.onToDateChange}
-            /> : null}
+            />
         </View>
     }
 
     onViewReportPress = item => {
+
         this.props.navigation.push('ViewTaxReportScreen', {
             taxItem: this.taxItem(),
             product: item,
             periodIndex: this.state.periodIndex,
-            fromDate: this.state.fromDate,
-            toDate: this.state.toDate
+            fromDate: this.state.fromDate.valueOf(),
+            toDate: this.state.toDate.valueOf()
         })
     }
 
@@ -203,7 +180,7 @@ class TaxViewScreen extends Component {
         />
     }
 
-    onPeriodChange = (itemValue, itemIndex) => {
+    onPeriodChange = (itemIndex) => {
         let startMonth;
         switch (itemIndex) {
             case 2:
@@ -218,12 +195,15 @@ class TaxViewScreen extends Component {
             default:
                 startMonth = 0;
         }
-        const fromDate = moment().set('month', startMonth).set('date', 1).toDate();
-        const toDate = moment(fromDate).add('month', 3).subtract('day', 1).toDate();
-        this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
-
-            setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
-            setFieldValue(this._toDateRef, timeHelper.format(toDate, this.DATE_FORMAT));
+        const fromDate = moment().set('month', startMonth).set('date', 1);
+        const toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
+        this.setState({
+            periodIndex: itemIndex,
+            fromDate: timeHelper.format(fromDate),
+            toDate: timeHelper.format(toDate)
+        }, () => {
+            setFieldValue(this._fromDateRef, this.state.fromDate);
+            setFieldValue(this._toDateRef, this.state.toDate);
             if (itemIndex > 0 && itemIndex < 5) {
                 this.fetchNominalTaxList();
             }
@@ -242,13 +222,13 @@ class TaxViewScreen extends Component {
                         borderColor: 'lightgray',
                         marginTop: 10
                     }}>
-                        <Picker
-                            selectedValue={periods[periodIndex]}
-                            mode='dropdown'
-                            onValueChange={this.onPeriodChange}>
-                            {periods.map((value, index) => <Picker.Item
-                                label={value} value={value} key={value} />)}
-                        </Picker>
+
+                        <AppPicker2
+                            title={periods[periodIndex]}
+                            text='Select Sales Period'
+                            items={periods}
+                            onChange={this.onPeriodChange}
+                        />
                     </View>
                     <Text style={{ color: 'gray', fontSize: 12, marginTop: 2 }}>Note: Choose custom period to modify Tax return between dates</Text>
                     {this.renderDateRange()}
@@ -261,7 +241,8 @@ class TaxViewScreen extends Component {
 const styles = StyleSheet.create({
     listCard: {
         marginHorizontal: 16,
-        marginTop: 16
+        marginTop: 16,
+        backgroundColor: 'white'
     }
 })
 export default connect(

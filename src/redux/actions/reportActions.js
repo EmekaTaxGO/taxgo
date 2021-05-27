@@ -100,7 +100,7 @@ export const fetchNominalTaxReturn = (id, ledger, startDate, endDate) => {
         const { authData } = Store.getState().auth;
         return Api.get(`/report/getNominalVat/${authData.id}/${id}/${ledger}/${startDate}/${endDate}`)
             .then(response => {
-                const payload = response.data.status === 'success' ? response.data.data : [];
+                const payload = response.data.data;
                 dispatch({
                     type: FETCH_NOMINAL_TAX_RETURN_SUCCESS,
                     payload

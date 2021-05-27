@@ -1,4 +1,4 @@
-import { replace, isString } from 'lodash';
+import { isString } from 'lodash';
 import moment from 'moment';
 import { H_DATE_FORMAT } from '../constants/appConstant';
 

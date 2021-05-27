@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import timeHelper from '../helpers/TimeHelper';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
 import moment from 'moment';
 import { FlatList } from 'react-native-gesture-handler';
@@ -14,9 +13,9 @@ import CardView from 'react-native-cardview';
 import { colorAccent } from '../theme/Color';
 import { getSavedData, TAX_RETURN_REPORT } from '../services/UserStorage';
 import { appFont, appFontBold, showHeaderProgress } from '../helpers/ViewHelper';
-import AppTextField from '../components/AppTextField';
 import AppText from '../components/AppText';
 import AppPicker2 from '../components/AppPicker2';
+import AppDatePicker from '../components/AppDatePicker';
 
 class TaxReturnListScreen extends Component {
 
@@ -24,13 +23,13 @@ class TaxReturnListScreen extends Component {
         super(props);
 
         const fromDate = moment().set('month', 0).set('date', 1).toDate();
-        const toDate = moment().set('month', 2).set('date', 31).toDate();
+        const toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
 
         this.state = {
             periods: this.buildPeriods(),
             periodIndex: 1,
-            fromDate,
-            toDate,
+            fromDate: timeHelper.format(fromDate),
+            toDate: timeHelper.format(toDate),
             showFromDateDialog: false,
             showToDateDialog: false,
             taxReports: undefined
@@ -72,9 +71,7 @@ class TaxReturnListScreen extends Component {
 
     fetchTaxReport = () => {
         const { reportActions } = this.props;
-        const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
-        const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
-        reportActions.fetchVatReport(startDate, endDate);
+        reportActions.fetchVatReport(this.state.fromDate, this.state.toDate);
         showHeaderProgress(this.props.navigation, true);
     }
 
@@ -86,24 +83,28 @@ class TaxReturnListScreen extends Component {
         })
     }
 
-    onFromDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.fromDate;
+    onFromDateChange = (show, date) => {
+        if (show === true || date == this.state.fromDate) {
+            this.setState({ showFromDateDialog: true });
+            return
+        }
         this.setState({
-            fromDate: currentDate,
-            showFromDateDialog: false
+            fromDate: date,
+            showFromDateDialog: show
         }, () => {
-            setFieldValue(this._fromDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
             this.fetchTaxReport();
         })
     }
 
-    onToDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || this.state.toDate;
+    onToDateChange = (show, date) => {
+        if (show === true || date == this.state.toDate) {
+            this.setState({ showToDateDialog: true });
+            return
+        }
         this.setState({
-            toDate: currentDate,
-            showToDateDialog: false
+            toDate: date,
+            showToDateDialog: show
         }, () => {
-            setFieldValue(this._toDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
             this.fetchTaxReport();
         })
     }
@@ -111,49 +112,29 @@ class TaxReturnListScreen extends Component {
     renderDateRange = () => {
         const disableDate = this.state.periodIndex !== 5;
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
-            <TouchableOpacity
-                style={{ flex: 1, marginEnd: 6 }}
-                onPress={() => this.setState({ showFromDateDialog: true })}
-                disabled={disableDate}>
-                <AppTextField
-                    containerStyle={{ color: colorAccent }}
-                    label='From'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
-                    value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    fieldRef={this._fromDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showFromDateDialog ? <DateTimePicker
-                value={this.state.fromDate}
-                mode={'datetime'}
-                display='default'
-                maximumDate={this.state.toDate}
+
+            <AppDatePicker
+                showDialog={this.state.showFromDateDialog}
+                date={this.state.fromDate}
+                disable={disableDate}
+                containerStyle={{ flex: 1, marginStart: 6 }}
+                textFieldProps={{
+                    label: 'From',
+                    fieldRef: this._fromDateRef
+                }}
                 onChange={this.onFromDateChange}
-            /> : null}
-            <TouchableOpacity
-                style={{ flex: 1, marginStart: 6 }}
-                onPress={() => this.setState({ showToDateDialog: true })}
-                disabled={disableDate}>
-                <AppTextField
-                    label='To'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
-                    value={timeHelper.format(this.state.toDate, this.DATE_FORMAT)}
-                    fieldRef={this._toDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showToDateDialog ? <DateTimePicker
-                value={this.state.toDate}
-                mode={'datetime'}
-                display='default'
-                minimumDate={this.state.fromDate}
+            />
+            <AppDatePicker
+                showDialog={this.state.showToDateDialog}
+                date={this.state.toDate}
+                disable={disableDate}
+                containerStyle={{ flex: 1, marginStart: 6 }}
+                textFieldProps={{
+                    label: 'To',
+                    fieldRef: this._toDateRef
+                }}
                 onChange={this.onToDateChange}
-            /> : null}
+            />
         </View>
     }
 
@@ -169,8 +150,8 @@ class TaxReturnListScreen extends Component {
         this.props.navigation.push('TaxViewScreen', {
             item,
             periodIndex: this.state.periodIndex,
-            fromDate: this.state.fromDate,
-            toDate: this.state.toDate
+            fromDate: this.state.fromDate.valueOf(),
+            toDate: this.state.toDate.valueOf()
         })
     }
 
@@ -191,8 +172,7 @@ class TaxReturnListScreen extends Component {
                     fontSize: 15,
                     fontFamily: appFontBold
                 }}>Vat on {item.label}</Text>
-                {/* <Text style={{ flex: 1, textAlign: 'center', fontSize: 14 }}>Rate</Text>
-                <Text style={{ flex: 1, textAlign: 'right', fontSize: 14 }}>Amount</Text> */}
+
             </View>
             {item.vatList.map(value => this.renderItemRow(value))}
             <View style={{
@@ -266,12 +246,15 @@ class TaxReturnListScreen extends Component {
             default:
                 startMonth = 0;
         }
-        const fromDate = moment().set('month', startMonth).set('date', 1).toDate();
-        const toDate = moment(fromDate).add(3, 'month').subtract(1, 'day').toDate();
-        this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
-
-            setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
-            setFieldValue(this._toDateRef, timeHelper.format(toDate, this.DATE_FORMAT));
+        const fromDate = moment().set('month', startMonth).set('date', 1);
+        const toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
+        this.setState({
+            periodIndex: itemIndex,
+            fromDate: timeHelper.format(fromDate),
+            toDate: timeHelper.format(toDate)
+        }, () => {
+            setFieldValue(this._fromDateRef, this.state.fromDate);
+            setFieldValue(this._toDateRef, this.state.toDate);
             if (itemIndex > 0 && itemIndex < 5) {
                 this.fetchTaxReport();
             }

@@ -19,16 +19,23 @@ class AppDatePicker extends Component {
 
 
     onDateChange = (event, selectedDate) => {
+        if (Platform.OS === 'android' && event.type !== 'set') {
+            this.setState({ showPicker: false })
+        } else {
+            this.setState({ showPicker: false }, () => {
+                this.onDateUpdated(selectedDate)
+            })
+        }
+    }
+
+    onDateUpdated = selectedDate => {
+
         const { onChange, textFieldProps } = this.props;
 
-        if (Platform.OS === 'ios' || (Platform.OS === 'android' && event.type === 'set')) {
-
-            const currentDate = moment(selectedDate) || this.getDate();
-            onChange(timeHelper.format(currentDate, this.getReadFormat()));
-            setFieldValue(textFieldProps.fieldRef,
-                timeHelper.format(currentDate, this.getDisplayFormat()));
-        }
-        this.setState({ showPicker: false })
+        const currentDate = moment(selectedDate) || this.getDate();
+        onChange(timeHelper.format(currentDate, this.getReadFormat()));
+        setFieldValue(textFieldProps.fieldRef,
+            timeHelper.format(currentDate, this.getDisplayFormat()));
     }
 
     getReadFormat = () => {
@@ -46,6 +53,7 @@ class AppDatePicker extends Component {
     }
 
     render() {
+        console.log('Show Picker: ', this.state.showPicker);
         const { textFieldProps, pickerProps, containerStyle } = this.props;
         const disable = get(this.props, 'disable', false);
         const date = this.getDate();

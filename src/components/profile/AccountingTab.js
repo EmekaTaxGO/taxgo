@@ -16,7 +16,6 @@ class AccountingTab extends Component {
         const reportTypes = this.createReports();
         this.state = {
             profile: props.profile,
-            showYrEndDialog: false,
             reportTypes: reportTypes,
             reportIdx: this.getReportTypeIdx(reportTypes, props.profile.reportType)
         }
@@ -53,13 +52,13 @@ class AccountingTab extends Component {
 
     }
 
-    onChangeYrEnd = (show, date) => {
+    onChangeYrEnd = date => {
         const { profile } = this.state;
         const newProfile = {
             ...profile,
             endYear: date
         };
-        this.setState({ showYrEndDialog: show, profile: newProfile });
+        this.setState({ profile: newProfile });
     }
 
     onChangeMultiline = (key, value) => {
@@ -102,7 +101,6 @@ class AccountingTab extends Component {
                     this.scrollView = ref
                 }}>
                 <AppDatePicker
-                    showDialog={this.state.showYrEndDialog}
                     date={profile.endYear}
                     containerStyle={styles.textField}
                     textFieldProps={{

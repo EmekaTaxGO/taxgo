@@ -19,7 +19,6 @@ class GeneralTab extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showDobDialog: false,
             profile: props.profile,
             uploading: false
         }
@@ -80,13 +79,13 @@ class GeneralTab extends Component {
         }
     }
 
-    onChangeDob = (show, date) => {
+    onChangeDob = date => {
         const { profile } = this.state;
         const newProfile = {
             ...profile,
             dob: date
         };
-        this.setState({ showDobDialog: show, profile: newProfile });
+        this.setState({ profile: newProfile });
     }
 
     validateForm = () => {
@@ -139,7 +138,6 @@ class GeneralTab extends Component {
                     disabled={true}
                 />
                 <AppDatePicker
-                    showDialog={this.state.showDobDialog}
                     date={profile.dob}
                     containerStyle={styles.textField}
                     textFieldProps={{

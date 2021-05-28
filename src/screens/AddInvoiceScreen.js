@@ -39,13 +39,11 @@ class AddInvoiceScreen extends Component {
         super();
         this.state = {
             selectedTab: 'supplier',
-            showInvDatePicker: false,
             fetching: true,
             updating: false,
             fetchError: undefined,
             taxList: [],
             invDate: this.getInvoiceDate(),
-            showDueDatePicker: false,
             dueDate: this.getDueDate(),
             showBreakdown: false,
             issuedcats: ['Yes', 'No'],
@@ -235,9 +233,8 @@ class AddInvoiceScreen extends Component {
         }
     }
 
-    onInvDateChanged = (show, date) => {
+    onInvDateChanged = date => {
         this.setState({
-            showInvDatePicker: show,
             invDate: date
         });
     }
@@ -251,9 +248,8 @@ class AddInvoiceScreen extends Component {
         });
     }
 
-    onDueDateChanged = (show, date) => {
+    onDueDateChanged = date => {
         this.setState({
-            showDueDatePicker: show,
             dueDate: date
         });
     }
@@ -320,7 +316,6 @@ class AddInvoiceScreen extends Component {
                 </TouchableOpacity>
 
                 <AppDatePicker
-                    showDialog={this.state.showInvDatePicker}
                     date={this.state.invDate}
                     containerStyle={styles.textField}
                     textFieldProps={{
@@ -332,7 +327,6 @@ class AddInvoiceScreen extends Component {
                 />
 
                 <AppDatePicker
-                    showDialog={this.state.showDueDatePicker}
                     date={this.state.dueDate}
                     containerStyle={styles.textField}
                     textFieldProps={{
@@ -1161,11 +1155,11 @@ class AddInvoiceScreen extends Component {
                 fieldRef={this.outAmtRef} />
             {/* Select Method Picker */}
             <View style={styles.pickerBox}>
-                
+
                 <AppPicker2
                     title={payMethod[payMethodIndex]}
                     items={payMethod}
-                    onChange={idx=>this.onDropDownChange('payMethodIndex',idx)}
+                    onChange={idx => this.onDropDownChange('payMethodIndex', idx)}
                     text='Select Payment Method'
                 />
 

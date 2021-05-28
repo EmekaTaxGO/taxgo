@@ -13,13 +13,13 @@ import Snackbar from 'react-native-snackbar';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
 import AppDatePicker from '../components/AppDatePicker';
+import timeHelper from '../helpers/TimeHelper';
 class AddJournalScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            date: moment().format(H_DATE_FORMAT),
-            showDate: false,
+            date: timeHelper.format(moment()),
             ledgers: this.createLedgers()
         }
     }
@@ -51,9 +51,8 @@ class AddJournalScreen extends Component {
         })
     }
 
-    onJournalDateChanged = (show, date) => {
+    onJournalDateChanged = date => {
         this.setState({
-            showDate: show,
             date: date
         });
     }
@@ -208,7 +207,6 @@ class AddJournalScreen extends Component {
         return (
             <View>
                 <AppDatePicker
-                    showDialog={this.state.showDate}
                     date={this.state.date}
                     readFormat={H_DATE_FORMAT}
                     displayFormat={DATE_FORMAT}

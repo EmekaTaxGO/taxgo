@@ -179,9 +179,7 @@ class TrialBalanceScreen extends Component {
         if (debtotal < 0) {
             debtotal *= -1;
         }
-        // if (isEmpty(ledgers)) {
-        //     return <EmptyView message='No Trial Balance Report Available' iconName='hail' />
-        // }
+        
         return (
 
             <CardView

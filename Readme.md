@@ -10,7 +10,6 @@ Go to /Users/Karan/Projects/taxgo-mobile/node_modules/react-native-material-text
 
 #3 AppDatePicker
 <AppDatePicker
-    showDialog={this.state.showDobDialog}
     date={this.state.dob}
     containerStyle={styles.textField}
     textFieldProps={{

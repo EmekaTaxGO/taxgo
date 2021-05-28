@@ -27,9 +27,7 @@ class ProfitLossReportScreen extends Component {
             periods: this.buildPeriods(),
             periodIndex: 0,
             fromDate: timeHelper.format(fromDate),
-            showFromDateDialog: false,
             toDate: timeHelper.format(toDate),
-            showToDateDialog: false,
             report: {}
         }
         this.presetState()
@@ -85,28 +83,14 @@ class ProfitLossReportScreen extends Component {
         });
     }
 
-    onFromDateChange = (save, date) => {
-        if (save === true || date === this.state.fromDate) {
-            this.setState({ showFromDateDialog: true })
-            return
-        }
-        this.setState({
-            fromDate: date,
-            showFromDateDialog: false
-        }, () => {
+    onFromDateChange = date => {
+        this.setState({ fromDate: date }, () => {
             this.fetchProfitAndLoss();
         })
     }
 
-    onToDateChange = (show, date) => {
-        if (show === true || date === this.state.toDate) {
-            this.setState({ showToDateDialog: true })
-            return
-        }
-        this.setState({
-            toDate: date,
-            showToDateDialog: false
-        }, () => {
+    onToDateChange = date => {
+        this.setState({ toDate: date }, () => {
             this.fetchProfitAndLoss();
         })
     }
@@ -114,7 +98,6 @@ class ProfitLossReportScreen extends Component {
     renderDateRange = () => {
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
             <AppDatePicker
-                showDialog={this.state.showFromDateDialog}
                 date={this.state.fromDate}
                 containerStyle={{ flex: 1, marginEnd: 6 }}
                 textFieldProps={{
@@ -125,7 +108,6 @@ class ProfitLossReportScreen extends Component {
                 onChange={this.onFromDateChange}
             />
             <AppDatePicker
-                showDialog={this.state.showToDateDialog}
                 date={this.state.toDate}
                 containerStyle={{ flex: 1, marginEnd: 6 }}
                 textFieldProps={{

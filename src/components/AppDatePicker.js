@@ -10,18 +10,25 @@ import moment from 'moment';
 
 class AppDatePicker extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            showPicker: false
+        }
+    }
 
 
     onDateChange = (event, selectedDate) => {
-        const { onChange, date, textFieldProps } = this.props;
-        if (Platform.OS === 'android' && event.type !== 'set') {
-            onChange(false, date);
-        } else {
+        const { onChange, textFieldProps } = this.props;
+
+        if (Platform.OS === 'ios' || (Platform.OS === 'android' && event.type === 'set')) {
+
             const currentDate = moment(selectedDate) || this.getDate();
-            onChange(false, timeHelper.format(currentDate, this.getReadFormat()));
+            onChange(timeHelper.format(currentDate, this.getReadFormat()));
             setFieldValue(textFieldProps.fieldRef,
                 timeHelper.format(currentDate, this.getDisplayFormat()));
         }
+        this.setState({ showPicker: false })
     }
 
     getReadFormat = () => {
@@ -32,11 +39,6 @@ class AppDatePicker extends Component {
         return get(this.props, 'displayFormat', H_DATE_FORMAT);
     }
 
-    onPress = () => {
-        const { onChange, date } = this.props;
-        onChange(true, date);
-    }
-
     getDate = () => {
         const { date } = this.props;
         const aDate = moment(date, this.getReadFormat());
@@ -44,14 +46,14 @@ class AppDatePicker extends Component {
     }
 
     render() {
-        const { textFieldProps, pickerProps, showDialog, containerStyle } = this.props;
+        const { textFieldProps, pickerProps, containerStyle } = this.props;
         const disable = get(this.props, 'disable', false);
         const date = this.getDate();
         const displayText = timeHelper.format(date, this.getDisplayFormat());
         return (
             <View style={containerStyle}>
                 <TouchableOpacity
-                    onPress={this.onPress}
+                    onPress={() => this.setState({ showPicker: true })}
                     disabled={disable}>
                     <AppTextField
                         keyboardType='default'
@@ -59,7 +61,7 @@ class AppDatePicker extends Component {
                         value={displayText}
                         {...textFieldProps} />
                 </TouchableOpacity>
-                {showDialog ? <DateTimePicker
+                {this.state.showPicker ? <DateTimePicker
                     value={date.toDate()}
                     mode={'date'}
                     onChange={this.onDateChange}

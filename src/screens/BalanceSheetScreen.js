@@ -82,7 +82,6 @@ class BalanceSheetScreen extends Component {
             this.setState({ showUntilDateDialog: false });
             return;
         }
-        console.log('Event: ', event);
         const currentDate = selectedDate || this.state.untilDate;
         this.setState({
             untilDate: currentDate,

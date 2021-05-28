@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, Picker, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, Text, StyleSheet } from 'react-native';
 import timeHelper from '../helpers/TimeHelper';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { setFieldValue } from '../helpers/TextFieldHelpers';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -13,21 +12,23 @@ import { colorAccent } from '../theme/Color';
 import { isEmpty } from 'lodash';
 import ProfitLossReport from '../components/profitLoss/ProfitLossReport';
 import { getSavedData, PROFIT_LOSS_REPORT } from '../services/UserStorage';
-import { DATE_FORMAT } from '../constants/appConstant';
 import { showHeaderProgress } from '../helpers/ViewHelper';
-import AppTextField from '../components/AppTextField';
 import AppPicker2 from '../components/AppPicker2';
+import AppDatePicker from '../components/AppDatePicker';
 
 class ProfitLossReportScreen extends Component {
 
     constructor(props) {
         super(props);
+
+        const fromDate = moment().set('date', 1)
+        const toDate = moment().set('date', fromDate.daysInMonth())
         this.state = {
             periods: this.buildPeriods(),
             periodIndex: 0,
-            fromDate: moment(),
+            fromDate: timeHelper.format(fromDate),
             showFromDateDialog: false,
-            toDate: moment(),
+            toDate: timeHelper.format(toDate),
             showToDateDialog: false,
             report: {}
         }
@@ -37,7 +38,6 @@ class ProfitLossReportScreen extends Component {
     _toDateRef = React.createRef();
 
 
-    DATE_FORMAT = 'YYYY-MM-DD';
 
     buildPeriods = () => {
         return [
@@ -74,96 +74,67 @@ class ProfitLossReportScreen extends Component {
 
     fetchProfitAndLoss = () => {
         const { reportActions } = this.props;
-        const startDate = timeHelper.format(this.state.fromDate, this.DATE_FORMAT)
-        const endDate = timeHelper.format(this.state.toDate, this.DATE_FORMAT)
         showHeaderProgress(this.props.navigation, true);
-        reportActions.fetchProfitAndLossReport(startDate, endDate);
+        reportActions.fetchProfitAndLossReport(this.state.fromDate, this.state.toDate);
     }
 
     presetState = async () => {
         const report = await getSavedData(PROFIT_LOSS_REPORT);
-        const from = moment().set('date', 1);
-        const to = moment().set('date', from.daysInMonth());
         this.setState({
-            fromDate: from,
-            toDate: to,
             report: report !== null ? report : {}
         });
     }
 
-    onFromDateChange = (event, selectedDate) => {
-        if (event.type !== 'set') {
-            this.setState({ showFromDateDialog: false });
-            return;
+    onFromDateChange = (save, date) => {
+        if (save === true || date === this.state.fromDate) {
+            this.setState({ showFromDateDialog: true })
+            return
         }
-        const currentDate = selectedDate || this.state.fromDate;
         this.setState({
-            fromDate: currentDate,
+            fromDate: date,
             showFromDateDialog: false
         }, () => {
-            setFieldValue(this._fromDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
             this.fetchProfitAndLoss();
         })
     }
 
-    onToDateChange = (event, selectedDate) => {
-        if (event.type !== 'set') {
-            this.setState({ showToDateDialog: false });
-            return;
+    onToDateChange = (show, date) => {
+        if (show === true || date === this.state.toDate) {
+            this.setState({ showToDateDialog: true })
+            return
         }
-        const currentDate = selectedDate || this.state.toDate;
         this.setState({
-            toDate: currentDate,
+            toDate: date,
             showToDateDialog: false
         }, () => {
-            setFieldValue(this._toDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
             this.fetchProfitAndLoss();
         })
     }
 
     renderDateRange = () => {
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
-            <TouchableOpacity
-                style={{ flex: 1, marginEnd: 6 }}
-                onPress={() => this.setState({ showFromDateDialog: true })}>
-                <AppTextField
-                    containerStyle={{ color: colorAccent }}
-                    label='From'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={colorAccent}
-                    value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    fieldRef={this._fromDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showFromDateDialog ? <DateTimePicker
-                value={this.state.fromDate}
-                mode={'datetime'}
-                display='default'
-                maximumDate={this.state.toDate}
+            <AppDatePicker
+                showDialog={this.state.showFromDateDialog}
+                date={this.state.fromDate}
+                containerStyle={{ flex: 1, marginEnd: 6 }}
+                textFieldProps={{
+                    label: `From`,
+                    fieldRef: this._fromDateRef,
+                    baseColor: colorAccent
+                }}
                 onChange={this.onFromDateChange}
-            /> : null}
-            <TouchableOpacity
-                style={{ flex: 1, marginStart: 6 }}
-                onPress={() => this.setState({ showToDateDialog: true })}>
-                <AppTextField
-                    label='To'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={colorAccent}
-                    value={timeHelper.format(this.state.toDate, this.DATE_FORMAT)}
-                    fieldRef={this._toDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showToDateDialog ? <DateTimePicker
-                value={this.state.toDate}
-                mode={'datetime'}
-                display='default'
-                minimumDate={this.state.fromDate}
+            />
+            <AppDatePicker
+                showDialog={this.state.showToDateDialog}
+                date={this.state.toDate}
+                containerStyle={{ flex: 1, marginEnd: 6 }}
+                textFieldProps={{
+                    label: `To`,
+                    fieldRef: this._toDateRef,
+                    baseColor: colorAccent
+                }}
                 onChange={this.onToDateChange}
-            /> : null}
+            />
         </View>
     }
 
@@ -191,8 +162,8 @@ class ProfitLossReportScreen extends Component {
         return (
             <ProfitLossReport
                 report={reportData}
-                startDate={timeHelper.format(fromDate, this.DATE_FORMAT)}
-                endDate={timeHelper.format(toDate, this.DATE_FORMAT)}
+                startDate={fromDate}
+                endDate={toDate}
             />
         )
     }
@@ -206,8 +177,10 @@ class ProfitLossReportScreen extends Component {
                 break;
             case 1:
                 //Current Quarter
-                fromDate = moment();
-                fromDate.set('month', 3 * fromDate.quarter() - 3).set(1, 'date');
+                // console.log('Quarter: ', fromDate.quarter());
+                // console.log('Month: ', fromDate.get('month'));
+                const quarter = moment().quarter();
+                fromDate = moment().set('month', 3 * quarter - 3).set('date', 1);
                 toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
                 break;
             case 2:
@@ -217,7 +190,7 @@ class ProfitLossReportScreen extends Component {
                 break;
             case 3:
                 //Last Month
-                fromDate = moment().subtract(1, 'month').set(1, 'date');
+                fromDate = moment().subtract(1, 'month').set('date', 1);
                 toDate = moment(fromDate).add(1, 'month').subtract(1, 'day');
                 break;
             case 4:
@@ -237,10 +210,14 @@ class ProfitLossReportScreen extends Component {
                 toDate = moment(this.state.toDate);
         }
 
-        this.setState({ periodIndex: itemIndex, fromDate, toDate }, () => {
+        this.setState({
+            periodIndex: itemIndex,
+            fromDate: timeHelper.format(fromDate),
+            toDate: timeHelper.format(toDate)
+        }, () => {
 
-            setFieldValue(this._fromDateRef, timeHelper.format(fromDate, this.DATE_FORMAT));
-            setFieldValue(this._toDateRef, timeHelper.format(toDate, this.DATE_FORMAT));
+            setFieldValue(this._fromDateRef, this.state.fromDate);
+            setFieldValue(this._toDateRef, this.state.toDate);
             if (itemIndex < 6) {
                 this.fetchProfitAndLoss();
             }

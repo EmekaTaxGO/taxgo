@@ -18,21 +18,20 @@ import { AGE_DEBTOR_REPORT, getSavedData } from '../services/UserStorage';
 import { showHeaderProgress } from '../helpers/ViewHelper';
 import { get } from 'lodash';
 import AppTextField from '../components/AppTextField';
+import AppDatePicker from '../components/AppDatePicker';
 
 class AgeDebtorScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            untilDate: new Date(),
+            untilDate: timeHelper.format(moment()),
             showUntilDateDialog: false,
             ageDebtors: undefined
         }
         this.presetState();
     }
     _untilDateRef = React.createRef();
-
-    DATE_FORMAT = 'YYYY-MM-DD';
 
     componentDidMount() {
         this.fetchAgeDebtors();
@@ -58,22 +57,19 @@ class AgeDebtorScreen extends Component {
 
     fetchAgeDebtors = () => {
         const { reportActions } = this.props;
-        const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
-        reportActions.fetchAgeDebtors(date);
+        reportActions.fetchAgeDebtors(this.state.untilDate);
         showHeaderProgress(this.props.navigation, true);
     }
 
-    onUntilDateChange = (event, selectedDate) => {
-        if (event.type !== 'set') {
-            this.setState({ showUntilDateDialog: false });
-            return;
+    onUntilDateChange = (show, date) => {
+        if (show === true || date === this.state.untilDate) {
+            this.setState({ showUntilDateDialog: true })
+            return
         }
-        const currentDate = selectedDate || this.state.untilDate;
         this.setState({
-            untilDate: currentDate,
+            untilDate: date,
             showUntilDateDialog: false
         }, () => {
-            setFieldValue(this._untilDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
             this.fetchAgeDebtors();
         })
     }
@@ -158,27 +154,18 @@ class AgeDebtorScreen extends Component {
     renderDate = () => {
         const disableDate = this.props.report.fetchingAgeDebtors;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
-            <TouchableOpacity
-                style={{ width: '100%', marginEnd: 6 }}
-                onPress={() => this.setState({ showUntilDateDialog: true })}
-                disabled={disableDate}>
-                <AppTextField
-                    containerStyle={{ color: colorAccent }}
-                    label='Until'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
-                    value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    fieldRef={this._untilDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showUntilDateDialog ? <DateTimePicker
-                value={this.state.untilDate}
-                mode={'datetime'}
-                display='default'
+
+            <AppDatePicker
+                disable={disableDate}
+                showDialog={this.state.showUntilDateDialog}
+                date={this.state.untilDate}
+                containerStyle={{ width: '100%', marginEnd: 6 }}
+                textFieldProps={{
+                    label: `Title`,
+                    fieldRef: this._untilDateRef
+                }}
                 onChange={this.onUntilDateChange}
-            /> : null}
+            />
             <Text>Choose the date for aged debtors report</Text>
         </View>
     }

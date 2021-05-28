@@ -29,8 +29,6 @@ class TrialBalanceScreen extends Component {
             periodIndex: 0,
             fromDate: timeHelper.format(fromDate),
             toDate: timeHelper.format(toDate),
-            showFromDateDialog: false,
-            showToDateDialog: false,
             trialBalance: undefined
         }
         this.presetState()
@@ -78,54 +76,41 @@ class TrialBalanceScreen extends Component {
         });
     }
 
-    onFromDateChange = (show, date) => {
-        if (show === true || date === this.state.fromDate) {
-            this.setState({ showFromDateDialog: true })
-            return
-        }
-        this.setState({
-            fromDate: date,
-            showFromDateDialog: false
-        }, () => {
+    onFromDateChange = date => {
+        this.setState({ fromDate: date, }, () => {
             this.fetchTrialBalance();
         })
     }
 
-    onToDateChange = (show, date) => {
-        if (show === true || this.state.toDate === date) {
-            this.setState({ showToDateDialog: true })
-            return
-        }
-        this.setState({
-            toDate: date,
-            showToDateDialog: false
-        }, () => {
+    onToDateChange = date => {
+        this.setState({ toDate: date, }, () => {
             this.fetchTrialBalance();
         })
     }
 
     renderDateRange = () => {
+        const disableDate = this.props.report.fetchingTrialBalance;
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
 
             <AppDatePicker
-                showDialog={this.state.showFromDateDialog}
+                disable={disableDate}
                 date={this.state.fromDate}
                 containerStyle={{ flex: 1, marginEnd: 6 }}
                 textFieldProps={{
                     label: `From`,
                     fieldRef: this._fromDateRef,
-                    baseColor: colorAccent
+                    baseColor: disableDate ? 'gray' : colorAccent
                 }}
                 onChange={this.onFromDateChange}
             />
             <AppDatePicker
-                showDialog={this.state.showToDateDialog}
+                disable={disableDate}
                 date={this.state.toDate}
                 containerStyle={{ flex: 1, marginEnd: 6 }}
                 textFieldProps={{
                     label: `To`,
                     fieldRef: this._toDateRef,
-                    baseColor: colorAccent
+                    baseColor: disableDate ? 'gray' : colorAccent
                 }}
                 onChange={this.onToDateChange}
             />
@@ -179,7 +164,7 @@ class TrialBalanceScreen extends Component {
         if (debtotal < 0) {
             debtotal *= -1;
         }
-        
+
         return (
 
             <CardView
@@ -207,21 +192,22 @@ class TrialBalanceScreen extends Component {
     }
 
     onPeriodChange = (itemIndex) => {
-        let fromDate, toDate;
+        let fromDate, toDate, quarter;
         switch (itemIndex) {
             case 0:
                 fromDate = moment().set('date', 1);
                 toDate = moment().set('date', fromDate.daysInMonth());
+                break;
             case 1:
                 //Current Quarter
-                const quarter = moment().quarter()
+                quarter = moment().quarter()
                 fromDate = moment().set('month', 3 * quarter - 3).set('date', 1);
-                toDate = moment(fromDate).add('month', 3).subtract(1, 'day');
+                toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
                 break;
             case 2:
                 //Current year
                 fromDate = moment().set('month', 0).set('date', 1);
-                toDate = moment(fromDate).add('year', 1).subtract(1, 'day');
+                toDate = moment(fromDate).add(1, 'year').subtract(1, 'day');
                 break;
             case 3:
                 //Last Month
@@ -230,14 +216,13 @@ class TrialBalanceScreen extends Component {
                 break;
             case 4:
                 //Last Quarter
-                fromDate = moment().subtract(3, 'month');
-                fromDate.set('month', 3 * fromDate.quarter() - 3).set('date', 1);
+                quarter = moment().quarter()
+                fromDate = moment().set('month', 3 * quarter - 3).set('date', 1);
                 toDate = moment(fromDate).add(3, 'month').subtract(1, 'day');
                 break;
             case 5:
                 //Last Year
-                fromDate = moment().subtract(1, 'year');
-                fromDate.set('month', 0).set('date', 1);
+                fromDate = moment().subtract(1, 'year').set('month', 0).set('date', 1);
                 toDate = moment(fromDate).add(1, 'year').subtract(1, 'day');
                 break;
             default:
@@ -259,6 +244,7 @@ class TrialBalanceScreen extends Component {
     }
     render() {
         const { periods, periodIndex } = this.state;
+        const { report } = this.props;
         return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <KeyboardAvoidingView style={{ flex: 1 }}>
 
@@ -266,6 +252,7 @@ class TrialBalanceScreen extends Component {
                     {/* Select Method Picker */}
 
                     <AppPicker2
+                        disable={report.fetchingTrialBalance}
                         containerStyle={{ marginTop: 12 }}
                         title={periods[periodIndex]}
                         text='Select Period'

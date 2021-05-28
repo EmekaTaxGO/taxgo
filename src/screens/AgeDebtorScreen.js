@@ -26,7 +26,6 @@ class AgeDebtorScreen extends Component {
         super(props);
         this.state = {
             untilDate: timeHelper.format(moment()),
-            showUntilDateDialog: false,
             ageDebtors: undefined
         }
         this.presetState();
@@ -61,15 +60,8 @@ class AgeDebtorScreen extends Component {
         showHeaderProgress(this.props.navigation, true);
     }
 
-    onUntilDateChange = (show, date) => {
-        if (show === true || date === this.state.untilDate) {
-            this.setState({ showUntilDateDialog: true })
-            return
-        }
-        this.setState({
-            untilDate: date,
-            showUntilDateDialog: false
-        }, () => {
+    onUntilDateChange = date => {
+        this.setState({ untilDate: date, }, () => {
             this.fetchAgeDebtors();
         })
     }
@@ -157,16 +149,16 @@ class AgeDebtorScreen extends Component {
 
             <AppDatePicker
                 disable={disableDate}
-                showDialog={this.state.showUntilDateDialog}
                 date={this.state.untilDate}
                 containerStyle={{ width: '100%', marginEnd: 6 }}
                 textFieldProps={{
-                    label: `Title`,
-                    fieldRef: this._untilDateRef
+                    label: `Until`,
+                    fieldRef: this._untilDateRef,
+                    baseColor: disableDate ? 'gray' : colorAccent
                 }}
                 onChange={this.onUntilDateChange}
             />
-            <Text>Choose the date for aged debtors report</Text>
+            <Text style={{ marginTop: 4 }}>Choose the date for aged debtors report</Text>
         </View>
     }
 

@@ -53,7 +53,6 @@ class AppDatePicker extends Component {
     }
 
     render() {
-        console.log('Show Picker: ', this.state.showPicker);
         const { textFieldProps, pickerProps, containerStyle } = this.props;
         const disable = get(this.props, 'disable', false);
         const date = this.getDate();

@@ -26,9 +26,7 @@ class TaxViewScreen extends Component {
             periods: this.buildPeriods(),
             periodIndex: this.props.route.params.periodIndex,
             fromDate: timeHelper.format(moment(this.props.route.params.fromDate)),
-            showFromDateDialog: false,
-            toDate: timeHelper.format(moment(this.props.route.params.toDate)),
-            showToDateDialog: false
+            toDate: timeHelper.format(moment(this.props.route.params.toDate))
         }
     }
     _fromDateRef = React.createRef();
@@ -70,28 +68,14 @@ class TaxViewScreen extends Component {
         reportActions.fetchTaxNominalList(taxId, startDate, endDate);
     }
 
-    onFromDateChange = (show, date) => {
-        if (show === true || date === this.state.fromDate) {
-            this.setState({ showFromDateDialog: true })
-            return
-        }
-        this.setState({
-            fromDate: date,
-            showFromDateDialog: show
-        }, () => {
+    onFromDateChange = date => {
+        this.setState({ fromDate: date }, () => {
             this.fetchNominalTaxList();
         })
     }
 
-    onToDateChange = (show, date) => {
-        if (show === true || date === this.state.toDate) {
-            this.setState({ showToDateDialog: true })
-            return
-        }
-        this.setState({
-            toDate: date,
-            showToDateDialog: false
-        }, () => {
+    onToDateChange = date => {
+        this.setState({ toDate: date }, () => {
             this.fetchNominalTaxList();
         })
     }
@@ -100,24 +84,24 @@ class TaxViewScreen extends Component {
         const disableDate = this.state.periodIndex !== 5;
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
             <AppDatePicker
-                showDialog={this.state.showFromDateDialog}
                 date={this.state.fromDate}
                 disable={disableDate}
                 containerStyle={{ flex: 1, marginStart: 6 }}
                 textFieldProps={{
                     label: 'From',
-                    fieldRef: this._fromDateRef
+                    fieldRef: this._fromDateRef,
+                    baseColor: disableDate ? 'gray' : colorAccent
                 }}
                 onChange={this.onFromDateChange}
             />
             <AppDatePicker
-                showDialog={this.state.showToDateDialog}
                 date={this.state.toDate}
                 disable={disableDate}
                 containerStyle={{ flex: 1, marginStart: 6 }}
                 textFieldProps={{
                     label: 'To',
-                    fieldRef: this._toDateRef
+                    fieldRef: this._toDateRef,
+                    baseColor: disableDate ? 'gray' : colorAccent
                 }}
                 onChange={this.onToDateChange}
             />

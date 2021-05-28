@@ -96,24 +96,28 @@ class ProfitLossReportScreen extends Component {
     }
 
     renderDateRange = () => {
+        const { report } = this.props;
+        const disableDate = report.fetchingProfitLossReport
         return <View style={{ flexDirection: 'row', marginTop: 24 }}>
             <AppDatePicker
+                disable={disableDate}
                 date={this.state.fromDate}
                 containerStyle={{ flex: 1, marginEnd: 6 }}
                 textFieldProps={{
                     label: `From`,
                     fieldRef: this._fromDateRef,
-                    baseColor: colorAccent
+                    baseColor: disableDate ? 'gray' : colorAccent
                 }}
                 onChange={this.onFromDateChange}
             />
             <AppDatePicker
+                disable={disableDate}
                 date={this.state.toDate}
                 containerStyle={{ flex: 1, marginEnd: 6 }}
                 textFieldProps={{
                     label: `To`,
                     fieldRef: this._toDateRef,
-                    baseColor: colorAccent
+                    baseColor: disableDate ? 'gray' : colorAccent
                 }}
                 onChange={this.onToDateChange}
             />
@@ -214,6 +218,7 @@ class ProfitLossReportScreen extends Component {
                 <View style={{ flexDirection: 'column', marginTop: 12, paddingHorizontal: 16 }}>
                     {/* Select Method Picker */}
                     <AppPicker2
+                        disable={report.fetchingProfitLossReport}
                         containerStyle={{ marginTop: 12 }}
                         title={periods[periodIndex]}
                         text='Select Period'

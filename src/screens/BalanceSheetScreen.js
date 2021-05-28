@@ -15,20 +15,19 @@ import { isEmpty } from 'lodash';
 import { BALANCE_SHEET, getSavedData } from '../services/UserStorage';
 import { showHeaderProgress } from '../helpers/ViewHelper';
 import AppTextField from '../components/AppTextField';
+import AppDatePicker from '../components/AppDatePicker';
+import moment from 'moment';
 
 class BalanceSheetScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            untilDate: new Date(),
-            showUntilDateDialog: false,
+            untilDate: timeHelper.format(moment()),
             balanceSheet: []
         }
     }
     _untilDateRef = React.createRef();
-
-    DATE_FORMAT = 'YYYY-MM-DD';
 
     componentDidMount() {
         this.fetchBalanceSheet();
@@ -72,22 +71,12 @@ class BalanceSheetScreen extends Component {
 
     fetchBalanceSheet = () => {
         const { reportActions } = this.props;
-        const date = timeHelper.format(this.state.untilDate, this.DATE_FORMAT)
         showHeaderProgress(this.props.navigation, true);
-        reportActions.fetchBalanceSheet(date);
+        reportActions.fetchBalanceSheet(this.state.untilDate);
     }
 
-    onUntilDateChange = (event, selectedDate) => {
-        if (Platform.OS === 'android' && event.type !== 'set') {
-            this.setState({ showUntilDateDialog: false });
-            return;
-        }
-        const currentDate = selectedDate || this.state.untilDate;
-        this.setState({
-            untilDate: currentDate,
-            showUntilDateDialog: false
-        }, () => {
-            setFieldValue(this._untilDateRef, timeHelper.format(currentDate, this.DATE_FORMAT))
+    onUntilDateChange = date => {
+        this.setState({ untilDate: date }, () => {
             this.fetchBalanceSheet();
         })
     }
@@ -105,9 +94,7 @@ class BalanceSheetScreen extends Component {
         if (report.fetchBalanceSheetError && isEmpty(this.state.balanceSheet)) {
             return <FullScreenError tryAgainClick={this.fetchBalanceSheet} />
         }
-        // if (this.state.balanceSheet.length === 0) {
-        //     return <EmptyView message='No Balance Sheet Data Available!' iconName='hail' />
-        // }
+        
         return <BalanceSheet
             sheet={this.state.balanceSheet}
             onChange={this.onBalanceSheetChange}
@@ -116,27 +103,17 @@ class BalanceSheetScreen extends Component {
     renderDate = () => {
         const disableDate = this.props.report.fetchingBalanceSheet;
         return <View style={{ paddingHorizontal: 16, marginTop: 24, flexDirection: 'column' }}>
-            <TouchableOpacity
-                style={{ width: '100%', marginEnd: 6, marginBottom: 6 }}
-                onPress={() => this.setState({ showUntilDateDialog: true })}
-                disabled={disableDate}>
-                <AppTextField
-                    containerStyle={{ color: colorAccent }}
-                    label='Until'
-                    returnKeyType='done'
-                    lineWidth={1}
-                    editable={false}
-                    baseColor={disableDate ? 'gray' : colorAccent}
-                    value={timeHelper.format(this.state.fromDate, this.DATE_FORMAT)}
-                    fieldRef={this._untilDateRef}
-                />
-            </TouchableOpacity>
-            {this.state.showUntilDateDialog ? <DateTimePicker
-                value={this.state.untilDate}
-                mode={'date'}
-                display='default'
+            <AppDatePicker
+                disable={disableDate}
+                date={this.state.untilDate}
+                containerStyle={{ width: '100%', marginEnd: 6, marginBottom: 6 }}
+                textFieldProps={{
+                    label: `Until`,
+                    fieldRef: this._untilDateRef,
+                    baseColor: disableDate ? 'gray' : colorAccent
+                }}
                 onChange={this.onUntilDateChange}
-            /> : null}
+            />
         </View>
     }
 

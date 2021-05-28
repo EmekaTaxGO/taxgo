@@ -35,7 +35,7 @@ import { log } from '../../components/Logger';
 import { getApiErrorMsg, toFloat } from '../../helpers/Utils';
 import Store from '../Store';
 import BalanceSheetHelper from '../../helpers/BalanceSheetHelper';
-import { get, isEmpty, isUndefined } from 'lodash';
+import { get, isArray, isEmpty, isUndefined } from 'lodash';
 import {
     BALANCE_SHEET,
     saveToLocal,
@@ -324,11 +324,14 @@ const sanetizeProfitLossReport = async (data) => {
 
 const sanetizeBreakdown = async (data) => {
     return new Promise(resolve => {
-        if (data.status === 'success' && data.data && data.data['0']) {
-            resolve(data.data['0']);
-        } else {
-            resolve([]);
-        }
+        const news = get(data, 'data.news', {})
+        var items = []
+        Object.values(news).forEach(value => {
+            if (isArray(value)) {
+                items = items.concat(value)
+            }
+        })
+        resolve(items)
     })
 }
 

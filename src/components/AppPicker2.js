@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -13,18 +14,21 @@ class AppPicker2 extends Component {
     }
     render() {
         const { title, containerStyle, onPress } = this.props;
+        const disable = get(this.props, 'disable', false)
         const newContainerStyle = {
             ...styles.container,
             ...containerStyle
         }
         return (
-            <TouchableOpacity onPress={() => {
-                if (onPress) {
-                    onPress()
-                } else {
-                    this.handleOnPress();
-                }
-            }}
+            <TouchableOpacity
+                disabled={disable}
+                onPress={() => {
+                    if (onPress) {
+                        onPress()
+                    } else {
+                        this.handleOnPress();
+                    }
+                }}
                 style={newContainerStyle}>
                 <AppText style={styles.text}>{title}</AppText>
                 <Icon name='arrow-drop-down' size={26} color='gray' />

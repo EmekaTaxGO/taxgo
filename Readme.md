@@ -11,6 +11,7 @@ Go to /Users/Karan/Projects/taxgo-mobile/node_modules/react-native-material-text
 #3 AppDatePicker
 <AppDatePicker
     date={this.state.dob}
+    disable={this.state.disableDate}
     containerStyle={styles.textField}
     textFieldProps={{
         label: `Title`,

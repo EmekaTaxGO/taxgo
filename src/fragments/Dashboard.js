@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { LineChart, BarChart, StackedBarChart } from 'react-native-chart-kit';
-import CardView from 'react-native-cardview';
+import {  BarChart } from 'react-native-chart-kit';
 import Api from '../services/api';
 import Store from '../redux/Store';
 import { getSavedData, GRAPH_DATA, saveToLocal } from '../services/UserStorage';
@@ -11,7 +10,6 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import { colorPrimary } from '../theme/Color';
 import AppText from '../components/AppText';
-import { appFontBold } from '../helpers/ViewHelper';
 import { get } from 'lodash';
 class DashBoard extends Component {
 

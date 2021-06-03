@@ -25,6 +25,7 @@ export const AGE_DEBTOR_REPORT = 'AGE_DEBTOR_REPORT';
 export const AGE_CREDITOR_REPORT = 'AGE_CREDITOR_REPORT';
 export const AGE_DEBTOR_BREAKDOWN = 'AGE_DEBTOR_BREAKDOWN';
 export const AGE_CREDITOR_BREAKDOWN = 'AGE_CREDITOR_BREAKDOWN';
+export const GRAPH_DATA = 'GRAPH_DATA'
 
 export async function getSavedData(key) {
     try {

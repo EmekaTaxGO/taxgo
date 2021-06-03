@@ -1,14 +1,73 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, ScrollView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { LineChart, BarChart, StackedBarChart } from 'react-native-chart-kit';
 import CardView from 'react-native-cardview';
+import Api from '../services/api';
+import Store from '../redux/Store';
+import { getSavedData, GRAPH_DATA, saveToLocal } from '../services/UserStorage';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import { colorPrimary } from '../theme/Color';
+import AppText from '../components/AppText';
+import { appFontBold } from '../helpers/ViewHelper';
+import { get } from 'lodash';
 class DashBoard extends Component {
 
+    constructor(props) {
+        super(props);
+
+        const symbol = get(Store.getState().auth, 'profile.countryInfo.symbol', '')
+        this.state = {
+            fetching: true,
+            error: undefined,
+            salesDataSet: undefined,
+            purchaseDataSet: undefined,
+            symbol
+        }
+    }
 
     componentDidMount() {
         this.configHeader();
+        this.fetchGraphData()
+    }
+
+    fetchGraphData = async () => {
+        this.setState({ fetching: true })
+        const cachedGraph = await getSavedData(GRAPH_DATA)
+        if (cachedGraph !== null) {
+            this.setState({
+                fetching: false,
+                ...cachedGraph
+            })
+        }
+        const id = Store.getState().auth.authData.id
+        const requests = [
+            Api.get(`/dashboard/salesGraph/${id}`),
+            Api.get(`/dashboard/purchaseGraph/${id}`)
+        ]
+        Promise.all(requests)
+            .then(async (result) => {
+                const graphData = {
+                    salesDataSet: result[0].data.data,
+                    purchaseDataSet: result[1].data.data
+                }
+                await saveToLocal(GRAPH_DATA, graphData)
+                this.setState({
+                    fetching: false,
+                    ...graphData
+                })
+            })
+            .catch(err => {
+                console.log('Error fetching graph Data: ', err.message);
+                if (cachedGraph === null) {
+                    this.setState({
+                        fetching: false,
+                        error: 'Unable to fetch Graph: '
+                    })
+                }
+            })
     }
     onMenuPress = () => {
         this.props.navigation.openDrawer();
@@ -26,10 +85,10 @@ class DashBoard extends Component {
 
     getChartConfig = () => {
         return {
-            backgroundColor: "#e26a00",
-            backgroundGradientFrom: "#002fff",
-            backgroundGradientTo: "#006cff",
-            decimalPlaces: 2, // optional, defaults to 2dp
+            backgroundColor: colorPrimary,
+            backgroundGradientFrom: colorPrimary,
+            backgroundGradientTo: colorPrimary + '9f',
+            decimalPlaces: 0, // optional, defaults to 2dp
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             style: {
@@ -39,96 +98,48 @@ class DashBoard extends Component {
                 r: "6",
                 strokeWidth: "2",
                 stroke: "#002fff"
-            }
+            },
+            barPercentage: 0.8
         }
     }
-    getBarData = () => {
-        return {
-            labels: ["January", "February", "March", "April", "May", "June"],
-            datasets: [
-                {
-                    data: [20, 45, 28, 80, 99, 43]
-                }
-            ]
-        };
-    }
-    getStackedBarData = () => {
-        return {
-            labels: ["Test1", "Test2"],
-            legend: ["L1", "L2", "L3"],
-            data: [
-                [60, 60, 60],
-                [30, 30, 60]
-            ],
-            barColors: ["#dfe4ea", "#ced6e0", "#a4b0be"]
-        };
-    }
-    render() {
-        const barData = this.getBarData();
-        const stackedBarData = this.getStackedBarData();
+
+    renderBarChart = (label, dataSet) => {
+
         const chartConfig = this.getChartConfig();
-
         const chartWidth = Dimensions.get('screen').width * 0.92;
-
-        return <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-            <LineChart
-                data={{
-                    labels: ["January", "February", "March", "April", "May", "June"],
-                    datasets: [
-                        {
-                            data: [
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100
-                            ]
-                        }
-                    ]
-                }}
-                width={chartWidth} // from react-native
-                height={220}
-                yAxisLabel="$"
-                yAxisSuffix="k"
-                yAxisInterval={1} // optional, defaults to 1
-                chartConfig={chartConfig}
-                bezier
-                style={{
-                    borderRadius: 12,
-                    marginTop: 18
-                }}
-            />
-
-            <BarChart
-                data={barData}
-                width={chartWidth}
-                height={220}
-                yAxisLabel="$"
-                chartConfig={chartConfig}
-                verticalLabelRotation={0}
-                style={{
-                    borderRadius: 12,
-                    marginTop: 18
-                }}
-            />
-
-
-            {/* <CardView
-                cardElevation={4}
-                cornerRadius={6}
-                style={styles.card}>
-                <StackedBarChart
-                    style={styles.barGraph}
-                    data={stackedBarData}
-                    width={Dimensions.get('screen').width}
+        return (
+            <View style={{ flexDirection: 'column' }}>
+                <AppText style={styles.chartLabel}>{label}</AppText>
+                <BarChart
+                    data={dataSet}
+                    width={chartWidth}
                     height={220}
+                    yAxisLabel={this.state.symbol}
                     chartConfig={chartConfig}
                     verticalLabelRotation={0}
-
+                    style={{
+                        borderRadius: 12
+                    }}
                 />
-            </CardView> */}
-        </View>
+            </View>
+        )
+    }
+
+    render() {
+        const { fetching, error } = this.state
+        if (fetching) {
+            return <OnScreenSpinner />
+        }
+        if (error) {
+            return <FullScreenError tryAgainClick={() => this.fetchGraphData()} />
+        }
+
+        return <ScrollView style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                {this.renderBarChart('Sales Graph', this.state.salesDataSet)}
+                {this.renderBarChart('Purchase Graph', this.state.purchaseDataSet)}
+            </View>
+        </ScrollView>
     }
 }
 const styles = StyleSheet.create({
@@ -141,6 +152,12 @@ const styles = StyleSheet.create({
     },
     chart: {
         borderRadius: 12
+    },
+    chartLabel: {
+        color: 'black',
+        fontSize: 18,
+        textAlign: 'center',
+        paddingVertical: 12
     }
 })
-export default DashBoard; 
+export default DashBoard;

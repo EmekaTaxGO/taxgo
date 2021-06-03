@@ -10,7 +10,7 @@ import { bindActionCreators } from 'redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ContactAvatarItem from '../ContactAvatarItem';
-import { editColor, errorColor, rColor, viewColor } from '../../theme/Color';
+import { editColor, rColor, viewColor } from '../../theme/Color';
 import { get, isEmpty } from 'lodash';
 
 class CustomerTabItem extends Component {

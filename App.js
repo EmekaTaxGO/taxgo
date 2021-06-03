@@ -34,7 +34,6 @@ import SelectSupplierScreen from './src/screens/SelectSupplierScreen';
 import ScanBarcodeScreen from './src/screens/ScanBarcodeScreen';
 import PurchaseLedgerScreen from './src/screens/PurchaseLedgerScreen';
 import SaleLedgerScreen from './src/screens/SaleLedgerScreen';
-import MyLedgerScreen from './src/screens/MyLedgerScreen';
 import BankAccountScreen from './src/screens/BankAccountScreen';
 import SelectCustomerScreen from './src/screens/SelectCustomerScreen';
 import SelectProductScreen from './src/screens/SelectProductScreen';
@@ -63,6 +62,7 @@ import { appFont, appFontBold } from './src/helpers/ViewHelper';
 import PaymentScreen from './src/screens/PaymentScreen';
 import EditProfileV2 from './src/screens/EditProfileV2';
 import InvoicePageV2 from './src/screens/InvoicePageV2';
+import MyLedgerTabItem from './src/components/tabs/MyLedgerTabItem';
 
 const App = () => {
 
@@ -131,6 +131,7 @@ const App = () => {
       <Stack.Screen name='PaymentScreen' component={PaymentScreen} options={{ title: 'Payment' }} />
       <Stack.Screen name='EditProfileV2' component={EditProfileV2} options={{ title: 'Edit Profile' }} />
       <Stack.Screen name='InvoicePageV2' component={InvoicePageV2} options={{ title: 'Invoice Summary' }} />
+      <Stack.Screen name='MyLedgerScreen' component={MyLedgerTabItem} options={{ title: 'Select Ledger' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

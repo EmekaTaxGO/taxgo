@@ -10,8 +10,7 @@ import { colorAccent, errorColor } from '../theme/Color';
 import * as invoiceActions from '../redux/actions/invoiceActions';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
-import printSalesInvoiceRequest from '../data/printSalesInvoiceRequest';
-import { getApiErrorMsg, showError, showSuccess, toFloat } from '../helpers/Utils';
+import { getApiErrorMsg, isBuffer, showError, showSuccess, toFloat } from '../helpers/Utils';
 import pdfHelper from '../helpers/PdfHelper';
 import ProgressDialog from '../components/ProgressDialog'
 import timehelper from '../helpers/TimeHelper';
@@ -19,6 +18,8 @@ import { CUSTOMER_SALES_PAYMENT, DATE_FORMAT, H_DATE_FORMAT } from '../constants
 import AppText from '../components/AppText';
 import InvoicePaymentInfo from '../components/payment/InvoicePaymentInfo';
 import nav from '../helpers/NavigationHelper';
+import Store from '../redux/Store';
+import { Buffer } from 'buffer';
 
 class ViewInvoiceScreen extends Component {
 
@@ -30,28 +31,68 @@ class ViewInvoiceScreen extends Component {
         }
     }
 
-    onPrintClick = () => {
-        this.setState({ fetching: true }, () => {
+    printInvoicePayload = () => {
+        const details = this.props.invoice.salesInvoiceDetail
+        const userid = Store.getState().auth.authData.id
+        const sale = { ...details.data }
+        Object.keys(sale).filter(key => isBuffer(sale[key]))
+            .forEach(key => {
+                sale[key] = Buffer.from(sale[key]).toString()
+            })
 
-            const { invoiceActions } = this.props;
-            invoiceActions.printSalesInvoice(printSalesInvoiceRequest)
-                .then(async (data) => {
-                    await pdfHelper.print(data.template, data.attachment);
-                    this.setState({ fetching: false });
+        var insale = [...details.invoiceItems]
+        insale = insale.map(item => {
+
+            Object.keys(item).filter(key => isBuffer(item[key]))
+                .forEach(key => {
+                    item[key] = Buffer.from(item[key]).toString()
                 })
-                .catch(err => {
-                    console.log('Error fetching Print Data', err);
-                    this.setState({ fetching: false }, () => {
-                        showError(getApiErrorMsg(err));
-                    })
+
+            const product = { ...item.product }
+            Object.keys(product).filter(key => isBuffer(product[key]))
+                .forEach(key => {
+                    product[key] = Buffer.from(product[key]).toString()
                 })
+            item.product = product
+            return item
         })
+        return {
+            userid,
+            pagetype: get(details, 'data.type'),
+            id: get(details, 'data.id'),
+            customer: get(details, 'customer'),
+            bankInfo: get(details, 'banking'),
+            insale,
+            sale
+        }
+    }
+
+    onPrintClick = () => {
+        const { invoiceActions } = this.props;
+        const body = this.printInvoicePayload()
+        console.log('Body: ', JSON.stringify(body, null, 2));
+        this.setState({ fetching: true })
+        invoiceActions.printSalesInvoice(body)
+            .then(async (data) => {
+                await pdfHelper.print(data.template, data.attachment);
+                this.setState({ fetching: false });
+            })
+            .catch(err => {
+                console.log('Error fetching Print Data', err);
+                this.setState({ fetching: false }, () => {
+                    showError(getApiErrorMsg(err));
+                })
+            })
     }
     componentDidMount() {
 
         const { title } = this.props.route.params;
+        this.props.navigation.setOptions({ title })
+        this.fetchInvoiceDetails();
+    }
+
+    showPrintButton = () => {
         this.props.navigation.setOptions({
-            title,
             headerRight: () => {
                 return (
                     <View style={styles.headerRightContainer}>
@@ -63,7 +104,6 @@ class ViewInvoiceScreen extends Component {
                 )
             }
         })
-        this.fetchInvoiceDetails();
     }
 
     fetchInvoiceDetails = () => {
@@ -79,6 +119,7 @@ class ViewInvoiceScreen extends Component {
             && !newInvoice.fetchingSalesInvoiceDetail) {
             //Invoives has just fetched
             this.setState({ invoice: newInvoice.salesInvoiceDetail });
+            this.showPrintButton()
         }
     }
     renderSectionLabel = (icon, label) => {

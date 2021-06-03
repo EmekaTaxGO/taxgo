@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, Component } from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform, ActionSheetIOS, FlatList, Text, Image, SafeAreaView } from 'react-native';
+import React, { Component } from 'react';
+import { View, TouchableOpacity, StyleSheet, SafeAreaView, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SearchView from '../components/SearchView';
 
@@ -11,7 +11,10 @@ import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
 import { isEmpty } from '../helpers/Utils';
 import ContactAvatarItem from '../components/ContactAvatarItem';
-import { rColor } from '../theme/Color';
+import { editColor, rColor, viewColor } from '../theme/Color';
+import timeHelper from '../helpers/TimeHelper';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import AppText from '../components/AppText';
 
 class JournalFragment extends Component {
 
@@ -27,7 +30,11 @@ class JournalFragment extends Component {
     }
 
     onAddClick = () => {
-        this.props.navigation.push('AddJournalScreen');
+        this.props.navigation.push('AddJournalScreen', {
+            onJournalUpdated: () => {
+                this.fetchMyJournal()
+            }
+        });
     }
 
     componentDidMount() {
@@ -47,7 +54,8 @@ class JournalFragment extends Component {
         this.fetchMyJournal();
     }
 
-    listItem = ({ item, index }) => {
+    listItem = (data, rowMap) => {
+        const { item, index } = data
         const color = rColor[2 % rColor.length];
         return (
             <ContactAvatarItem
@@ -55,7 +63,7 @@ class JournalFragment extends Component {
                 text='J'
                 title={item.description}
                 subtitle={item.total}
-                description={item.date}
+                description={timeHelper.format(item.date)}
             />
         )
     }
@@ -79,6 +87,42 @@ class JournalFragment extends Component {
         });
         return filteredJournals;
     }
+    onViewClick = data => {
+
+    }
+    onEditClick = data => {
+        const { item } = data
+        this.props.navigation.push('AddJournalScreen', {
+            onJournalUpdated: () => {
+                this.fetchMyJournal()
+            },
+            journalId: item.id
+        });
+    }
+    renderHiddenItem = (data, rowMap) => {
+        return <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1 }}>
+                {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
+            </View>
+            {this.hiddenElement('Edit', 'edit', editColor, () => this.onEditClick(data))}
+        </View>
+    }
+    hiddenElement = (label, icon, color, onPress) => {
+        return <TouchableHighlight onPress={onPress} underlayColor={color}>
+            <View style={{
+                flexDirection: 'column',
+                backgroundColor: color,
+                width: 70,
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+
+                <Icon name={icon} color='white' size={24} />
+                <AppText style={{ color: 'white' }}>{label}</AppText>
+            </View>
+        </TouchableHighlight>
+    }
 
     render() {
         const { journal } = this.props;
@@ -98,11 +142,13 @@ class JournalFragment extends Component {
                 onChangeQuery={q => this.setState({ query: q })}
                 onCrossPress={() => { this.setState({ query: '' }) }}
                 placeholder='Search Journals' />
-
-            <FlatList
+            <SwipeListView
                 data={this.listData()}
                 renderItem={this.listItem}
-                keyExtractor={(item, index) => `${index}`}
+                disableRightSwipe={true}
+                renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data, rowMap)}
+                leftOpenValue={70}
+                rightOpenValue={-70}
             />
         </SafeAreaView >
     }

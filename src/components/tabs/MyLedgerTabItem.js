@@ -12,8 +12,8 @@ import { isEmpty } from '../../helpers/Utils';
 import SearchView from '../SearchView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as color from '../../theme/Color';
-import ContactAvatar from '../ContactAvatar';
 import ContactAvatarItem from '../ContactAvatarItem';
+import { get } from 'lodash';
 
 class MyLedgerTabItem extends Component {
 
@@ -58,12 +58,23 @@ class MyLedgerTabItem extends Component {
         return (text !== undefined && text !== null && text.length > 0) ? text.charAt(0) : '-';
     }
 
+    onPressItem = item => {
+        const onSelected = get(this.props, 'route.params.onLedgerSelected')
+        if (onSelected) {
+            onSelected(item)
+            this.props.navigation.goBack()
+        }
+    }
+
     listItem = (data) => {
         const { item, index } = data;
         const firstLetter = this.firstLetter(item.laccount);
         const bgColor = color.rColor[index % color.rColor.length];
+        const selectLedger = get(this.props, 'route.params.selectLedger', false)
         return (
             <ContactAvatarItem
+                onPress={() => this.onPressItem(item)}
+                clickable={selectLedger}
                 title={`${item.nominalcode}-${item.laccount}`}
                 subtitle={item.category}
                 description={item.categorygroup}

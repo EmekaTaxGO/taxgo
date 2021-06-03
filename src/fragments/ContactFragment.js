@@ -1,10 +1,7 @@
 import React, { useLayoutEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform, ActionSheetIOS } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AntIcon from 'react-native-vector-icons/AntDesign';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ContactTabItem from '../components/tabs/CustomerTabItem';
-import { colorAccent, colorDark } from '../theme/Color';
 import CustomerTabItem from '../components/tabs/CustomerTabItem';
 import SupplierTabItem from '../components/tabs/SupplierTabItem';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';

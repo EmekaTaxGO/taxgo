@@ -171,7 +171,6 @@ export const uploadFile = async (file) => {
         console.log('S# Response: ', response);
         if (response.status !== 201)
             throw new Error("Failed to upload image to S3");
-        console.log('Response from S3: ', JSON.stringify(response.body, null, 2));
         return response.body;
     });
 }

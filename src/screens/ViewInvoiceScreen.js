@@ -70,7 +70,6 @@ class ViewInvoiceScreen extends Component {
     onPrintClick = () => {
         const { invoiceActions } = this.props;
         const body = this.printInvoicePayload()
-        console.log('Body: ', JSON.stringify(body, null, 2));
         this.setState({ fetching: true })
         invoiceActions.printSalesInvoice(body)
             .then(async (data) => {

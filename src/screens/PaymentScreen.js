@@ -313,7 +313,6 @@ class PaymentScreen extends Component {
         const { payload, onSuccess } = this.props.route.params;
         const body = this.buildRequest(payload);
 
-        // console.log('body: ', JSON.stringify(body, null, 2));
         this.setState({ paying: true });
         Api.post(payload.url, body)
             .then(response => {

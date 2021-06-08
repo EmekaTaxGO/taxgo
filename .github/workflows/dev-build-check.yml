@@ -1,4 +1,4 @@
-name: react-native-android-build-apk
+name: Build Taxgo Dev APK
 on:
   push:
     branches:

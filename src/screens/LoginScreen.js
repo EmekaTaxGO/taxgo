@@ -111,11 +111,15 @@ class LoginScreen extends Component {
                 onChange={event => this.resetState()}
                 onSubmitEditing={e => this.onLoginClick()} />
 
-            <TouchableOpacity
-                style={{ paddingVertical: 6, alignItems: 'flex-end' }}
-                onPress={this.onForgetPassClick}>
-                <Text style={styles.forgotPass}>Forgot password?</Text>
-            </TouchableOpacity>
+            <View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
+                <TouchableOpacity
+                    style={{
+                        padding: 8
+                    }}
+                    onPress={this.onForgetPassClick}>
+                    <Text style={styles.forgotPass}>Forgot password?</Text>
+                </TouchableOpacity>
+            </View>
 
             <AppButton
                 onPress={this.onLoginClick}

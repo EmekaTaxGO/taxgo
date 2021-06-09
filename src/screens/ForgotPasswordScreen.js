@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { RaisedTextButton } from 'react-native-material-buttons';
-import { colorAccent } from '../theme/Color';
+import { View, StyleSheet, Keyboard } from 'react-native';
 import AppLogo from '../components/AppLogo';
-import { validateEmail, EMAIL_ERROR_MESSAGE } from '../helpers/Utils';
+import { validateEmail, EMAIL_ERROR_MESSAGE, getApiErrorMsg, showError } from '../helpers/Utils';
 import { getFieldValue, focusField } from '../helpers/TextFieldHelpers';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
+import Api from '../services/api';
+import ProgressDialog from '../components/ProgressDialog';
+
 class ForgotPasswordScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            emailError: undefined
+            emailError: undefined,
+            updating: false
         }
     }
 
@@ -22,7 +24,7 @@ class ForgotPasswordScreen extends Component {
 
         setTimeout(() => {
             focusField(this.emailRef);
-        }, 200);
+        }, 500);
 
     }
 
@@ -41,7 +43,26 @@ class ForgotPasswordScreen extends Component {
     }
 
     resetPass = () => {
-        
+        Keyboard.dismiss();
+        this.setState({ updating: true })
+        const emailId = getFieldValue(this.emailRef)
+        Api.post(`/user/resetPassword/${emailId}`)
+            .then(response => {
+                this.setState({ updating: false }, () => {
+                    this.props.navigation.reset('ChangePasswordV2')
+                })
+            })
+            .catch(err => {
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    this.props.navigation.replace('ChangePasswordV2', {
+                        email: emailId
+                    })
+                }, 500)
+                // const message = getApiErrorMsg(err)
+                // this.setState({ updating: false })
+                // setTimeout(() => showError(message), 400)
+            })
     }
     render() {
         return <View style={{
@@ -57,10 +78,11 @@ class ForgotPasswordScreen extends Component {
                 fieldRef={this.emailRef}
                 lineWidth={1}
                 onChange={event => this.resetState()}
-                onSubmitEditing={() => { }} />
+                onSubmitEditing={this.validateAndResetPass} />
             <AppButton
                 title='Submit'
                 onPress={this.validateAndResetPass} />
+            <ProgressDialog visible={this.state.updating} />
         </View>
     }
 };

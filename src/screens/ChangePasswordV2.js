@@ -77,6 +77,7 @@ class ChangePasswordV2 extends Component {
                 setTimeout(() => this.showPassChangeAlert(), 500)
             })
             .catch(err => {
+                console.log('Error Changing Password ', err);
                 const message = getApiErrorMsg(err)
                 this.setState({ updating: false })
 

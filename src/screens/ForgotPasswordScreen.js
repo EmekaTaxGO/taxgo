@@ -53,6 +53,7 @@ class ForgotPasswordScreen extends Component {
                 })
             })
             .catch(err => {
+                console.log('Error resetting Password', err);
                 this.setState({ updating: false })
                 setTimeout(() => {
                     this.props.navigation.replace('ChangePasswordV2', {

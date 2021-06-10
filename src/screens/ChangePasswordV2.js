@@ -44,7 +44,7 @@ class ChangePasswordV2 extends Component {
 
     showPassReqAlert = () => {
         var message = 'To create a new password, you have to meet following conditions\n\n'
-        message = message + this.state.points.map((value, index) => `${index+1}. ${value}.`).join('\n')
+        message = message + this.state.points.map((value, index) => `${index + 1}. ${value}.`).join('\n')
         Alert.alert('Password Requirement', message)
     }
     validateAndSubmitPass = () => {
@@ -75,8 +75,8 @@ class ChangePasswordV2 extends Component {
             }
         }
     }
-    showPassChangeAlert = () => {
-        Alert.alert('Alert', 'Password changed successfully', [
+    showPassChangeAlert = message => {
+        Alert.alert('Alert', message, [
             {
                 onPress: () => { this.props.navigation.goBack() },
                 style: 'default',
@@ -90,7 +90,7 @@ class ChangePasswordV2 extends Component {
         Api.post('/user/forgotPassword', body)
             .then(response => {
                 this.setState({ updating: false })
-                setTimeout(() => this.showPassChangeAlert(), 500)
+                setTimeout(() => this.showPassChangeAlert(response.data.message), 500)
             })
             .catch(err => {
                 console.log('Error Changing Password ', err);

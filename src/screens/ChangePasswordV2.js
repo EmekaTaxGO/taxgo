@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import React, { Component } from 'react';
 import { Alert, Keyboard, StyleSheet, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,7 +8,7 @@ import AppText from '../components/AppText';
 import AppTextField from '../components/AppTextField';
 import ProgressDialog from '../components/ProgressDialog';
 import { focusField, getFieldValue } from '../helpers/TextFieldHelpers';
-import { getApiErrorMsg, showError } from '../helpers/Utils';
+import { getApiErrorMsg, showError, showSuccess } from '../helpers/Utils';
 import { appFontBold } from '../helpers/ViewHelper';
 import Api from '../services/api';
 class ChangePasswordV2 extends Component {
@@ -23,12 +23,29 @@ class ChangePasswordV2 extends Component {
     codeRef = React.createRef()
     newPassRef = React.createRef()
     confPassRef = React.createRef()
+
+    componentDidMount() {
+
+        const message = get(this.props, 'route.params.message')
+        if (message) {
+            setTimeout(() => {
+                showSuccess(message)
+            }, 500)
+        }
+
+    }
     getAllPoints = () => {
         return [
             'Minimum 8 character',
             'At least one special character . * @ ! # % & ( ) ^ ~',
             'Can’t be the same as a previous password'
         ];
+    }
+
+    showPassReqAlert = () => {
+        var message = 'To create a new password, you have to meet following conditions\n\n'
+        message = message + this.state.points.map((value, index) => `${index + 1}. ${value}.`).join('\n')
+        Alert.alert('Password Requirement', message)
     }
     validateAndSubmitPass = () => {
         const body = {
@@ -47,20 +64,19 @@ class ChangePasswordV2 extends Component {
             showError('New password & confirm password should be same.')
         }
         else {
-            const samePass = body.password_old === body.password_new;
             const validLength = body.password_new.length >= 8;
             const hasNumber = /\d/.test(body.password_new);
             const hasSymbol = /[.*@!#%&()^~]/.test(body.password_new);
-            if (!samePass && validLength && hasNumber && hasSymbol) {
+            if (validLength && hasNumber && hasSymbol) {
                 delete body.conf_pass;
                 this.forgotPassword(body)
             } else {
-                showError('Invalid password entered.');
+                this.showPassReqAlert()
             }
         }
     }
-    showPassChangeAlert = () => {
-        Alert.alert('Alert', 'Password changed successfully', [
+    showPassChangeAlert = message => {
+        Alert.alert('Alert', message, [
             {
                 onPress: () => { this.props.navigation.goBack() },
                 style: 'default',
@@ -74,17 +90,15 @@ class ChangePasswordV2 extends Component {
         Api.post('/user/forgotPassword', body)
             .then(response => {
                 this.setState({ updating: false })
-                setTimeout(() => this.showPassChangeAlert(), 500)
+                setTimeout(() => this.showPassChangeAlert(response.data.message), 500)
             })
             .catch(err => {
                 console.log('Error Changing Password ', err);
                 const message = getApiErrorMsg(err)
                 this.setState({ updating: false })
-
-                setTimeout(() => this.showPassChangeAlert(), 500)
-                // setTimeout(() => {
-                //     showError(message)
-                // }, 500)
+                setTimeout(() => {
+                    showError(message)
+                }, 500)
             })
     }
     renderPassRequirement = () => {
@@ -97,7 +111,7 @@ class ChangePasswordV2 extends Component {
                 marginTop: 12,
                 borderRadius: 4
             }}>
-                <AppText style={styles.reqTitle}>Passwork Requirements</AppText>
+                <AppText style={styles.reqTitle}>Password Requirements</AppText>
                 <AppText style={styles.reqDesc}>to create a new password, you have to meet all of the following requirements.</AppText>
                 {this.state.points.map(value => <AppText style={styles.point} key={value}>{value}</AppText>)}
 

@@ -8,7 +8,7 @@ import { LoginButton, AccessToken } from 'react-native-fbsdk';
 import { log, showToast } from '../components/Logger';
 import FBLoginButton from '../components/FBLoginButton';
 import { bindActionCreators } from 'redux';
-const { View, Text, StyleSheet, Image } = require("react-native")
+const { View, Text, StyleSheet, Image, Alert } = require("react-native")
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 //Importing Actions
@@ -19,6 +19,7 @@ import { validateEmail, EMAIL_ERROR_MESSAGE, PASSWORD_ERROR_MESSAGE, validatePas
 import { APP_LOGO } from '../constants/appConstant';
 import AppLogo from '../components/AppLogo';
 import AppTextField from '../components/AppTextField';
+import { FIRST_TIME, getSavedData, saveToLocal } from '../services/UserStorage';
 
 class LoginScreen extends Component {
 
@@ -111,11 +112,15 @@ class LoginScreen extends Component {
                 onChange={event => this.resetState()}
                 onSubmitEditing={e => this.onLoginClick()} />
 
-            <TouchableOpacity
-                style={{ paddingVertical: 6, alignItems: 'flex-end' }}
-                onPress={this.onForgetPassClick}>
-                <Text style={styles.forgotPass}>Forgot password?</Text>
-            </TouchableOpacity>
+            <View style={{ justifyContent: 'flex-end', flexDirection: 'row' }}>
+                <TouchableOpacity
+                    style={{
+                        padding: 8
+                    }}
+                    onPress={this.onForgetPassClick}>
+                    <Text style={styles.forgotPass}>Forgot password?</Text>
+                </TouchableOpacity>
+            </View>
 
             <AppButton
                 onPress={this.onLoginClick}
@@ -128,6 +133,27 @@ class LoginScreen extends Component {
             .then(data => {
                 log('FB Access Token', data.accessToken.toString());
             })
+    }
+
+    componentDidMount() {
+        this.checkFirstTime()
+    }
+
+    checkFirstTime = async () => {
+        const firstTime = await getSavedData(FIRST_TIME)
+        if (firstTime == null) {
+            await saveToLocal(FIRST_TIME, {})
+            setTimeout(() => {
+                Alert.alert('Important',
+                    'Welcome to new TaxGO accounting app, please reset your password if you are not able to login with existing account.', [
+                    {
+                        onPress: () => { },
+                        style: 'default',
+                        text: 'OK'
+                    }
+                ])
+            }, 500)
+        }
     }
 
     render() {

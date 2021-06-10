@@ -63,6 +63,7 @@ import PaymentScreen from './src/screens/PaymentScreen';
 import EditProfileV2 from './src/screens/EditProfileV2';
 import InvoicePageV2 from './src/screens/InvoicePageV2';
 import MyLedgerTabItem from './src/components/tabs/MyLedgerTabItem';
+import ChangePasswordV2 from './src/screens/ChangePasswordV2';
 
 const App = () => {
 
@@ -132,6 +133,7 @@ const App = () => {
       <Stack.Screen name='EditProfileV2' component={EditProfileV2} options={{ title: 'Edit Profile' }} />
       <Stack.Screen name='InvoicePageV2' component={InvoicePageV2} options={{ title: 'Invoice Summary' }} />
       <Stack.Screen name='MyLedgerScreen' component={MyLedgerTabItem} options={{ title: 'Select Ledger' }} />
+      <Stack.Screen name='ChangePasswordV2' component={ChangePasswordV2} options={{ title: 'Change Password' }} />
     </Stack.Navigator>
   </NavigationContainer>
 }

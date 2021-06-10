@@ -46,23 +46,21 @@ class ForgotPasswordScreen extends Component {
         Keyboard.dismiss();
         this.setState({ updating: true })
         const emailId = getFieldValue(this.emailRef)
-        Api.post(`/user/resetPassword/${emailId}`)
+        Api.get(`/user/resetPassword/${emailId}`)
             .then(response => {
-                this.setState({ updating: false }, () => {
-                    this.props.navigation.reset('ChangePasswordV2')
-                })
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    this.props.navigation.replace('ChangePasswordV2', {
+                        message: response.data.message,
+                        email: emailId
+                    })
+                }, 500)
             })
             .catch(err => {
                 console.log('Error resetting Password', err);
                 this.setState({ updating: false })
-                setTimeout(() => {
-                    this.props.navigation.replace('ChangePasswordV2', {
-                        email: emailId
-                    })
-                }, 500)
-                // const message = getApiErrorMsg(err)
-                // this.setState({ updating: false })
-                // setTimeout(() => showError(message), 400)
+                const message = getApiErrorMsg(err)
+                setTimeout(() => showError(message), 500)
             })
     }
     render() {

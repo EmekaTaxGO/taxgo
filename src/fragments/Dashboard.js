@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {  BarChart } from 'react-native-chart-kit';
+import { BarChart } from 'react-native-chart-kit';
 import Api from '../services/api';
 import Store from '../redux/Store';
 import { getSavedData, GRAPH_DATA, saveToLocal } from '../services/UserStorage';
@@ -10,7 +10,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import { colorPrimary } from '../theme/Color';
 import AppText from '../components/AppText';
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 class DashBoard extends Component {
 
     constructor(props) {
@@ -31,6 +31,19 @@ class DashBoard extends Component {
         this.fetchGraphData()
     }
 
+    sanetizeMonth = data => {
+        if (isEmpty(data.labels)) {
+            return data;
+        }
+        data.labels = data.labels.map(value => {
+            if (value.length > 2) {
+                return value.substring(0, 3)
+            }
+            return value
+        })
+        return data
+    }
+
     fetchGraphData = async () => {
         this.setState({ fetching: true })
         const cachedGraph = await getSavedData(GRAPH_DATA)
@@ -48,8 +61,8 @@ class DashBoard extends Component {
         Promise.all(requests)
             .then(async (result) => {
                 const graphData = {
-                    salesDataSet: result[0].data.data,
-                    purchaseDataSet: result[1].data.data
+                    salesDataSet: this.sanetizeMonth(result[0].data.data),
+                    purchaseDataSet: this.sanetizeMonth(result[1].data.data)
                 }
                 await saveToLocal(GRAPH_DATA, graphData)
                 this.setState({

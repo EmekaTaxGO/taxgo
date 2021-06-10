@@ -22,11 +22,28 @@ jobs:
       - name: Install npm dependencies
         run: |
           npm install
-      - name: Build Android Release
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build Release APK
         run: |
-          cd android && ./gradlew assembleRelease
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+          cd android && ./gradlew clean assembleRelease
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v2.2.3
         with:
           name: app-release.apk
           path: android/app/build/outputs/apk/release/
+      - name: Build Release Bundle
+        run: |
+          cd android && ./gradlew clean bundleRelease
+      - name: Upload Release Bundle
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: app-release.aab
+          path: android/app/build/outputs/bundle/release/

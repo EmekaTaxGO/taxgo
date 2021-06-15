@@ -16,7 +16,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import Menu, { MenuItem } from 'react-native-material-menu';
-import { rColor } from '../theme/Color';
+import { editColor, rColor, viewColor } from '../theme/Color';
 
 class BankFragment extends Component {
     constructor(props) {
@@ -236,9 +236,9 @@ class BankFragment extends Component {
             flexDirection: 'row'
         }}>
             <View style={{ flex: 1 }}>
-                {this.hiddenElement('View', 'visibility', 'green', () => this.onViewClick(account))}
+                {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(account))}
             </View>
-            {this.hiddenElement('Edit', 'edit', 'blue', () => this.onEditClick(account))}
+            {this.hiddenElement('Edit', 'edit', editColor, () => this.onEditClick(account))}
         </View>
     }
 

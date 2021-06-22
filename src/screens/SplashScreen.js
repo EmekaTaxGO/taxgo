@@ -22,7 +22,7 @@ class SplashScreen extends Component {
 
         setTimeout(() => {
             const { authData } = this.props.auth;
-            this.props.navigation.replace(authData !== null ? 'HomeScreen' : 'LoginScreen');
+            this.props.navigation.replace(authData !== null ? 'HomeScreen' : 'TaxgoServices');
         }, 500);
     }
 

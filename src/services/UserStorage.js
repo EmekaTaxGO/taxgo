@@ -13,7 +13,6 @@ export async function saveToLocal(key, value) {
 }
 
 
-
 export const AUTH_DATA = 'AUTH_DATA';
 export const TAX_LIST = 'TAX_LIST';
 export const PROFILE_DATA = 'PROFILE_DATA';
@@ -27,6 +26,9 @@ export const AGE_DEBTOR_BREAKDOWN = 'AGE_DEBTOR_BREAKDOWN';
 export const AGE_CREDITOR_BREAKDOWN = 'AGE_CREDITOR_BREAKDOWN';
 export const GRAPH_DATA = 'GRAPH_DATA'
 export const FIRST_TIME = 'FIRST_TIME'
+
+
+const persistOnLogout = [FIRST_TIME]
 
 export async function getSavedData(key) {
     try {
@@ -49,7 +51,14 @@ export async function clearData(key) {
 }
 export async function clearAll() {
     try {
+        const persist = {}
+        persistOnLogout.forEach(async (item) => {
+            persist[item] = await AsyncStorage.getItem(item)
+        })
         await AsyncStorage.clear();
+        Object.keys(persist).forEach(async (key) => {
+            AsyncStorage.setItem(key, persist[key])
+        })
     } catch (error) {
         log('Error Clearing AsyncStorage', error);
     }

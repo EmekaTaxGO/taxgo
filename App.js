@@ -66,6 +66,7 @@ import MyLedgerTabItem from './src/components/tabs/MyLedgerTabItem';
 import ChangePasswordV2 from './src/screens/ChangePasswordV2';
 import TaxgoServices from './src/screens/TaxgoServices';
 import CountryTax from './src/screens/CountryTax';
+import TaxForm from './src/components/TaxForm';
 
 const App = () => {
 
@@ -137,6 +138,8 @@ const App = () => {
       <Stack.Screen name='ChangePasswordV2' component={ChangePasswordV2} options={{ title: 'Change Password' }} />
       <Stack.Screen name='TaxgoServices' component={TaxgoServices} options={{ title: 'Taxgo Services' }} />
       <Stack.Screen name='CountryTax' component={CountryTax} options={{ title: 'Select Country' }} />
+      <Stack.Screen name='TaxForm' component={TaxForm} options={{ title: 'Tax Form' }} />
+    
     </Stack.Navigator>
   </NavigationContainer>
 }

@@ -7,34 +7,65 @@ const FormProgress = props => {
         if (index <= position) {
             return 'green'
         } else {
-            return 'gray'
+            return 'lightgray'
         }
     }
-    const renderItem = ({ item, index }) => {
+    const stickColor = index => {
+        const position = props.currPosition
+        if (index < position) {
+            return 'green'
+        } else {
+            return 'lightgray'
+        }
+    }
+    const renderItem = (item, index) => {
         const isLast = props.data.length == index + 1
         const pColor = stateColor(index)
 
+        if (isLast) {
+            return <View style={{
+                height: 30,
+                width: 30,
+                borderRadius: 15,
+                backgroundColor: pColor
+            }}
+                key={item.name} />
+        }
         return (
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{
+                flexDirection: 'row',
+                flex: 1,
+                alignItems: 'center'
+            }}
+                key={item.name}>
                 <View style={{
                     height: 30,
                     width: 30,
                     borderRadius: 15,
                     backgroundColor: pColor
                 }} />
-                {!isLast ?
-                    <View style={{ flex: 1, backgroundColor: pColor, height: 2 }} />
-                    : null}
+                <View style={{ flex: 1, backgroundColor: stickColor(index), height: 2 }} />
             </View>
         )
     }
+
     return (
-        <FlatList
-            horizontal={true}
-            data={props.data}
-            keyExtractor={(item, index) => item.name}
-            renderItem={renderItem}
-        />
+        // <FlatList
+        //     horizontal={true}
+        //     data={props.data}
+        //     style={{ backgroundColor: 'red', paddingTop: 12 }}
+        //     keyExtractor={(item, index) => item.name}
+        //     renderItem={renderItem}
+        // />
+        <View style={{
+            flexDirection: 'row',
+            paddingHorizontal: 20,
+            paddingVertical: 20,
+            justifyContent: 'center'
+        }}>
+            {props.data.map((value, index) => renderItem(value, index))}
+
+        </View>
     )
 }
 export default FormProgress;

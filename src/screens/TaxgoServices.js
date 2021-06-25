@@ -13,7 +13,10 @@ const TaxgoServices = props => {
     useEffect(() => {
         if (props.route.params?.country) {
             setTimeout(() => {
-                props.navigation.navigate('LoginScreen')
+                const country = props.route.params.country
+                props.navigation.navigate('TaxForm', {
+                    countryId: country.id
+                })
             }, 200)
         }
     }, [props.route.params?.country])
@@ -46,6 +49,7 @@ const TaxgoServices = props => {
                 btnTxt: 'Calculate',
                 title: 'Tax Calculator',
                 onPress: () => {
+                    props.navigation.setParams({ country: undefined })
                     props.navigation.navigate('CountryTax', {
                         sender: 'TaxgoServices'
                     })

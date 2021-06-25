@@ -6,19 +6,25 @@ export default {
                 {
                     type: 'picker',
                     label: 'TAX YEAR',
-                    options: ['Select Year', '2019', '2018'],
-                    selected: 0
+                    options: ['2019', '2018'],
+                    selected: -1,
+                    text: 'Select Year'
                 },
                 {
                     type: 'picker',
                     label: 'WORK STATUS',
-                    options: ['Select Work Status', 'Employee'],
-                    selected: 0
+                    options: ['Employee'],
+                    selected: -1,
+                    text: 'Select Work Status'
                 },
                 {
                     type: 'input',
                     label: 'AGE (IN YEARS)',
-                    value: ''
+                    value: '',
+                    textStyle: {
+                        keyboardType: 'numeric',
+                        returnKeyType: 'done'
+                    }
                 }
             ]
         },
@@ -28,12 +34,20 @@ export default {
                 {
                     type: 'input',
                     label: 'TAXABLE SALARY (IN INR)',
-                    value: ''
+                    value: '',
+                    textStyle: {
+                        keyboardType: 'numeric',
+                        returnKeyType: 'done'
+                    }
                 },
                 {
                     type: 'input',
                     label: 'OTHER INCOME (IN INR)',
-                    value: ''
+                    value: '',
+                    textStyle: {
+                        keyboardType: 'numeric',
+                        returnKeyType: 'done'
+                    }
                 }
             ]
         },
@@ -43,20 +57,33 @@ export default {
                 {
                     type: 'input',
                     label: 'PROFIT AND GAIN (IN INR)',
-                    value: ''
+                    value: '',
+                    textStyle: {
+                        keyboardType: 'numeric',
+                        returnKeyType: 'done'
+                    }
                 },
                 {
                     type: 'input',
                     label: 'AGRICULTURE INCOME (IN INR)',
-                    value: ''
+                    value: '',
+                    textStyle: {
+                        keyboardType: 'numeric',
+                        returnKeyType: 'done'
+                    }
                 },
                 {
                     type: 'input',
                     label: 'DEDUCTIONS (IN INR)',
-                    value: ''
+                    value: '',
+                    textStyle: {
+                        keyboardType: 'numeric',
+                        returnKeyType: 'done'
+                    }
                 }
             ]
         }
     ],
-    currentTab: 0
+    currentTab: 0,
+    title: 'Indian Tax Form'
 }

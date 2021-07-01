@@ -9,6 +9,8 @@ import AppTextField from './AppTextField';
 import { showError } from '../helpers/Utils'
 import { isEmpty, toNumber } from 'lodash';
 import FormRadioGroup from './FormRadioGroup';
+import { showToast } from './Logger';
+import FormCheckBox from './FormCheckbox';
 const TaxForm = props => {
 
     const countryId = props.route.params.countryId
@@ -63,9 +65,24 @@ const TaxForm = props => {
             const selected_grp = newField.groups.filter(value => value.selected == true)[0]
             const selected_objs = newField.subFields.filter(value => value.group_id == selected_grp.id)
             if (!isEmpty(selected_objs)) {
-                newFields.splice(fieldIdx+1, 0, ...selected_objs)
+                newFields.splice(fieldIdx + 1, 0, ...selected_objs)
             }
         }
+        const tab = {
+            ...form.tabs[form.currentTab],
+            fields: newFields
+        }
+        const tabs = [...form.tabs]
+        tabs.splice(form.currentTab, 1, tab)
+        const newForm = { ...form, tabs }
+        setForm(newForm)
+    }
+
+    const onCheckChange = (checked, fieldIdx) => {
+        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], checked }
+        const newFields = [...form.tabs[form.currentTab].fields]
+        newFields.splice(fieldIdx, 1, newField)
+
         const tab = {
             ...form.tabs[form.currentTab],
             fields: newFields
@@ -98,6 +115,12 @@ const TaxForm = props => {
                     title={item.title}
                     options={item.groups}
                     onPress={data => onRadioItemChange(data, index)}
+                />
+            case 'check-box':
+                return <FormCheckBox
+                    title={item.title}
+                    checked={item.checked}
+                    onValueChange={checked => onCheckChange(checked, index)}
                 />
             default:
                 return null
@@ -135,7 +158,8 @@ const TaxForm = props => {
         }
 
         if (error) {
-            showError(error)
+            // showError(error)
+            showToast(error)
             return false
         }
         return true;

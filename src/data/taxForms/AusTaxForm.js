@@ -1,39 +1,47 @@
+import AgeField from "../taxFields/AgeField";
+import TaxYearField from '../taxFields/TaxYearField';
+import WorkStatusField from "../taxFields/WorkStatusField";
+import TaxableSalaryField from '../taxFields/TaxableSalaryField';
+import ExpenseField from "../taxFields/ExpenseField";
+import InsuranceField from "../taxFields/InsuranceField";
+import PaymentFrequencyField from '../taxFields/PaymentFrequencyField';
 export default {
     tabs: [
         {
             name: 'Tax',
             fields: [
                 {
-                    type: 'picker',
-                    label: 'TAX YEAR',
-                    options: ['Select Year', '2019', '2018'],
-                    selected: 0
+                    ...TaxYearField,
+                    options: ['2018-2019', '2017-2018']
                 },
                 {
+                    id: 'resident',
                     type: 'picker',
-                    label: 'WORK STATUS',
-                    options: ['Select Work Status', 'Employee'],
-                    selected: 0
+                    label: 'Resident Status',
+                    options: [
+                        'Australian Resident',
+                        'Foreign Resident',
+                        'Working Holiday Maker'
+                    ],
+                    selected: -1,
+                    text: 'Select Resident Status',
+                    error: 'Please select resident status'
                 },
                 {
-                    type: 'input',
-                    label: 'AGE (IN YEARS)',
-                    value: ''
-                }
+                    ...WorkStatusField
+                },
+                { ...PaymentFrequencyField }
             ]
         },
         {
             name: 'Income',
             fields: [
                 {
-                    type: 'input',
-                    label: 'TAXABLE SALARY (IN INR)',
-                    value: ''
-                },
-                {
-                    type: 'input',
-                    label: 'OTHER INCOME (IN INR)',
-                    value: ''
+                    ...TaxableSalaryField,
+                    label: 'Gross Income (IN AUD)',
+                    error: 'Please enter gross income',
+                    regexError: 'Please enter valid gross income',
+                    minValueError: 'gross income should be greater than 0'
                 }
             ]
         },
@@ -41,23 +49,14 @@ export default {
             name: 'Other',
             fields: [
                 {
-                    type: 'input',
-                    label: 'PROFIT AND GAIN (IN INR)',
-                    value: ''
+                    ...ExpenseField,
+                    label: 'Total Expense (In AUD)'
                 },
-                {
-                    type: 'input',
-                    label: 'AGRICULTURE INCOME (IN INR)',
-                    value: ''
-                },
-                {
-                    type: 'input',
-                    label: 'DEDUCTIONS (IN INR)',
-                    value: ''
-                }
+                { ...AgeField },
+                { ...InsuranceField }
             ]
         }
     ],
     currentTab: 0,
-    title:'Australian Tax Form'
+    title: 'Australian Tax Form'
 }

@@ -50,13 +50,6 @@ const FormProgress = props => {
     }
 
     return (
-        // <FlatList
-        //     horizontal={true}
-        //     data={props.data}
-        //     style={{ backgroundColor: 'red', paddingTop: 12 }}
-        //     keyExtractor={(item, index) => item.name}
-        //     renderItem={renderItem}
-        // />
         <View style={{
             flexDirection: 'row',
             paddingHorizontal: 20,

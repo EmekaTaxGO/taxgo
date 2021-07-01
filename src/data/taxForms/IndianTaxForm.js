@@ -1,67 +1,37 @@
+import AgeField from "../taxFields/AgeField";
+import DeductionField from "../taxFields/DeductionField";
+import OtherIncomeField from "../taxFields/OtherIncomeField";
+import ProfitField from "../taxFields/ProfitField";
+import TaxableSalaryField from "../taxFields/TaxableSalaryField";
+import TaxYearField from "../taxFields/TaxYearField";
+import WorkStatusField from "../taxFields/WorkStatusField";
+
 export default {
     tabs: [
         {
             name: 'Tax',
             fields: [
+                { ...TaxYearField },
                 {
-                    type: 'picker',
-                    label: 'TAX YEAR',
-                    options: ['2019', '2018'],
-                    selected: -1,
-                    text: 'Select Year'
-                },
-                {
-                    type: 'picker',
-                    label: 'WORK STATUS',
-                    options: ['Employee'],
-                    selected: -1,
-                    text: 'Select Work Status'
-                },
-                {
-                    type: 'input',
-                    label: 'AGE (IN YEARS)',
-                    value: '',
-                    textStyle: {
-                        keyboardType: 'numeric',
-                        returnKeyType: 'done'
-                    }
+                    ...WorkStatusField,
+                    subFields: [
+                        { ...AgeField }
+                    ]
                 }
             ]
         },
         {
             name: 'Income',
             fields: [
-                {
-                    type: 'input',
-                    label: 'TAXABLE SALARY (IN INR)',
-                    value: '',
-                    textStyle: {
-                        keyboardType: 'numeric',
-                        returnKeyType: 'done'
-                    }
-                },
-                {
-                    type: 'input',
-                    label: 'OTHER INCOME (IN INR)',
-                    value: '',
-                    textStyle: {
-                        keyboardType: 'numeric',
-                        returnKeyType: 'done'
-                    }
-                }
+                { ...TaxableSalaryField },
+                { ...OtherIncomeField }
             ]
         },
         {
             name: 'Other',
             fields: [
                 {
-                    type: 'input',
-                    label: 'PROFIT AND GAIN (IN INR)',
-                    value: '',
-                    textStyle: {
-                        keyboardType: 'numeric',
-                        returnKeyType: 'done'
-                    }
+                    ...ProfitField
                 },
                 {
                     type: 'input',
@@ -72,15 +42,7 @@ export default {
                         returnKeyType: 'done'
                     }
                 },
-                {
-                    type: 'input',
-                    label: 'DEDUCTIONS (IN INR)',
-                    value: '',
-                    textStyle: {
-                        keyboardType: 'numeric',
-                        returnKeyType: 'done'
-                    }
-                }
+                { ...DeductionField }
             ]
         }
     ],

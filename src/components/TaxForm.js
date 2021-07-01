@@ -6,6 +6,9 @@ import AppPicker2 from '../components/AppPicker2';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AppText from './AppText';
 import AppTextField from './AppTextField';
+import { showError } from '../helpers/Utils'
+import { isEmpty, toNumber } from 'lodash';
+import FormRadioGroup from './FormRadioGroup';
 const TaxForm = props => {
 
     const countryId = props.route.params.countryId
@@ -17,10 +20,15 @@ const TaxForm = props => {
 
 
     const onPickerItemChange = (fieldIdx, selected) => {
-        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], selected }
+        const oldField = form.tabs[form.currentTab].fields[fieldIdx]
+        const newField = { ...oldField, selected }
         const newFields = [...form.tabs[form.currentTab].fields]
         newFields.splice(fieldIdx, 1, newField)
-
+        if (newField.subFields) {
+            if (oldField.selected < 0 && selected >= 0) {
+                newFields.push(...newField.subFields)
+            }
+        }
         const tab = {
             ...form.tabs[form.currentTab],
             fields: newFields
@@ -36,6 +44,28 @@ const TaxForm = props => {
         const newFields = [...form.tabs[form.currentTab].fields]
         newFields.splice(fieldIdx, 1, newField)
 
+        const tab = {
+            ...form.tabs[form.currentTab],
+            fields: newFields
+        }
+        const tabs = [...form.tabs]
+        tabs.splice(form.currentTab, 1, tab)
+        const newForm = { ...form, tabs }
+        setForm(newForm)
+    }
+    const onRadioItemChange = (groups, fieldIdx) => {
+        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], groups }
+        let newFields = [...form.tabs[form.currentTab].fields]
+        newFields.splice(fieldIdx, 1, newField)
+
+        if (!isEmpty(newField.subFields)) {
+            newFields = newFields.filter(value => value.dependency_field_id != newField.id)
+            const selected_grp = newField.groups.filter(value => value.selected == true)[0]
+            const selected_objs = newField.subFields.filter(value => value.group_id == selected_grp.id)
+            if (!isEmpty(selected_objs)) {
+                newFields.splice(fieldIdx+1, 0, ...selected_objs)
+            }
+        }
         const tab = {
             ...form.tabs[form.currentTab],
             fields: newFields
@@ -63,11 +93,58 @@ const TaxForm = props => {
                     onChangeText={text => onTextChange(index, text)}
                     {...item.textStyle}
                 />
+            case 'radio-group':
+                return <FormRadioGroup
+                    title={item.title}
+                    options={item.groups}
+                    onPress={data => onRadioItemChange(data, index)}
+                />
             default:
                 return null
         }
     }
+    const validateForm = () => {
+        const current = form.tabs[form.currentTab]
+        let error;
+        for (let i = 0; i < current.fields.length; i++) {
+            const element = current.fields[i];
+            switch (element.type) {
+                case 'picker':
+                    if (element.selected < 0) {
+                        error = element.error
+                    }
+                    break;
+                case 'input':
+                    if (isEmpty(element.value)) {
+                        error = element.error
+                    } else if (element.validationRegex && !element.validationRegex.test(element.value)) {
+                        error = element.regexError
+                    }
+                    else if (element.minValue && toNumber(element.value) < element.minValue) {
+                        error = element.minValueError
+                    }
+                    else if (element.maxValue && toNumber(element.value) > element.maxValue) {
+                        error = element.maxValueError
+                    }
+                    break;
+                default:
+            }
+            if (error) {
+                break;
+            }
+        }
+
+        if (error) {
+            showError(error)
+            return false
+        }
+        return true;
+
+    }
     const onNextPress = () => {
+        if (!validateForm()) {
+            return
+        }
         if (form.currentTab + 1 == form.tabs.length) {
             Alert.alert('Are you sure?', 'Do you want to submit form')
         } else {
@@ -121,7 +198,7 @@ const TaxForm = props => {
             <FlatList
                 style={{ flex: 1, marginTop: 6 }}
                 data={form.tabs[form.currentTab].fields}
-                keyExtractor={(item, index) => item.label}
+                keyExtractor={(item, index) => item.id}
                 renderItem={renderItem}
             />
             {renderBottomNav()}

@@ -1,3 +1,4 @@
+import { decimalRegex } from "../../helpers/Utils";
 import AgeField from "../taxFields/AgeField";
 import PaymentFrequencyField from "../taxFields/PaymentFrequencyField";
 import TaxableSalaryField from "../taxFields/TaxableSalaryField";
@@ -46,7 +47,7 @@ export default {
                     id: 'other_bik',
                     type: 'input',
                     value: '',
-                    validationRegex: /^\d{1,}.{1}\d{1,}$/,
+                    validationRegex: decimalRegex,
                     minValue: 1,
                     label: 'Other/BIK (In €)',
                     error: 'Please enter your BIK',

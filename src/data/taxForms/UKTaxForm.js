@@ -2,6 +2,8 @@ import DeductionField from "../taxFields/DeductionField";
 import TaxableSalaryField from "../taxFields/TaxableSalaryField";
 import TaxYearField from "../taxFields/TaxYearField";
 import PaymentFrequencyField from '../taxFields/PaymentFrequencyField';
+import DatePickerField from "../taxFields/DatePickerField";
+import { decimalRegex } from "../../helpers/Utils";
 
 export default {
     tabs: [
@@ -45,6 +47,7 @@ export default {
                     title: 'STUDENT LOAN',
                     checked: false
                 },
+                { ...DatePickerField },
                 {
                     ...TaxYearField,
                     options: ['2019/2020', '2018/2019', '2017/2018', '2016/2017', '2015/2016']
@@ -64,10 +67,11 @@ export default {
             fields: [
                 {
                     ...TaxableSalaryField,
+                    minValue: 2,
                     label: 'Gross Income (In £)',
                     error: 'Please enter your Gross income',
                     regexError: 'Please enter valid Gross income',
-                    minValueError: 'Gross income should be greater than 0'
+                    minValueError: 'Gross income should be greater than equal to 2'
                 }
             ]
         },
@@ -83,7 +87,7 @@ export default {
                     type: 'input',
                     label: 'Tax Code (Optional)',
                     value: '',
-                    validationRegex: /^[0-9]{1,3}$/,
+                    validationRegex: /^[0-9]{1,}$/,
                     regexError: 'Please enter valid tax code',
                     minValue: 1,
                     minValueError: 'non-negative tax code value is allowed',
@@ -97,7 +101,7 @@ export default {
                     type: 'input',
                     label: 'Pension Contributions (In £)',
                     value: '',
-                    validationRegex: /^\d{1,}.{1}\d{1,}$/,
+                    validationRegex: decimalRegex,
                     error: 'Please enter pension contribution',
                     regexError: 'Please enter valid pension contributions',
                     minValue: 1,

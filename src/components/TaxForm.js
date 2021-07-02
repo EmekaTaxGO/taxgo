@@ -11,6 +11,8 @@ import { isEmpty, toNumber } from 'lodash';
 import FormRadioGroup from './FormRadioGroup';
 import { showToast } from './Logger';
 import FormCheckBox from './FormCheckbox';
+import AppDatePicker from './AppDatePicker';
+import { H_DATE_FORMAT } from '../constants/appConstant';
 const TaxForm = props => {
 
     const countryId = props.route.params.countryId
@@ -92,6 +94,20 @@ const TaxForm = props => {
         const newForm = { ...form, tabs }
         setForm(newForm)
     }
+    const onDateChange = (date, fieldIdx) => {
+        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], date }
+        const newFields = [...form.tabs[form.currentTab].fields]
+        newFields.splice(fieldIdx, 1, newField)
+
+        const tab = {
+            ...form.tabs[form.currentTab],
+            fields: newFields
+        }
+        const tabs = [...form.tabs]
+        tabs.splice(form.currentTab, 1, tab)
+        const newForm = { ...form, tabs }
+        setForm(newForm)
+    }
     const renderItem = ({ item, index }) => {
         switch (item.type) {
             case 'picker':
@@ -121,6 +137,21 @@ const TaxForm = props => {
                     title={item.title}
                     checked={item.checked}
                     onValueChange={checked => onCheckChange(checked, index)}
+                />
+            case 'date-picker':
+                if (!item.fieldRef) {
+                    item.fieldRef = React.createRef()
+                }
+                return <AppDatePicker
+                    date={item.date}
+                    containerStyle={styles.datePickerStyle}
+                    textFieldProps={{
+                        label: item.title,
+                        fieldRef: item.fieldRef
+                    }}
+                    readFormat={H_DATE_FORMAT}
+                    displayFormat='DD MMM YYYY'
+                    onChange={date => onDateChange(date, index)}
                 />
             default:
                 return null
@@ -246,6 +277,10 @@ const styles = StyleSheet.create({
     textField: {
         marginTop: 20,
         marginHorizontal: 16
+    },
+    datePickerStyle: {
+        marginHorizontal: 16,
+        marginTop: 20
     }
 })
 export default TaxForm

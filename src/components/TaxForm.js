@@ -16,6 +16,7 @@ import { H_DATE_FORMAT } from '../constants/appConstant';
 import Api from '../services/api';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view'
 const TaxForm = props => {
 
     const countryId = props.route.params.countryId
@@ -251,7 +252,10 @@ const TaxForm = props => {
 
     }
     const onPrevPress = () => {
-        const data = { ...form.data, currentTab: form.data.currentTab + 1 }
+        const data = {
+            ...form.data,
+            currentTab: form.data.currentTab - 1
+        }
         setForm({ ...form, data })
     }
     const renderBottomNav = () => {
@@ -293,13 +297,13 @@ const TaxForm = props => {
         return <FullScreenError tryAgainClick={fetchCountryTaxForm} />
     }
     return (
-        <SafeAreaView style={{ flexDirection: 'column', flex: 1 }}>
+        <SafeAreaView style={{ flexDirection: 'column', flex: 1, backgroundColor: 'white' }}>
             <FormProgress
                 data={form.data.tabs}
                 currPosition={form.data.currentTab}
             />
             <AppText style={styles.pageTitle}>{form.data.tabs[form.data.currentTab].name}</AppText>
-            <FlatList
+            <KeyboardAwareFlatList
                 style={{ flex: 1, marginTop: 6 }}
                 data={form.data.tabs[form.data.currentTab].fields}
                 keyExtractor={(item, index) => item.id}

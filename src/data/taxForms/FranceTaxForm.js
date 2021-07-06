@@ -57,7 +57,7 @@ export default {
                     label: 'No of children/dependent',
                     value: '',
                     error: 'Please Enter no of dependent',
-                    validationRegex: /^[0-9]{1,3}$/,
+                    validationRegex: '^[0-9]{1,3}$',
                     regexError: 'Please Enter valid no of dependent',
                     minValue: 0,
                     maxValue: 149,

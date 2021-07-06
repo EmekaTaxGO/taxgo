@@ -4,7 +4,7 @@ export default {
     label: 'AGE (IN YEARS)',
     value: '',
     error: 'Please Enter your age',
-    validationRegex: /^[0-9]{1,3}$/,
+    validationRegex: '^[0-9]{1,3}$',
     regexError: 'Please Enter valid age',
     minValue: 1,
     maxValue: 149,

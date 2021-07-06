@@ -1,15 +1,51 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import CardView from 'react-native-cardview';
 import AppImage from '../components/AppImage';
 import AppText from '../components/AppText';
-import taxCountries from '../data/TaxCountryData';
-import { appFontBold } from '../helpers/ViewHelper';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
+import Api from '../services/api';
 
 const CountryTax = props => {
+    //Tax Country Data Json is Availabel in TaxCountryData.js File
+    const [country, setCountry] = useState({
+        fetching: true,
+        error: undefined,
+        list: []
+    })
 
-    const [countries, setCountries] = useState(taxCountries)
+
+    useEffect(() => {
+        fetchTaxCountryList()
+    }, [])
+
+
+    const fetchTaxCountryList = () => {
+        setCountry({
+            ...country,
+            fetching: true,
+            error: undefined
+        })
+        Api.get('https://taxgo-c47a9-default-rtdb.firebaseio.com/taxCountry.json')
+            .then(response => {
+                setCountry({
+                    ...country,
+                    fetching: false,
+                    error: undefined,
+                    list: response.data
+                })
+            })
+            .catch(error => {
+                setCountry({
+                    ...country,
+                    fetching: false,
+                    error: 'Error fetching country'
+                })
+                console.log('Error fetching country');
+            })
+    }
 
     const onPressCountry = item => {
         const sender = props.route.params.sender
@@ -41,17 +77,23 @@ const CountryTax = props => {
             </CardView>
         )
     }
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+
+    if (country.fetching) {
+        return <OnScreenSpinner />
+    } else if (country.error) {
+        return <FullScreenError
+            tryAgainClick={fetchTaxCountryList} />
+    } else {
+        return <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <FlatList
                 style={{ flex: 1, backgroundColor: 'white' }}
-                data={countries}
+                data={country.list}
                 numColumns={2}
                 keyExtractor={(item, index) => item.name}
                 renderItem={renderItem}
             />
         </SafeAreaView>
-    )
+    }
 };
 const styles = StyleSheet.create({
     card: {

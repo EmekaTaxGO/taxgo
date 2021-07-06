@@ -87,7 +87,7 @@ export default {
                     type: 'input',
                     label: 'Tax Code (Optional)',
                     value: '',
-                    validationRegex: /^[0-9]{1,}$/,
+                    validationRegex: '^[0-9]{1,}$',
                     regexError: 'Please enter valid tax code',
                     minValue: 1,
                     minValueError: 'non-negative tax code value is allowed',

@@ -11,17 +11,7 @@ export default {
         {
             name: 'Tax',
             fields: [
-                { ...TaxYearField },
-                {
-                    ...WorkStatusField,
-                    subFields: [
-                        {
-                            dependency_field_id: 'work_status',
-                            group_id: '0',
-                            ...AgeField,
-                        }
-                    ]
-                }
+                { ...TaxYearField }
             ]
         },
         {

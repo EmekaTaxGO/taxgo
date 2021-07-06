@@ -13,53 +13,88 @@ import { showToast } from './Logger';
 import FormCheckBox from './FormCheckbox';
 import AppDatePicker from './AppDatePicker';
 import { H_DATE_FORMAT } from '../constants/appConstant';
+import Api from '../services/api';
+import OnScreenSpinner from '../components/OnScreenSpinner';
+import FullScreenError from '../components/FullScreenError';
 const TaxForm = props => {
 
     const countryId = props.route.params.countryId
-    const [form, setForm] = useState(allForms[countryId])
+    const [form, setForm] = useState({
+        fetching: true,
+        error: undefined,
+        data: {}
+    })
 
     useEffect(() => {
-        props.navigation.setOptions({ title: form.title })
+        props.navigation.setOptions({ title: 'Tax Form' })
+        fetchCountryTaxForm()
     }, [])
+
+    const fetchCountryTaxForm = () => {
+        setForm({ ...form, fetching: true, error: undefined })
+        Api.get(`https://taxgo-c47a9-default-rtdb.firebaseio.com/taxForms/${countryId}.json`)
+            .then(response => {
+                setForm({
+                    ...form,
+                    fetching: false,
+                    error: undefined,
+                    data: response.data
+                })
+                props.navigation.setOptions({ title: response.data.title })
+
+            })
+            .catch(err => {
+                setForm({
+                    ...form,
+                    fetching: false,
+                    error: 'Error fetching tax form'
+                })
+                console.log('Error fetching country tax form', err);
+            })
+    }
 
 
     const onPickerItemChange = (fieldIdx, selected) => {
-        const oldField = form.tabs[form.currentTab].fields[fieldIdx]
+        const oldField = form.data.tabs[form.data.currentTab].fields[fieldIdx]
         const newField = { ...oldField, selected }
-        const newFields = [...form.tabs[form.currentTab].fields]
+        let newFields = [...form.data.tabs[form.data.currentTab].fields]
         newFields.splice(fieldIdx, 1, newField)
-        if (newField.subFields) {
-            if (oldField.selected < 0 && selected >= 0) {
-                newFields.push(...newField.subFields)
+
+        if (!isEmpty(newField.subFields)) {
+            newFields = newFields.filter(value => value.dependency_field_id != newField.id)
+            const selected_objs = newField.subFields.filter(value => value.group_id == `${selected}`)
+            if (!isEmpty(selected_objs)) {
+                newFields.splice(fieldIdx + 1, 0, ...selected_objs)
             }
         }
+
         const tab = {
-            ...form.tabs[form.currentTab],
+            ...form.data.tabs[form.data.currentTab],
             fields: newFields
         }
-        const tabs = [...form.tabs]
-        tabs.splice(form.currentTab, 1, tab)
-        const newForm = { ...form, tabs }
-        setForm(newForm)
+        const tabs = [...form.data.tabs]
+        tabs.splice(form.data.currentTab, 1, tab)
+        const data = { ...form.data, tabs }
+        setForm({ ...form, data })
     }
 
     const onTextChange = (fieldIdx, value) => {
-        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], value }
-        const newFields = [...form.tabs[form.currentTab].fields]
+        const newField = { ...form.data.tabs[form.data.currentTab].fields[fieldIdx], value }
+        const newFields = [...form.data.tabs[form.data.currentTab].fields]
         newFields.splice(fieldIdx, 1, newField)
 
         const tab = {
-            ...form.tabs[form.currentTab],
+            ...form.data.tabs[form.data.currentTab],
             fields: newFields
         }
-        const tabs = [...form.tabs]
-        tabs.splice(form.currentTab, 1, tab)
-        const newForm = { ...form, tabs }
-        setForm(newForm)
+        const tabs = [...form.data.tabs]
+        tabs.splice(form.data.currentTab, 1, tab)
+        const data = { ...form.data, tabs }
+        setForm({ ...form, data })
     }
     const onRadioItemChange = (groups, fieldIdx) => {
-        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], groups }
-        let newFields = [...form.tabs[form.currentTab].fields]
+        const newField = { ...form.data.tabs[form.data.currentTab].fields[fieldIdx], groups }
+        let newFields = [...form.data.tabs[form.data.currentTab].fields]
         newFields.splice(fieldIdx, 1, newField)
 
         if (!isEmpty(newField.subFields)) {
@@ -71,42 +106,42 @@ const TaxForm = props => {
             }
         }
         const tab = {
-            ...form.tabs[form.currentTab],
+            ...form.data.tabs[form.data.currentTab],
             fields: newFields
         }
-        const tabs = [...form.tabs]
-        tabs.splice(form.currentTab, 1, tab)
-        const newForm = { ...form, tabs }
-        setForm(newForm)
+        const tabs = [...form.data.tabs]
+        tabs.splice(form.data.currentTab, 1, tab)
+        const data = { ...form.data, tabs }
+        setForm({ ...form, data })
     }
 
     const onCheckChange = (checked, fieldIdx) => {
-        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], checked }
-        const newFields = [...form.tabs[form.currentTab].fields]
+        const newField = { ...form.data.tabs[form.data.currentTab].fields[fieldIdx], checked }
+        const newFields = [...form.data.tabs[form.data.currentTab].fields]
         newFields.splice(fieldIdx, 1, newField)
 
         const tab = {
-            ...form.tabs[form.currentTab],
+            ...form.data.tabs[form.data.currentTab],
             fields: newFields
         }
-        const tabs = [...form.tabs]
-        tabs.splice(form.currentTab, 1, tab)
-        const newForm = { ...form, tabs }
-        setForm(newForm)
+        const tabs = [...form.data.tabs]
+        tabs.splice(form.data.currentTab, 1, tab)
+        const data = { ...form.data, tabs }
+        setForm({ ...form, data })
     }
     const onDateChange = (date, fieldIdx) => {
-        const newField = { ...form.tabs[form.currentTab].fields[fieldIdx], date }
-        const newFields = [...form.tabs[form.currentTab].fields]
+        const newField = { ...form.data.tabs[form.data.currentTab].fields[fieldIdx], date }
+        const newFields = [...form.data.tabs[form.data.currentTab].fields]
         newFields.splice(fieldIdx, 1, newField)
 
         const tab = {
-            ...form.tabs[form.currentTab],
+            ...form.data.tabs[form.data.currentTab],
             fields: newFields
         }
-        const tabs = [...form.tabs]
-        tabs.splice(form.currentTab, 1, tab)
-        const newForm = { ...form, tabs }
-        setForm(newForm)
+        const tabs = [...form.data.tabs]
+        tabs.splice(form.data.currentTab, 1, tab)
+        const data = { ...form.data, tabs }
+        setForm({ ...form, data })
     }
     const renderItem = ({ item, index }) => {
         switch (item.type) {
@@ -158,7 +193,7 @@ const TaxForm = props => {
         }
     }
     const validateForm = () => {
-        const current = form.tabs[form.currentTab]
+        const current = form.data.tabs[form.data.currentTab]
         let error;
         for (let i = 0; i < current.fields.length; i++) {
             const element = current.fields[i];
@@ -171,8 +206,12 @@ const TaxForm = props => {
                 case 'input':
                     if (isEmpty(element.value)) {
                         error = element.error
-                    } else if (element.validationRegex && !element.validationRegex.test(element.value)) {
-                        error = element.regexError
+                    } else if (element.validationRegex) {
+                        const regex = new RegExp(element.validationRegex)
+                        if (!regex.test(element.value)) {
+                            error = element.regexError
+                        }
+
                     }
                     else if (element.minValue && toNumber(element.value) < element.minValue) {
                         error = element.minValueError
@@ -200,19 +239,23 @@ const TaxForm = props => {
         if (!validateForm()) {
             return
         }
-        if (form.currentTab + 1 == form.tabs.length) {
+        if (form.data.currentTab + 1 == form.data.tabs.length) {
             Alert.alert('Are you sure?', 'Do you want to submit form')
         } else {
-            setForm({ ...form, currentTab: form.currentTab + 1 })
+            const data = {
+                ...form.data,
+                currentTab: form.data.currentTab + 1
+            }
+            setForm({ ...form, data })
         }
 
     }
     const onPrevPress = () => {
-
-        setForm({ ...form, currentTab: form.currentTab - 1 })
+        const data = { ...form.data, currentTab: form.data.currentTab + 1 }
+        setForm({ ...form, data })
     }
     const renderBottomNav = () => {
-        const isFirst = form.currentTab == 0
+        const isFirst = form.data.currentTab == 0
         return (
             <View style={{
                 flexDirection: 'row',
@@ -243,16 +286,22 @@ const TaxForm = props => {
             </View>
         )
     }
+
+    if (form.fetching) {
+        return <OnScreenSpinner />
+    } else if (form.error) {
+        return <FullScreenError tryAgainClick={fetchCountryTaxForm} />
+    }
     return (
         <SafeAreaView style={{ flexDirection: 'column', flex: 1 }}>
             <FormProgress
-                data={form.tabs}
-                currPosition={form.currentTab}
+                data={form.data.tabs}
+                currPosition={form.data.currentTab}
             />
-            <AppText style={styles.pageTitle}>{form.tabs[form.currentTab].name}</AppText>
+            <AppText style={styles.pageTitle}>{form.data.tabs[form.data.currentTab].name}</AppText>
             <FlatList
                 style={{ flex: 1, marginTop: 6 }}
-                data={form.tabs[form.currentTab].fields}
+                data={form.data.tabs[form.data.currentTab].fields}
                 keyExtractor={(item, index) => item.id}
                 renderItem={renderItem}
             />

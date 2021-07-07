@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import FormProgress from './FormProgress';
-import allForms from '../data/taxForms/allForms';
 import AppPicker2 from '../components/AppPicker2';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AppText from './AppText';

@@ -188,4 +188,5 @@ export const isBuffer = (value) => {
     const type = get(value, 'type', '');
     return type === 'Buffer';
 }
+export const decimalRegex = '^\\d{1,}.?\\d*$'
 

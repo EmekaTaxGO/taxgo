@@ -4,12 +4,8 @@ import {
     View,
     SafeAreaView,
     KeyboardAvoidingView,
-    ScrollView,
     StyleSheet,
     TouchableOpacity,
-    Picker,
-    FlatList,
-    Text,
     Alert
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,12 +18,8 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner'
 import FullScreenError from '../components/FullScreenError'
 import EmptyView from '../components/EmptyView';
-import CheckBox from '@react-native-community/checkbox';
-import { colorAccent } from '../theme/Color';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { isFloat, toFloat, showError } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
-import { RaisedTextButton } from 'react-native-material-buttons';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Menu, { MenuItem } from 'react-native-material-menu';
@@ -38,7 +30,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
-
+import AppPicker2 from '../components/AppPicker2';
 class CustomerReceiptScreen extends Component {
 
     constructor(props) {
@@ -340,16 +332,12 @@ class CustomerReceiptScreen extends Component {
                     fieldRef={this.paidIntoRef} />
             </TouchableOpacity>
             {/* Select Method Picker */}
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
-                <Picker
-                    selectedValue={payMethod[payMethodIndex]}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ payMethodIndex: itemIndex })}>
-                    {payMethod.map((value, index) => <Picker.Item
-                        label={value} value={value} key={`${index}`} />)}
-                </Picker>
-            </View>
-
+            <AppPicker2
+                title={payMethod[payMethodIndex]}
+                text='Payment Method'
+                items={payMethod}
+                containerStyle={styles.picker}
+                onChange={idx => this.setState({ payMethodIndex: idx })} />
             <TouchableOpacity
                 onPress={() => this.setState({ showReceivedDate: true })}
                 style={{ marginTop: 20 }}>
@@ -404,6 +392,9 @@ const styles = StyleSheet.create({
         padding: 26,
         marginTop: 16,
         fontSize: 50
+    },
+    picker: {
+        marginTop: 12
     }
 })
 export default connect(

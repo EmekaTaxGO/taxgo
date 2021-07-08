@@ -6,7 +6,6 @@ import AppButton from '../AppButton';
 import AppDatePicker from '../AppDatePicker';
 import MultiLineTextField from '../MultiLineTextField';
 import AppPicker2 from '../AppPicker2';
-import { showSingleSelectAlert } from '../SingleSelectAlert';
 import AppText from '../AppText';
 
 class AccountingTab extends Component {

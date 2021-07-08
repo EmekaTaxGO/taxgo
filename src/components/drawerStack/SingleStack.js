@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { colorPrimary, colorWhite } from '../../theme/Color';
-import { appFont, appFontBold } from '../../helpers/ViewHelper';
+import { appFont } from '../../helpers/ViewHelper';
 
 const SingleStack = ({ name, component, title, showHeader = true }) => {
 

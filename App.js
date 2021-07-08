@@ -64,6 +64,9 @@ import EditProfileV2 from './src/screens/EditProfileV2';
 import InvoicePageV2 from './src/screens/InvoicePageV2';
 import MyLedgerTabItem from './src/components/tabs/MyLedgerTabItem';
 import ChangePasswordV2 from './src/screens/ChangePasswordV2';
+import TaxgoServices from './src/screens/TaxgoServices';
+import CountryTax from './src/screens/CountryTax';
+import TaxForm from './src/components/TaxForm';
 
 const App = () => {
 
@@ -78,8 +81,7 @@ const App = () => {
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
         headerTitleStyle: { fontFamily: appFont, fontSize: 20 },
-        headerBackTitleVisible: false,
-
+        headerBackTitleVisible: false
       }}>
 
       <Stack.Screen name='LoginScreen' component={LoginScreen} options={{ title: 'Login' }} />
@@ -134,6 +136,10 @@ const App = () => {
       <Stack.Screen name='InvoicePageV2' component={InvoicePageV2} options={{ title: 'Invoice Summary' }} />
       <Stack.Screen name='MyLedgerScreen' component={MyLedgerTabItem} options={{ title: 'Select Ledger' }} />
       <Stack.Screen name='ChangePasswordV2' component={ChangePasswordV2} options={{ title: 'Change Password' }} />
+      <Stack.Screen name='TaxgoServices' component={TaxgoServices} options={{ title: 'Taxgo Services' }} />
+      <Stack.Screen name='CountryTax' component={CountryTax} options={{ title: 'Select Country' }} />
+      <Stack.Screen name='TaxForm' component={TaxForm} options={{ title: 'Tax Form' }} />
+    
     </Stack.Navigator>
   </NavigationContainer>
 }

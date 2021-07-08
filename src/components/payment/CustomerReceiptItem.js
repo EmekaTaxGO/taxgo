@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import { colorAccent } from '../../theme/Color';
+import { colorAccent, errorColor } from '../../theme/Color';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { isFloat, toFloat } from '../../helpers/Utils';
 class CustomerReceiptItem extends React.PureComponent {

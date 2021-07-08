@@ -13,11 +13,15 @@ class AppPicker2 extends Component {
         })
     }
     render() {
-        const { title, containerStyle, onPress } = this.props;
+        const { title, containerStyle, onPress, textStyle } = this.props;
         const disable = get(this.props, 'disable', false)
         const newContainerStyle = {
             ...styles.container,
             ...containerStyle
+        }
+        const newTextStyle = {
+            ...styles.text,
+            ...textStyle
         }
         return (
             <TouchableOpacity
@@ -30,7 +34,7 @@ class AppPicker2 extends Component {
                     }
                 }}
                 style={newContainerStyle}>
-                <AppText style={styles.text}>{title}</AppText>
+                <AppText style={newTextStyle}>{title}</AppText>
                 <Icon name='arrow-drop-down' size={26} color='gray' />
             </TouchableOpacity>
         )

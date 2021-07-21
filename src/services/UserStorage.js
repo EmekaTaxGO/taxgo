@@ -42,6 +42,7 @@ export async function getSavedData(key) {
         return null;
     }
 }
+
 export async function clearData(key) {
     try {
         await AsyncStorage.removeItem(key);

@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, HeaderTitle } from '@react-navigation/stack';
 import LoginScreen from './src/screens/LoginScreen';
@@ -18,7 +18,7 @@ import MerchantAccountScreen from './src/screens/MerchantAccountScreen';
 import UpgradePlanScreen from './src/screens/UpgradePlanScreen';
 import AddCustomerScreen from './src/screens/AddCustomerScreen';
 import AddProductScreen from './src/screens/AddProductScreen';
-import { LogBox } from 'react-native';
+import { LogBox, Linking } from 'react-native';
 import AddJournalScreen from './src/screens/AddJournalScreen';
 import AddLedgerScreen from './src/screens/AddLedgerScreen';
 import SelectLedgerScreen from './src/screens/SelectLedgerScreen';
@@ -58,7 +58,7 @@ import BalanceSheetScreen from './src/screens/BalanceSheetScreen';
 import TrialBalanceScreen from './src/screens/TrialBalanceScreen';
 import ProfitLossReportScreen from './src/screens/ProfitLossReportScreen';
 import ViewInvoiceScreen from './src/screens/ViewInvoiceScreen';
-import { appFont, appFontBold } from './src/helpers/ViewHelper';
+import { appFont } from './src/helpers/ViewHelper';
 import PaymentScreen from './src/screens/PaymentScreen';
 import EditProfileV2 from './src/screens/EditProfileV2';
 import InvoicePageV2 from './src/screens/InvoicePageV2';
@@ -67,6 +67,7 @@ import ChangePasswordV2 from './src/screens/ChangePasswordV2';
 import TaxgoServices from './src/screens/TaxgoServices';
 import CountryTax from './src/screens/CountryTax';
 import TaxForm from './src/components/TaxForm';
+import Store from './src/redux/Store';
 
 const App = () => {
 
@@ -74,9 +75,10 @@ const App = () => {
 
   LogBox.ignoreAllLogs();
 
+  const initialRoute = Store.getState()?.auth?.authData ? 'HomeScreen' : 'TaxgoServices'
   return <NavigationContainer>
     <Stack.Navigator
-      initialRouteName='SplashScreen'
+      initialRouteName={initialRoute}
       screenOptions={{
         headerStyle: { backgroundColor: colorPrimary },
         headerTintColor: colorWhite,
@@ -139,7 +141,7 @@ const App = () => {
       <Stack.Screen name='TaxgoServices' component={TaxgoServices} options={{ title: 'Taxgo Services' }} />
       <Stack.Screen name='CountryTax' component={CountryTax} options={{ title: 'Select Country' }} />
       <Stack.Screen name='TaxForm' component={TaxForm} options={{ title: 'Tax Form' }} />
-    
+
     </Stack.Navigator>
   </NavigationContainer>
 }

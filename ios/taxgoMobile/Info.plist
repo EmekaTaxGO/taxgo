@@ -28,6 +28,16 @@
 				<string>fb2209420276004281</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>taxgo</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>taxgo</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -38,6 +48,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>itms-apps</string>
+		<string>taxcalculator</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

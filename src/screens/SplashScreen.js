@@ -17,13 +17,7 @@ class SplashScreen extends Component {
     }
 
     componentDidMount() {
-        const { authActions } = this.props;
-        authActions.fetchAuthdata();
-
-        setTimeout(() => {
-            const { authData } = this.props.auth;
-            this.props.navigation.replace(authData !== null ? 'HomeScreen' : 'TaxgoServices');
-        }, 500);
+        
     }
 
     render() {

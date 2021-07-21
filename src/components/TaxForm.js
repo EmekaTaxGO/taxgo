@@ -5,7 +5,6 @@ import AppPicker2 from '../components/AppPicker2';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AppText from './AppText';
 import AppTextField from './AppTextField';
-import { showError } from '../helpers/Utils'
 import { isEmpty, toNumber } from 'lodash';
 import FormRadioGroup from './FormRadioGroup';
 import { showToast } from './Logger';

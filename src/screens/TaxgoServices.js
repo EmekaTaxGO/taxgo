@@ -1,25 +1,51 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Linking, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import CardView from 'react-native-cardview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colorPrimary } from '../theme/Color';
 import AppText from '../components/AppText';
 import { appFontBold } from '../helpers/ViewHelper';
+import { CALCULATOR_STORE_URL, COUNTRY_TAX_DEEPLINK } from '../constants/appConstant';
+import { log, showToast } from '../components/Logger';
+import Store from '../redux/Store';
 
-const TaxgoServices = props => {
+const TaxgoServices = ({ navigation }) => {
 
+    const handleOpenURL = (event) => {
+        navigate(event.url)
+    }
+    const checkDeeplinkFlow = async () => {
+        const deeplinkURL = await Linking.getInitialURL()
+        if (deeplinkURL != null) {
+            //When app is launched from deeplink
+            navigate(deeplinkURL)
+            return
+        }
+        //User Launch Handling
+
+    }
 
     useEffect(() => {
-        if (props.route.params?.country) {
-            setTimeout(() => {
-                const country = props.route.params.country
-                props.navigation.navigate('TaxForm', {
-                    countryId: country.id
-                })
-            }, 200)
+        Linking.addEventListener('url', handleOpenURL)
+        checkDeeplinkFlow()
+        return () => {
+            Linking.removeEventListener('url', handleOpenURL)
         }
-    }, [props.route.params?.country])
+    }, [])
+
+    const navigate = (url) => {
+        const routeName = url.split('://')[1].split('?')[0]
+        if (routeName === 'home') {
+            if (Store.getState().auth.authData != null) {
+                navigation.reset({ index: 0, routes: [{ name: 'HomeScreen' }] });
+            } else {
+                navigation.navigate('LoginScreen')
+            }
+        } else {
+            Alert.alert('Can\'t open this link')
+        }
+    }
 
 
     const renderCard = (item) => {
@@ -33,12 +59,27 @@ const TaxgoServices = props => {
                     <Icon name={item.icon} size={60} color={colorPrimary} />
                     <AppText style={styles.titleTxt}>{item.title}</AppText>
                     <AppText style={styles.descriptionTxt}>{item.description}</AppText>
-                    <TouchableOpacity onPress={item.onPress} style={styles.btnStyle}>
+                    {item.btnTxt && (<TouchableOpacity onPress={item.onPress} style={styles.btnStyle}>
                         <AppText style={styles.btnTxt}>{item.btnTxt}</AppText>
-                    </TouchableOpacity>
+                    </TouchableOpacity>)}
                 </View>
             </CardView>
         )
+    }
+
+    const openTaxCalculator = async () => {
+        const canOpenDeeplink = await Linking.canOpenURL(COUNTRY_TAX_DEEPLINK)
+        if (canOpenDeeplink) {
+            Linking.openURL(COUNTRY_TAX_DEEPLINK)
+            return
+        }
+        const canOpenStore = await Linking.canOpenURL(CALCULATOR_STORE_URL)
+        if (canOpenStore) {
+            Linking.openURL(CALCULATOR_STORE_URL)
+        } else {
+            showToast('Can\'t Open')
+        }
+
     }
 
     const getCardData = () => {
@@ -49,10 +90,7 @@ const TaxgoServices = props => {
                 btnTxt: 'Calculate',
                 title: 'Tax Calculator',
                 onPress: () => {
-                    props.navigation.setParams({ country: undefined })
-                    props.navigation.navigate('CountryTax', {
-                        sender: 'TaxgoServices'
-                    })
+                    openTaxCalculator()
                 }
             },
             {
@@ -61,7 +99,7 @@ const TaxgoServices = props => {
                 btnTxt: 'Accounting',
                 title: 'Accounting',
                 onPress: () => {
-                    props.navigation.navigate('LoginScreen')
+                    navigation.navigate('LoginScreen')
                 }
             }
         ]

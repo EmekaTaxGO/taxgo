@@ -5,7 +5,6 @@ import Deeplink from '../deeplink/Deeplink';
 import { clearAll } from '../services/UserStorage';
 import DeviceInfo from 'react-native-device-info';
 import { showError } from '../helpers/Utils';
-import { colorAccent } from '../theme/Color';
 
 const canHandle = deeplink => {
     const values = Object.values(Deeplink);
@@ -21,7 +20,7 @@ const signOutUser = (nav) => {
             style: 'default',
             onPress: async () => {
                 await clearAll();
-                nav.replace('LoginScreen');
+                nav.reset({ index: 0, routes: [{ name: 'TaxgoServices' }] });
             }
         }
     ])
@@ -40,6 +39,7 @@ const navigateToRateUS = async () => {
     }
 
 }
+
 const handleDeepLink = (navigation, deeplink) => {
     if (isEmpty(deeplink)) {
         return;

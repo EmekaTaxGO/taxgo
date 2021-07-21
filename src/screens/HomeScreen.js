@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Linking, Alert } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerContent from '../components/DrawerContent';
 import ProductStack from '../components/drawerStack/ProductStack';
@@ -24,7 +24,7 @@ import * as authActions from '../redux/actions/authActions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReportStack from '../components/drawerStack/ReportStack';
-import { appFont, appFontBold } from '../helpers/ViewHelper';
+import { appFont } from '../helpers/ViewHelper';
 
 class HomeScreen extends Component {
 
@@ -32,12 +32,34 @@ class HomeScreen extends Component {
 
     drawerWidth = (7 * this.dimension.width) / 10;
 
-
-
-
     componentDidMount() {
         const { authActions } = this.props;
         authActions.getProfile();
+        Linking.addEventListener('url', this.handleOpenURL)
+        this.checkDeeplink()
+    }
+
+    async checkDeeplink() {
+        const url = await Linking.getInitialURL()
+        if (url != null) {
+            this.navigate(url)
+        }
+    }
+
+    componentWillUnmount() {
+        Linking.removeEventListener('url', this.handleOpenURL)
+    }
+
+    handleOpenURL = (event) => {
+        console.log('Url: ', event);
+        this.navigate(event.url)
+    }
+
+    navigate = (url) => {
+        const routeName = url.split('://')[1].split('?')[0]
+        if (routeName != 'home') {
+            Alert.alert('Can\'t open this link')
+        }
     }
 
     render() {

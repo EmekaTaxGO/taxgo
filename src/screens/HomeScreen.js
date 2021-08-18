@@ -25,6 +25,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReportStack from '../components/drawerStack/ReportStack';
 import { appFont } from '../helpers/ViewHelper';
+import messaging from '@react-native-firebase/messaging';
 
 class HomeScreen extends Component {
 
@@ -32,11 +33,19 @@ class HomeScreen extends Component {
 
     drawerWidth = (7 * this.dimension.width) / 10;
 
+    unsubscribeMessage;
     componentDidMount() {
         const { authActions } = this.props;
         authActions.getProfile();
         Linking.addEventListener('url', this.handleOpenURL)
         this.checkDeeplink()
+        unsubscribeMessage = messaging().onMessage(async remoteMessage => {
+            console.log('New FCM Message', JSON.stringify(remoteMessage));
+        })
+    }
+
+    componentWillUnmount() {
+        unsubscribeMessage();
     }
 
     async checkDeeplink() {

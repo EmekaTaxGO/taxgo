@@ -78,7 +78,7 @@ class SalesCNList extends Component {
     }
 
     onEditClick = (data) => {
-        console.log('Edit Click!');
+        console.log('Edit Click!', JSON.stringify(data.item, null, 2));
 
     }
     onDeleteClick = (data) => {

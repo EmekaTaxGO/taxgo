@@ -26,7 +26,7 @@ import AppDatePicker from '../components/AppDatePicker';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 import InvoiceBottomCard from '../components/invoices/InvoiceBottomCard';
 import InvoiceBreakdown from '../components/invoices/InvoiceBreakdown';
-import { get, isEmpty, isNaN } from 'lodash';
+import { get, isEmpty, isNaN, isUndefined } from 'lodash';
 import Api from '../services/api';
 import ProgressDialog from '../components/ProgressDialog';
 import AppText from '../components/AppText';
@@ -35,9 +35,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import AppPicker2 from '../components/AppPicker2';
 
 class AddInvoiceScreen extends Component {
+
     constructor(props) {
-        super();
-        this.state = {
+        super(props);
+        this.state = {  
             selectedTab: 'supplier',
             fetching: true,
             updating: false,
@@ -70,7 +71,8 @@ class AddInvoiceScreen extends Component {
             currency: get(Store.getState().auth, 'profile.countryInfo.symbol'),
             isSale: this.isSalesInvoice(props),
             creditNote: this.isCreditNote(props),
-            editMode: this.isEditMode(props)
+            invoiceId: props.route.params.info.invoice_id,
+            invoiceType: props.route.params.info.invoice_type
         }
     }
     _reference = ''
@@ -157,16 +159,28 @@ class AddInvoiceScreen extends Component {
         });
         const { authData } = Store.getState().auth;
 
-        Promise.all([
-            Api.get(`/default/taxList/${authData.country}`),
-            Api.get(this.getInvoiceNoURL())
-        ])
+        const requests = [Api.get(`/default/taxList/${authData.country}`)]
+        const editMode = this.state.invoiceId ? true : false
+        if (editMode) {
+            const pathSegment = this.isSalesInvoice(this.props) ? 'sales' : 'purchase';
+            requests.push(Api.get(`/${pathSegment}/viewInvoice/${this.state.invoiceId}/${authData.id}/${this.state.invoiceType}`))
+        } else {
+            requests.push(Api.get(this.getInvoiceNoURL()))
+        }
+        let response = {};
+        Promise.all(requests)
             .then(results => {
-                this.setState({
+                response = {
                     fetching: false,
-                    taxList: results[0].data.data,
-                    invoiceno: results[1].data.data
-                });
+                    taxList: results[0].data.data
+                }
+                if (editMode) {
+                    response.invoiceno = results[1].data.data
+                } else {
+                    response.invoice = results[1].data.data
+                }
+
+                this.setState(response);
             })
             .catch(err => {
                 console.log('Error fetching TaxList: ', err);
@@ -188,9 +202,6 @@ class AddInvoiceScreen extends Component {
         return timeHelper.format(dueDate, H_DATE_FORMAT);
     }
 
-    isEditMode = (props) => {
-        return props.route.params.info.mode === 'update';
-    }
     isCreditNote = (props) => {
         const type = props.route.params.info.invoice_type;
         return type === 'scredit' || type === 'pcredit';
@@ -1238,7 +1249,7 @@ class AddInvoiceScreen extends Component {
             .catch(err => {
                 console.log('Error adding/updating invoice', err);
                 this.setState({ updating: false });
-                const action = this.state.editMode ? 'updating' : 'adding';
+                const action = this.state.invoiceId ? 'updating' : 'adding';
                 setTimeout(() => showError(`Error ${action} invoice.`), 300);
             })
     }

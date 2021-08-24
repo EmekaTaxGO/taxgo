@@ -11,7 +11,7 @@ import FullScreenError from '../../components/FullScreenError';
 import EmptyView from '../../components/EmptyView';
 import OnScreenSpinner from '../../components/OnScreenSpinner';
 import { isEmpty, size } from 'lodash';
-import { rColor, viewColor } from '../../theme/Color';
+import { editColor, rColor, viewColor } from '../../theme/Color';
 import SalesInvoiceListItem from './SalesInvoiceListItem';
 import AppText from '../AppText';
 import { appFontBold } from '../../helpers/ViewHelper';
@@ -79,8 +79,13 @@ class SalesInvoiceList extends Component {
     }
 
     onEditClick = (data) => {
-        console.log('Edit Click!');
-
+        console.log('Item: ',data.item);
+        this.props.navigation.navigate('AddInvoiceScreen', {
+            info: {
+                invoice_id: data.item.id,
+                invoice_type: data.item.type
+            }
+        });
     }
     onDeleteClick = (data) => {
         console.log('Delete Click!');
@@ -93,7 +98,10 @@ class SalesInvoiceList extends Component {
             cornerRadius={6}
             style={styles.hiddenCard}>
             <View style={{ flexDirection: 'row' }}>
-                {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
+                <View style={{ flex: 1 }}>
+                    {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
+                </View>
+                {this.hiddenElement('Edit', 'visibility', editColor, () => this.onEditClick(data))}
             </View>
         </CardView>
     }
@@ -144,6 +152,7 @@ class SalesInvoiceList extends Component {
                 renderItem={(data, rowMap) => this.renderListItem(data, rowMap)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}
+                rightOpenValue={-70}
             />
         </View>
     }

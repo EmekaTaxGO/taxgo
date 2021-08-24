@@ -33,12 +33,13 @@ import AppText from '../components/AppText';
 import { appFontBold } from '../helpers/ViewHelper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppPicker2 from '../components/AppPicker2';
+import { Buffer } from 'buffer';
 
 class AddInvoiceScreen extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {  
+        this.state = {
             selectedTab: 'supplier',
             fetching: true,
             updating: false,
@@ -100,8 +101,10 @@ class AddInvoiceScreen extends Component {
 
 
     componentDidMount() {
-        const { info } = this.props.route.params;
         this.fetchInfo();
+
+        const headerPrefix = this.state.invoiceId ? 'Edit' : 'Add'
+        this.props.navigation.setOptions({ title: `${headerPrefix} Invoice` })
     }
 
     getInvoiceTag = () => {
@@ -152,43 +155,83 @@ class AddInvoiceScreen extends Component {
         }
     }
 
-    fetchInfo = () => {
+    fetchTaxList = async (country) => {
+        return Api.get(`/default/taxList/${country}`)
+            .then(response => response.data.data)
+    }
+    fetchInvoiceDetails = async () => {
+
+        const pathSegment = this.isSalesInvoice(this.props) ? 'sales' : 'purchase';
+        const { authData } = Store.getState().auth;
+        return Api.get(`/${pathSegment}/viewInvoice/${this.state.invoiceId}/${authData.id}/${this.state.invoiceType}`)
+            .then(response => response.data)
+    }
+    fetchCustomerList = async () => {
+        const { authData } = Store.getState().auth
+        return Api.get(`/contact/customerList/${authData.id}`)
+            .then(response => response.data.data)
+    }
+    fetchLedgerList = async () => {
+        const { authData } = Store.getState().auth
+        return Api.get(`/ledger/listLedger/${authData.id}`)
+            .then(response => response.data.data)
+    }
+
+    fetchNewInvoiceNumber = async () => {
+        return Api.get(this.getInvoiceNoURL())
+            .then(response => response.data.data)
+    }
+
+
+
+    fetchInfo = async () => {
         this.setState({
             fetching: true,
             fetchError: undefined
         });
+
         const { authData } = Store.getState().auth;
+        try {
+            let taxList, invoice, ledgerList, invoiceno, address, customer
+            taxList = await this.fetchTaxList(authData.country)
 
-        const requests = [Api.get(`/default/taxList/${authData.country}`)]
-        const editMode = this.state.invoiceId ? true : false
-        if (editMode) {
-            const pathSegment = this.isSalesInvoice(this.props) ? 'sales' : 'purchase';
-            requests.push(Api.get(`/${pathSegment}/viewInvoice/${this.state.invoiceId}/${authData.id}/${this.state.invoiceType}`))
-        } else {
-            requests.push(Api.get(this.getInvoiceNoURL()))
+            const newState = { fetching: false, taxList }
+            if (this.state.invoiceId) {
+                invoice = await this.fetchInvoiceDetails()
+                // customerList = await this.fetchCustomerList()
+                ledgerList = await this.fetchLedgerList()
+                customer = invoice.customer
+                if (customer) {
+                    address = `${customer?.address}\n${customer?.town}\n${customer?.post_code}`;
+                }
+
+            } else {
+                invoiceno = await this.fetchNewInvoiceNumber()
+            }
+
+            if (this.state.invoiceId) {
+                newState.invoiceno = invoice.data.invoiceno
+                newState.customer = customer
+                newState.invoiceAddress = address
+                newState.deliveryAddress = address
+                newState.invDate = timeHelper.format(moment(invoice.data.sdate), H_DATE_FORMAT)
+                newState.dueDate = timeHelper.format(moment(invoice.data.ldate), H_DATE_FORMAT)
+                newState.issued = this.state.issuedcats.filter(item => invoice.data.issued.toLowerCase() === item.toLowerCase())[0]
+                newState.termsCondition = Buffer.from(invoice.data.terms).toString()
+                newState.notes = Buffer.from(invoice.data.quotes).toString()
+                newState.columns = invoice.invoiceItems
+            } else {
+                newState.invoiceno = invoiceno
+            }
+            this.setState(newState)
+
+        } catch (err) {
+            console.log('Error fetching Info: ', err);
+            this.setState({
+                fetching: false,
+                fetchError: getApiErrorMsg(err)
+            });
         }
-        let response = {};
-        Promise.all(requests)
-            .then(results => {
-                response = {
-                    fetching: false,
-                    taxList: results[0].data.data
-                }
-                if (editMode) {
-                    response.invoiceno = results[1].data.data
-                } else {
-                    response.invoice = results[1].data.data
-                }
-
-                this.setState(response);
-            })
-            .catch(err => {
-                console.log('Error fetching TaxList: ', err);
-                this.setState({
-                    fetching: false,
-                    fetchError: getApiErrorMsg(err)
-                });
-            })
     }
 
 
@@ -305,17 +348,19 @@ class AddInvoiceScreen extends Component {
             flexDirection: 'column'
         }}>
             <View>
-                <TouchableOpacity onPress={this.onCustomerPress}>
+
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Invoice No.'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    editable={false}
+                    fieldRef={this.invoiceNumRef}
+                    value={this.state.invoiceno} />
+                <TouchableOpacity onPress={this.onCustomerPress}
+                    style={styles.textField}>
                     <AppTextField
-                        containerStyle={styles.textField}
-                        label='Invoice No.'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        fieldRef={this.invoiceNumRef}
-                        value={this.state.invoiceno} />
-                    <AppTextField
-                        containerStyle={styles.textField}
                         label={isSaleInvoice ? 'Customer' : 'Supplier'}
                         keyboardType='default'
                         returnKeyType='done'
@@ -431,7 +476,7 @@ class AddInvoiceScreen extends Component {
                 const product = {
                     ...item
                 };
-                const costprice = Number(item.itemtype === 'Stock' ? item.sp_price : rate);
+                const costprice = Number(item.itemtype === 'Stock' ? item.sp_price : item.rate);
                 const vat = Number(item.vat);
                 const quantity = 1;
                 const includevat = false;
@@ -1284,7 +1329,7 @@ class AddInvoiceScreen extends Component {
             ldate: this.state.dueDate,
             inaddress: this.state.invoiceAddress,
             deladdress: this.state.deliveryAddress,
-            terms: this.state.terms,
+            terms: this.state.termsCondition,
             quotes: this.state.notes,
             userid: authData.id,
             status: '0',

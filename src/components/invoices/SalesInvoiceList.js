@@ -79,7 +79,6 @@ class SalesInvoiceList extends Component {
     }
 
     onEditClick = (data) => {
-        console.log('Item: ',data.item);
         this.props.navigation.navigate('AddInvoiceScreen', {
             info: {
                 invoice_id: data.item.id,

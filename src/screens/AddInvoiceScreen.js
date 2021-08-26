@@ -118,9 +118,9 @@ class AddInvoiceScreen extends Component {
             quantity: '',
             saccount: "",
             includevat: false,
-            vatrate: 0,
-            vatamt: 0.0,
-            vatrate: 0,
+            incomeTax: 0,
+            incomeTaxAmount: 0.0,
+            incomeTax: 0,
             discount: 0.0,
             incomeTax: 0,
             costprice: 0.0,
@@ -131,7 +131,7 @@ class AddInvoiceScreen extends Component {
             product: {
                 idescription: "",
                 vat: 0.0,
-                vatamt: 0.0,
+                incomeTaxAmount: 0.0,
                 total: 0,
                 itemtype: "Stock",
                 includevat: false,
@@ -204,6 +204,10 @@ class AddInvoiceScreen extends Component {
                 if (customer) {
                     address = `${customer?.address}\n${customer?.town}\n${customer?.post_code}`;
                 }
+                invoice.invoiceItems.forEach(value => {
+                    value.ledger = value.ledgerDetails
+                    delete value.ledgerDetails
+                })
 
             } else {
                 invoiceno = await this.fetchNewInvoiceNumber()
@@ -485,7 +489,7 @@ class AddInvoiceScreen extends Component {
                     product,
                     costprice: costprice.toString(),
                     quantity: quantity.toString(),
-                    vatrate: vat.toFixed(2),
+                    incomeTax: vat.toFixed(2),
                     incomeTax: vat.toFixed(2),
                     description: item.idescription,
                     itemtype: item.itemtype,
@@ -557,6 +561,7 @@ class AddInvoiceScreen extends Component {
         this.setState({ columns: newColumns });
     }
     renderProductItem = ({ item, index }) => {
+        console.log('Income Tax: ', item.incomeTaxAmount);
         const { taxList } = this.state;
         const isSale = this.state.isSale;
         return <View style={{ flexDirection: 'column' }}>
@@ -669,7 +674,7 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>Vat (Amt)</Text>
                         <TextInput
-                            value={item.vatamt}
+                            value={item.incomeTaxAmount}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                         />
@@ -698,7 +703,7 @@ class AddInvoiceScreen extends Component {
                 }}>
                     <AppPicker2
                         containerStyle={{ flex: 2, marginTop: 4 }}
-                        title={taxList.filter(element => element.percentage === Number(item.vatrate))
+                        title={taxList.filter(element => element.percentage === Number(item.incomeTax))
                             .map(item => {
                                 return `${item.taxtype}-${item.percentage}`
                             })[0]}
@@ -876,7 +881,7 @@ class AddInvoiceScreen extends Component {
         const { taxList } = this.state;
         const newColumn = {
             ...this.state.columns[idx],
-            vatrate: taxList[taxIdx].percentage
+            incomeTax: taxList[taxIdx].percentage
         };
         const newColumns = [...this.state.columns];
         newColumns.splice(idx, 1, newColumn);
@@ -891,21 +896,21 @@ class AddInvoiceScreen extends Component {
         const column = this.state.columns[index];
         const price = toNum(column.costprice);
         const quantity = toNum(column.quantity);
-        const vatrate = toNum(column.vatrate);
+        const incomeTax = toNum(column.incomeTax);
         const includevat = column.includevat;
         const disPer = toNum(column.percentage);
-        let vatamt;
+        let incomeTaxAmount;
         let total;
         let discount;
         if (includevat) {
-            vatamt = (vatrate * price) / (vatrate + 100);
+            incomeTaxAmount = (incomeTax * price) / (incomeTax + 100);
         } else {
-            vatamt = (vatrate * price) / 100;
+            incomeTaxAmount = (incomeTax * price) / 100;
         }
-        vatamt *= quantity;
+        incomeTaxAmount *= quantity;
         total = price * quantity;
         if (!includevat) {
-            total += vatamt;
+            total += incomeTaxAmount;
         }
         discount = (disPer * total) / 100;
         total -= discount;
@@ -913,10 +918,9 @@ class AddInvoiceScreen extends Component {
 
         const newColumn = {
             ...column,
-            vatrate: vatrate.toFixed(2),
-            incomeTax: vatrate.toFixed(2),
-            vatamt: vatamt.toFixed(2),
-            incomeTaxAmount: vatamt.toFixed(2),
+            incomeTax: incomeTax.toFixed(2),
+            incomeTaxAmount: incomeTaxAmount.toFixed(2),
+            incomeTaxAmount: incomeTaxAmount.toFixed(2),
             total: total.toFixed(2),
             totalamount: total.toFixed(2),
             discount: discount.toFixed(2)

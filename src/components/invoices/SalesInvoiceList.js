@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, Text, TouchableHighlight, Alert } from 'react-native';
 import SearchView from '../SearchView';
 import { connect } from 'react-redux';
 import * as invoiceActions from '../../redux/actions/invoiceActions';
@@ -11,17 +11,22 @@ import FullScreenError from '../../components/FullScreenError';
 import EmptyView from '../../components/EmptyView';
 import OnScreenSpinner from '../../components/OnScreenSpinner';
 import { isEmpty, size } from 'lodash';
-import { editColor, rColor, viewColor } from '../../theme/Color';
+import { deleteColor, editColor, rColor, viewColor } from '../../theme/Color';
 import SalesInvoiceListItem from './SalesInvoiceListItem';
 import AppText from '../AppText';
 import { appFontBold } from '../../helpers/ViewHelper';
+import Store from '../../redux/Store';
+import Api from '../../services/api'
+import { showError, showSuccess } from '../../helpers/Utils';
+import ProgressDialog from '../ProgressDialog';
 
 class SalesInvoiceList extends Component {
     constructor(props) {
         super(props);
         this.state = {
             query: '',
-            allChecked: false
+            allChecked: false,
+            updating: false
         }
     }
 
@@ -87,13 +92,48 @@ class SalesInvoiceList extends Component {
         });
     }
     onDeleteClick = (data) => {
-        console.log('Delete Click!');
+        const { item } = data
+        Alert.alert('Are you sure', 'Do you really want to delete this invoice?', [
+            {
+                style: 'cancel',
+                onPress: () => { },
+                text: 'CANCEL'
+            },
+            {
+                onPress: () => { this.deleteInvoice(item) },
+                style: 'default',
+                text: 'YES'
+            }
+        ])
+    }
 
+    deleteInvoice = (item) => {
+        const body = {
+            id: item.id,
+            invoiceno: item.invoiceno,
+            userid: Store.getState().auth.authData.id
+        }
+        this.setState({ updating: true })
+        Api.post('/sales/deleteInvoice', body)
+            .then(response => {
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    showSuccess('Invoice Deleted Successfully.')
+                    this.fetchSalesInvoice()
+                }, 300)
+            })
+            .catch(err => {
+                console.log('Error deleting invoice');
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    showError('Error Deleting Invoice')
+                }, 300)
+            })
     }
 
     renderHiddenItem = (data) => {
         const { item } = data
-        const enableEdit = (item.status !== 1 && item.status !== 2)
+        const enableOptionBtn = (item.status !== 1 && item.status !== 2)
         return <CardView
             cardElevation={0}
             cornerRadius={6}
@@ -102,7 +142,8 @@ class SalesInvoiceList extends Component {
                 <View style={{ flex: 1 }}>
                     {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
                 </View>
-                {enableEdit ? this.hiddenElement('Edit', 'visibility', editColor, () => this.onEditClick(data)) : null}
+                {enableOptionBtn ? this.hiddenElement('Edit', 'visibility', editColor, () => this.onEditClick(data)) : null}
+                {enableOptionBtn ? this.hiddenElement('Delete', 'delete', deleteColor, () => this.onDeleteClick(data)) : null}
             </View>
         </CardView>
     }
@@ -153,8 +194,9 @@ class SalesInvoiceList extends Component {
                 renderItem={(data, rowMap) => this.renderListItem(data, rowMap)}
                 renderHiddenItem={(data, rowMap) => this.renderHiddenItem(data)}
                 leftOpenValue={70}
-                rightOpenValue={-70}
+                rightOpenValue={-140}
             />
+            <ProgressDialog visible={this.state.updating} />
         </View>
     }
 };

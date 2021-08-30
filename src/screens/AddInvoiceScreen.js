@@ -55,6 +55,7 @@ class AddInvoiceScreen extends Component {
             subTotal: 0.0,
             totalVat: 0.0,
             totalDiscount: 0.0,
+            discount: undefined,
             payable: 0.0,
             invoiceno: '',
             invoiceAddress: '',
@@ -207,6 +208,8 @@ class AddInvoiceScreen extends Component {
                 invoice.invoiceItems.forEach(value => {
                     value.ledger = value.ledgerDetails
                     delete value.ledgerDetails
+                    value.includevat = value.includevat === 1
+                    value.discountPer = ((Number(value.discount) * 100) / (Number(value.total) + Number(value.discount))).toFixed(2)
                 })
 
             } else {
@@ -227,7 +230,9 @@ class AddInvoiceScreen extends Component {
             } else {
                 newState.invoiceno = invoiceno
             }
-            this.setState(newState)
+            this.setState(newState, () => {
+                this.evaluateTotal()
+            })
 
         } catch (err) {
             console.log('Error fetching Info: ', err);
@@ -561,7 +566,6 @@ class AddInvoiceScreen extends Component {
         this.setState({ columns: newColumns });
     }
     renderProductItem = ({ item, index }) => {
-        console.log('Income Tax: ', item.incomeTaxAmount);
         const { taxList } = this.state;
         const isSale = this.state.isSale;
         return <View style={{ flexDirection: 'column' }}>
@@ -674,7 +678,7 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>Vat (Amt)</Text>
                         <TextInput
-                            value={item.incomeTaxAmount}
+                            value={`${item.incomeTaxAmount}`}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                         />
@@ -795,8 +799,8 @@ class AddInvoiceScreen extends Component {
                         <Text style={styles.subtitle}>%</Text>
                         <TextInput
                             style={[styles.textInput, { marginTop: 6 }]}
-                            value={item.percentage}
-                            onChangeText={text => this.handleColumnChange(text, 'percentage', index)}
+                            value={item.discountPer}
+                            onChangeText={text => this.handleColumnChange(text, 'discount', index)}
                         />
                     </View>
 
@@ -809,7 +813,7 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>(Amt)</Text>
                         <TextInput
-                            value={item.discount}
+                            value={`${item.discount}`}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                             onChangeText={text => this.onQuantityChange(text, index)}
@@ -898,10 +902,9 @@ class AddInvoiceScreen extends Component {
         const quantity = toNum(column.quantity);
         const incomeTax = toNum(column.incomeTax);
         const includevat = column.includevat;
-        const disPer = toNum(column.percentage);
+        const disPer = toNum(column.discountPer);
         let incomeTaxAmount;
         let total;
-        let discount;
         if (includevat) {
             incomeTaxAmount = (incomeTax * price) / (incomeTax + 100);
         } else {
@@ -912,7 +915,7 @@ class AddInvoiceScreen extends Component {
         if (!includevat) {
             total += incomeTaxAmount;
         }
-        discount = (disPer * total) / 100;
+        const discount = (disPer * total) / 100;
         total -= discount;
 
 
@@ -920,10 +923,9 @@ class AddInvoiceScreen extends Component {
             ...column,
             incomeTax: incomeTax.toFixed(2),
             incomeTaxAmount: incomeTaxAmount.toFixed(2),
-            incomeTaxAmount: incomeTaxAmount.toFixed(2),
             total: total.toFixed(2),
             totalamount: total.toFixed(2),
-            discount: discount.toFixed(2)
+            discount
         };
         const newColumns = [...this.state.columns];
         newColumns.splice(index, 1, newColumn);
@@ -932,6 +934,26 @@ class AddInvoiceScreen extends Component {
         setTimeout(() => {
             this.evaluateTotal();
         }, 200);
+    }
+
+    getItemTotal = (item) => {
+        const price = toNum(item.costprice);
+        const quantity = toNum(item.quantity);
+        const incomeTax = toNum(item.incomeTax);
+        const includevat = item.includevat;
+        let incomeTaxAmount;
+        let total;
+        if (includevat) {
+            incomeTaxAmount = (incomeTax * price) / (incomeTax + 100);
+        } else {
+            incomeTaxAmount = (incomeTax * price) / 100;
+        }
+        incomeTaxAmount *= quantity;
+        total = price * quantity;
+        if (!includevat) {
+            total += incomeTaxAmount;
+        }
+        return total;
     }
 
     evaluateTotal = () => {
@@ -1281,15 +1303,21 @@ class AddInvoiceScreen extends Component {
     }
 
     showSaveOptions = body => {
-        const items = ['Save', 'Save & New', 'Save & Email', 'Save & Print'];
-        showSingleSelectAlert('Save Options', items, index => {
-            this.addInvoice(body);
+        const prefix = this.state.invoiceId ? 'Update' : 'Save'
+        const items = [prefix, `${prefix} & New`, `${prefix} & Email`, `${prefix} & Print`];
+        showSingleSelectAlert(`${prefix} Options`, items, index => {
+            this.addUpdateInvoice(body);
         })
     }
 
-    addInvoice = body => {
+    addUpdateInvoice = body => {
         this.setState({ updating: true });
-        const url = this.state.isSale ? '/sales/addSales' : '/purchase/addUpdatePurchase';
+        let url;
+        if (this.state.isSale) {
+            url = this.state.invoiceId ? '/sales/updateSales' : '/sales/addSales'
+        } else {
+            url = '/purchase/addUpdatePurchase'
+        }
         Api.post(url, body)
             .then(response => {
                 this.setState({ updating: false });
@@ -1371,12 +1399,13 @@ class AddInvoiceScreen extends Component {
 
 
     renderBottomCard = () => {
-        const { payable, currency } = this.state;
+        const { payable, currency, invoiceId } = this.state;
         const payableAmt = `${currency} ${payable}`;
         return (
             payable > 0 ? <InvoiceBottomCard
                 payable={payableAmt}
                 onSavePress={this.validateAndSave}
+                btnText={invoiceId ? 'Update' : 'Save'}
                 onBreakdownPress={() => this.setState({ showBreakdown: true })}
             /> : null
         )

@@ -92,6 +92,9 @@ class SalesInvoiceList extends Component {
     }
 
     renderHiddenItem = (data) => {
+        console.log('Status: ', data.status);
+        const { item } = data
+        const enableEdit = (item.status !== 1 && item.status !== 2)
         return <CardView
             cardElevation={0}
             cornerRadius={6}
@@ -100,7 +103,7 @@ class SalesInvoiceList extends Component {
                 <View style={{ flex: 1 }}>
                     {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
                 </View>
-                {this.hiddenElement('Edit', 'visibility', editColor, () => this.onEditClick(data))}
+                {enableEdit ? this.hiddenElement('Edit', 'visibility', editColor, () => this.onEditClick(data)) : null}
             </View>
         </CardView>
     }

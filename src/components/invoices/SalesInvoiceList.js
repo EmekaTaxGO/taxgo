@@ -92,7 +92,6 @@ class SalesInvoiceList extends Component {
     }
 
     renderHiddenItem = (data) => {
-        console.log('Status: ', data.status);
         const { item } = data
         const enableEdit = (item.status !== 1 && item.status !== 2)
         return <CardView

@@ -9,7 +9,7 @@ class InvoiceBottomCard extends Component {
 
 
     render() {
-        const { payable, onSavePress, onBreakdownPress } = this.props;
+        const { payable, onSavePress, onBreakdownPress,btnText } = this.props;
         return (
             <CardView
                 style={styles.container}
@@ -30,7 +30,7 @@ class InvoiceBottomCard extends Component {
                 </View>
 
                 <TouchableOpacity style={styles.saveBtn} onPress={onSavePress}>
-                    <AppText style={{ color: 'white', fontSize: 22 }}>Save</AppText>
+                    <AppText style={{ color: 'white', fontSize: 22 }}>{btnText}</AppText>
                 </TouchableOpacity>
             </CardView>
         )
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         paddingHorizontal: 12,
         backgroundColor: 'white',
-        paddingBottom: 40,
+        paddingBottom: 10,
         paddingTop: 12,
         alignItems: 'center'
     },

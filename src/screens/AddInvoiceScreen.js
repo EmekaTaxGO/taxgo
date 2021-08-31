@@ -26,17 +26,19 @@ import AppDatePicker from '../components/AppDatePicker';
 import { showSingleSelectAlert } from '../components/SingleSelectAlert';
 import InvoiceBottomCard from '../components/invoices/InvoiceBottomCard';
 import InvoiceBreakdown from '../components/invoices/InvoiceBreakdown';
-import { get, isEmpty, isNaN } from 'lodash';
+import { get, isEmpty, isNaN, isUndefined } from 'lodash';
 import Api from '../services/api';
 import ProgressDialog from '../components/ProgressDialog';
 import AppText from '../components/AppText';
 import { appFontBold } from '../helpers/ViewHelper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AppPicker2 from '../components/AppPicker2';
+import { Buffer } from 'buffer';
 
 class AddInvoiceScreen extends Component {
+
     constructor(props) {
-        super();
+        super(props);
         this.state = {
             selectedTab: 'supplier',
             fetching: true,
@@ -53,6 +55,7 @@ class AddInvoiceScreen extends Component {
             subTotal: 0.0,
             totalVat: 0.0,
             totalDiscount: 0.0,
+            discount: undefined,
             payable: 0.0,
             invoiceno: '',
             invoiceAddress: '',
@@ -70,7 +73,8 @@ class AddInvoiceScreen extends Component {
             currency: get(Store.getState().auth, 'profile.countryInfo.symbol'),
             isSale: this.isSalesInvoice(props),
             creditNote: this.isCreditNote(props),
-            editMode: this.isEditMode(props)
+            invoiceId: props.route.params.info.invoice_id,
+            invoiceType: props.route.params.info.invoice_type
         }
     }
     _reference = ''
@@ -98,8 +102,10 @@ class AddInvoiceScreen extends Component {
 
 
     componentDidMount() {
-        const { info } = this.props.route.params;
         this.fetchInfo();
+
+        const headerPrefix = this.state.invoiceId ? 'Edit' : 'Add'
+        this.props.navigation.setOptions({ title: `${headerPrefix} Invoice` })
     }
 
     getInvoiceTag = () => {
@@ -113,9 +119,9 @@ class AddInvoiceScreen extends Component {
             quantity: '',
             saccount: "",
             includevat: false,
-            vatrate: 0,
-            vatamt: 0.0,
-            vatrate: 0,
+            incomeTax: 0,
+            incomeTaxAmount: 0.0,
+            incomeTax: 0,
             discount: 0.0,
             incomeTax: 0,
             costprice: 0.0,
@@ -126,7 +132,7 @@ class AddInvoiceScreen extends Component {
             product: {
                 idescription: "",
                 vat: 0.0,
-                vatamt: 0.0,
+                incomeTaxAmount: 0.0,
                 total: 0,
                 itemtype: "Stock",
                 includevat: false,
@@ -150,31 +156,91 @@ class AddInvoiceScreen extends Component {
         }
     }
 
-    fetchInfo = () => {
+    fetchTaxList = async (country) => {
+        return Api.get(`/default/taxList/${country}`)
+            .then(response => response.data.data)
+    }
+    fetchInvoiceDetails = async () => {
+
+        const pathSegment = this.isSalesInvoice(this.props) ? 'sales' : 'purchase';
+        const { authData } = Store.getState().auth;
+        return Api.get(`/${pathSegment}/viewInvoice/${this.state.invoiceId}/${authData.id}/${this.state.invoiceType}`)
+            .then(response => response.data)
+    }
+    fetchCustomerList = async () => {
+        const { authData } = Store.getState().auth
+        return Api.get(`/contact/customerList/${authData.id}`)
+            .then(response => response.data.data)
+    }
+    fetchLedgerList = async () => {
+        const { authData } = Store.getState().auth
+        return Api.get(`/ledger/listLedger/${authData.id}`)
+            .then(response => response.data.data)
+    }
+
+    fetchNewInvoiceNumber = async () => {
+        return Api.get(this.getInvoiceNoURL())
+            .then(response => response.data.data)
+    }
+
+
+
+    fetchInfo = async () => {
         this.setState({
             fetching: true,
             fetchError: undefined
         });
-        const { authData } = Store.getState().auth;
 
-        Promise.all([
-            Api.get(`/default/taxList/${authData.country}`),
-            Api.get(this.getInvoiceNoURL())
-        ])
-            .then(results => {
-                this.setState({
-                    fetching: false,
-                    taxList: results[0].data.data,
-                    invoiceno: results[1].data.data
-                });
+        const { authData } = Store.getState().auth;
+        try {
+            let taxList, invoice, ledgerList, invoiceno, address, customer
+            taxList = await this.fetchTaxList(authData.country)
+
+            const newState = { fetching: false, taxList }
+            if (this.state.invoiceId) {
+                invoice = await this.fetchInvoiceDetails()
+                // customerList = await this.fetchCustomerList()
+                ledgerList = await this.fetchLedgerList()
+                customer = invoice.customer
+                if (customer) {
+                    address = `${customer?.address}\n${customer?.town}\n${customer?.post_code}`;
+                }
+                invoice.invoiceItems.forEach(value => {
+                    value.ledger = value.ledgerDetails
+                    delete value.ledgerDetails
+                    value.includevat = value.includevat === 1
+                    value.discountPer = ((Number(value.discount) * 100) / (Number(value.total) + Number(value.discount))).toFixed(2)
+                })
+
+            } else {
+                invoiceno = await this.fetchNewInvoiceNumber()
+            }
+
+            if (this.state.invoiceId) {
+                newState.invoiceno = invoice.data.invoiceno
+                newState.customer = customer
+                newState.invoiceAddress = address
+                newState.deliveryAddress = address
+                newState.invDate = timeHelper.format(moment(invoice.data.sdate), H_DATE_FORMAT)
+                newState.dueDate = timeHelper.format(moment(invoice.data.ldate), H_DATE_FORMAT)
+                newState.issued = this.state.issuedcats.filter(item => invoice.data.issued.toLowerCase() === item.toLowerCase())[0]
+                newState.termsCondition = Buffer.from(invoice.data.terms).toString()
+                newState.notes = Buffer.from(invoice.data.quotes).toString()
+                newState.columns = invoice.invoiceItems
+            } else {
+                newState.invoiceno = invoiceno
+            }
+            this.setState(newState, () => {
+                this.evaluateTotal()
             })
-            .catch(err => {
-                console.log('Error fetching TaxList: ', err);
-                this.setState({
-                    fetching: false,
-                    fetchError: getApiErrorMsg(err)
-                });
-            })
+
+        } catch (err) {
+            console.log('Error fetching Info: ', err);
+            this.setState({
+                fetching: false,
+                fetchError: getApiErrorMsg(err)
+            });
+        }
     }
 
 
@@ -188,9 +254,6 @@ class AddInvoiceScreen extends Component {
         return timeHelper.format(dueDate, H_DATE_FORMAT);
     }
 
-    isEditMode = (props) => {
-        return props.route.params.info.mode === 'update';
-    }
     isCreditNote = (props) => {
         const type = props.route.params.info.invoice_type;
         return type === 'scredit' || type === 'pcredit';
@@ -294,17 +357,19 @@ class AddInvoiceScreen extends Component {
             flexDirection: 'column'
         }}>
             <View>
-                <TouchableOpacity onPress={this.onCustomerPress}>
+
+                <AppTextField
+                    containerStyle={styles.textField}
+                    label='Invoice No.'
+                    keyboardType='default'
+                    returnKeyType='done'
+                    lineWidth={1}
+                    editable={false}
+                    fieldRef={this.invoiceNumRef}
+                    value={this.state.invoiceno} />
+                <TouchableOpacity onPress={this.onCustomerPress}
+                    style={styles.textField}>
                     <AppTextField
-                        containerStyle={styles.textField}
-                        label='Invoice No.'
-                        keyboardType='default'
-                        returnKeyType='done'
-                        lineWidth={1}
-                        fieldRef={this.invoiceNumRef}
-                        value={this.state.invoiceno} />
-                    <AppTextField
-                        containerStyle={styles.textField}
                         label={isSaleInvoice ? 'Customer' : 'Supplier'}
                         keyboardType='default'
                         returnKeyType='done'
@@ -420,7 +485,7 @@ class AddInvoiceScreen extends Component {
                 const product = {
                     ...item
                 };
-                const costprice = Number(item.itemtype === 'Stock' ? item.sp_price : rate);
+                const costprice = Number(item.itemtype === 'Stock' ? item.sp_price : item.rate);
                 const vat = Number(item.vat);
                 const quantity = 1;
                 const includevat = false;
@@ -429,7 +494,7 @@ class AddInvoiceScreen extends Component {
                     product,
                     costprice: costprice.toString(),
                     quantity: quantity.toString(),
-                    vatrate: vat.toFixed(2),
+                    incomeTax: vat.toFixed(2),
                     incomeTax: vat.toFixed(2),
                     description: item.idescription,
                     itemtype: item.itemtype,
@@ -613,7 +678,7 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>Vat (Amt)</Text>
                         <TextInput
-                            value={item.vatamt}
+                            value={`${item.incomeTaxAmount}`}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                         />
@@ -642,7 +707,7 @@ class AddInvoiceScreen extends Component {
                 }}>
                     <AppPicker2
                         containerStyle={{ flex: 2, marginTop: 4 }}
-                        title={taxList.filter(element => element.percentage === Number(item.vatrate))
+                        title={taxList.filter(element => element.percentage === Number(item.incomeTax))
                             .map(item => {
                                 return `${item.taxtype}-${item.percentage}`
                             })[0]}
@@ -734,8 +799,8 @@ class AddInvoiceScreen extends Component {
                         <Text style={styles.subtitle}>%</Text>
                         <TextInput
                             style={[styles.textInput, { marginTop: 6 }]}
-                            value={item.percentage}
-                            onChangeText={text => this.handleColumnChange(text, 'percentage', index)}
+                            value={item.discountPer}
+                            onChangeText={text => this.handleColumnChange(text, 'discount', index)}
                         />
                     </View>
 
@@ -748,7 +813,7 @@ class AddInvoiceScreen extends Component {
                     }}>
                         <Text style={styles.subtitle}>(Amt)</Text>
                         <TextInput
-                            value={item.discount}
+                            value={`${item.discount}`}
                             style={[styles.textInput, { marginTop: 6 }]}
                             editable={false}
                             onChangeText={text => this.onQuantityChange(text, index)}
@@ -820,7 +885,7 @@ class AddInvoiceScreen extends Component {
         const { taxList } = this.state;
         const newColumn = {
             ...this.state.columns[idx],
-            vatrate: taxList[taxIdx].percentage
+            incomeTax: taxList[taxIdx].percentage
         };
         const newColumns = [...this.state.columns];
         newColumns.splice(idx, 1, newColumn);
@@ -835,35 +900,32 @@ class AddInvoiceScreen extends Component {
         const column = this.state.columns[index];
         const price = toNum(column.costprice);
         const quantity = toNum(column.quantity);
-        const vatrate = toNum(column.vatrate);
+        const incomeTax = toNum(column.incomeTax);
         const includevat = column.includevat;
-        const disPer = toNum(column.percentage);
-        let vatamt;
+        const disPer = toNum(column.discountPer);
+        let incomeTaxAmount;
         let total;
-        let discount;
         if (includevat) {
-            vatamt = (vatrate * price) / (vatrate + 100);
+            incomeTaxAmount = (incomeTax * price) / (incomeTax + 100);
         } else {
-            vatamt = (vatrate * price) / 100;
+            incomeTaxAmount = (incomeTax * price) / 100;
         }
-        vatamt *= quantity;
+        incomeTaxAmount *= quantity;
         total = price * quantity;
         if (!includevat) {
-            total += vatamt;
+            total += incomeTaxAmount;
         }
-        discount = (disPer * total) / 100;
+        const discount = (disPer * total) / 100;
         total -= discount;
 
 
         const newColumn = {
             ...column,
-            vatrate: vatrate.toFixed(2),
-            incomeTax: vatrate.toFixed(2),
-            vatamt: vatamt.toFixed(2),
-            incomeTaxAmount: vatamt.toFixed(2),
+            incomeTax: incomeTax.toFixed(2),
+            incomeTaxAmount: incomeTaxAmount.toFixed(2),
             total: total.toFixed(2),
             totalamount: total.toFixed(2),
-            discount: discount.toFixed(2)
+            discount
         };
         const newColumns = [...this.state.columns];
         newColumns.splice(index, 1, newColumn);
@@ -872,6 +934,26 @@ class AddInvoiceScreen extends Component {
         setTimeout(() => {
             this.evaluateTotal();
         }, 200);
+    }
+
+    getItemTotal = (item) => {
+        const price = toNum(item.costprice);
+        const quantity = toNum(item.quantity);
+        const incomeTax = toNum(item.incomeTax);
+        const includevat = item.includevat;
+        let incomeTaxAmount;
+        let total;
+        if (includevat) {
+            incomeTaxAmount = (incomeTax * price) / (incomeTax + 100);
+        } else {
+            incomeTaxAmount = (incomeTax * price) / 100;
+        }
+        incomeTaxAmount *= quantity;
+        total = price * quantity;
+        if (!includevat) {
+            total += incomeTaxAmount;
+        }
+        return total;
     }
 
     evaluateTotal = () => {
@@ -1221,15 +1303,21 @@ class AddInvoiceScreen extends Component {
     }
 
     showSaveOptions = body => {
-        const items = ['Save', 'Save & New', 'Save & Email', 'Save & Print'];
-        showSingleSelectAlert('Save Options', items, index => {
-            this.addInvoice(body);
+        const prefix = this.state.invoiceId ? 'Update' : 'Save'
+        const items = [prefix, `${prefix} & New`, `${prefix} & Email`, `${prefix} & Print`];
+        showSingleSelectAlert(`${prefix} Options`, items, index => {
+            this.addUpdateInvoice(body);
         })
     }
 
-    addInvoice = body => {
+    addUpdateInvoice = body => {
         this.setState({ updating: true });
-        const url = this.state.isSale ? '/sales/addSales' : '/purchase/addUpdatePurchase';
+        let url;
+        if (this.state.isSale) {
+            url = this.state.invoiceId ? '/sales/updateSales' : '/sales/addSales'
+        } else {
+            url = '/purchase/addUpdatePurchase'
+        }
         Api.post(url, body)
             .then(response => {
                 this.setState({ updating: false });
@@ -1238,7 +1326,7 @@ class AddInvoiceScreen extends Component {
             .catch(err => {
                 console.log('Error adding/updating invoice', err);
                 this.setState({ updating: false });
-                const action = this.state.editMode ? 'updating' : 'adding';
+                const action = this.state.invoiceId ? 'updating' : 'adding';
                 setTimeout(() => showError(`Error ${action} invoice.`), 300);
             })
     }
@@ -1273,7 +1361,7 @@ class AddInvoiceScreen extends Component {
             ldate: this.state.dueDate,
             inaddress: this.state.invoiceAddress,
             deladdress: this.state.deliveryAddress,
-            terms: this.state.terms,
+            terms: this.state.termsCondition,
             quotes: this.state.notes,
             userid: authData.id,
             status: '0',
@@ -1289,6 +1377,7 @@ class AddInvoiceScreen extends Component {
         } else {
             body.pList = this.state.columns;
             body.supplier = this.state.customer;
+            body.type = this.state.invoiceId ? '2' : '1';
             body.purchase = {
                 sdate: body.sdate,
                 ldate: body.ldate,
@@ -1311,12 +1400,13 @@ class AddInvoiceScreen extends Component {
 
 
     renderBottomCard = () => {
-        const { payable, currency } = this.state;
+        const { payable, currency, invoiceId } = this.state;
         const payableAmt = `${currency} ${payable}`;
         return (
             payable > 0 ? <InvoiceBottomCard
                 payable={payableAmt}
                 onSavePress={this.validateAndSave}
+                btnText={invoiceId ? 'Update' : 'Save'}
                 onBreakdownPress={() => this.setState({ showBreakdown: true })}
             /> : null
         )

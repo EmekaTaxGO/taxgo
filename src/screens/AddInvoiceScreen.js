@@ -1377,6 +1377,7 @@ class AddInvoiceScreen extends Component {
         } else {
             body.pList = this.state.columns;
             body.supplier = this.state.customer;
+            body.type = this.state.invoiceId ? '2' : '1';
             body.purchase = {
                 sdate: body.sdate,
                 ldate: body.ldate,

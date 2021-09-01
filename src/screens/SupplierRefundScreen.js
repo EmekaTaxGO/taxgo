@@ -33,6 +33,7 @@ import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
 import AppPicker2 from '../components/AppPicker2';
+import { isNaN, toNumber } from 'lodash';
 
 class SupplierRefundScreen extends Component {
 
@@ -139,7 +140,7 @@ class SupplierRefundScreen extends Component {
         this.props.navigation.push('SelectSupplierScreen', {
             onSupplierSelected: item => {
                 setFieldValue(this.supplierRef, item.name);
-                this._supplier = item.name
+                this._supplier = item
                 this.fetchSupplierRefund();
             }
         });
@@ -180,23 +181,23 @@ class SupplierRefundScreen extends Component {
         const newReceipt = {
             ...oldReceipt,
             checked: checked ? '1' : '0',
-            amountpaid: checked ? oldReceipt.rout : 0,
-            outstanding: checked ? 0 : oldReceipt.rout
+            amountpaid: checked ? oldReceipt.outstanding : 0,
+            outstanding: checked ? 0 : oldReceipt.amountpaid
         };
 
         const newReceipts = [...receipts];
         newReceipts.splice(index, 1, newReceipt);
         this.setState({ receipts: newReceipts }, () => {
-            if (isFloat(newReceipt.rout)) {
-                let amount = this._amount
+            if (!isNaN(toNumber(newReceipt.amountpaid))) {
+                let amount = toNumber(this._amount)
 
                 if (checked) {
-                    amount += -1 * toFloat(newReceipt.rout);
+                    amount += toNumber(newReceipt.amountpaid);
                 } else {
-                    amount -= -1 * toFloat(newReceipt.rout);
+                    amount -= toNumber(newReceipt.amountpaid);
                 }
-                this._amount = toFloat(amount.toFixed(2));
-                setFieldValue(this.amountRefundedRef, `${this._amount}`);
+                this._amount = amount;
+                setFieldValue(this.amountRefundedRef, Math.abs(amount).toFixed(2));
             }
         });
     }
@@ -267,7 +268,7 @@ class SupplierRefundScreen extends Component {
         else if (this.state.payMethodIndex === 0) {
             this.showError('Select Pay Method')
         }
-        else if (!isFloat(getFieldValue(this.amountRefundedRef)) || toFloat(getFieldValue(this.amountRefundedRef))) {
+        else if (toNumber(getFieldValue(this.amountRefundedRef)) <= 0) {
             this.showError('Refund Amount cannot be 0')
         }
         else {
@@ -288,7 +289,7 @@ class SupplierRefundScreen extends Component {
             paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
             sdate: paidDate,
             reference: getFieldValue(this.referenceRef),
-            receipttype: "Supplier Receipt",
+            receipttype: "Supplier Refund",
             adminid: 0,
             logintype: "user"
         }
@@ -383,7 +384,7 @@ class SupplierRefundScreen extends Component {
                 lineWidth={1}
                 title='*required'
                 editable={false}
-                value={`${this._amount}`}
+                value={Math.abs(this._amount).toFixed(2)}
                 fieldRef={this.amountRefundedRef} />
             <AppTextField
                 containerStyle={{ marginTop: 20 }}

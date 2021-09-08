@@ -63,10 +63,10 @@ export const getSupplierRefund = (supplierId = 86) => {
         const { authData } = Store.getState().auth;
         return Api.get(`/bank/listSupplierRefund/${supplierId}/${authData.id}`)
             .then(async (response) => {
-                const receipts = await sanetizeReceipts(response.data.data)
+                // const receipts = await sanetizeReceipts(response.data.data)
                 dispatch({
                     type: SUPPLIER_REFUND_RECEIPT_SUCCESS,
-                    payload: receipts
+                    payload: response.data.data
                 })
             })
             .catch(err => {
@@ -176,7 +176,7 @@ export const saveOtherReceipt = body => {
 export const saveSupplierRefund = body => {
     return (dispatch) => {
         dispatch({ type: SAVE_SUPPLIER_REFUND_REQUEST });
-        return Api.post('//TO-DO', body)
+        return Api.post('/receipt/addSuppRefund', body)
             .then(response => {
                 dispatch({
                     type: SAVE_SUPPLIER_REFUND_SUCCESS,

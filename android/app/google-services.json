@@ -15,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "922031940197-505bbn21la9ujbvlpils7cg2hcpnvhvd.apps.googleusercontent.com",
+          "client_id": "922031940197-194ec1i3mfj0gum8iqraj5ept55n5ft3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.app.ieaccounts.taxgo",
@@ -23,7 +23,7 @@
           }
         },
         {
-          "client_id": "922031940197-f36q7etjitkimekej2kf91g6p7b14bh6.apps.googleusercontent.com",
+          "client_id": "922031940197-uskcasgg5avbk9s2vbadq2opknkaon9u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.app.ieaccounts.taxgo",
@@ -46,6 +46,57 @@
             {
               "client_id": "922031940197-vq91m7uejolvi07ha73ou4c20kev280v.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "922031940197-aufvrj61bamtebgkkr1plbclceufmv51.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.taxgoMobile"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922031940197:android:c3e5328fbd4616e10d1c8c",
+        "android_client_info": {
+          "package_name": "com.ieaccounts.taxcalculator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922031940197-lbo2jiicdf8o003ckkq00vf15747olbg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ieaccounts.taxcalculator",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "922031940197-vq91m7uejolvi07ha73ou4c20kev280v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVXHz5EwP4qu51L_St9bD3fxgEAcJkBWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922031940197-vq91m7uejolvi07ha73ou4c20kev280v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "922031940197-aufvrj61bamtebgkkr1plbclceufmv51.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.taxgoMobile"
+              }
             }
           ]
         }

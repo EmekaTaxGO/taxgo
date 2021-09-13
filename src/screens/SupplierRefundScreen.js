@@ -20,7 +20,7 @@ import OnScreenSpinner from '../components/OnScreenSpinner'
 import FullScreenError from '../components/FullScreenError'
 import EmptyView from '../components/EmptyView';
 import { colorWhite, errorColor } from '../theme/Color';
-import { isFloat, toFloat, showError } from '../helpers/Utils'
+import { isFloat, toFloat, showError, toNum } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -46,7 +46,8 @@ class SupplierRefundScreen extends Component {
             payMethodIndex: 0,
             receipts: [],
             showPaymentDetail: false,
-            paymentDetail: {}
+            paymentDetail: {},
+            disableAmountRefunded: false
         }
     }
 
@@ -186,18 +187,25 @@ class SupplierRefundScreen extends Component {
         };
 
         const newReceipts = [...receipts];
-        newReceipts.splice(index, 1, newReceipt);
-        this.setState({ receipts: newReceipts }, () => {
-            if (!isNaN(toNumber(newReceipt.amountpaid))) {
-                let amount = toNumber(this._amount)
 
-                if (checked) {
-                    amount += toNumber(newReceipt.amountpaid);
-                } else {
-                    amount -= toNumber(newReceipt.amountpaid);
-                }
-                this._amount = amount;
-                setFieldValue(this.amountRefundedRef, Math.abs(amount).toFixed(2));
+        newReceipts.splice(index, 1, newReceipt);
+        console.log('New Receipts: ', JSON.stringify(newReceipts, null, 2));
+        let disableAmountRefunded = false;
+        let total = 0;
+        for (let idx = 0; idx < newReceipts.length; idx++) {
+            if (newReceipts[idx].checked === '1') {
+                disableAmountRefunded = true;
+            }
+            total += toNum(newReceipts[idx].amountpaid)
+        }
+        total = Math.abs(total)
+        this.setState({ receipts: newReceipts, disableAmountRefunded }, () => {
+
+            if (disableAmountRefunded) {
+                this._amount = total
+                setFieldValue(this.amountRefundedRef, '0.00')
+            } else {
+                this._amount = toNum(getFieldValue(this.amountRefundedRef))
             }
         });
     }
@@ -268,7 +276,7 @@ class SupplierRefundScreen extends Component {
         else if (this.state.payMethodIndex === 0) {
             this.showError('Select Pay Method')
         }
-        else if (toNumber(getFieldValue(this.amountRefundedRef)) <= 0) {
+        else if (this._amount <= 0) {
             this.showError('Refund Amount cannot be 0')
         }
         else {
@@ -283,7 +291,7 @@ class SupplierRefundScreen extends Component {
         const body = {
             userid: authData.id,
             item: selectedItems,
-            amount: getFieldValue(this.amountRefundedRef),
+            amount: toNum(this._amount).toFixed(2),
             sname: this._supplier ? this._supplier.id : '',
             paidto: this._bank ? this._bank.id : '',
             paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
@@ -308,6 +316,11 @@ class SupplierRefundScreen extends Component {
                 onPress: () => { }
             }
         });
+    }
+
+    onChangeAmountRefundedText = text => {
+        this._amount = toNum(text)
+        console.log('Changed to ', text);
     }
 
     renderHeader = () => {
@@ -383,9 +396,10 @@ class SupplierRefundScreen extends Component {
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                editable={false}
+                disabled={this.state.disableAmountRefunded}
                 value={Math.abs(this._amount).toFixed(2)}
-                fieldRef={this.amountRefundedRef} />
+                fieldRef={this.amountRefundedRef}
+                onChangeText={this.onChangeAmountRefundedText} />
             <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'

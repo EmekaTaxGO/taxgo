@@ -137,7 +137,7 @@ class SupplierRefundScreen extends Component {
     amountRefundedRef = React.createRef();
     referenceRef = React.createRef();
 
-    onCustomerPress = () => {
+    onSupplierPress = () => {
         this.props.navigation.push('SelectSupplierScreen', {
             onSupplierSelected: item => {
                 setFieldValue(this.supplierRef, item.name);
@@ -189,7 +189,7 @@ class SupplierRefundScreen extends Component {
         const newReceipts = [...receipts];
 
         newReceipts.splice(index, 1, newReceipt);
-        console.log('New Receipts: ', JSON.stringify(newReceipts, null, 2));
+        
         let disableAmountRefunded = false;
         let total = 0;
         for (let idx = 0; idx < newReceipts.length; idx++) {
@@ -320,7 +320,6 @@ class SupplierRefundScreen extends Component {
 
     onChangeAmountRefundedText = text => {
         this._amount = toNum(text)
-        console.log('Changed to ', text);
     }
 
     renderHeader = () => {
@@ -333,7 +332,7 @@ class SupplierRefundScreen extends Component {
             paddingBottom: 12
         }}>
             <TouchableOpacity
-                onPress={this.onCustomerPress}
+                onPress={this.onSupplierPress}
                 style={{ marginTop: 20 }}>
                 <AppTextField
                     containerStyle={styles.fieldStyle}

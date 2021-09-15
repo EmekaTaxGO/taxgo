@@ -18,7 +18,7 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner'
 import FullScreenError from '../components/FullScreenError'
 import EmptyView from '../components/EmptyView';
-import { isFloat, toFloat, showError } from '../helpers/Utils'
+import { isFloat, toFloat, showError, toNum } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -42,7 +42,8 @@ class CustomerReceiptScreen extends Component {
             payMethodIndex: 0,
             receipts: [],
             showPaymentDetail: false,
-            paymentDetail: {}
+            paymentDetail: {},
+            disableAmountReceived: false
         }
     }
 
@@ -65,7 +66,7 @@ class CustomerReceiptScreen extends Component {
             if (newPayment.saveCustomerReceiptError) {
                 setTimeout(() => {
                     showError(newPayment.saveCustomerReceiptError);
-                }, 300);
+                }, 500);
             } else {
                 this.showUpdateSuccessAlert(newPayment.savedCustomerReceipt.message)
             }
@@ -138,7 +139,7 @@ class CustomerReceiptScreen extends Component {
         this.props.navigation.push('SelectCustomerScreen', {
             onCustomerSelected: item => {
                 setFieldValue(this.customerRef, item.name);
-                this._customer = item.name
+                this._customer = item
                 this.fetchCustomerPayment();
             }
         });
@@ -179,23 +180,31 @@ class CustomerReceiptScreen extends Component {
         const newReceipt = {
             ...oldReceipt,
             checked: checked ? '1' : '0',
-            amountpaid: checked ? oldReceipt.rout : 0,
-            outstanding: checked ? 0 : oldReceipt.rout
+            amountpaid: checked ? oldReceipt.outstanding : 0,
+            outstanding: checked ? 0 : oldReceipt.amountpaid
         };
 
         const newReceipts = [...receipts];
         newReceipts.splice(index, 1, newReceipt);
-        this.setState({ receipts: newReceipts }, () => {
-            if (isFloat(newReceipt.rout)) {
-                let amount = this._amount
 
-                if (checked) {
-                    amount += -1 * toFloat(newReceipt.rout);
-                } else {
-                    amount -= -1 * toFloat(newReceipt.rout);
-                }
-                this._amount = toFloat(amount.toFixed(2));
-                setFieldValue(this.amountReceivedRef, `${this._amount}`);
+
+        let disableAmountReceived = false;
+        let total = 0;
+        for (let idx = 0; idx < newReceipts.length; idx++) {
+            if (newReceipts[idx].checked === '1') {
+                disableAmountReceived = true;
+            }
+            total += toNum(newReceipts[idx].amountpaid)
+        }
+        total = Math.abs(total)
+
+        this.setState({ receipts: newReceipts, disableAmountReceived }, () => {
+
+            if (disableAmountReceived) {
+                this._amount = total
+                setFieldValue(this.amountReceivedRef, '0.00')
+            } else {
+                this._amount = toNum(getFieldValue(this.amountReceivedRef))
             }
         });
     }
@@ -265,7 +274,7 @@ class CustomerReceiptScreen extends Component {
         else if (this.state.payMethodIndex === 0) {
             showError('Select Paid Method')
         }
-        else if (toFloat(getFieldValue(this.amountReceivedRef)) === 0) {
+        else if (this._amount <= 0) {
             showError('Amount received cannot be zero')
         }
         else {
@@ -275,16 +284,16 @@ class CustomerReceiptScreen extends Component {
 
     saveCustomerReceipt = () => {
         const selectedItems = paymentHelper.getSelectedReceipts(this.state.receipts);
-        const currentDate = moment(this.state.dateReceivedRef).format('YYYY-MM-DD');
+        const receivedDate = moment(this.state.receivedDate).format('YYYY-MM-DD');
         const { authData } = Store.getState().auth;
         const body = {
             userid: authData.id,
             item: selectedItems,
-            amount: getFieldValue(this.amountReceivedRef),
-            sname: this._supplier ? this._supplier.id : '',
+            amount: toNum(this._amount).toFixed(2),
+            cname: this._customer ? this._customer.id : '',
             paidto: this._bank ? this._bank.id : '',
             paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
-            sdate: currentDate,
+            sdate: receivedDate,
             reference: getFieldValue(this.referenceRef),
             receipttype: "Customer Receipt",
             adminid: 0,
@@ -292,6 +301,11 @@ class CustomerReceiptScreen extends Component {
         }
         const { paymentActions } = this.props;
         paymentActions.saveCustomerReceipt(body);
+    }
+
+
+    onChangeAmountReceivedText = text => {
+        this._amount = toNum(text)
     }
 
     renderHeader = () => {
@@ -366,8 +380,10 @@ class CustomerReceiptScreen extends Component {
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                value={`${this._amount}`}
-                fieldRef={this.amountReceivedRef} />
+                disabled={this.state.disableAmountReceived}
+                value={Math.abs(this._amount).toFixed(2)}
+                fieldRef={this.amountReceivedRef}
+                onChangeText={this.onChangeAmountReceivedText} />
             <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'

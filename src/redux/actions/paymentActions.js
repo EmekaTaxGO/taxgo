@@ -136,7 +136,7 @@ export const getCustomerRefund = (supplierId = 18) => {
 export const saveCustomerReceipt = body => {
     return (dispatch) => {
         dispatch({ type: SAVE_CUSTOMER_RECEIPT_REQUEST });
-        return Api.post('//TO-DO', body)
+        return Api.post('/receipt/addCustReceipt', body)
             .then(response => {
                 dispatch({
                     type: SAVE_CUSTOMER_RECEIPT_SUCCESS,

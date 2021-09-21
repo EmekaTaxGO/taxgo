@@ -156,7 +156,7 @@ export const saveCustomerReceipt = body => {
 export const saveOtherReceipt = body => {
     return (dispatch) => {
         dispatch({ type: SAVE_OTHER_RECEIPT_REQUEST });
-        return Api.post('//TO-DO', body)
+        return Api.post('/receipt/addOtherReceipt', body)
             .then(response => {
                 dispatch({
                     type: SAVE_OTHER_RECEIPT_SUCCESS,

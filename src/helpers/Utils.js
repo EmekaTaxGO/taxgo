@@ -6,7 +6,7 @@ import Snackbar from "react-native-snackbar";
 import { NO_INTERNET_ERROR, API_ERROR_MESSAGE } from "../constants/appConstant";
 import { RNS3 } from "react-native-aws3";
 import Api from '../services/api';
-import { get, isNaN } from "lodash";
+import { get, isNaN, toNumber } from "lodash";
 
 export const openLink = (navigation, title, url) => {
     navigation.push('WebViewScreen', {
@@ -57,14 +57,11 @@ export const toFloat = (text, _default = 0.0) => {
 }
 
 export const toNum = (text, _default = 0.0) => {
-
-    const value = Number(text);
-    if (isNaN(value)) {
-        return _default;
-    } else {
-        return value;
+    if(isNaN(toNumber(text))){
+        return _default
+    }else{
+        return toNumber(text)
     }
-
 }
 
 

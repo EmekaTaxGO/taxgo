@@ -223,10 +223,12 @@ class AddInvoiceScreen extends Component {
                 newState.deliveryAddress = address
                 newState.invDate = timeHelper.format(moment(invoice.data.sdate), H_DATE_FORMAT)
                 newState.dueDate = timeHelper.format(moment(invoice.data.ldate), H_DATE_FORMAT)
-                newState.issued = this.state.issuedcats.filter(item => invoice.data.issued.toLowerCase() === item.toLowerCase())[0]
-                newState.termsCondition = Buffer.from(invoice.data.terms).toString()
-                newState.notes = Buffer.from(invoice.data.quotes).toString()
+                newState.termsCondition = invoice.data.terms ? Buffer.from(invoice.data.terms).toString() : ''
+                newState.notes = invoice.data.quotes ? Buffer.from(invoice.data.quotes).toString() : ''
                 newState.columns = invoice.invoiceItems
+                if (this.state.isSale) {
+                    newState.issued = this.state.issuedcats.filter(item => invoice.data.issued.toLowerCase() === item.toLowerCase())[0]
+                }
             } else {
                 newState.invoiceno = invoiceno
             }

@@ -113,7 +113,7 @@ class SalesCNList extends Component {
             userid: Store.getState().auth.authData.id
         }
         this.setState({ updating: true })
-        Api.post('/scredit/deleteInvoice', body)
+        Api.post('/sales/deleteInvoice', body)
             .then(response => {
                 this.setState({ updating: false })
                 setTimeout(() => {

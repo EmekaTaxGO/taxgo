@@ -17,6 +17,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import { editColor, rColor, viewColor } from '../theme/Color';
+import AppText from '../components/AppText';
+import { appFontBold } from '../helpers/ViewHelper';
 
 class BankFragment extends Component {
     constructor(props) {
@@ -160,11 +162,7 @@ class BankFragment extends Component {
 
                         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                             {this.accountIcon(account.acctype)}
-                            <View style={{
-                                flex: 1,
-                                justifyContent: 'flex-end',
-                                flexDirection: 'row',
-                            }}>
+                            <AppText style={styles.laccount}>{account.laccount}</AppText>
                                 <CardView
                                     cornerRadius={6}
                                     cardElevation={0}
@@ -176,13 +174,13 @@ class BankFragment extends Component {
                                         textAlign: 'center',
                                     }}>{account.acctype}</Text>
                                 </CardView>
-                            </View>
 
                         </View>
                         <Text style={{
                             textAlign: 'center',
                             color: 'white',
-                            fontSize: 20
+                            fontSize: 20,
+                            paddingRight:35
                         }}>{account.accnum ? account.accnum : '****  ***  ****'}</Text>
                         {this.rowItem('Current Balance', account.total)}
                         {this.rowItem('Opening Balance', account.opening)}
@@ -282,6 +280,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#3b96ef',
         paddingHorizontal: 16,
         paddingVertical: 12
+    },
+    laccount:{
+        color:'white',
+        flex:1,
+        textAlign:'center',
+        fontFamily:appFontBold,
+        fontSize:18
     }
 })
 export default connect(

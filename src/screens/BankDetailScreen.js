@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, SafeAreaView, KeyboardAvoidingView, Text, TouchableOpacity, FlatList } from 'react-native';
+import { View, SafeAreaView, KeyboardAvoidingView, Text, TouchableOpacity, FlatList, TouchableHighlight, Alert } from 'react-native';
 import AppTab from '../components/AppTab';
 import moment from 'moment';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
@@ -12,7 +12,16 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner';
 import FullScreenError from '../components/FullScreenError';
 import EmptyView from '../components/EmptyView';
-import { check } from 'react-native-permissions';
+import { H_DATE_FORMAT } from '../constants/appConstant';
+import { getApiErrorMsg, showError, showSuccess, toNum } from '../helpers/Utils';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import AppText from '../components/AppText';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { appFontBold } from '../helpers/ViewHelper';
+import ProgressDialog from '../components/ProgressDialog';
+import Api from '../services/api';
+import Store from '../redux/Store';
+import { get } from 'lodash';
 
 
 class BankDetailScreen extends Component {
@@ -28,7 +37,8 @@ class BankDetailScreen extends Component {
             showEndDateDialog: false,
             allChecked: false,
             activities: [],
-            reconciles: []
+            reconciles: [],
+            updating: false
         }
     }
 
@@ -238,12 +248,12 @@ class BankDetailScreen extends Component {
                     alignItems: 'center',
                     marginTop: 8
                 }}>
-                    <CheckBox
+                    {/* <CheckBox
                         style={{ color: colorAccent, position: 'relative' }}
                         value={allChecked}
                         tintColors={{ true: colorAccent, false: 'gray' }}
                         onValueChange={this.onAllCheckChanged} />
-                    <Text>All</Text>
+                    <Text>All</Text> */}
 
                 </View>
                 <Text style={{
@@ -253,6 +263,7 @@ class BankDetailScreen extends Component {
                     fontWeight: 'bold',
                     textAlign: 'center',
                     paddingHorizontal: 12,
+                    paddingVertical: 6
                 }}>Bank Transactions</Text>
 
             </View>
@@ -272,32 +283,33 @@ class BankDetailScreen extends Component {
         this.setState({ activities: newActivities });
     }
 
-    renderActivityItem = ({ item, index }) => {
+    renderActivityItem = (data) => {
+        const { item } = data
         return <View style={{
             flexDirection: 'row',
             alignItems: 'center',
             borderBottomColor: 'lightgray',
             borderBottomWidth: 1,
             paddingVertical: 12,
-            marginLeft: 16
+            backgroundColor: 'white'
         }}>
-            <CheckBox
+            {/* <CheckBox
                 style={{ color: colorAccent, position: 'relative' }}
                 value={item.checked}
                 tintColors={{ true: colorAccent, false: 'gray' }}
-                onValueChange={checked => this.onCheckChanged(checked, index)} />
+                onValueChange={checked => this.onCheckChanged(checked, index)} /> */}
             <View style={{
                 flexDirection: 'column',
                 flex: 1,
                 marginLeft: 8,
             }}>
-                <Text style={{ fontSize: 14, color: 'black' }}>Nail2</Text>
-                <Text style={{ fontSize: 14, color: 'gray' }}>2021-01-13</Text>
-                <Text style={{ fontSize: 14, color: 'gray' }}>Customer Payment</Text>
+                <Text style={{ fontSize: 14, color: 'black' }}>{item.customer}</Text>
+                <Text style={{ fontSize: 14, color: 'gray' }}>{moment(item.date).format(H_DATE_FORMAT)}</Text>
+                <Text style={{ fontSize: 14, color: 'gray' }}>{item.type}</Text>
             </View>
             <View style={{ flexDirection: 'column', paddingEnd: 16 }}>
-                <Text style={{ fontSize: 14, color: 'green' }}>0.00</Text>
-                <Text style={{ fontSize: 14, color: errorColor, marginTop: 6 }}>36.00</Text>
+                <Text style={{ fontSize: 14, color: 'green', textAlign: 'right' }}>Amount: {toNum(item.amount).toFixed(2)}</Text>
+                <Text style={{ fontSize: 14, color: errorColor, marginTop: 6, textAlign: 'right' }}>Net: {toNum(item.net).toFixed(2)}</Text>
             </View>
         </View>
     }
@@ -315,12 +327,73 @@ class BankDetailScreen extends Component {
             return <EmptyView message='No Transaction found' iconName='hail' />
         }
 
-        return <FlatList
+        return <SwipeListView
             data={activities}
             keyExtractor={(item, index) => `${index}`}
             renderItem={this.renderActivityItem}
+            renderHiddenItem={this.renderHiddenItem}
+            leftOpenValue={70}
         />
     }
+
+    proceedToDeleteTransaction = (txn) => {
+        this.setState({ updating: true })
+        const body = {
+            userid: Store.getState().auth.authData.id,
+            logintype: 'user',
+            id: txn.id
+        }
+        Api.post('/bank/custPayDel', body)
+            .then(response => {
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    showSuccess(get(response, 'data.message', 'Payment Deleted Successfully'))
+                    this.fetchBankActivity()
+                }, 500)
+            })
+            .catch(err => {
+                console.log('Error Deleting Customer Pay: ', err);
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    showError(getApiErrorMsg(err))
+                }, 500)
+            })
+    }
+
+    onDeletePress = (item) => {
+        Alert.alert('Are you sure', 'Do you really want to delete this Transaction?', [
+            {
+                style: 'cancel',
+                text: 'NO',
+                onPress: () => { }
+            },
+            {
+                style: 'default',
+                text: 'YES',
+                onPress: () => { this.proceedToDeleteTransaction(item) }
+            }
+        ])
+    }
+    renderHiddenItem = (data) => {
+        const { item } = data
+        return (
+            <TouchableHighlight onPress={() => this.onDeletePress(item)} underlayColor={errorColor}>
+                <View style={{
+                    flexDirection: 'column',
+                    backgroundColor: errorColor,
+                    width: 70,
+                    height: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+
+                    <Icon name='delete' color='white' size={30} />
+                    <AppText style={{ color: 'white', fontFamily: appFontBold }}>Delete</AppText>
+                </View>
+            </TouchableHighlight>
+        )
+    }
+
     renderReconcileItem = ({ item, index }) => {
         return <View style={{
             flexDirection: 'column',
@@ -361,6 +434,7 @@ class BankDetailScreen extends Component {
                 {tab === 'activity' ? this.renderActivity() : null}
                 {tab === 'reconcile' ? this.renderReconcile() : null}
             </KeyboardAvoidingView>
+            <ProgressDialog visible={this.state.updating} />
         </SafeAreaView>
     }
 }

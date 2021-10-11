@@ -164,21 +164,21 @@ class LoginScreen extends Component {
                 {this.renderLoginForm()}
                 {this.renderCreateAccountRow()}
 
-                <View style={{
+                {/* <View style={{
                     flex: 1, flexDirection: 'row',
                     alignItems: 'center', marginTop: 12
                 }}>
                     <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
                     <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
                     <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
-                </View>
-                <View style={{ flex: 1, justifyContent: 'center', marginTop: 20 }}>
+                </View> */}
+                {/* <View style={{ flex: 1, justifyContent: 'center', marginTop: 20 }}>
 
                     <FBLoginButton
                         onSuccess={accessToken => { }}
                         onError={() => { }} />
 
-                </View>
+                </View> */}
             </View>
             <ProgressDialog visible={auth.loading} />
         </ScrollView>

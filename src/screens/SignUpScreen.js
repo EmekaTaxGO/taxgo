@@ -371,7 +371,7 @@ class SignUpScreen extends Component {
                     onChange={event => this.resetAllError()}
                 />
                 <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', marginTop: 12 }}>
-                    <Text style={{ fontSize: 10 }}>By Signing up you are agreeing with Tax Go</Text>
+                    <Text style={{ fontSize: 10 }}>By Signing up you are agreeing with Tax GO</Text>
                     <TouchableOpacity onPress={this.onTermsConditionClick}
                         style={{
                             marginLeft: 4,

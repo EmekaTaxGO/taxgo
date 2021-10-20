@@ -95,7 +95,7 @@ const TaxgoServices = ({ navigation }) => {
             },
             {
                 icon: 'code',
-                description: 'Manage your invoice & accounts with Tax Go. Register to find Out.',
+                description: 'Manage your invoice & accounts with Tax GO. Register to find Out.',
                 btnTxt: 'Accounting',
                 title: 'Accounting',
                 onPress: () => {

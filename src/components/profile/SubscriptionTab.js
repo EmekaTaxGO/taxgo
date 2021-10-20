@@ -70,7 +70,7 @@ class SubscriptionTab extends Component {
                     end={{ x: 1, y: 0 }}
                     colors={['#fec107', '#fec107']}
                     style={{ flexDirection: 'column', padding: 12, }}>
-                    <Text style={{ color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>Tax Go Pro</Text>
+                    <Text style={{ color: 'black', fontSize: 16, fontWeight: 'bold', textAlign: 'center' }}>Tax GO Pro</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
                         <Text style={{ color: 'white', color: 'gray' }}>Expiry: </Text>
                     </View>
@@ -100,7 +100,7 @@ class SubscriptionTab extends Component {
                     borderBottomWidth: 1,
                     borderBottomColor: 'white'
                 }}>
-                    <Text style={{ fontSize: 18, color: 'gray' }}>Tax Go</Text>
+                    <Text style={{ fontSize: 18, color: 'gray' }}>Tax GO</Text>
                     <Text style={{ color: 'green', paddingStart: 12, fontSize: 16 }}>{item.header}</Text>
                 </View>
                 <View style={{

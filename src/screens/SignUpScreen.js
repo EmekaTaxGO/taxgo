@@ -371,7 +371,7 @@ class SignUpScreen extends Component {
                     onChange={event => this.resetAllError()}
                 />
                 <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', marginTop: 12 }}>
-                    <Text style={{ fontSize: 10 }}>By Signing up you are agreeing with Tax Go</Text>
+                    <Text style={{ fontSize: 10 }}>By Signing up you are agreeing with Tax GO</Text>
                     <TouchableOpacity onPress={this.onTermsConditionClick}
                         style={{
                             marginLeft: 4,
@@ -390,14 +390,14 @@ class SignUpScreen extends Component {
                 <AppButton
                     title='Sign Up'
                     onPress={this.validateAndSignUp} />
-                <View style={{ flexDirection: 'row', marginVertical: 18, alignItems: 'center' }}>
+                {/* <View style={{ flexDirection: 'row', marginVertical: 18, alignItems: 'center' }}>
                     <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
                     <Text style={{ paddingHorizontal: 24, fontSize: 16 }}>OR</Text>
                     <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 0.5, height: 1 }} />
-                </View>
-                <FBLoginButton
+                </View> */}
+                {/* <FBLoginButton
                     onSuccess={accessToken => { }}
-                    onError={() => { }} />
+                    onError={() => { }} /> */}
                 <View style={{
                     flexDirection: 'row',
                     justifyContent: 'center',

@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import { colorAccent } from '../../theme/Color';
+import { colorAccent, errorColor } from '../../theme/Color';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { isFloat, toFloat } from '../../helpers/Utils';
+import { isNaN, toNumber } from 'lodash';
 class CustomerReceiptItem extends React.PureComponent {
 
     formatVal = (val) => {
-        let valFloat = toFloat(val)
-        if (valFloat < 0) {
-            valFloat = -1 * valFloat;
+
+        if (isNaN(toNumber(val))) {
+            return '0'
+        } else {
+            return toNumber(val).toFixed(2)
         }
-        return toFloat(valFloat.toFixed(2));
     }
 
     render() {

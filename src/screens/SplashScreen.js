@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
-import { colorPrimary, colorAccent } from '../theme/Color';
 import AppLogo from '../components/AppLogo';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -18,13 +17,7 @@ class SplashScreen extends Component {
     }
 
     componentDidMount() {
-        const { authActions } = this.props;
-        authActions.fetchAuthdata();
-
-        setTimeout(() => {
-            const { authData } = this.props.auth;
-            this.props.navigation.replace(authData !== null ? 'HomeScreen' : 'LoginScreen');
-        }, 500);
+        
     }
 
     render() {
@@ -33,13 +26,6 @@ class SplashScreen extends Component {
             justifyContent: 'center',
             alignItems: 'center'
         }}>
-            {/* <Text style={{
-                color: colorAccent,
-                fontSize: 36,
-                fontWeight: 'bold',
-                textAlign: 'center',
-                textTransform: 'capitalize'
-            }}>Welcome to TaxGo</Text> */}
             <AppLogo />
         </View>
     }

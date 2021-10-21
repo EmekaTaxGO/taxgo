@@ -1,5 +1,13 @@
 import React, { Component } from 'react'
-import { View, SafeAreaView, KeyboardAvoidingView, ScrollView, TouchableOpacity, StyleSheet, Picker, FlatList, Text } from 'react-native';
+import {
+    View,
+    SafeAreaView,
+    KeyboardAvoidingView,
+    ScrollView,
+    TouchableOpacity,
+    StyleSheet,
+    Text
+} from 'react-native';
 import AppTab from '../components/AppTab';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
@@ -18,6 +26,8 @@ import Snackbar from 'react-native-snackbar';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AppTextField from '../components/AppTextField';
+import AppPicker2 from '../components/AppPicker2';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 class OtherPaymentScreen extends Component {
 
@@ -211,15 +221,12 @@ class OtherPaymentScreen extends Component {
                         fieldRef={this.paidIntoRef} />
                 </TouchableOpacity>
                 {/* Select Method Picker */}
-                <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
-                    <Picker
-                        selectedValue={payMethod[payMethodIndex]}
-                        mode='dropdown'
-                        onValueChange={(itemValue, itemIndex) => this.setState({ payMethodIndex: itemIndex })}>
-                        {payMethod.map((value, index) => <Picker.Item
-                            label={value} value={value} key={`${index}`} />)}
-                    </Picker>
-                </View>
+                <AppPicker2
+                    title={payMethod[payMethodIndex]}
+                    text='Payment Method'
+                    items={payMethod}
+                    containerStyle={{ marginTop: 14 }}
+                    onChange={idx => this.setState({ payMethodIndex: idx })} />
 
                 <TouchableOpacity
                     onPress={() => this.setState({ showReceivedDate: true })}
@@ -359,21 +366,12 @@ class OtherPaymentScreen extends Component {
 
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{
-                        borderWidth: 1,
-                        borderRadius: 12,
-                        borderColor: 'lightgray',
-                        marginTop: 10,
-                        flex: 1
-                    }}>
-                        <Picker
-                            selectedValue={taxes[item.taxIndex]}
-                            mode='dropdown'
-                            onValueChange={(itemValue, itemIndex) => this.onTaxChange(index, itemIndex)}>
-                            {taxes.map((value, index) => <Picker.Item
-                                label={value} value={value} key={`${index}`} />)}
-                        </Picker>
-                    </View>
+                    <AppPicker2
+                        title={taxes[item.taxIndex]}
+                        text='Tax Rate'
+                        items={taxes}
+                        containerStyle={{ marginTop: 14, flex: 1 }}
+                        onChange={idx => this.onTaxChange(index, idx)} />
                     <View style={{
                         flexDirection: 'column',
                         justifyContent: 'center',

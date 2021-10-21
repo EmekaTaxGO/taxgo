@@ -1,5 +1,5 @@
 import React, { Component, PureComponent } from 'react';
-import { View, StyleSheet, FlatList, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, Text, TouchableHighlight, TouchableOpacity, Alert } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import SearchView from '../SearchView';
 import { connect } from 'react-redux';
@@ -12,17 +12,21 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import FullScreenError from '../../components/FullScreenError';
 import EmptyView from '../../components/EmptyView';
 import OnScreenSpinner from '../../components/OnScreenSpinner';
-import { isEmpty } from '../../helpers/Utils'
+import { isEmpty, showError, showSuccess } from '../../helpers/Utils'
 import SalesInvoiceListItem from './SalesInvoiceListItem';
 import AppText from '../AppText';
 import { appFontBold } from '../../helpers/ViewHelper';
+import Store from '../../redux/Store';
+import Api from '../../services/api'
+import ProgressDialog from '../ProgressDialog';
 
 class PurchaseCNList extends Component {
     constructor(props) {
         super(props);
         this.state = {
             query: '',
-            allChecked: false
+            allChecked: false,
+            updating: false
         }
     }
 
@@ -80,15 +84,58 @@ class PurchaseCNList extends Component {
     }
 
     onEditClick = (data) => {
-        console.log('Edit Click!');
+        this.props.navigation.navigate('AddInvoiceScreen', {
+            info: {
+                invoice_id: data.item.id,
+                invoice_type: data.item.type
+            }
+        });
+    }
+
+    onDeleteClick = (data) => {
+        const { item } = data
+        Alert.alert('Are you sure', 'Do you really want to delete this invoice?', [
+            {
+                style: 'cancel',
+                onPress: () => { },
+                text: 'CANCEL'
+            },
+            {
+                onPress: () => { this.deleteInvoice(item) },
+                style: 'default',
+                text: 'YES'
+            }
+        ])
 
     }
-    onDeleteClick = (data) => {
-        console.log('Delete Click!');
 
+    deleteInvoice = (item) => {
+        const body = {
+            id: item.id,
+            invoiceno: item.invoiceno,
+            userid: Store.getState().auth.authData.id
+        }
+        this.setState({ updating: true })
+        Api.post('/purchase/deleteInvoice', body)
+            .then(response => {
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    showSuccess('Invoice Deleted Successfully.')
+                    this.fetchPurchaseInvoice()
+                }, 300)
+            })
+            .catch(err => {
+                console.log('Error deleting invoice');
+                this.setState({ updating: false })
+                setTimeout(() => {
+                    showError('Error Deleting Invoice')
+                }, 300)
+            })
     }
 
     renderHiddenItem = (data) => {
+        const { item } = data
+        const enableOptionBtn = (item.status !== 1 && item.status !== 2)
         return <CardView
             cardElevation={0}
             cornerRadius={6}
@@ -97,8 +144,8 @@ class PurchaseCNList extends Component {
                 <View style={{ flex: 1 }}>
                     {this.hiddenElement('View', 'visibility', viewColor, () => this.onViewClick(data))}
                 </View>
-                {this.hiddenElement('Edit', 'edit', editColor, () => this.onEditClick(data))}
-                {this.hiddenElement('Delete', 'delete', deleteColor, () => this.onDeleteClick(data))}
+                {enableOptionBtn ? this.hiddenElement('Edit', 'edit', editColor, () => this.onEditClick(data)) : null}
+                {enableOptionBtn ? this.hiddenElement('Delete', 'delete', deleteColor, () => this.onDeleteClick(data)) : null}
             </View>
         </CardView>
     }
@@ -157,6 +204,7 @@ class PurchaseCNList extends Component {
                 leftOpenValue={70}
                 rightOpenValue={-140}
             />
+            <ProgressDialog visible={this.state.updating} />
         </View>
     }
 };

@@ -114,14 +114,17 @@ class BankAccountScreen extends Component {
         const { bank: oldBank } = prevProps
         const { bank: newBank } = this.props
         if (oldBank.updatingBankDetail && !newBank.updatingBankDetail) {
-            if (newBank.updateBankDetailError) {
-                //Case of error
-                setTimeout(() => {
+
+            setTimeout(() => {
+                if (newBank.updateBankDetailError) {
+                    //Case of error
                     showError(newBank.updateBankDetailError)
-                }, 400)
-            } else {
-                this.showBankUpdatedMessage(newBank.updateBankData.message)
-            }
+                } else {
+                    this.showBankUpdatedMessage(newBank.updateBankData.message)
+                }
+            }, 400)
+
+
         }
     }
 

@@ -14,3 +14,8 @@ export const PRIVACY_POLICY_URL = 'https://taxgoglobal.com/privacy';
 
 export const CUSTOMER_SALES_PAYMENT = 'customer_sales_payment';
 export const CUSTOMER_PURCHASE_PAYMENT = 'customer_purchase_payment';
+export const COUNTRY_TAX_DEEPLINK = 'taxcalculator://countrytax'
+export const CALCULATOR_STORE_URL = Platform.select({
+    ios: 'itms-apps://itunes.apple.com/us/app/apple-store/id1156521749?mt=8',
+    android: `market://details?id=com.ieaccounts.taxcalculator`
+})

@@ -64,7 +64,7 @@ export const login = (navigation, body) => {
                     type: LOGIN_SUCCESS,
                     payload: response.data.data
                 });
-                navigation.replace('HomeScreen');
+                navigation.reset({ index: 0, routes: [{ name: 'HomeScreen' }] });
             })
             .catch(err => {
                 setTimeout(() => {

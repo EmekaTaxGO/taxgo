@@ -26,7 +26,7 @@ const SettingFragment = props => {
         {
             title: {
                 label: 'Subscription & Payment',
-                description: 'Tax Go gives you one month of free trial and upgrade plans at minimum of your budget.'
+                description: 'Tax GO gives you one month of free trial and upgrade plans at minimum of your budget.'
             },
             data: [
                 {

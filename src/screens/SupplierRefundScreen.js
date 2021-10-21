@@ -4,12 +4,9 @@ import {
     View,
     SafeAreaView,
     KeyboardAvoidingView,
-    ScrollView,
     StyleSheet,
     TouchableOpacity,
-    Picker,
     FlatList,
-    Text,
     Alert
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -22,12 +19,9 @@ import { bindActionCreators } from 'redux';
 import OnScreenSpinner from '../components/OnScreenSpinner'
 import FullScreenError from '../components/FullScreenError'
 import EmptyView from '../components/EmptyView';
-import CheckBox from '@react-native-community/checkbox';
-import { colorAccent, colorWhite, errorColor } from '../theme/Color';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { isFloat, toFloat, showError } from '../helpers/Utils'
+import { colorWhite, errorColor } from '../theme/Color';
+import { isFloat, toFloat, showError, toNum } from '../helpers/Utils'
 import CustomerReceiptItem from '../components/payment/CustomerReceiptItem';
-import { RaisedTextButton } from 'react-native-material-buttons';
 import PaymentDetailCard from '../components/payment/PaymentDetailCard';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Menu, { MenuItem } from 'react-native-material-menu';
@@ -38,6 +32,8 @@ import Store from '../redux/Store';
 import ProgressDialog from '../components/ProgressDialog';
 import AppTextField from '../components/AppTextField';
 import AppButton from '../components/AppButton';
+import AppPicker2 from '../components/AppPicker2';
+import { isNaN, toNumber } from 'lodash';
 
 class SupplierRefundScreen extends Component {
 
@@ -50,7 +46,8 @@ class SupplierRefundScreen extends Component {
             payMethodIndex: 0,
             receipts: [],
             showPaymentDetail: false,
-            paymentDetail: {}
+            paymentDetail: {},
+            disableAmountRefunded: false
         }
     }
 
@@ -140,11 +137,11 @@ class SupplierRefundScreen extends Component {
     amountRefundedRef = React.createRef();
     referenceRef = React.createRef();
 
-    onCustomerPress = () => {
+    onSupplierPress = () => {
         this.props.navigation.push('SelectSupplierScreen', {
             onSupplierSelected: item => {
                 setFieldValue(this.supplierRef, item.name);
-                this._supplier = item.name
+                this._supplier = item
                 this.fetchSupplierRefund();
             }
         });
@@ -185,23 +182,30 @@ class SupplierRefundScreen extends Component {
         const newReceipt = {
             ...oldReceipt,
             checked: checked ? '1' : '0',
-            amountpaid: checked ? oldReceipt.rout : 0,
-            outstanding: checked ? 0 : oldReceipt.rout
+            amountpaid: checked ? oldReceipt.outstanding : 0,
+            outstanding: checked ? 0 : oldReceipt.amountpaid
         };
 
         const newReceipts = [...receipts];
-        newReceipts.splice(index, 1, newReceipt);
-        this.setState({ receipts: newReceipts }, () => {
-            if (isFloat(newReceipt.rout)) {
-                let amount = this._amount
 
-                if (checked) {
-                    amount += -1 * toFloat(newReceipt.rout);
-                } else {
-                    amount -= -1 * toFloat(newReceipt.rout);
-                }
-                this._amount = toFloat(amount.toFixed(2));
-                setFieldValue(this.amountRefundedRef, `${this._amount}`);
+        newReceipts.splice(index, 1, newReceipt);
+        
+        let disableAmountRefunded = false;
+        let total = 0;
+        for (let idx = 0; idx < newReceipts.length; idx++) {
+            if (newReceipts[idx].checked === '1') {
+                disableAmountRefunded = true;
+            }
+            total += toNum(newReceipts[idx].amountpaid)
+        }
+        total = Math.abs(total)
+        this.setState({ receipts: newReceipts, disableAmountRefunded }, () => {
+
+            if (disableAmountRefunded) {
+                this._amount = total
+                setFieldValue(this.amountRefundedRef, '0.00')
+            } else {
+                this._amount = toNum(getFieldValue(this.amountRefundedRef))
             }
         });
     }
@@ -272,7 +276,7 @@ class SupplierRefundScreen extends Component {
         else if (this.state.payMethodIndex === 0) {
             this.showError('Select Pay Method')
         }
-        else if (!isFloat(getFieldValue(this.amountRefundedRef)) || toFloat(getFieldValue(this.amountRefundedRef))) {
+        else if (this._amount <= 0) {
             this.showError('Refund Amount cannot be 0')
         }
         else {
@@ -287,13 +291,13 @@ class SupplierRefundScreen extends Component {
         const body = {
             userid: authData.id,
             item: selectedItems,
-            amount: getFieldValue(this.amountRefundedRef),
+            amount: toNum(this._amount).toFixed(2),
             sname: this._supplier ? this._supplier.id : '',
             paidto: this._bank ? this._bank.id : '',
             paidmethod: bankHelper.getPaidMethod(this.state.payMethodIndex),
             sdate: paidDate,
             reference: getFieldValue(this.referenceRef),
-            receipttype: "Supplier Receipt",
+            receipttype: "Supplier Refund",
             adminid: 0,
             logintype: "user"
         }
@@ -314,6 +318,10 @@ class SupplierRefundScreen extends Component {
         });
     }
 
+    onChangeAmountRefundedText = text => {
+        this._amount = toNum(text)
+    }
+
     renderHeader = () => {
         const { payMethod, payMethodIndex, paidDate: paidDate } = this.state;
         return <View style={{
@@ -324,7 +332,7 @@ class SupplierRefundScreen extends Component {
             paddingBottom: 12
         }}>
             <TouchableOpacity
-                onPress={this.onCustomerPress}
+                onPress={this.onSupplierPress}
                 style={{ marginTop: 20 }}>
                 <AppTextField
                     containerStyle={styles.fieldStyle}
@@ -352,15 +360,12 @@ class SupplierRefundScreen extends Component {
                     fieldRef={this.paidIntoRef} />
             </TouchableOpacity>
             {/* Select Method Picker */}
-            <View style={{ borderWidth: 1, borderRadius: 12, borderColor: 'lightgray', marginTop: 10 }}>
-                <Picker
-                    selectedValue={payMethod[payMethodIndex]}
-                    mode='dropdown'
-                    onValueChange={(itemValue, itemIndex) => this.setState({ payMethodIndex: itemIndex })}>
-                    {payMethod.map((value, index) => <Picker.Item
-                        label={value} value={value} key={`${index}`} />)}
-                </Picker>
-            </View>
+            <AppPicker2
+                title={payMethod[payMethodIndex]}
+                text='Payment Method'
+                items={payMethod}
+                containerStyle={{ marginTop: 12 }}
+                onChange={idx => this.setState({ payMethodIndex: idx })} />
 
             <TouchableOpacity
                 onPress={() => this.setState({ showPaidDate: true })}
@@ -390,9 +395,10 @@ class SupplierRefundScreen extends Component {
                 returnKeyType='next'
                 lineWidth={1}
                 title='*required'
-                editable={false}
-                value={`${this._amount}`}
-                fieldRef={this.amountRefundedRef} />
+                disabled={this.state.disableAmountRefunded}
+                value={Math.abs(this._amount).toFixed(2)}
+                fieldRef={this.amountRefundedRef}
+                onChangeText={this.onChangeAmountRefundedText} />
             <AppTextField
                 containerStyle={{ marginTop: 20 }}
                 label='References'

@@ -2,7 +2,7 @@ const { View, Image, StyleSheet, Text, ScrollView, ColorPropType, Alert, Touchab
 import React, { useState } from 'react';
 import { DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { colorAccent, colorPrimary } from '../theme/Color';
-import { SafeAreaView, TouchableOpacity } from 'react-native';
+import { Linking, SafeAreaView, TouchableOpacity } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { clearData, AUTH_DATA, clearAll } from '../services/UserStorage';
 import { DrawerActions } from '@react-navigation/native';
@@ -62,7 +62,7 @@ const DrawerContent = props => {
                 style: 'default',
                 onPress: async () => {
                     await clearAll();
-                    props.navigation.replace('LoginScreen');
+                    props.navigation.reset({ index: 0, routes: [{ name: 'TaxgoServices' }] });
                 }
             }
         ])

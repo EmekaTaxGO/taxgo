@@ -67,7 +67,7 @@ class HomeScreen extends Component {
         const Drawer = createDrawerNavigator();
         return <Drawer.Navigator
             initialRouteName='HomeFragment'
-            drawerType={this.dimension.width > 760 ? 'permanent' : 'front'}
+            drawerType={'front'}
             drawerPosition='left'
             drawerStyle={{ backgroundColor: 'white', width: InitialRender ? 0 : this.drawerWidth }}
             drawerContent={DrawerContent}

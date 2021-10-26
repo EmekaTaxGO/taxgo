@@ -261,7 +261,7 @@ export const fetchProfitAndLossReport = (sdate, edate) => {
     return (dispatch) => {
         dispatch({ type: FETCH_PROFIT_LOSS_REPORT_REQUEST })
         const { authData } = Store.getState().auth;
-        return Api.get('https://taxgoglobal.com/newrestapi/Profitcalc/profitandloss', {
+        return Api.get('/Profitcalc/profitandloss', {
             params: {
                 userid: authData.id,
                 sdate,

@@ -146,9 +146,11 @@ class DashBoard extends Component {
         }
 
         return <ScrollView style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'column', alignItems: 'center',paddingBottom:16 }}>
                 {this.renderBarChart('Sales Graph', this.state.salesDataSet)}
                 {this.renderBarChart('Purchase Graph', this.state.purchaseDataSet)}
+                {this.renderBarChart('New Customers', this.state.salesDataSet)}
+                {this.renderBarChart('Top Product Sales', this.state.salesDataSet)}
             </View>
         </ScrollView>
     }

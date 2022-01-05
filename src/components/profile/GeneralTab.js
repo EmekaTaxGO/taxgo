@@ -74,7 +74,6 @@ class GeneralTab extends Component {
             }, 300);
         } catch (error) {
             showToast('Error updating profile picture!');
-            console.log('Error updating profile picture', error);
             this.setState({ uploading: false });
         }
     }
